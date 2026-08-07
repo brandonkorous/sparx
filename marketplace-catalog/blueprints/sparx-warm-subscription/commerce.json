@@ -98,6 +98,31 @@
       "collectionHandles": ["this-months-origins", "single-origins"],
       "seoTitle": "Ethiopia Guji — washed light-roast single-origin coffee",
       "seoDescription": "A bright, floral washed Ethiopian single origin with peach, bergamot and jasmine notes.",
+      "productTypeKey": "food_beverage",
+      "attributes": {
+        "ingredients": "100% single-origin arabica coffee — washed Ethiopia Guji, grown at altitude by smallholders in the Guji highlands and roasted light. Nothing else: no flavourings, no blending, no fillers.",
+        "allergens": [],
+        "netWeight": "250 g / 8.8 oz",
+        "storage": "Keep the bag sealed, cool and out of direct sun — the one-way valve lets the fresh coffee degas without going stale. Grind as you brew and drink within four weeks of the roast date to catch it at its brightest.",
+        "nutrition": [
+          {
+            "label": "Serving",
+            "value": "250 ml brewed, black"
+          },
+          {
+            "label": "Calories",
+            "value": "2 kcal"
+          },
+          {
+            "label": "Caffeine",
+            "value": "~120 mg"
+          },
+          {
+            "label": "Sugars",
+            "value": "0 g"
+          }
+        ]
+      },
       "options": [
         {
           "name": "Grind",
@@ -173,6 +198,31 @@
       "collectionHandles": ["this-months-origins", "single-origins"],
       "seoTitle": "Colombia Huila — washed medium-roast single-origin coffee",
       "seoDescription": "A balanced washed Colombian single origin with red apple, caramel and milk-chocolate notes.",
+      "productTypeKey": "food_beverage",
+      "attributes": {
+        "ingredients": "100% single-origin arabica coffee — washed Colombia Huila from a family farm that has grown coffee on the same slope for three generations, roasted to a warm medium. Just coffee, and one origin.",
+        "allergens": [],
+        "netWeight": "250 g / 8.8 oz",
+        "storage": "Store sealed and cool, away from the sun and the stove. A medium roast is forgiving, but it is still best within four to five weeks of roasting — grind fresh each time and it will thank you.",
+        "nutrition": [
+          {
+            "label": "Serving",
+            "value": "250 ml brewed, black"
+          },
+          {
+            "label": "Calories",
+            "value": "2 kcal"
+          },
+          {
+            "label": "Caffeine",
+            "value": "~110 mg"
+          },
+          {
+            "label": "Sugars",
+            "value": "0 g"
+          }
+        ]
+      },
       "options": [
         {
           "name": "Grind",
@@ -248,6 +298,31 @@
       "collectionHandles": ["this-months-origins", "single-origins"],
       "seoTitle": "Kenya Nyeri — washed light-roast single-origin coffee",
       "seoDescription": "A bright, structured washed Kenyan single origin with blackcurrant and grapefruit notes.",
+      "productTypeKey": "food_beverage",
+      "attributes": {
+        "ingredients": "100% single-origin arabica coffee — washed Kenya Nyeri, roasted light to hold on to its blackcurrant snap and syrupy body. One farm, nothing added, nothing hidden.",
+        "allergens": [],
+        "netWeight": "250 g / 8.8 oz",
+        "storage": "Keep it sealed, cool and dark. This is a coffee that rewards freshness — all that fruit fades first, so grind right before you brew and finish the bag inside a month of the roast date.",
+        "nutrition": [
+          {
+            "label": "Serving",
+            "value": "250 ml brewed, black"
+          },
+          {
+            "label": "Calories",
+            "value": "2 kcal"
+          },
+          {
+            "label": "Caffeine",
+            "value": "~125 mg"
+          },
+          {
+            "label": "Sugars",
+            "value": "0 g"
+          }
+        ]
+      },
       "options": [
         {
           "name": "Grind",
@@ -323,6 +398,31 @@
       "collectionHandles": ["this-months-origins", "blends"],
       "seoTitle": "Latitude House Blend — everyday medium-roast coffee blend",
       "seoDescription": "A dependable medium-roast house blend with chocolate, toasted almond and a citrus lift.",
+      "productTypeKey": "food_beverage",
+      "attributes": {
+        "ingredients": "100% arabica coffee blend — a rotating base of washed Latin American and East African lots, roasted medium. A blend of origins and nothing but coffee: no robusta bulk, no flavouring, no oils sprayed on.",
+        "allergens": [],
+        "netWeight": "340 g / 12 oz",
+        "storage": "A cool, dark shelf and a sealed bag are all it asks. The everyday bag is built to be reliable rather than fleeting, but it is still at its best within five weeks of roasting — grind fresh and keep it out of the fridge.",
+        "nutrition": [
+          {
+            "label": "Serving",
+            "value": "250 ml brewed, black"
+          },
+          {
+            "label": "Calories",
+            "value": "2 kcal"
+          },
+          {
+            "label": "Caffeine",
+            "value": "~115 mg"
+          },
+          {
+            "label": "Sugars",
+            "value": "0 g"
+          }
+        ]
+      },
       "options": [
         {
           "name": "Grind",
@@ -398,6 +498,31 @@
       "collectionHandles": ["blends"],
       "seoTitle": "Midnight Espresso Blend — dark-roast espresso coffee",
       "seoDescription": "A dark, syrupy espresso blend with dark chocolate, dried fig and molasses notes.",
+      "productTypeKey": "food_beverage",
+      "attributes": {
+        "ingredients": "100% arabica coffee blend, roasted dark for espresso and the moka pot. Just coffee — nothing sprayed on, no sweeteners, no chicory. A darker roast, built to stand up to milk.",
+        "allergens": [],
+        "netWeight": "340 g / 12 oz",
+        "storage": "Keep it sealed and cool; a dark roast carries a little more surface oil, so heat and light turn it stale faster than a light one. Give a fresh bag two days to rest before you dial in your shots.",
+        "nutrition": [
+          {
+            "label": "Serving",
+            "value": "30 ml single shot"
+          },
+          {
+            "label": "Calories",
+            "value": "1 kcal"
+          },
+          {
+            "label": "Caffeine",
+            "value": "~75 mg"
+          },
+          {
+            "label": "Sugars",
+            "value": "0 g"
+          }
+        ]
+      },
       "options": [
         {
           "name": "Grind",
@@ -473,6 +598,31 @@
       "collectionHandles": [],
       "seoTitle": "Brazil Cerrado Decaf — sugar-cane decaffeinated coffee",
       "seoDescription": "A soft, nutty sugar-cane-decaffeinated Brazilian coffee with hazelnut and chocolate notes.",
+      "productTypeKey": "food_beverage",
+      "attributes": {
+        "ingredients": "100% arabica coffee — a natural Brazil Cerrado lot, roasted medium and sugar-cane decaffeinated. Caffeine is removed with a cane-sugar derivative and water, so nothing chemical ever touches the bean.",
+        "allergens": [],
+        "netWeight": "250 g / 8.8 oz",
+        "storage": "Store sealed, cool and out of the sun, exactly like the caffeinated bags. Decaf keeps no better and no worse — grind fresh and enjoy within a month, and it is just as good after dinner as before work.",
+        "nutrition": [
+          {
+            "label": "Serving",
+            "value": "250 ml brewed, black"
+          },
+          {
+            "label": "Calories",
+            "value": "2 kcal"
+          },
+          {
+            "label": "Caffeine",
+            "value": "<5 mg (decaffeinated)"
+          },
+          {
+            "label": "Sugars",
+            "value": "0 g"
+          }
+        ]
+      },
       "options": [
         {
           "name": "Grind",
@@ -548,6 +698,31 @@
       "collectionHandles": ["blends"],
       "seoTitle": "Cold Brew Blend — coarse-ground cold brew coffee",
       "seoDescription": "A smooth, low-acid cold brew blend in steep bags, with cocoa and dried-cherry notes.",
+      "productTypeKey": "food_beverage",
+      "attributes": {
+        "ingredients": "Coarse-ground 100% arabica coffee blend in unbleached, biodegradable steep bags. Just coffee, roasted a touch darker and ground for a long cold steep — add cold water and time.",
+        "allergens": [],
+        "netWeight": "4 steep bags, 60 g each",
+        "storage": "Keep the sealed pouch somewhere dry and cool. Once brewed, the concentrate keeps in a covered jug in the fridge for up to a week — dilute one part concentrate to one part water or milk over plenty of ice.",
+        "nutrition": [
+          {
+            "label": "Serving",
+            "value": "250 ml prepared, black"
+          },
+          {
+            "label": "Calories",
+            "value": "3 kcal"
+          },
+          {
+            "label": "Caffeine",
+            "value": "~150 mg"
+          },
+          {
+            "label": "Sugars",
+            "value": "0 g"
+          }
+        ]
+      },
       "options": [
         {
           "name": "Pack",
@@ -601,6 +776,14 @@
       "collectionHandles": ["gear"],
       "seoTitle": "Ceramic Pour-Over Dripper — hand-glazed coffee dripper",
       "seoDescription": "A hand-glazed ceramic pour-over dripper with a tall rib pattern, for an even, controlled brew.",
+      "productTypeKey": "food_beverage",
+      "attributes": {
+        "ingredients": "Hand-thrown stoneware ceramic with a food-safe, lead-free glaze. Ships with a starter pack of oxygen-bleached paper filters cut to fit.",
+        "allergens": [],
+        "netWeight": "380 g / 13 oz",
+        "storage": "Hand wash in warm water and air dry — the glaze is dishwasher-safe, but hand washing keeps it looking new. Warm it through with a rinse of hot water before you brew so it does not steal heat from the pour.",
+        "nutrition": []
+      },
       "options": [
         {
           "name": "Colour",
@@ -654,6 +837,14 @@
       "collectionHandles": ["gear"],
       "seoTitle": "Pour-Over Filters — 100 paper coffee filters",
       "seoDescription": "A box of 100 oxygen-bleached paper pour-over filters, cut to fit the Latitude dripper.",
+      "productTypeKey": "food_beverage",
+      "attributes": {
+        "ingredients": "Oxygen-bleached paper — no chlorine, no adhesives, and nothing that leaves a papery taste in the cup. One hundred filters, cut to fit the Latitude dripper.",
+        "allergens": [],
+        "netWeight": "100 filters, ~120 g",
+        "storage": "Keep the box somewhere dry so the filters do not draw moisture and stick together. Rinse each one through with hot water before you brew to wash off any last paper note and warm the dripper at the same time.",
+        "nutrition": []
+      },
       "variants": [
         {
           "sku": "LCC-FILT-100",
@@ -682,6 +873,14 @@
       "collectionHandles": ["gear"],
       "seoTitle": "Latitude Enamel Mug — 12oz enamel coffee mug",
       "seoDescription": "A chip-resistant 12oz enamel coffee mug that keeps its heat, at home or on the trail.",
+      "productTypeKey": "food_beverage",
+      "attributes": {
+        "ingredients": "Enamel-coated steel with a food-safe, chip-resistant vitreous finish and a rolled rim. Holds a generous 12 oz / 350 ml — exactly one good pour-over.",
+        "allergens": [],
+        "netWeight": "220 g / 7.8 oz",
+        "storage": "Hand wash and dry — the enamel is happy on a stovetop and around a campfire, but keep it out of the microwave. A chip earned on a trail is character, not a fault; the steel underneath will not rust.",
+        "nutrition": []
+      },
       "options": [
         {
           "name": "Colour",
@@ -735,6 +934,14 @@
       "collectionHandles": ["gear"],
       "seoTitle": "Hand Coffee Grinder — conical burr hand grinder",
       "seoDescription": "A compact conical-steel-burr hand coffee grinder, adjustable from espresso-fine to coarse.",
+      "productTypeKey": "food_beverage",
+      "attributes": {
+        "ingredients": "Conical hardened-steel burrs in a brushed aluminium body, with a stepped adjustment dial and a glass catch jar. Goes from espresso-fine to cold-brew-coarse.",
+        "allergens": [],
+        "netWeight": "430 g / 15 oz",
+        "storage": "Brush the burrs clean of old grounds every few weeks and keep the whole thing dry — never wash the burrs in water, which dulls the steel and rusts it. A dry brush is the entire maintenance routine.",
+        "nutrition": []
+      },
       "variants": [
         {
           "sku": "LCC-GRIND-01",
@@ -763,6 +970,31 @@
       "collectionHandles": ["this-months-origins", "gifts"],
       "seoTitle": "The Origin Gift Set — coffee and brew-gear gift box",
       "seoDescription": "A gift box of three single origins, a ceramic dripper, filters and an enamel mug in a reusable tin.",
+      "productTypeKey": "food_beverage",
+      "attributes": {
+        "ingredients": "Three 250 g bags of this month’s single-origin arabica coffee, a hand-glazed ceramic dripper, a starter pack of paper filters and an enamel mug, packed in a reusable tin with a hand-written brew guide. The coffee is 100% coffee — nothing added.",
+        "allergens": [],
+        "netWeight": "3 × 250 g coffee, plus gear",
+        "storage": "Keep the coffee bags sealed and cool and brew each within four weeks of its roast date; hand wash the dripper and the mug. Everything but the coffee is made to last for years — the tin included.",
+        "nutrition": [
+          {
+            "label": "Serving",
+            "value": "250 ml brewed, black"
+          },
+          {
+            "label": "Calories",
+            "value": "2 kcal"
+          },
+          {
+            "label": "Caffeine",
+            "value": "~115 mg"
+          },
+          {
+            "label": "Sugars",
+            "value": "0 g"
+          }
+        ]
+      },
       "variants": [
         {
           "sku": "LCC-GIFT-SET",
@@ -791,6 +1023,31 @@
       "collectionHandles": ["this-months-origins", "gifts"],
       "seoTitle": "The Origin Club — monthly single-origin coffee subscription",
       "seoDescription": "A monthly single-origin coffee subscription, roasted to order and shipped free. Pause or cancel any time.",
+      "productTypeKey": "food_beverage",
+      "attributes": {
+        "ingredients": "A fresh single-origin arabica coffee each month — 100% coffee, roasted to order and ground the way you brew. A different farm and harvest every box, and never a flavouring or a filler.",
+        "allergens": [],
+        "netWeight": "250 g coffee per month",
+        "storage": "Each month’s bag arrives sealed with a one-way valve; keep it cool and out of the sun and brew within four weeks of the roast date printed on the front. Pause the plan any time and the next box simply waits.",
+        "nutrition": [
+          {
+            "label": "Serving",
+            "value": "250 ml brewed, black"
+          },
+          {
+            "label": "Calories",
+            "value": "2 kcal"
+          },
+          {
+            "label": "Caffeine",
+            "value": "~120 mg"
+          },
+          {
+            "label": "Sugars",
+            "value": "0 g"
+          }
+        ]
+      },
       "options": [
         {
           "name": "Plan",

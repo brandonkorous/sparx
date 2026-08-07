@@ -33,9 +33,12 @@ import { writeTemplatePreview } from './template-sites/preview';
 import { videoBackdrop } from './template-sites/behaviors';
 import {
   addToCartForm,
+  pdpAttributes,
   pdpDescription,
   pdpImage,
+  pdpPolicyLinks,
   pdpPriceRow,
+  pdpStockBadge,
   pdpTitle,
   productPage,
 } from './template-sites/pdp';
@@ -416,6 +419,16 @@ interface Product {
   description: string;
   status: 'active';
   productType: string;
+  // The typed product type (docs/143) — every piece here is `apparel`, so the PDP's
+  // `pdpAttributes` renders each product's OWN fabric/fit/care/materials/origin.
+  productTypeKey: 'apparel';
+  attributes: {
+    fabric: string;
+    fit: string;
+    care: string;
+    materials: { name: string; percent: string }[];
+    origin: string;
+  };
   vendor: string;
   tags: string[];
   categoryHandles: string[];
@@ -426,6 +439,12 @@ interface Product {
   variants: Variant[];
   images: { assetId: string; isPrimary: true; alt: string }[];
 }
+
+// Care copy shared across the four eaux + the discovery set — genuinely identical for every
+// fragrance in the house, so it lives once (each jewellery piece keeps its own metal-specific
+// care, and per-product fabric/fit/materials/origin still differ everywhere).
+const SCENT_CARE =
+  'Keep it out of heat, direct sun and steam — a closed drawer or its own box, never a bathroom shelf, which is the one place a fine fragrance turns. Composed from natural materials, it settles and deepens a little with age rather than fading.';
 
 const money = (dollars: number): number => Math.round(dollars * 100);
 
@@ -443,6 +462,18 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals', 'high-jewellery'],
     seoTitle: 'Astrid Signet Ring — solid 18k gold signet',
     seoDescription: 'A hand-finished solid 18k gold signet ring, plain or engraved to your mark.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'Turned from a solid billet of 18k gold and finished entirely by hand — no plating, no hollow core. The face is left broad and flat to take a seal or a monogram, the shoulders rounded so it sits close to the finger without ever catching.',
+      fit: 'A substantial, weighted everyday ring, sized true to a standard band; the broad face wears equally on the little finger or the ring finger. Between sizes, size up so a signet turns freely.',
+      care: 'Gold takes a scratch and polishes straight back — a soft cloth keeps the face bright between wears, and the atelier will re-polish the piece and re-cut an engraving for as long as you own it.',
+      materials: [
+        { name: '18k yellow gold', percent: '75%' },
+        { name: 'Fine alloy', percent: '25%' },
+      ],
+      origin: 'Made in France',
+    },
     options: [
       { name: 'Metal', displayType: 'swatch', values: [{ value: 'Yellow gold' }, { value: 'Rose gold' }] },
     ],
@@ -465,6 +496,18 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals', 'high-jewellery'],
     seoTitle: 'Colette Tennis Bracelet — white-diamond line bracelet',
     seoDescription: 'An 18k gold tennis bracelet of hand-matched white diamonds with a flat, hidden clasp.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'An unbroken line of hand-matched white diamonds, each grain-set into an articulated 18k gold rail that flexes with the wrist. The box clasp is worked flush and fitted with a safety catch, so it sits flat and all but disappears.',
+      fit: 'Cut to drape rather than grip; we size each bracelet to the wrist on commission, with a half-link either way for the season. The clasp doubles with a hidden figure-eight for security.',
+      care: 'Rinse in warm water with a soft brush to keep the stones lively, and store it apart from harder pieces so nothing marks the gold. Every setting is checked and re-tightened by the atelier for the life of the bracelet.',
+      materials: [
+        { name: '18k gold rail', percent: '62%' },
+        { name: 'White diamonds', percent: '38%' },
+      ],
+      origin: 'Made in France',
+    },
     variants: [
       { sku: 'VER-COLETTE', priceCents: money(6800), isDefault: true, inventoryPolicy: 'continue' },
     ],
@@ -483,6 +526,18 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['high-jewellery'],
     seoTitle: 'Vesper Drop Earrings — onyx and 18k gold drops',
     seoDescription: 'A pair of onyx-and-gold drop earrings, weighted to hang true against the jaw.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'Polished onyx drops hung from warm 18k gold, weighted low so they fall true and sit close to the jaw. Posts and backs are solid gold; the join is pivoted so each drop swings a little as you move.',
+      fit: 'Long enough to read after dark, light enough to wear through dinner; for pierced ears, with a secure friction back. They sit just below the lobe, against the line of the jaw.',
+      care: 'Wipe the gold and the stone with a dry, soft cloth; onyx dislikes solvents and perfume, so dress and scent first and put these on last. The atelier re-polishes the gold and re-seats a loosened stone whenever needed.',
+      materials: [
+        { name: '18k gold', percent: '70%' },
+        { name: 'Onyx', percent: '30%' },
+      ],
+      origin: 'Made in France',
+    },
     variants: [
       { sku: 'VER-VESPER', priceCents: money(1150), isDefault: true, inventoryPolicy: 'continue' },
     ],
@@ -501,6 +556,15 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals', 'everyday-fine'],
     seoTitle: 'Lune Pendant Necklace — 18k gold disc pendant',
     seoDescription: 'A brushed-and-polished 18k gold disc pendant on a fine chain, in two lengths.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A single 18k gold disc, brushed on one face and mirror-polished on the other so it catches the light differently as it turns, hung from a fine cable chain on a discreet spring clasp.',
+      fit: 'Offered in two lengths, to sit at the collarbone or just below; the disc lies flat against the skin and layers cleanly under a heavier chain.',
+      care: 'A soft cloth brings the polished face back after wear; keep it clasped and hung so the fine chain never knots. Gold does not tarnish, so it asks for little more than the occasional wipe.',
+      materials: [{ name: '18k gold', percent: '100%' }],
+      origin: 'Made in France',
+    },
     options: [
       { name: 'Chain length', displayType: 'dropdown', values: [{ value: '40cm' }, { value: '45cm' }] },
     ],
@@ -523,6 +587,18 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['high-jewellery', 'the-gift-edit'],
     seoTitle: 'Odette Pavé Band — platinum pavé-diamond band',
     seoDescription: 'A slim platinum band grain-set edge to edge with pavé diamonds.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A slim platinum band grain-set edge to edge with pavé diamonds, each stone raised by hand so the line reads as one continuous ribbon of light. Platinum for its weight, and for the way it refuses to wear thin.',
+      fit: 'Low enough in profile to stack or to wear alone; sized true, and best sized precisely — a fully-set band cannot be resized without lifting and re-setting the stones.',
+      care: 'Warm water and a soft brush behind the stones keeps the pavé bright — hand cream and dust dull it faster than anything. The atelier checks every grain and re-tightens the setting for life.',
+      materials: [
+        { name: 'Platinum', percent: '85%' },
+        { name: 'Pavé diamonds', percent: '15%' },
+      ],
+      origin: 'Made in France',
+    },
     options: [
       { name: 'Ring size', displayType: 'dropdown', values: [{ value: '52' }, { value: '54' }] },
     ],
@@ -545,6 +621,15 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['everyday-fine'],
     seoTitle: 'Margaux Hoop Earrings — brushed 18k gold hoops',
     seoDescription: 'A pair of solid brushed-gold hoop earrings, balanced to sit and turn cleanly.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'Solid 18k gold hoops — not hollow tube — brushed to a soft matte that hides the marks of daily wear, on a hinged click closure that seats with a positive snap.',
+      fit: 'A mid-weight, mid-size hoop, sized to clear the lobe and turn without catching, and balanced so it hangs level rather than tipping forward. For pierced ears.',
+      care: 'The brushed finish is forgiving — a dry cloth is usually enough, and the atelier can re-brush or re-polish the surface to your preference. Store the pair clasped so the hinge stays true.',
+      materials: [{ name: '18k gold', percent: '100%' }],
+      origin: 'Made in France',
+    },
     variants: [
       { sku: 'VER-MARGAUX', priceCents: money(720), isDefault: true, inventoryPolicy: 'continue' },
     ],
@@ -563,6 +648,18 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['everyday-fine'],
     seoTitle: 'Céleste Cuff — high-polished silver cuff',
     seoDescription: 'A single-piece high-polished silver cuff, formed to sit close and slip on.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'Formed from a single piece of high-polished sterling silver, shaped to sit close to the wrist with an opening just wide enough to slip on. Substantial in the hand without the dead weight of a solid bangle.',
+      fit: 'An open cuff that eases on over the wrist bone and can be gently adjusted by hand; offered in three sizes to sit snug rather than loose. Wear it high on the forearm or low at the wrist.',
+      care: 'Silver lives — worn often it stays bright; left in a drawer it softens to a patina you can either keep or lift with a silver cloth. The atelier will re-polish it back to a mirror whenever you like.',
+      materials: [
+        { name: 'Sterling silver', percent: '92.5%' },
+        { name: 'Fine copper', percent: '7.5%' },
+      ],
+      origin: 'Made in Italy',
+    },
     options: [
       { name: 'Size', displayType: 'dropdown', values: [{ value: 'Small' }, { value: 'Medium' }, { value: 'Large' }] },
     ],
@@ -586,6 +683,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['fragrance'],
     seoTitle: 'Nº1 Fig & Neroli — eau de parfum',
     seoDescription: 'A green fig and neroli eau de parfum on a warm cedar base, in 50ml and 100ml.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'An eau de parfum built on green fig, softened with neroli and set on a warm cedar base — composed in small batches and left to marry before it is bottled. Bright at the top, quiet and skin-close as it settles.',
+      fit: 'Wears soft and close rather than loud; a pulse at the wrist and the throat carries through a day. Brightest in the first hour, then a warm second skin.',
+      care: SCENT_CARE,
+      materials: [
+        { name: 'Alcohol base', percent: '82%' },
+        { name: 'Fig & neroli accord', percent: '14%' },
+        { name: 'Cedar & musk', percent: '4%' },
+      ],
+      origin: 'Made in Grasse, France',
+    },
     options: [
       { name: 'Size', displayType: 'dropdown', values: [{ value: '50ml' }, { value: '100ml' }] },
     ],
@@ -608,6 +718,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['fragrance'],
     seoTitle: 'Nº2 Iris & Ambrette — eau de parfum',
     seoDescription: 'A powdery iris and ambrette-seed eau de parfum with a soft musk, in 50ml and 100ml.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'An eau de parfum that draws powdery iris out with ambrette seed and a breath of musk — cool, soft and quietly expensive. The most-worn scent in the house, and the hardest to place on someone else.',
+      fit: 'Sits close to the skin and stays soft all day — never a scent that fills a room. A single application at the pulse points lasts, and it layers well over Nº1.',
+      care: SCENT_CARE,
+      materials: [
+        { name: 'Alcohol base', percent: '81%' },
+        { name: 'Iris & ambrette accord', percent: '15%' },
+        { name: 'Musk', percent: '4%' },
+      ],
+      origin: 'Made in Grasse, France',
+    },
     options: [
       { name: 'Size', displayType: 'dropdown', values: [{ value: '50ml' }, { value: '100ml' }] },
     ],
@@ -630,6 +753,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['fragrance', 'new-arrivals'],
     seoTitle: 'Nº3 Black Rose & Oud — eau de parfum',
     seoDescription: 'A dark-rose and oud eau de parfum on a resinous amber base, in 50ml and 100ml.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'The evening eau — a dark rose laid over real oud and a resinous amber, composed at a higher concentration so it holds warm and dense at close range. The scent the atelier is asked about most.',
+      fit: 'Made to be noticed at close range rather than across a room; a little carries a long way. One pulse at the throat is plenty for an evening.',
+      care: SCENT_CARE,
+      materials: [
+        { name: 'Alcohol base', percent: '78%' },
+        { name: 'Rose & oud accord', percent: '18%' },
+        { name: 'Amber', percent: '4%' },
+      ],
+      origin: 'Made in Grasse, France',
+    },
     options: [
       { name: 'Size', displayType: 'dropdown', values: [{ value: '50ml' }, { value: '100ml' }] },
     ],
@@ -652,6 +788,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['fragrance'],
     seoTitle: 'Nº4 Bergamot & Vetiver — eau de parfum',
     seoDescription: 'A bergamot and smoky-vetiver eau de parfum with a clean woody dry-down, in 50ml and 100ml.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'Cool bergamot over smoky vetiver on a clean woody dry-down — the sharpest and most unisex of the four. Crisp on application, and still there, softened, by evening.',
+      fit: 'The most versatile of the eaux — bright enough for the morning, settled enough for the night, and easy on close company. A pulse at each wrist carries the day.',
+      care: SCENT_CARE,
+      materials: [
+        { name: 'Alcohol base', percent: '83%' },
+        { name: 'Bergamot & vetiver accord', percent: '13%' },
+        { name: 'Woods', percent: '4%' },
+      ],
+      origin: 'Made in Grasse, France',
+    },
     options: [
       { name: 'Size', displayType: 'dropdown', values: [{ value: '50ml' }, { value: '100ml' }] },
     ],
@@ -674,6 +823,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['fragrance', 'new-arrivals', 'the-gift-edit'],
     seoTitle: 'The Four Eaux — Vérane fragrance discovery set',
     seoDescription: 'All four Vérane eaux de parfum in 2ml vials, redeemable against a full-size bottle.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'All four house eaux — Nº1 through Nº4 — decanted into 2ml travel vials and boxed together, drawn from the same small batches as the full bottles. The honest way to live with each scent before choosing.',
+      fit: 'A week with a single vial tells you far more than any note list; wear one at a time, on skin, across a full day. Its value is redeemable against any full-size bottle.',
+      care: SCENT_CARE,
+      materials: [
+        { name: 'Alcohol base', percent: '80%' },
+        { name: 'The four house accords', percent: '18%' },
+        { name: 'Musk & wood bases', percent: '2%' },
+      ],
+      origin: 'Made in Grasse, France',
+    },
     variants: [
       { sku: 'VER-DISCOVERY', priceCents: money(95), isDefault: true, inventoryPolicy: 'continue' },
     ],
@@ -829,19 +991,6 @@ const CONTENT = [
 // JavaScript. Bound fields come from the shared PDP kit (correct `repeat('product')` scope
 // + `item.*` binds); the layout + static brand copy are ours.
 
-/** One labelled detail block in the buy-box — a whisper uppercase-tracked `<h2>` label (the
- *  VB "DESCRIPTION / SIZE & FIT / DELIVERY" micro-label, here in the maison sans-label
- *  register) over a paragraph of static brand copy, separated by a single hairline rule so
- *  the stack reads as a quiet accordion without any chrome or shadow. */
-function pdpDetail(label: string, body: string): Node {
-  return el('div', 'flex flex-col gap-3 border-t border-base-300 pt-5', {
-    children: [
-      el('h2', 'text-xs font-medium uppercase tracking-widest text-base-content', { text: label }),
-      el('p', 'text-base leading-relaxed text-base-content', { text: body }),
-    ],
-  });
-}
-
 /** The bespoke buy REGION — authored UNSCOPED; `productPage` wraps it in `repeat('product')`.
  *  Left: the large square product image on the warm stone ground. Right: the calm serif buy
  *  column. Magazine-quiet, maison-restraint. */
@@ -874,28 +1023,38 @@ function pdpBuyRegion(): Node {
                     compareClass: 'text-lg text-base-content line-through',
                     rowClass: 'flex items-baseline gap-4',
                   }),
+                  // A quiet low-stock signal, in the maison's whisper register (bordered, zero
+                  // radius) — shown only when the routed piece is genuinely running low, never
+                  // fabricated scarcity.
+                  pdpStockBadge({
+                    className:
+                      'inline-flex w-fit items-center gap-2 border border-base-300 px-3 py-1 text-xs font-medium uppercase tracking-widest text-base-content',
+                    label: 'Low stock',
+                  }),
                 ],
               }),
               pdpDescription('text-lg leading-relaxed text-base-content'),
               // Qty + Add to cart — the pure-black #000 CTA (btn-primary in `maison`, white ink
               // by construction). The real cart form from the kit, never hand-rolled.
               addToCartForm(),
-              // The stacked detail accordion — provenance, materials & care, delivery.
-              el('div', 'mt-2 flex flex-col gap-5', {
-                children: [
-                  pdpDetail(
-                    'Made in the atelier',
-                    'Cut, set and finished by hand in numbered runs, in our own atelier. Nothing here is bought in and re-badged — we can tell you where every stone was cut, who set it, and the run it belongs to. Each piece leaves numbered, with a note of its principal stone.'
-                  ),
-                  pdpDetail(
-                    'Materials & care',
-                    'Worked in solid 18k gold, platinum, sterling silver and hand-matched stones — or, for the eaux, composed in small litres from natural materials. Gold takes a scratch and polishes back; silver softens into a patina; a fragrance is best kept from heat and light. Every order ships with a care card, and the atelier will re-polish or re-string a piece for its lifetime.'
-                  ),
-                  pdpDetail(
-                    'Delivery & returns',
-                    'Dispatched within two to three working days, packed in the house box and fully insured in transit, with complimentary shipping worldwide. Thirty days to return anything unworn for a full refund; engraved and bespoke commissions are made to your mark and final. Fragrance is returnable only sealed.'
-                  ),
-                ],
+              // The piece's OWN typed attributes (fabric / fit / care / materials / origin),
+              // repeated from `attributeSections` — real per-product copy, not a hardcoded stack.
+              pdpAttributes({
+                containerClass: 'mt-2 flex flex-col gap-5',
+                sectionClass: 'flex flex-col gap-3 border-t border-base-300 pt-5',
+                labelTag: 'h2',
+                labelClass: 'text-xs font-medium uppercase tracking-widest text-base-content',
+                valueClass: 'text-base leading-relaxed text-base-content',
+                rowClass:
+                  'flex items-baseline justify-between gap-4 border-b border-base-200 pb-1',
+                rowLabelClass: 'text-base font-medium text-base-content',
+                rowValueClass: 'text-base text-base-content',
+              }),
+              // Delivery & returns — LINKS to the maison's real legal pages, never reprinted copy.
+              pdpPolicyLinks({
+                className:
+                  'flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-5 text-xs font-medium uppercase tracking-widest text-base-content',
+                linkClass: 'underline underline-offset-4',
               }),
             ],
           }),

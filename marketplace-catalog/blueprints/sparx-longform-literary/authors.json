@@ -1,0 +1,20 @@
+[
+  {
+    "slug": "eleanor-vance",
+    "displayName": "Eleanor Vance",
+    "bio": "Eleanor Vance writes essays and criticism for The Meridian, mostly about books, attention, and the culture of reading. She has been on staff since the magazine’s second year.",
+    "avatarAssetId": "author-vance"
+  },
+  {
+    "slug": "julian-mercer",
+    "displayName": "Julian Mercer",
+    "bio": "Julian Mercer is a reporter at large for The Meridian. He writes long pieces about people and places, and keeps the Notebook when something is too small for an essay and too good to lose.",
+    "avatarAssetId": "author-mercer"
+  },
+  {
+    "slug": "sofia-adeyemi",
+    "displayName": "Sofia Adeyemi",
+    "bio": "Sofia Adeyemi is a fiction writer and critic. Her short stories have appeared in The Meridian and elsewhere; her first collection is out next year.",
+    "avatarAssetId": "author-adeyemi"
+  }
+]

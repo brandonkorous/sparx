@@ -160,6 +160,43 @@ export const SAMPLE_PRODUCT: PublicProduct = {
       notes: null,
     },
   ],
+  // Typed attributes (docs/143) — a `home_goods` sample so the preview PDP also shows the
+  // auto-render attribute sections a real product carries.
+  productTypeKey: 'home_goods',
+  attributes: {
+    materials:
+      'High-fired stoneware with a food-safe reactive glaze; a cork base ring so it sits quiet on the counter.',
+    dimensions: 'Ø 12 cm × H 9.5 cm — brews one to four cups.',
+    care: 'Dishwasher-safe; hand-wash to keep the glaze bright. Let it come to room temperature before brewing to avoid thermal shock.',
+    origin: 'Portugal',
+  },
+  attributeSections: [
+    {
+      key: 'materials',
+      label: 'Materials',
+      kind: 'long_text',
+      value:
+        'High-fired stoneware with a food-safe reactive glaze; a cork base ring so it sits quiet on the counter.',
+      items: [],
+    },
+    {
+      key: 'dimensions',
+      label: 'Dimensions',
+      kind: 'text',
+      value: 'Ø 12 cm × H 9.5 cm — brews one to four cups.',
+      items: [],
+    },
+    {
+      key: 'care',
+      label: 'Care',
+      kind: 'long_text',
+      value:
+        'Dishwasher-safe; hand-wash to keep the glaze bright. Let it come to room temperature before brewing to avoid thermal shock.',
+      items: [],
+    },
+    { key: 'origin', label: 'Made in', kind: 'text', value: 'Portugal', items: [] },
+  ],
+  lowStock: false,
 };
 
 export const SAMPLE_PRODUCT_EXTRAS: {

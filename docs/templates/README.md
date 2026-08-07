@@ -4,6 +4,20 @@
 **Author:** Brandon Korous
 **Last Updated:** 2026-08-04
 
+## Two reference sets
+
+sparx is **content and/or commerce**, so the template library models the proven
+flagships of BOTH halves:
+
+1. **Commerce ten** (this doc) — modelled on the biggest **Shopify** storefronts.
+   Exercises the shop / PLP / cart / **PDP** surfaces.
+2. **Content ten** — [content/README.md](content/README.md) — modelled on the biggest
+   **WordPress** publishers (TechCrunch, The New Yorker, Vogue, National Geographic,
+   TED, …). Exercises the index/feed / **article** / archive / author surfaces the
+   commerce set never touches.
+
+Same rules, same doc format, same silica-native build path for both.
+
 ## What this is
 
 A set of first-party sparx **site blueprints** whose designs are modelled on the

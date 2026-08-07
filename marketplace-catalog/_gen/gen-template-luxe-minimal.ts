@@ -34,9 +34,12 @@ import { writeTemplatePreview } from './template-sites/preview';
 import { videoBackdrop } from './template-sites/behaviors';
 import {
   addToCartForm,
+  pdpAttributes,
   pdpDescription,
   pdpImage,
+  pdpPolicyLinks,
   pdpPriceRow,
+  pdpStockBadge,
   pdpTitle,
   productPage,
 } from './template-sites/pdp';
@@ -376,6 +379,17 @@ interface Product {
   description: string;
   status: 'active';
   productType: string;
+  // The typed product type (docs/143) — every product here is `cosmetics`, so the PDP's
+  // `pdpAttributes` renders each formula's OWN key ingredients / how-to-use / skin type /
+  // size / full INCI list rather than one hardcoded brand stack.
+  productTypeKey: 'cosmetics';
+  attributes: {
+    keyIngredients: string;
+    howToUse: string;
+    skinType: string[];
+    volume: string;
+    fullIngredients: string;
+  };
   vendor: string;
   tags: string[];
   categoryHandles: string[];
@@ -403,6 +417,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['best-sellers', 'the-morning-ritual', 'the-evening-ritual', 'the-essentials'],
     seoTitle: 'The Everyday Cleanser — gentle daily face wash',
     seoDescription: 'A soft gel-to-milk cleanser that removes make-up and SPF without stripping the skin.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'Mild coconut-derived surfactants lift away sunscreen, make-up and grime, while glycerin and panthenol keep the barrier soft — so skin is clean without the tight, squeaky feeling that means it has been stripped.',
+      howToUse:
+        'Massage a small amount over damp skin morning and night; it turns from a gel to a light milk as you work it in. Rinse with lukewarm water and pat dry. Follow with serum and moisturiser while skin is still slightly damp.',
+      skinType: ['all'],
+      volume: '150 ml / 250 ml',
+      fullIngredients:
+        'Aqua, Glycerin, Coco-Glucoside, Sodium Cocoyl Isethionate, Panthenol, Sodium Hyaluronate, Allantoin, Citric Acid, Sodium Benzoate, Potassium Sorbate.',
+    },
     options: [
       { name: 'Size', displayType: 'dropdown', values: [{ value: '150ml' }, { value: '250ml' }] },
     ],
@@ -425,6 +450,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['the-evening-ritual'],
     seoTitle: 'Gentle Exfoliant — low-percentage lactic acid treatment',
     seoDescription: 'A gentle overnight lactic-acid exfoliant that smooths and brightens without stinging.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'A low percentage of lactic acid resurfaces and brightens, paired with gluconolactone — a gentle PHA that also holds water — and allantoin to soothe, so it smooths without the sting of a harsher acid.',
+      howToUse:
+        'At night, two or three times a week, smooth a thin layer over clean, dry skin and let it absorb before moisturiser. Introduce it slowly, avoid layering with other acids, and always wear SPF the next morning.',
+      skinType: ['all', 'sensitive'],
+      volume: '100 ml / 3.4 fl oz',
+      fullIngredients:
+        'Aqua, Lactic Acid, Gluconolactone, Glycerin, Sodium Hydroxide, Allantoin, Panthenol, Xanthan Gum, Sodium Benzoate, Potassium Sorbate.',
+    },
     variants: [
       { sku: 'NUE-EXFOL-100', priceCents: money(34), isDefault: true, inventoryPolicy: 'continue' },
     ],
@@ -443,6 +479,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['best-sellers', 'the-morning-ritual', 'new-arrivals'],
     seoTitle: 'Barrier Repair Serum — niacinamide & ceramide serum',
     seoDescription: 'A niacinamide, ceramide and panthenol serum that rebuilds a stressed skin barrier.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'Niacinamide calms and helps skin make its own lipids, ceramides replace the ones a stressed barrier has lost, and panthenol soothes — together they rebuild reactive, red, thirsty skin over a few weeks.',
+      howToUse:
+        'Press a few drops into clean skin morning and night, before your moisturiser. It layers under anything and plays well with everything, so it fits either end of the routine. Used daily, the effect builds quietly.',
+      skinType: ['dry', 'sensitive'],
+      volume: '30 ml / 50 ml',
+      fullIngredients:
+        'Aqua, Niacinamide, Glycerin, Ceramide NP, Panthenol, Sodium Hyaluronate, Cetearyl Alcohol, Squalane, Xanthan Gum, Phenoxyethanol.',
+    },
     options: [
       { name: 'Size', displayType: 'dropdown', values: [{ value: '30ml' }, { value: '50ml' }] },
     ],
@@ -465,6 +512,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['the-evening-ritual'],
     seoTitle: 'Facial Recovery Oil — squalane & rosehip night oil',
     seoDescription: 'A weightless squalane and rosehip night oil that seals in hydration and softens skin.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'Plant-derived squalane mimics skin’s own oils to seal in everything beneath it, rosehip seed oil brings essential fatty acids to soften and even tone, and a little vitamin E steadies the blend.',
+      howToUse:
+        'As the last step at night, warm three or four drops between the palms and press — do not rub — over moisturiser to lock in hydration. Use nightly for dry skin, or a couple of nights a week when skin feels tight.',
+      skinType: ['dry', 'normal'],
+      volume: '30 ml / 1.0 fl oz',
+      fullIngredients:
+        'Squalane, Rosa Canina (Rosehip) Seed Oil, Caprylic/Capric Triglyceride, Simmondsia Chinensis (Jojoba) Seed Oil, Tocopherol, Bisabolol.',
+    },
     variants: [
       { sku: 'NUE-OIL-30', priceCents: money(64), isDefault: true, inventoryPolicy: 'continue' },
     ],
@@ -483,6 +541,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['the-evening-ritual'],
     seoTitle: 'Overnight Renewal Mask — leave-on hydrating night mask',
     seoDescription: 'A rich leave-on overnight cream mask with hyaluronic acid and shea for tired, dry skin.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'Multi-weight hyaluronic acid floods dry, tired skin with water, while shea butter and glycerin seal it in overnight — so you wake to the plump, rested face a good night is meant to give you.',
+      howToUse:
+        'Twice a week, smooth a generous layer over clean skin as the final step before bed and leave it on — no rinsing. It sinks in without transferring to the pillow. On very dry nights, use it in place of your moisturiser.',
+      skinType: ['dry', 'normal'],
+      volume: '50 ml / 1.7 fl oz',
+      fullIngredients:
+        'Aqua, Glycerin, Butyrospermum Parkii (Shea) Butter, Sodium Hyaluronate, Squalane, Cetearyl Alcohol, Panthenol, Allantoin, Xanthan Gum, Phenoxyethanol.',
+    },
     variants: [
       { sku: 'NUE-MASK-50', priceCents: money(48), isDefault: true, inventoryPolicy: 'continue' },
     ],
@@ -501,6 +570,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['the-evening-ritual'],
     seoTitle: 'Quiet Eye Cream — caffeine & peptide eye cream',
     seoDescription: 'A light caffeine-and-peptide eye cream that de-puffs and softens fine lines without pilling.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'Caffeine helps de-puff a slow morning, peptides support firmness over time, and a light dose of hyaluronic acid smooths the look of fine lines — in a fast-absorbing cream that will not pill under concealer.',
+      howToUse:
+        'Morning and night, tap a small amount around the orbital bone with your ring finger, working from the inner corner outward. A little goes a long way, so a tube lasts. Let it settle before eye make-up.',
+      skinType: ['all'],
+      volume: '15 ml / 0.5 fl oz',
+      fullIngredients:
+        'Aqua, Glycerin, Caffeine, Acetyl Hexapeptide-8, Sodium Hyaluronate, Squalane, Cetearyl Alcohol, Panthenol, Tocopherol, Phenoxyethanol.',
+    },
     variants: [
       { sku: 'NUE-EYE-15', priceCents: money(46), isDefault: true, inventoryPolicy: 'continue' },
     ],
@@ -519,6 +599,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['best-sellers', 'the-morning-ritual', 'the-essentials'],
     seoTitle: 'Ultimate Moisturizer — daily ceramide face cream',
     seoDescription: 'A glycerin, squalane and ceramide face cream that sinks in fast and layers under SPF.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'Glycerin draws water in, squalane softens, and ceramides shore up the barrier — a balanced trio in a texture that sinks in fast and sits invisibly under SPF or make-up, rich enough for winter, light enough for summer.',
+      howToUse:
+        'Smooth a pea-to-almond-sized amount over the face and neck as the last step of the routine — after serum, and in the morning before SPF. Warm it between the fingers first so it presses in rather than dragging.',
+      skinType: ['all'],
+      volume: '50 ml / 100 ml',
+      fullIngredients:
+        'Aqua, Glycerin, Squalane, Ceramide NP, Cetearyl Alcohol, Caprylic/Capric Triglyceride, Sodium Hyaluronate, Panthenol, Tocopherol, Phenoxyethanol.',
+    },
     options: [
       { name: 'Size', displayType: 'dropdown', values: [{ value: '50ml' }, { value: '100ml' }] },
     ],
@@ -541,6 +632,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['best-sellers', 'the-morning-ritual', 'the-essentials'],
     seoTitle: 'Daily Mineral SPF 30 — no-white-cast mineral sunscreen',
     seoDescription: 'A lightweight matte mineral SPF 30 that leaves no white cast and wears under make-up.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'Non-nano zinc oxide gives broad-spectrum SPF 30 mineral protection tinted to leave no white cast on any skin tone, with niacinamide and glycerin so it wears like skincare rather than a chalky sunscreen.',
+      howToUse:
+        'As the final morning step, apply two finger-lengths over the face and neck — more than feels necessary — and let it set before make-up. Reapply across a long day outdoors; do not rely on the SPF in your make-up alone.',
+      skinType: ['all', 'sensitive'],
+      volume: '50 ml / 1.7 fl oz',
+      fullIngredients:
+        'Aqua, Zinc Oxide (non-nano), Caprylic/Capric Triglyceride, Glycerin, Niacinamide, Cetearyl Alcohol, Silica, Iron Oxides (CI 77491, CI 77492), Tocopherol, Phenoxyethanol.',
+    },
     variants: [
       { sku: 'NUE-SPF-50', priceCents: money(38), isDefault: true, inventoryPolicy: 'continue' },
     ],
@@ -559,6 +661,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals'],
     seoTitle: 'Hydrating Essence Mist — hyaluronic acid face mist',
     seoDescription: 'A fine hyaluronic-acid and aloe essence mist that hydrates and preps skin for serum.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'Low-weight hyaluronic acid and betaine lay down a real hydrating layer that helps everything after it absorb, while aloe and panthenol calm — not a gimmick spritz, but a genuine essence step.',
+      howToUse:
+        'Mist over clean skin and press in with the palms before serum, or spritz over make-up through the day when skin feels tight. Hold it a hand’s width away and let the fine mist settle rather than soaking the face.',
+      skinType: ['all'],
+      volume: '100 ml / 3.4 fl oz',
+      fullIngredients:
+        'Aqua, Glycerin, Sodium Hyaluronate, Aloe Barbadensis Leaf Juice, Panthenol, Betaine, Allantoin, Sodium Benzoate, Potassium Sorbate.',
+    },
     variants: [
       { sku: 'NUE-MIST-100', priceCents: money(32), isDefault: true, inventoryPolicy: 'continue' },
     ],
@@ -577,6 +690,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['the-essentials'],
     seoTitle: 'Body Softening Lotion — fast-absorbing oat & shea lotion',
     seoDescription: 'A fast-absorbing oat, shea and glycerin body lotion that softens skin in seconds.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'Colloidal oat calms and softens rough, tight patches, shea butter and glycerin hold in moisture, and a light non-greasy base absorbs in seconds — so you can dress straight after without waiting for it to sink in.',
+      howToUse:
+        'Smooth over the whole body after a shower while skin is still slightly damp, concentrating on elbows, knees and anywhere that runs dry. Lightly and briefly scented, then gone — nothing that fights your fragrance.',
+      skinType: ['all', 'dry'],
+      volume: '250 ml / 400 ml',
+      fullIngredients:
+        'Aqua, Glycerin, Avena Sativa (Oat) Kernel Extract, Butyrospermum Parkii (Shea) Butter, Caprylic/Capric Triglyceride, Cetearyl Alcohol, Panthenol, Tocopherol, Phenoxyethanol.',
+    },
     options: [
       { name: 'Size', displayType: 'dropdown', values: [{ value: '250ml' }, { value: '400ml' }] },
     ],
@@ -599,6 +723,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['the-evening-ritual'],
     seoTitle: 'Overnight Lip Mask — repairing shea lip balm',
     seoDescription: 'A thick, non-sticky overnight lip mask of shea and squalane that repairs chapped lips.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'Shea butter and squalane form a rich, cushioning seal that repairs chapped, flaking lips overnight, with a whisper of vanilla and vitamin E — thick enough to work while you sleep, never sticky or waxy.',
+      howToUse:
+        'Press a generous layer onto the lips as the last thing before bed and wake to soft lips that take colour cleanly. Keep it in a pocket for the worst of winter, and use it as a nightly balm whenever lips feel raw.',
+      skinType: ['all'],
+      volume: '15 ml / 0.5 fl oz',
+      fullIngredients:
+        'Butyrospermum Parkii (Shea) Butter, Squalane, Hydrogenated Polyisobutene, Ricinus Communis (Castor) Seed Oil, Tocopheryl Acetate, Vanillin, Bisabolol.',
+    },
     variants: [
       { sku: 'NUE-LIP-15', priceCents: money(24), isDefault: true, inventoryPolicy: 'continue' },
     ],
@@ -617,6 +752,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['best-sellers', 'new-arrivals'],
     seoTitle: 'The Complete Ritual — Nue four-step skincare set',
     seoDescription: 'The full four-step routine — cleanser, serum, moisturizer and SPF — in one boxed set.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'The four essentials that carry the routine: the gel-to-milk Everyday Cleanser, the niacinamide-and-ceramide Barrier Repair Serum, the glycerin-squalane-ceramide Ultimate Moisturizer, and the no-cast Daily Mineral SPF 30.',
+      howToUse:
+        'The whole method is the order. Morning: cleanse, serum, moisturiser, then SPF. Evening: cleanse, serum, moisturiser. Introduce it as your everyday routine and give it a month — skin changes slowly, and the results that last arrive quietly.',
+      skinType: ['all'],
+      volume: 'Four full-size essentials',
+      fullIngredients:
+        'Each essential carries its own full INCI list — see the Everyday Cleanser, Barrier Repair Serum, Ultimate Moisturizer and Daily Mineral SPF 30 pages for the complete lists.',
+    },
     variants: [
       { sku: 'NUE-RITUAL-SET', priceCents: money(180), isDefault: true, inventoryPolicy: 'continue' },
     ],
@@ -782,24 +928,12 @@ const CONTENT = [
 // photograph is the only chroma. Bound fields come from the shared PDP kit (correct
 // `repeat('product')` scope + `item.*` binds); the layout + static brand copy are ours.
 
-/** One labelled detail block in the buy column — an `<h2>` uppercase label over a paragraph
- *  of static brand copy. The stacked "Ingredients / How to use / Shipping & returns" panel,
- *  stacked rather than tabbed so it reads without JavaScript and needs no behaviour marker.
- *  A hairline top rule is the only chrome — the calm structure the minimal aesthetic wants. */
-function pdpDetail(label: string, body: string): Node {
-  return el('div', 'flex flex-col gap-2 border-t border-base-300 pt-5', {
-    children: [
-      el('h2', 'text-sm font-semibold uppercase tracking-widest text-base-content', {
-        text: label,
-      }),
-      el('p', 'text-base leading-relaxed text-base-content', { text: body }),
-    ],
-  });
-}
-
 /** The bespoke buy REGION — authored UNSCOPED; `productPage` wraps it in `repeat('product')`.
  *  Left: the big square studio image on the warm-neutral sweep. Right: the quiet buy column,
- *  generous negative space, ink on bone, no accent anywhere. */
+ *  generous negative space, ink on bone, no accent anywhere. The detail stack is no longer
+ *  hardcoded per template (a serum's ingredients ≠ a cleanser's): `pdpAttributes` repeats the
+ *  routed product's OWN typed cosmetics attributes (docs/143), and `pdpPolicyLinks` points at
+ *  the store's real shipping/returns pages. */
 function pdpBuyRegion(): Node {
   return el('section', 'bg-base-100 @container px-6 py-12 @3xl:py-20', {
     children: [
@@ -827,27 +961,37 @@ function pdpBuyRegion(): Node {
                     compareClass: 'text-lg text-base-content line-through',
                     rowClass: 'flex items-baseline gap-4',
                   }),
+                  // A real low-stock signal — an understated bordered pill in ink, no accent,
+                  // shown only when the routed product is genuinely low (never fake scarcity).
+                  pdpStockBadge({
+                    className:
+                      'inline-flex w-fit items-center gap-2 border border-base-300 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-base-content',
+                    label: 'Low stock',
+                  }),
                 ],
               }),
               pdpDescription('text-lg leading-relaxed text-base-content'),
               // Qty + Add to cart — the near-black mono CTA (btn-primary in `bare`).
               addToCartForm(),
-              // The stacked detail panel — brand-level copy true of every Nue formula.
-              el('div', 'mt-1 flex flex-col gap-5', {
-                children: [
-                  pdpDetail(
-                    'Ingredients',
-                    'Every Nue formula is fragrance-free, non-comedogenic and built from a short list of ingredients that earn their place — humectants, ceramides and gentle actives at levels skin can actually use. No essential oils, no drying alcohols, no colour, and nothing added to make a jar look busy on a shelf.'
-                  ),
-                  pdpDetail(
-                    'How to use',
-                    'Work into clean skin in the order of the ritual — cleanse, treat, moisturize, then protect in the morning — a little at a time, morning and night as the step calls for. Introduce one new product at a time and give it a fortnight: skin changes slowly, and the results that last are the ones that arrive quietly.'
-                  ),
-                  pdpDetail(
-                    'Shipping & returns',
-                    'Complimentary carbon-neutral shipping on orders over $50, dispatched within two business days and tracked to your door. If something is not right for your skin, return it within 30 days — opened or not — for a full refund. Skincare is personal, and finding your routine should feel that way.'
-                  ),
-                ],
+              // The product's OWN typed attributes (key ingredients / how to use / skin type /
+              // size / full INCI) — repeated from `attributeSections`, real per-product copy
+              // rather than a hardcoded brand stack, stacked flat in the calm minimal voice.
+              pdpAttributes({
+                containerClass: 'mt-1 flex flex-col gap-5',
+                sectionClass: 'flex flex-col gap-2 border-t border-base-300 pt-5',
+                labelTag: 'h2',
+                labelClass: 'text-sm font-semibold uppercase tracking-widest text-base-content',
+                valueClass: 'text-base leading-relaxed text-base-content',
+                rowClass:
+                  'flex items-baseline justify-between gap-4 border-b border-base-200 pb-1',
+                rowLabelClass: 'text-base font-medium text-base-content',
+                rowValueClass: 'text-base text-base-content',
+              }),
+              // Shipping & returns — LINKS to the store's real legal pages, never reprinted copy.
+              pdpPolicyLinks({
+                className:
+                  'flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-5 text-sm font-semibold uppercase tracking-widest text-base-content',
+                linkClass: 'underline underline-offset-4',
               }),
             ],
           }),

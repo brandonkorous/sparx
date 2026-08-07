@@ -115,11 +115,44 @@ function formatPublishedDate(iso: string | null): string {
   }).format(d);
 }
 
+/** Project an entry's BYLINE — author persona + taxonomy — into the flat, bindable
+ *  fields a masthead / feed card reads (`authorName`, `authorAvatar`, `authorBio`,
+ *  `category`, `categorySlug`, `tags`).
+ *
+ *  These come from the `author` / `terms` relations the PUBLIC content reads now
+ *  `include` (packages/cms `PUBLIC_ENTRY_BYLINE_INCLUDE`); an entry read without them
+ *  (or a type with no author/taxonomy) projects empty, so a template that binds a
+ *  byline degrades to nothing rather than erroring. `category` is the first
+ *  `blog_category` term (fallback: the first non-tag term); `tags` are the
+ *  `blog_tag` terms — the WordPress rubric/tags split every publisher template wants. */
+function projectByline(
+  entry: Pick<ApiEntry, 'author' | 'terms'>,
+  tenantSlug: string
+): Record<string, unknown> {
+  const author = entry.author ?? null;
+  const avatarUrl = author?.avatar_asset_id ? mediaUrl(author.avatar_asset_id, tenantSlug) : null;
+  const terms = entry.terms ?? [];
+  const tagTerms = terms.filter((t) => t.taxonomy_key === 'blog_tag');
+  const primaryCategory =
+    terms.find((t) => t.taxonomy_key === 'blog_category') ??
+    terms.find((t) => t.taxonomy_key !== 'blog_tag') ??
+    null;
+  return {
+    authorName: author?.display_name ?? '',
+    authorAvatar: avatarUrl ? { url: avatarUrl, alt: author?.display_name ?? '' } : null,
+    authorBio: author?.bio ?? '',
+    category: primaryCategory?.name ?? '',
+    categorySlug: primaryCategory?.slug ?? '',
+    tags: tagTerms.map((t) => t.name),
+  };
+}
+
 /** Map a published blog_post entry into the single in-scope record a `cms.blog_post`
  *  collection template binds (`blog_post.*`): title + excerpt, the rich-text body
  *  doc passed through verbatim (the Prose leaf serializes it on render), the
- *  featured-image asset id resolved to a `{ url, alt }`, and a human-readable
- *  published date. The CMS analogue of productToBuilderRecord. */
+ *  featured-image asset id resolved to a `{ url, alt }`, a human-readable published
+ *  date, and the byline (author + category + tags). The CMS analogue of
+ *  productToBuilderRecord. */
 export function postToBuilderRecord(
   entry: ApiEntry<BlogPostBody>,
   tenantSlug: string
@@ -134,6 +167,7 @@ export function postToBuilderRecord(
     body: body.body ?? null,
     featuredImage: url ? { url, alt: title } : null,
     date: formatPublishedDate(entry.published_at),
+    ...projectByline(entry, tenantSlug),
   };
 }
 
@@ -228,7 +262,14 @@ export async function loadBuilderData(
           setAtPath(
             root,
             `cms.${type}`,
-            shown.map((e) => resolveEntryBodyAssets(e.body, tenantSlug))
+            // Body fields (`item.title`, `item.featuredImage`, …) PLUS the byline
+            // (`item.authorName`, `item.category`, `item.tags`) so a feed card renders
+            // a real WordPress-style row, not just a headline. Byline is empty for a
+            // type with no author/taxonomy, so non-editorial feeds are unaffected.
+            shown.map((e) => ({
+              ...resolveEntryBodyAssets(e.body, tenantSlug),
+              ...projectByline(e, tenantSlug),
+            }))
           );
           // n+1 came back → more exist. Bindable, so a template can say so instead of
           // the list just ending (docs/127 §8).

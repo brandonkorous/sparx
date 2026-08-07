@@ -36,6 +36,7 @@ import * as offer from './offer';
 import * as people from './people';
 import * as place from './place';
 import * as process from './process';
+import * as publishing from './publishing';
 
 export const SECTION_CATALOG: CatalogGroup[] = [
   {
@@ -516,6 +517,47 @@ export const SECTION_CATALOG: CatalogGroup[] = [
         icon: 'grid',
         hint: 'Guides and articles, three across.',
         make: content.resourceGrid,
+      },
+    ],
+  },
+  {
+    key: 'sparx_publishing',
+    label: 'News and listings',
+    items: [
+      {
+        key: 'lead_feed',
+        label: 'News feed',
+        icon: 'layout',
+        hint: 'One lead story, then the next few — the front page of anything that publishes more than one thing.',
+        make: publishing.leadFeed,
+      },
+      {
+        key: 'headline_list',
+        label: 'Headline list',
+        icon: 'article',
+        hint: 'More stories as text-only links with their bylines — fits ten where a grid of cards fits three.',
+        make: publishing.headlineList,
+      },
+      {
+        key: 'popular_list',
+        label: 'Most read',
+        icon: 'article',
+        hint: 'A numbered list of your most-read pieces — the rail every publisher runs down its side.',
+        make: publishing.popularList,
+      },
+      {
+        key: 'event_list',
+        label: "What's on",
+        icon: 'calendar',
+        hint: 'Dated events, each with the where and the when — for a venue, a programme, a tour, or public notices.',
+        make: publishing.eventList,
+      },
+      {
+        key: 'directory',
+        label: 'Section directory',
+        icon: 'grid',
+        hint: 'The onward sections of a big site, grouped and labelled — links a search engine can actually read.',
+        make: publishing.directory,
       },
     ],
   },

@@ -1,0 +1,2206 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-4 px-6 py-5",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden flex-1 items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "01f55685-9b56-447c-b422-30dfb8fbc8b5",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "5b4b63c8-b40a-4c6e-a14c-e4b8ecbc4d21",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "8f55d6eb-a351-4279-8d04-8fd9a0e4dc74",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "7deaeb4d-0015-41ec-87ff-816edc125784",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "flex flex-1 items-center justify-end gap-4",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "nav",
+                      "class": "hidden items-center gap-6 @md:flex",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "a",
+                          "class": "text-sm font-medium text-base-content hover:text-primary",
+                          "attrs": {
+                            "href": "/about"
+                          },
+                          "children": ["About"],
+                          "slot": {
+                            "name": "link3",
+                            "type": "link",
+                            "label": "Docs"
+                          },
+                          "id": "6c3d3902-0f0c-43d5-905e-cdbc3099f1c2",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "a",
+                          "class": "text-sm font-medium text-base-content hover:text-primary",
+                          "attrs": {
+                            "href": "/contact"
+                          },
+                          "children": ["Contact"],
+                          "slot": {
+                            "name": "link4",
+                            "type": "link",
+                            "label": "Company"
+                          },
+                          "id": "98526a5b-6504-4cd5-8567-55c23e64bbdc",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "ba4373fe-c817-4d05-aaa7-8f43c6ce6d3a",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "d4e31e47-ff32-46de-815d-24c70d0a2dc1",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "cfd00a32-f949-4cd5-8b3a-1109ae05d7e7",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "5ad890fd-20c6-42c9-b2a2-e0743657a94a",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "67289c80-b0a1-4872-a402-f36f07962698",
+                  "ord": "a2"
+                }
+              ],
+              "id": "9c6ea268-657e-40e5-b619-b85e7f1e48f0",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "34b9ed8b-cc39-48a8-8e45-018d7cb9c149",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "30134e3c-cad3-4879-8f40-bc832f6677d9",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "33110ba5-9146-4c4b-b05a-298d7e18f2a1",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "ed010d68-a6ab-4000-a8e4-94f41b0ceff4",
+                  "ord": "a3"
+                }
+              ],
+              "part": "panel",
+              "id": "ca2b073f-4f21-4e76-8617-2b70110f6205",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "07f9e592-ba5c-4b38-bdc1-c29c36e7f943",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "e2baa153-fc2e-413a-8e76-10ca8e5453d2",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-200 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @3xl:grid-cols-2",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "77df488f-5ced-474a-84d1-239c7f4887ec",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-sm text-sm text-base-content",
+                          "children": [
+                            "Join the list — new work, journal notes, and studio news, about once a month."
+                          ],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "cb7a56c4-fa95-4dbf-a91e-52da58e6e2a4",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "component",
+                          "component": "Form",
+                          "class": "flex w-full max-w-md flex-col gap-3 @sm:flex-row",
+                          "props": {
+                            "action": "subscribe"
+                          },
+                          "children": [
+                            {
+                              "kind": "component",
+                              "component": "Input",
+                              "class": "input flex-1",
+                              "props": {
+                                "type": "email",
+                                "name": "email",
+                                "placeholder": "you@example.com",
+                                "required": true
+                              },
+                              "id": "7bc5d03e-b4ed-4c67-9932-91b465f75349",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "component",
+                              "component": "Button",
+                              "class": "btn btn-primary",
+                              "props": {
+                                "label": "Subscribe",
+                                "type": "submit"
+                              },
+                              "slot": {
+                                "name": "cta",
+                                "type": "text",
+                                "label": "Button label"
+                              },
+                              "id": "63ed6b5e-52e8-4159-8807-23767be72857",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "26443e56-00aa-4195-ae79-e38df9e6728c",
+                          "ord": "a2"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm text-base-content",
+                          "children": ["No spam, and an unsubscribe link in every issue."],
+                          "slot": {
+                            "name": "note",
+                            "type": "text",
+                            "label": "Reassurance line"
+                          },
+                          "id": "fd15fca6-8386-4d99-9ba3-2faec9928b00",
+                          "ord": "a3"
+                        }
+                      ],
+                      "id": "6200ab71-977c-40ea-aee0-52cbdf26a705",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Explore"],
+                              "slot": {
+                                "name": "col1",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/"
+                              },
+                              "id": "45df854b-c2e1-4e92-b123-698bbac2e7b7",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/shop"
+                                      },
+                                      "children": ["Shop"],
+                                      "slot": {
+                                        "name": "link1",
+                                        "type": "link",
+                                        "label": "Features"
+                                      },
+                                      "id": "a73dad3c-12df-4044-8f6b-cd72c6b9aa4e",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "780aa7c6-e5a0-4099-a5c7-c6996fadcf92",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/journal"
+                                      },
+                                      "children": ["Journal"],
+                                      "slot": {
+                                        "name": "link2",
+                                        "type": "link",
+                                        "label": "Pricing"
+                                      },
+                                      "id": "75edc765-686b-4fa6-a4be-976af69432a4",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "eb13829c-1868-4db9-94ed-cc9b6d835e99",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/about"
+                                      },
+                                      "children": ["About"],
+                                      "slot": {
+                                        "name": "link3",
+                                        "type": "link",
+                                        "label": "Changelog"
+                                      },
+                                      "id": "adb1dae5-c722-4512-af75-30794e04ac6c",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "a2d55c92-54ab-4621-9175-b02e67caa29a",
+                                  "ord": "a2"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/contact"
+                                      },
+                                      "children": ["Contact"],
+                                      "slot": {
+                                        "name": "link4",
+                                        "type": "link",
+                                        "label": "Roadmap"
+                                      },
+                                      "id": "5452b65b-daf8-48b5-8976-9343ae26903e",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "76a0dabd-e973-4fee-9d03-b8755af88cf3",
+                                  "ord": "a3"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/search"
+                                      },
+                                      "children": ["Search"],
+                                      "id": "1c0a68d9-3f86-4d3e-8500-d6c0766d854b",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "c304f761-032c-4551-8798-53a7662bfcd9",
+                                  "ord": "a4"
+                                }
+                              ],
+                              "id": "e08a5a19-d50e-4da1-9a50-bebf892628cd",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "ca772570-431e-4041-8589-1f8edd5de0bb",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Account"],
+                              "slot": {
+                                "name": "col2",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/account"
+                              },
+                              "id": "9f70f7f0-1813-4c20-9a70-7f9227af49c3",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account"
+                                      },
+                                      "children": ["Sign in"],
+                                      "slot": {
+                                        "name": "link5",
+                                        "type": "link",
+                                        "label": "About"
+                                      },
+                                      "id": "a447c33d-1ee7-4b6a-98d7-91c922851a2f",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "a7947251-9677-4d2f-b1e2-4af6e997cb84",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account/orders"
+                                      },
+                                      "children": ["Orders"],
+                                      "slot": {
+                                        "name": "link6",
+                                        "type": "link",
+                                        "label": "Careers"
+                                      },
+                                      "id": "d72bd19f-c83c-4668-aeaf-ae198d61b09b",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "3ae4ded7-193c-4ef9-8849-3f01ab1db349",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/cart"
+                                      },
+                                      "children": ["Cart"],
+                                      "slot": {
+                                        "name": "link7",
+                                        "type": "link",
+                                        "label": "Press"
+                                      },
+                                      "id": "d478b02f-3a97-4be4-ae7a-c2b12ff069dc",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "0c23e324-2a99-4aaa-9bf3-141e0dfb1e11",
+                                  "ord": "a2"
+                                }
+                              ],
+                              "id": "e9ed78f5-751a-4534-aa56-d4996e17ed0c",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "9d8952ba-946b-4f55-8114-07cdf122194a",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "8d599326-71eb-4840-a41e-064b003c66da",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "41fb6cc1-7d79-4ecf-b3ae-79054f9fd557",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "95acac69-d88a-4bc9-90dc-47f34baf0b5f",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "0eafe92e-5a5f-4e1a-a276-5102efae10cb",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex items-center gap-5",
+                      "children": [],
+                      "id": "724f589b-adc2-44f6-97d3-03d8a4cb5f41",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "2de55f80-c9d2-4c3b-8e3d-be2f6ff6cf07",
+                  "ord": "a1"
+                }
+              ],
+              "id": "7828bf34-3116-4d88-869b-6385af490cdd",
+              "ord": "a0"
+            }
+          ],
+          "id": "754ea7b7-e055-42e1-bc05-38e188dbe4a7",
+          "ord": "a2"
+        }
+      ],
+      "id": "2e5f7a63-988e-45dc-8635-4536baf8a313"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Wayfarer — a travel & photography journal",
+      "seoDescription": "Wayfarer is an independent travel and photography journal — long-scroll photo stories and reported features from the field, with signed prints of the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "b8e7a3d6-446b-4fa7-a06d-6c38f6bcf3cc",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative bg-base-100 @container",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "aspect-video w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1600&q=80",
+                  "alt": "A desert mountain range glowing at first light",
+                  "loading": "eager"
+                },
+                "id": "ca00e201-6177-4096-96e4-5b79053a491e",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 flex items-end",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto flex w-full max-w-6xl px-6 pb-10 @2xl:pb-14",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @2xl:p-10",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                            "children": ["Travel · Photo story"],
+                            "id": "217f8a13-d6ae-4d12-afa8-a1cee7f7b772",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h1",
+                            "class": "text-4xl font-bold leading-tight tracking-tight text-base-content @3xl:text-6xl",
+                            "children": ["Twelve hours in the Atacama, chasing the last light"],
+                            "id": "bc9ecbfb-2dee-452f-b27c-ef1ebe6f63c3",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": [
+                              "The driest desert on Earth turns to colour for a few minutes at dusk. We drove four hours for those minutes, and stayed for the sky that came after."
+                            ],
+                            "id": "5de97795-ab95-48d6-a1f3-979417491531",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm text-base-content",
+                            "children": ["Photographs by Lena Ross · 12 August"],
+                            "id": "6bee94aa-9889-4e50-8a89-c0c8341d68f4",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "5a2b0881-b26d-4abb-8a37-d5e402ef6e21",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "ae19ee22-fe4c-4fd3-b245-d1f9dd2f90d3",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "cd654448-821d-4e80-bfec-520c14bc4ed5",
+                "ord": "a1"
+              }
+            ],
+            "id": "10a81434-49a7-4bf9-92e2-de04ce166c2f",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-2",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-3",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Latest dispatches"],
+                    "id": "cd633abb-8edf-438f-ac3c-49ec4eef2a89",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": ["New writing and photography from the field, newest first."],
+                    "id": "6d4b7752-55d6-4e81-b25c-d162627fa3d9",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "a0de566f-a9fb-4784-a02a-e27c033f01eb",
+                "ord": "a0"
+              }
+            ],
+            "id": "6d58a237-19a1-49ff-8002-edf98c0f0fa1",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "91294c45-d1c9-48bb-baca-cae5535589e4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "044fda42-cb21-435d-af5c-c0e62fa985fa",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "08483ced-26d8-47f2-bd18-d943a7ba4c74",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "3cd0d90d-bf97-4609-a90d-3b06e53f3164",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "35e57e68-949e-4e50-b9fc-5017e5b1c1b5",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "7b4c613c-f5fb-45b4-a952-03bc10902849",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "6c2d3c5b-cd87-4ced-96d6-21c3f6ecd54a",
+                "ord": "a0"
+              }
+            ],
+            "id": "c82f659b-fa61-408f-b4bd-4f7eb51e38fd",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                        "children": ["Photo essay"],
+                        "id": "5bd772d7-7614-416a-b1f2-576a496144a9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["The high passes, chapter by chapter"],
+                        "id": "1e609339-c659-4912-9fe1-b109867c21a2",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "A long scroll through one week above the tree line — the road up, the water on the way down, and the forest that swallowed the last of the light."
+                        ],
+                        "id": "c5f3bacc-50cc-4d8d-b490-a95ffeb510dc",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "acc5990d-4594-414e-adc1-8cace603406d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "relative overflow-hidden rounded-box border border-base-300",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=1600&q=80",
+                              "alt": "A switchback road climbing a green mountainside",
+                              "loading": "lazy"
+                            },
+                            "id": "c9f74805-460d-4895-bee4-ebeccd0a289d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "absolute inset-0 flex items-end",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex w-full p-4 @2xl:p-6",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "div",
+                                    "class": "flex max-w-md flex-col gap-2 rounded-box bg-base-100 p-6",
+                                    "children": [
+                                      {
+                                        "kind": "element",
+                                        "tag": "h3",
+                                        "class": "text-2xl font-bold leading-snug tracking-tight text-base-content",
+                                        "children": ["The road up"],
+                                        "id": "c6cc9570-e4f8-440c-8e2a-b11e74129d1d",
+                                        "ord": "a0"
+                                      },
+                                      {
+                                        "kind": "element",
+                                        "tag": "p",
+                                        "class": "text-base leading-relaxed text-base-content",
+                                        "children": [
+                                          "Nine hairpins in twenty minutes, each one opening onto the same valley from a little higher, until the farms below turned to a green quilt and the air went thin and clean."
+                                        ],
+                                        "id": "160bc32e-ac33-4beb-a9e1-1b6fcfd97b0a",
+                                        "ord": "a1"
+                                      }
+                                    ],
+                                    "id": "9a30f453-0fde-4457-b608-42c456c4b9a9",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "94140bf2-a7fc-4a38-aaa6-b18bcecb5500",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "a36a1e7a-020e-4432-aaf2-2b7d4de14368",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b25def82-5f8a-4dac-ba84-a88c495b8dd2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "relative overflow-hidden rounded-box border border-base-300",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=1600&q=80",
+                              "alt": "A waterfall in long exposure over dark rock",
+                              "loading": "lazy"
+                            },
+                            "id": "d403173e-8ad5-4475-8ad7-251a1c725dc5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "absolute inset-0 flex items-end",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex w-full p-4 @2xl:p-6",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "div",
+                                    "class": "flex max-w-md flex-col gap-2 rounded-box bg-base-100 p-6",
+                                    "children": [
+                                      {
+                                        "kind": "element",
+                                        "tag": "h3",
+                                        "class": "text-2xl font-bold leading-snug tracking-tight text-base-content",
+                                        "children": ["Where the snow goes"],
+                                        "id": "65b744c1-a24d-4d89-ac57-979554bf1045",
+                                        "ord": "a0"
+                                      },
+                                      {
+                                        "kind": "element",
+                                        "tag": "p",
+                                        "class": "text-base leading-relaxed text-base-content",
+                                        "children": [
+                                          "Everything that fell as snow up here leaves as this — a single white thread over black rock, moving so fast a half-second exposure turns it to smoke."
+                                        ],
+                                        "id": "f97a7c05-17a0-4339-a0a0-904b597a9b04",
+                                        "ord": "a1"
+                                      }
+                                    ],
+                                    "id": "76e54dca-6fac-4dc6-89f4-144a25f8968f",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "a693bdf1-0fc7-418c-aaab-330685914896",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "df351264-aa3c-4f35-a974-4d9885f72609",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ddff9def-b6d4-4ce4-8854-fe3a776fec8d",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "relative overflow-hidden rounded-box border border-base-300",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1600&q=80",
+                              "alt": "Fog drifting through a valley of pines",
+                              "loading": "lazy"
+                            },
+                            "id": "68e56b9f-b59c-45e5-81bc-342e273d14b6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "absolute inset-0 flex items-end",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex w-full p-4 @2xl:p-6",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "div",
+                                    "class": "flex max-w-md flex-col gap-2 rounded-box bg-base-100 p-6",
+                                    "children": [
+                                      {
+                                        "kind": "element",
+                                        "tag": "h3",
+                                        "class": "text-2xl font-bold leading-snug tracking-tight text-base-content",
+                                        "children": ["The last of the light"],
+                                        "id": "d452d440-e6c1-4706-b3eb-3996a0eea047",
+                                        "ord": "a0"
+                                      },
+                                      {
+                                        "kind": "element",
+                                        "tag": "p",
+                                        "class": "text-base leading-relaxed text-base-content",
+                                        "children": [
+                                          "By six the sun was gone behind the ridge and the fog came up the valley to meet us, and for a few minutes the whole forest was one soft, grey, breathing thing."
+                                        ],
+                                        "id": "e4ba2844-0f72-4332-a617-7326ad8de726",
+                                        "ord": "a1"
+                                      }
+                                    ],
+                                    "id": "b74fd380-2a51-44dd-97bf-5bc95580ab83",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "9b48d37a-bcbf-4be5-9632-4af09c1ab4be",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "0ae54ad6-d3f6-4236-977f-005b887d7cb7",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "7435785e-9b08-4c57-8424-61a6405bff54",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "a629cddd-dc4f-44f6-8eea-9b4c45b5e8eb",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "18cf9718-4902-43c0-a45d-347bc8110d0b",
+                "ord": "a0"
+              }
+            ],
+            "id": "fdde7dfb-d23d-47c5-a08b-850fd95bee46",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Prints & Field Gear"],
+                    "id": "f2a1ad34-92ee-401f-9f41-282bc38c1f7a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "a98ac317-8951-4fdc-af87-8331d8a9400c",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "cf28af7f-7d9e-43d8-9677-989da1ca4265",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "5fa5743e-9f1c-47e6-86d3-4b2bedca481b",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "eab90b7a-0529-4951-9881-59d51a5e7f64",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "e99e72d3-dd9d-4d38-9604-af8dd4947185",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "488c135d-9458-4719-b73b-2d740aaa1e43",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "f369703d-32bb-4835-a555-f0a7752f181d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "a8ddfb8b-9297-4178-84d8-3a7b37c8c707",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "63aa38cd-bbf9-419f-bba9-dbfe962781e2",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "95e7187c-f334-495c-921e-87021fb90d1e",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "a6108121-37ae-4f6d-9fda-175ff5c89533",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "f7f134df-0812-44dc-abbe-97b61cc99e8d",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "9ff145f8-e3bb-440a-9d8f-c88c64e9db8a",
+            "ord": "a4"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — Wayfarer",
+      "seoDescription": "Browse everything Wayfarer makes, with prices and options at a glance. Travel & photography.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "56a49152-c1dc-4534-af94-fbf560745828",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-12 pb-4",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-6xl",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
+                    "children": ["Shop"],
+                    "id": "83930a3f-e456-41ca-9e44-64f634b8123f",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "mt-4 max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": ["Everything we currently have available."],
+                    "id": "e430473d-cc36-4816-9f32-9644f7d41812",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "c7dc6405-7898-4b4c-bffe-455f5a356835",
+                "ord": "a0"
+              }
+            ],
+            "id": "b7997e3a-4d3c-454d-85a3-4571f4b84055",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "28780481-dedf-4fc4-b4aa-400e169ea7a7",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — Wayfarer",
+      "seoDescription": "Explore the collections at Wayfarer, grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "8c04effc-7e5c-44ca-8f78-a39e35dcabbe",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container",
+            "children": [
+              {
+                "kind": "host",
+                "component": "commerce.collections",
+                "class": "mx-auto w-full max-w-6xl px-6 py-6",
+                "locked": "host",
+                "id": "02345370-418c-4961-b6bf-bc2d6b0aa9f4",
+                "ord": "a0"
+              }
+            ],
+            "id": "9f7b00e4-aba7-441f-bc34-34cf9bee9a21",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — Wayfarer",
+      "seoDescription": "Review what is in your cart and check out securely at Wayfarer.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "af15f621-9979-40a7-b6ce-f7975073f5bb",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "h1",
+                "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
+                "children": ["Your cart"],
+                "id": "d7c429c9-2282-43e7-ae3f-f27059c18ba3",
+                "ord": "a0"
+              },
+              {
+                "kind": "host",
+                "component": "commerce.cart",
+                "class": "mx-auto w-full max-w-4xl px-6 py-10",
+                "locked": "host",
+                "id": "f1cae82e-0e64-4335-b7dc-407715e42c66",
+                "ord": "a1"
+              }
+            ],
+            "id": "82e1dfef-0e4d-45ab-a81b-b1c9163e2e26",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — Wayfarer",
+      "seoDescription": "Search Wayfarer for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "d676ed45-ce97-43c2-8cba-e3b54f39a74c",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "h1",
+                "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
+                "children": ["Search"],
+                "id": "0b18ea42-e192-43c1-b104-6effae47ecbb",
+                "ord": "a0"
+              },
+              {
+                "kind": "host",
+                "component": "commerce.search",
+                "class": "mx-auto w-full max-w-6xl px-6 py-6",
+                "locked": "host",
+                "id": "2f71387f-1d23-4ca2-bcdc-b0163ea8fbe6",
+                "ord": "a1"
+              }
+            ],
+            "id": "ecf3688a-8c98-4923-a87c-bcdb98068f25",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — Wayfarer",
+      "seoDescription": "Stories, guides and notes from Wayfarer.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "34d0c8c6-a98c-48cd-afe3-df8191cfe0da",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "span",
+                    "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                    "children": ["The Wayfarer Journal"],
+                    "id": "c8cd9914-1041-4f8f-8592-3dcc07a70c78",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold leading-tight tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Places, seen properly"],
+                    "id": "e672a331-b822-4015-9580-aec15e41cb06",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Long-scroll photo stories and reported features from the field — travel, nature, the night sky, and the craft of making a picture worth the walk."
+                    ],
+                    "id": "3a1ad50e-572e-4f6e-bfe6-e34cf1797677",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "ab435b04-c2b0-45ce-b6a8-bd81e25c386e",
+                "ord": "a0"
+              }
+            ],
+            "id": "b5eda28f-a4ec-4067-8ce7-eda53699fb78",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "af1ec949-03d3-4229-bf41-5b98868f7492",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "ef523f8c-42c9-48da-89d2-f9a1cdd181c4",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "90c6744a-ab06-439f-aea1-e9c38940bf2b",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "7913508a-bd7c-4287-87f8-0c9140493812",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "459d8bbd-8c05-4fde-96fa-251b9cbf0ca6",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "bc35a7db-eeeb-47e5-8c55-b81dc7469a38",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "1de5aa75-b50e-4d38-87b1-8b8e6164d1d0",
+                "ord": "a0"
+              }
+            ],
+            "id": "e6092acd-f8ab-4ae8-8666-233d3c99182a",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Wayfarer — an independent photo journal",
+      "seoDescription": "Who Wayfarer is and how it works — a small circle of photographers and writers who go slowly, sell prints, and take no sponsored trips.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "3f6bfaca-7f97-4305-8eab-7c15b7fb7074",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
+                    "children": ["About Wayfarer"],
+                    "id": "47f4166d-3f04-49fe-98ef-c1dcd8fc0bdd",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Wayfarer is an independent travel and photography journal. We go slowly, on foot where we can, and we come back with pictures and the writing that earns them — the road it took to get there, the hour the light was worth waiting for, and the people we met along the way."
+                    ],
+                    "id": "fb9dafcc-2a50-425c-804b-e3db5b308150",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "We work with a small circle of photographers and writers, and we sell prints of the work so the next expedition pays for itself. No sponsored trips, no press junkets — just the places, seen properly."
+                    ],
+                    "id": "26a8726b-f0a7-42db-a11e-b8d9afc0ba21",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "32be29fb-bbf1-435d-a5ca-f8d0ed1dc4f3",
+                "ord": "a0"
+              }
+            ],
+            "id": "157db84a-571f-42af-8a27-eb136758afdb",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Wayfarer",
+      "seoDescription": "Get in touch with Wayfarer — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "45d9c72e-c42b-4163-95f3-5f3edf78add6",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
+                    "children": ["Send us somewhere"],
+                    "id": "8f465d3e-0202-486f-81b8-f4ad5e193c9b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "A place we should photograph, a story we should chase, or a print you want in a size we do not list yet? Tell us. We read every message, and we answer the good ones from wherever we happen to be."
+                    ],
+                    "id": "36b13f0c-505b-4968-93e0-8d13a85d5ec3",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:hello@wayfarer.example"
+                    },
+                    "children": ["Email the desk"],
+                    "id": "3138e038-4322-4274-b1d0-1621cea45765",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "8ca95034-5151-466e-bfe9-68e5b7bd6a3b",
+                "ord": "a0"
+              }
+            ],
+            "id": "d3b38eb9-24eb-4492-868e-96a1243b8b4d",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Article",
+      "kind": "collection",
+      "recordType": "cms.blog_post",
+      "isDefault": true,
+      "seoTitle": "Article — Wayfarer",
+      "seoDescription": "A story from Wayfarer — the writing, the reporting and the notes behind it.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative bg-base-100 @container",
+            "children": [
+              {
+                "kind": "component",
+                "component": "Image",
+                "class": "aspect-video w-full object-cover",
+                "props": {
+                  "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                  "alt": ""
+                },
+                "data": {
+                  "kind": "value",
+                  "ref": "featuredImage"
+                },
+                "id": "b3370bc3-dced-49c0-bea0-c2f1282fbb94",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 flex items-end",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto flex w-full max-w-4xl px-6 pb-10 @2xl:pb-14",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex w-full max-w-2xl flex-col gap-4 rounded-box bg-base-100 p-8 @2xl:p-10",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-primary",
+                            "attrs": {
+                              "href": "/journal"
+                            },
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "children": ["←"],
+                                "id": "a247ccb1-eb3f-4da5-854b-93ad5ee2834b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "children": ["All stories"],
+                                "id": "345a71be-35dd-4965-982b-cde8272d113a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "cedf8925-1cdf-42ce-8b28-de3ff0ab6c70",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                            "children": ["Section"],
+                            "data": {
+                              "kind": "visible",
+                              "ref": "category"
+                            },
+                            "id": "55c7de9b-2d31-47f2-98a5-39edac504a09",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h1",
+                            "class": "text-4xl font-bold leading-tight tracking-tight text-base-content @2xl:text-5xl",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "8cbb5fa2-7d96-4410-b429-807149b134de",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-xl leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "70d214b9-2a79-4929-8d41-bf0088e41445",
+                            "ord": "a3"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "mt-2 flex items-center gap-3",
+                            "children": [
+                              {
+                                "kind": "component",
+                                "component": "Image",
+                                "class": "h-11 w-11 rounded-full border border-base-300 object-cover",
+                                "props": {
+                                  "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                                  "alt": ""
+                                },
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "authorAvatar"
+                                },
+                                "id": "34eeb4fa-ceff-41ee-858d-6008c4cac0c7",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex flex-col",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-base font-semibold text-base-content",
+                                    "children": ["Author name"],
+                                    "data": {
+                                      "kind": "visible",
+                                      "ref": "authorName"
+                                    },
+                                    "id": "f3db2347-ea3a-410f-887e-fb0fc9f75b8a",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-sm text-base-content",
+                                    "children": ["Published date"],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "date"
+                                    },
+                                    "id": "09bf2d30-f287-4078-a983-6657e7b74403",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "62b99d60-511f-4e53-972d-fe4860bf939b",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "16fd05e0-cd53-4978-9f6f-bb94c607c817",
+                            "ord": "a4"
+                          }
+                        ],
+                        "id": "885e929c-1ada-42bb-9754-d023a53850c9",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "03edbb05-a142-4a4e-8d77-2f228bcae0a3",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "44120e73-2862-44c0-a52d-204b7fe712fb",
+                "ord": "a1"
+              }
+            ],
+            "id": "bd45c794-326b-4a14-a43a-748c568b0731",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl px-6 pb-20 @2xl:pb-24",
+                "children": [
+                  {
+                    "kind": "host",
+                    "component": "cms.article-body",
+                    "class": "w-full",
+                    "locked": "host",
+                    "id": "1dde9ec4-c56a-4a6b-a3f2-930e234f0e78",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "a6c30905-1d79-40f6-aa50-0ac6965645ee",
+                "ord": "a0"
+              }
+            ],
+            "id": "a8d9ac8d-9453-4cbf-b754-5845fdc71a8c",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pb-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-4 rounded-box border border-base-300 bg-base-200 p-6 @2xl:flex-row @2xl:items-center",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "h-16 w-16 rounded-full border border-base-300 object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": ""
+                        },
+                        "data": {
+                          "kind": "visible",
+                          "ref": "authorAvatar"
+                        },
+                        "id": "231e73e2-6ae9-4a1a-b9f9-559ff454a7e3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-lg font-semibold text-base-content",
+                            "children": ["Author name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorName"
+                            },
+                            "id": "58f61a0f-4554-4fad-a932-ca92da4a17d7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["About the author."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorBio"
+                            },
+                            "id": "abd8f8dc-62f9-4cac-bd33-ab806dafdb70",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "cd75cfa3-e1ca-45c9-9329-63fd9e9036a0",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "authorBio"
+                    },
+                    "id": "16caab1b-e44e-4c11-bac3-7b6a008d016a",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "f8440523-67bb-4f6b-ba80-7333712bfa8e",
+                "ord": "a0"
+              }
+            ],
+            "id": "16b12a2a-3d6c-4aac-847b-164be0c27238",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-200 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-2xl font-bold tracking-tight text-base-content @2xl:text-3xl",
+                        "children": ["Keep reading"],
+                        "id": "9458fbae-70ad-403b-b52d-3b6d235ea5c3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/journal"
+                            },
+                            "children": ["More stories"],
+                            "id": "bf94885f-e1f5-42a4-b015-4ef741598c0d",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "741e0389-3564-4679-b312-22b169c42781",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "f27c341d-dd6e-440a-80f7-21df63776c8f",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "ad510231-90a8-44d2-bf6b-0e366515a50d",
+                "ord": "a0"
+              }
+            ],
+            "id": "ef324e4e-882d-458d-9836-2709ad0f75ba",
+            "ord": "a3"
+          }
+        ],
+        "data": {
+          "kind": "collection",
+          "ref": "blog_post"
+        },
+        "id": "34b678c9-dab8-4455-abf4-b66123cc63e8"
+      }
+    }
+  ],
+  "theme": {
+    "name": "expanse",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(18% 0.008 220)",
+      "--color-base-200": "oklch(15% 0.008 220)",
+      "--color-base-300": "oklch(12% 0.008 220)",
+      "--color-base-content": "oklch(96% 0.004 90)",
+      "--color-primary": "oklch(80% 0.14 85)",
+      "--color-secondary": "oklch(74% 0.02 220)",
+      "--color-accent": "oklch(80% 0.14 85)",
+      "--color-neutral": "oklch(31% 0.008 220)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--radius-selector": "0.5rem",
+      "--radius-field": "0.375rem",
+      "--radius-box": "0.5rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Fraunces\", serif",
+      "--color-primary-content": "oklch(15% 0.02 85)",
+      "--color-secondary-content": "oklch(15% 0.02 220)",
+      "--color-accent-content": "oklch(15% 0.02 85)",
+      "--color-neutral-content": "oklch(98% 0.008 220)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(80% 0.14 85)",
+      "--color-highlight-content": "oklch(15% 0.02 85)",
+      "--color-border": "oklch(12% 0.008 220)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Fraunces\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(15% 0.008 220)",
+      "--color-base-200": "oklch(12% 0.008 220)",
+      "--color-base-300": "oklch(9% 0.008 220)",
+      "--color-base-content": "oklch(97% 0.004 90)",
+      "--color-primary": "oklch(82% 0.14 85)",
+      "--color-secondary": "oklch(76% 0.02 220)",
+      "--color-accent": "oklch(82% 0.14 85)",
+      "--color-neutral": "oklch(29% 0.008 220)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 85)",
+      "--color-secondary-content": "oklch(15% 0.02 220)",
+      "--color-accent-content": "oklch(15% 0.02 85)",
+      "--color-neutral-content": "oklch(98% 0.008 220)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(82% 0.14 85)",
+      "--color-highlight-content": "oklch(15% 0.02 85)",
+      "--color-border": "oklch(9% 0.008 220)"
+    }
+  }
+}

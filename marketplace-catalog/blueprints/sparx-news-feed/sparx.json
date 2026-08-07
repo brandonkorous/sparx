@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-news-feed",
+  "name": "sparx — News Feed",
+  "version": "1.1.0",
+  "tagline": "A high-signal news-feed template for a publication that reports and sells.",
+  "description": "A dense front-page feed for a technology & business publication — a full-width lead over a rail of the day’s stories, a live journal, and a bespoke bylined article page, in a white-ground one-accent theme. Modelled on the tech-newsroom archetype; shipped as Frequency. Ships a light store (reports, a book, membership) to demonstrate content + commerce together.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "content",
+    "industry": "Technology & business news"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "commerce", "cms", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — News Feed icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — News Feed — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#007e4b",
+  "sortWeight": 100
+}

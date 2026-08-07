@@ -34,7 +34,7 @@ describe('the section library', () => {
   it('offers a real breadth of sections, not a token few', () => {
     // The number IS the slice. The engine ships 18 blocks — a decent spine for a
     // software marketing page and a thin one for a photographer, a restaurant or a
-    // garage. This library is 66 sections on top of that; the floor is set just under
+    // garage. This library is 71 sections on top of that; the floor is set well under
     // so a deletion has to be deliberate rather than accidental. If it ever drops back
     // toward a handful, the builder has quietly become unusable for most of the
     // businesses this platform claims to serve.

@@ -21,7 +21,7 @@ import { prisma, withTenant } from '@sparx/db';
 import { commerceSiteService } from '@sparx/commerce';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { notFound, badRequest } from '@sparx/api-core/errors';
-import { serializeEntry } from '@sparx/cms';
+import { serializeEntry, PUBLIC_ENTRY_BYLINE_INCLUDE } from '@sparx/cms';
 import { tryVerifyPreviewToken } from '../../../lib/preview.js';
 import { readPublicConsentConfig } from '../../../lib/consent.js';
 import { parseBrandOverride, mergeBrandIdentity } from '../../../lib/property-brand.js';
@@ -216,6 +216,7 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
             orderBy,
             take: q.limit,
             skip: (q.page! - 1) * q.limit,
+            include: PUBLIC_ENTRY_BYLINE_INCLUDE,
           }),
           tx.contentEntry.count({ where }),
         ])
@@ -237,6 +238,7 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
         where,
         orderBy,
         take: q.limit + 1,
+        include: PUBLIC_ENTRY_BYLINE_INCLUDE,
         ...(q.cursor ? { cursor: { id: q.cursor }, skip: 1 } : {}),
       })
     );
@@ -266,6 +268,7 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
             ? { OR: [{ status: 'published' }, { id: preview.entryId }] }
             : { status: 'published' }),
         },
+        include: PUBLIC_ENTRY_BYLINE_INCLUDE,
       })
     );
     if (!row) throw notFound(`${q.type}`, q.slug);
@@ -294,6 +297,7 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
           deletedAt: null,
           ...contentSiteVisibilityWhere(propertyId),
         },
+        include: PUBLIC_ENTRY_BYLINE_INCLUDE,
       })
     );
     // Unresolvable ids are simply absent — a pin to a deleted or unpublished entry

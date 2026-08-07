@@ -39,6 +39,8 @@ import {
   MoneyCents,
   OptionDisplayType,
   ProductStatus,
+  ProductTypeKey,
+  ProductTypeSchema,
   Sku,
   WeightGrams,
 } from '@sparx/commerce-schemas';
@@ -178,15 +180,41 @@ const ContentSeoDecl = z.object({
   ogImageAssetId: ManifestId.optional(),
 });
 
+/** A byline persona a blueprint ships (docs/131 §4 — an Author is a PUBLIC persona, not
+ *  a login). Referenced by a content entry's `authorSlug`. The installer creates one CMS
+ *  `Author` per decl, scoped to the installed site, and reconciles by `slug` on reinstall.
+ *  `avatarAssetId` is a manifest asset id (`{ $asset }`-style), resolved to the installed
+ *  MediaAsset like every other asset ref — so a byline can carry a real portrait. */
+export const AuthorDecl = z.object({
+  slug: z
+    .string()
+    .min(1)
+    .max(255)
+    .regex(/^[a-z0-9][a-z0-9-]*$/, 'Use lowercase letters, numbers, and internal hyphens.'),
+  displayName: z.string().min(1).max(255),
+  bio: z.string().max(2000).optional(),
+  avatarAssetId: ManifestId.optional(),
+});
+export type AuthorDecl = z.infer<typeof AuthorDecl>;
+
 /** A content entry (e.g. a blog post). `body` is opaque here and validated at
  *  install against its content type's schema; `asset`-typed fields inside it use
- *  a `{ $asset: '<id>' }` ref (see ./refs). Default status draft (docs/54 D4). */
+ *  a `{ $asset: '<id>' }` ref (see ./refs). Default status draft (docs/54 D4).
+ *
+ *  `authorSlug` names one of the blueprint's `authors`; `categories`/`tags` are term
+ *  NAMES (not slugs — the installer slugifies) filed under the `blog_category` /
+ *  `blog_tag` vocabularies the storefront byline projection reads. All three are optional
+ *  and only meaningful for CMS types with those relations (a `blog_post`); a non-CMS or
+ *  author-less entry simply omits them and installs exactly as before. */
 export const ContentEntryDecl = z.object({
   typeKey: ContentTypeKey,
   slug: z.string().max(255).optional(),
   status: z.enum(['draft', 'published']).default('draft'),
   body: z.record(z.string(), z.unknown()),
   seo: ContentSeoDecl.optional(),
+  authorSlug: z.string().max(255).optional(),
+  categories: z.array(z.string().min(1).max(255)).max(20).optional(),
+  tags: z.array(z.string().min(1).max(255)).max(50).optional(),
 });
 export type ContentEntryDecl = z.infer<typeof ContentEntryDecl>;
 
@@ -272,12 +300,34 @@ export const ProductImageDecl = z.object({
 });
 export type ProductImageDecl = z.infer<typeof ProductImageDecl>;
 
+/** A blueprint-declared PRODUCT TYPE (docs/143) — the commerce mirror of
+ *  ContentTypeDecl. A blueprint ships its own typed product type(s) with an attribute
+ *  schema, exactly as it ships content types; the installer upserts them by
+ *  (tenant, key) before products so a product's `attributes` bag validates. Author a
+ *  built-in key (`apparel`, `cosmetics`, …) to reuse a platform type, or a fresh key +
+ *  schema for a bespoke vertical. */
+export const ProductTypeDecl = z.object({
+  key: ProductTypeKey,
+  name: z.string().min(1).max(127),
+  pluralName: z.string().min(1).max(127).optional(),
+  description: z.string().max(2000).optional(),
+  icon: z.string().max(63).optional(),
+  attributeSchema: ProductTypeSchema,
+});
+export type ProductTypeDecl = z.infer<typeof ProductTypeDecl>;
+
 export const ProductDecl = z.object({
   handle: Handle,
   title: z.string().min(1).max(255),
   description: z.string().max(50_000).optional(), // HTML allowed
   status: ProductStatus.default('draft'),
   productType: z.string().max(127).optional(),
+  /** The typed product-type link (docs/143) — a ProductTypeDecl key (or a built-in).
+   *  When set, `attributes` is validated against that type's schema at install. */
+  productTypeKey: ProductTypeKey.optional(),
+  /** The typed attribute bag — validated against the resolved product type at install
+   *  (422 on mismatch, exactly like a content entry body). Opaque here. */
+  attributes: z.record(z.string(), z.unknown()).optional(),
   vendor: z.string().max(127).optional(),
   tags: z.array(z.string().min(1).max(63)).max(50).default([]),
   fulfillmentType: FulfillmentType.default('physical'),
@@ -334,6 +384,9 @@ export const SitePageDecl = z.object({
   kind: BuilderPageKind.default('singleton'),
   /** Collection pages target a recordType (e.g. cms.blog_post, commerce.product). */
   recordType: z.string().max(63).optional(),
+  /** A `commerce.product` page's product-TYPE target (docs/143 Option B) — the type
+   *  key this page designs (`apparel`, …); omitted = the default product page. */
+  recordSubtype: z.string().max(63).optional(),
   /** Route slug; `''` (or omitted) is the home page. */
   slug: PageSlug.optional(),
   root: SilicaTreeInput,
@@ -426,7 +479,14 @@ export const BlueprintSchema = z.object({
   theme: ThemeDecl,
   assets: z.array(AssetDecl).max(500).default([]),
   contentTypes: z.array(ContentTypeDecl).max(50).default([]),
+  /** Byline personas the content entries reference by `authorSlug` (docs/131 §4).
+   *  Installed as CMS `Author` rows scoped to the site; empty for a blueprint whose
+   *  posts carry no byline. */
+  authors: z.array(AuthorDecl).max(200).default([]),
   content: z.array(ContentEntryDecl).max(500).default([]),
+  /** Typed product types (docs/143) — shipped like content types, installed (upsert by
+   *  key) before products so a product's `attributes` bag validates against its type. */
+  productTypes: z.array(ProductTypeDecl).max(50).default([]),
   commerce: CommerceDecl.optional(),
   /** The authored silica site (frame + pages + theme + symbols). Optional so a
    *  commerce/content-only blueprint (no hosted site) stays expressible. */

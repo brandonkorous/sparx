@@ -1,0 +1,117 @@
+[
+  {
+    "id": "cover-story",
+    "url": "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1600&q=80",
+    "alt": "A model in a tailored coat against a plain wall"
+  },
+  {
+    "id": "look-1",
+    "url": "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=1600&q=80",
+    "alt": "A look in soft neutral tailoring"
+  },
+  {
+    "id": "look-2",
+    "url": "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1600&q=80",
+    "alt": "A studio portrait of a single garment"
+  },
+  {
+    "id": "look-3",
+    "url": "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=1600&q=80",
+    "alt": "A full-length look on a seamless ground"
+  },
+  {
+    "id": "look-4",
+    "url": "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1600&q=80",
+    "alt": "An accessory styled on a plain surface"
+  },
+  {
+    "id": "look-5",
+    "url": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=1600&q=80",
+    "alt": "A close crop of draped fabric"
+  },
+  {
+    "id": "look-6",
+    "url": "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=1600&q=80",
+    "alt": "A look photographed in low, even light"
+  },
+  {
+    "id": "dept-fashion",
+    "url": "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=1600&q=80",
+    "alt": "A rack of considered clothing in a studio"
+  },
+  {
+    "id": "dept-beauty",
+    "url": "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=1600&q=80",
+    "alt": "A clean beauty portrait in daylight"
+  },
+  {
+    "id": "dept-runway",
+    "url": "https://images.unsplash.com/photo-1509319117193-57bab727e09d?w=1600&q=80",
+    "alt": "A look moving down a bare runway"
+  },
+  {
+    "id": "dept-culture",
+    "url": "https://images.unsplash.com/photo-1513519245088-0e12902e35ca?w=1600&q=80",
+    "alt": "A ceramic object on a plinth"
+  },
+  {
+    "id": "author-prevost",
+    "url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1600&q=80",
+    "alt": "Portrait of Elena Prévost"
+  },
+  {
+    "id": "author-okonkwo",
+    "url": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1600&q=80",
+    "alt": "Portrait of Nadia Okonkwo"
+  },
+  {
+    "id": "author-hart",
+    "url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=1600&q=80",
+    "alt": "Portrait of Julian Hart"
+  },
+  {
+    "id": "post-wardrobe",
+    "url": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=1600&q=80",
+    "alt": "A considered wardrobe laid out flat"
+  },
+  {
+    "id": "post-skin",
+    "url": "https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=1600&q=80",
+    "alt": "A bare-skin beauty portrait"
+  },
+  {
+    "id": "post-resort",
+    "url": "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=1600&q=80",
+    "alt": "A resort collection look on a plain ground"
+  },
+  {
+    "id": "post-object",
+    "url": "https://images.unsplash.com/photo-1531913764164-f85c52e6e654?w=1600&q=80",
+    "alt": "A single designed object in the light"
+  },
+  {
+    "id": "post-fragrance",
+    "url": "https://images.unsplash.com/photo-1541643600914-78b084683601?w=1600&q=80",
+    "alt": "A fragrance bottle on a stone surface"
+  },
+  {
+    "id": "product-scarf",
+    "url": "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=1600&q=80",
+    "alt": "A folded silk scarf"
+  },
+  {
+    "id": "product-carafe",
+    "url": "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=1600&q=80",
+    "alt": "A hand-thrown ceramic carafe"
+  },
+  {
+    "id": "product-sunglasses",
+    "url": "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=1600&q=80",
+    "alt": "A pair of acetate sunglasses"
+  },
+  {
+    "id": "product-print",
+    "url": "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=1600&q=80",
+    "alt": "A framed studio print"
+  }
+]

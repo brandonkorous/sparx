@@ -1,0 +1,140 @@
+{
+  "categories": [
+    {
+      "handle": "music",
+      "name": "Music",
+      "description": "The records — vinyl and download.",
+      "featured": true
+    },
+    {
+      "handle": "apparel",
+      "name": "Apparel",
+      "description": "Tour shirts and everyday wear.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "featured",
+      "name": "Featured",
+      "description": "The new record and the tour merch, in one place.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["small-hours-vinyl", "small-hours-digital", "nightshift-tour-tee"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "small-hours-vinyl",
+      "title": "Small Hours — Vinyl LP",
+      "description": "The new album on heavyweight 180g black vinyl, cut loud from the tape masters, in a gatefold sleeve with the lyrics and a photo insert from the sessions. Includes a download of the full record.",
+      "status": "active",
+      "productType": "Vinyl",
+      "vendor": "Vela",
+      "tags": ["music", "vinyl", "album"],
+      "categoryHandles": ["music"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "Small Hours — Vinyl LP | Vela",
+      "seoDescription": "The new Vela album on heavyweight 180g vinyl, gatefold sleeve, with a download.",
+      "variants": [
+        {
+          "sku": "VELA-LP-SMALLHOURS",
+          "priceCents": 3200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-vinyl",
+          "isPrimary": true,
+          "alt": "The Small Hours vinyl LP"
+        }
+      ]
+    },
+    {
+      "handle": "small-hours-digital",
+      "title": "Small Hours — Digital Album",
+      "description": "The full record as a lossless download the moment you buy it — ten tracks, plus two b-sides that did not fit the vinyl. Yours to keep, no subscription, no expiry.",
+      "status": "active",
+      "productType": "Digital",
+      "vendor": "Vela",
+      "tags": ["music", "download", "album"],
+      "categoryHandles": ["music"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "Small Hours — Digital Album | Vela",
+      "seoDescription": "The new Vela album as a lossless download, ten tracks plus two b-sides.",
+      "variants": [
+        {
+          "sku": "VELA-DL-SMALLHOURS",
+          "priceCents": 1100,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-digital",
+          "isPrimary": true,
+          "alt": "Small Hours digital album key art"
+        }
+      ]
+    },
+    {
+      "handle": "nightshift-tour-tee",
+      "title": "Nightshift Tour Tee",
+      "description": "The Small Hours tour shirt — heavyweight black cotton with the routing printed small on the back and the band mark on the chest. Screen-printed in small runs; when a size is gone, it is gone.",
+      "status": "active",
+      "productType": "Apparel",
+      "vendor": "Vela",
+      "tags": ["apparel", "tour", "merch"],
+      "categoryHandles": ["apparel"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "Nightshift Tour Tee | Vela",
+      "seoDescription": "The Small Hours tour tee — heavyweight black cotton, routing on the back.",
+      "variants": [
+        {
+          "sku": "VELA-TEE-NIGHTSHIFT",
+          "priceCents": 2800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-tee",
+          "isPrimary": true,
+          "alt": "The Nightshift tour tee"
+        }
+      ]
+    },
+    {
+      "handle": "vela-logo-hoodie",
+      "title": "Vela Logo Hoodie",
+      "description": "A heavy brushed-back hoodie in charcoal with the Vela mark embroidered on the chest — the one you steal back off whoever you lend it to. Built to survive a winter of load-ins.",
+      "status": "active",
+      "productType": "Apparel",
+      "vendor": "Vela",
+      "tags": ["apparel", "merch"],
+      "categoryHandles": ["apparel"],
+      "collectionHandles": [],
+      "seoTitle": "Vela Logo Hoodie | Vela",
+      "seoDescription": "A heavy brushed-back charcoal hoodie with the embroidered Vela mark.",
+      "variants": [
+        {
+          "sku": "VELA-HOOD-LOGO",
+          "priceCents": 5800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-hoodie",
+          "isPrimary": true,
+          "alt": "The Vela logo hoodie"
+        }
+      ]
+    }
+  ]
+}

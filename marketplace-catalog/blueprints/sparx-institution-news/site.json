@@ -1,0 +1,3061 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "ccf78662-5fae-420c-89ec-da0a8613336d",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "7fee9585-e8e0-4862-b3d3-d15b551d1187",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "6e3edfbe-9115-49d5-9673-8fe2019a6667",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "bbca8ccf-4034-4bb8-bffc-29586e5b0397",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link4",
+                        "type": "link",
+                        "label": "Company"
+                      },
+                      "id": "5110e2de-6d66-4141-be29-09520f856b8f",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "715432ba-8eba-4cb2-a814-5a3ab2946b48",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "7552da73-d002-426d-9d26-1a201f7d4fad",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "3838a2e9-c5c0-4d49-92ed-73510d50f0a3",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "a0087058-f598-44a6-b756-cc1458d23127",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "3eb6d301-565a-4222-bac1-655dacbef5aa",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "52cd1a5f-058e-46ff-887a-44a0dd3290b1",
+                  "ord": "a2"
+                }
+              ],
+              "id": "9fddfd09-006c-40ac-bbcb-a2e8588e1601",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "da4679fb-a647-4bff-bcf8-51ce0b13c94d",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "c775a8d2-083e-4c01-89b1-637e6fe7a951",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "2481c084-f6be-4bda-8a1c-7f0b0ad11739",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "f056f1e1-c9d0-49bc-8cd3-ccaad3bdaef2",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "563d6c40-69c6-42d7-8b27-5f77ef550dec",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "26cdf673-59ba-484f-8f32-733efc6f642d",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "0f4b5da0-3963-45dc-8cdf-b7779e8fc92f",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "3f3e91ab-64c5-43ba-9b3d-ed6bf577d6b7",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "857c74e9-81b4-4c0d-ab90-ab8d5324739b",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish and sell, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "8096cc5f-589c-44e9-828e-972593d7168d",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "cdf41282-1390-4c88-bd4e-9346eb2f9953",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "22ff604f-427e-4016-b073-ba83376c5bb0",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "20a5d132-c5a8-44c6-9308-3b77469cf798",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/shop"
+                                  },
+                                  "children": ["Shop"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "09d7c967-1bbf-42ef-90ca-b933e52b91f7",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "ccee4b89-6baa-4b87-b702-7b20af239106",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/journal"
+                                  },
+                                  "children": ["Journal"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "45a7d3d0-4722-41f8-974e-e5f3750dfa65",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "948520a5-1b93-4a71-8fd4-6dce716cb96d",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "ecdd31cf-3de7-49c3-9707-6aa4a8c67fbd",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "f058bed3-e4c0-4e9a-8ce9-afadb0903bb5",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "c90a6e37-d87a-4abb-8b74-f75cd0f7da38",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "72a84baf-ec01-4441-a077-4ec5e8895146",
+                              "ord": "a3"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "id": "cb7c7892-ddce-402f-90c4-21afe71383cc",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "5fb7ddb0-9596-4ea8-afe0-a300efa50a88",
+                              "ord": "a4"
+                            }
+                          ],
+                          "id": "f1aad5cf-4256-4a05-99df-98edb563b976",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "a35dd3cd-4a4c-4e08-8b70-380bc2700fa5",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Account"],
+                          "slot": {
+                            "name": "col2",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/account"
+                          },
+                          "id": "e2bff7b1-3f1e-4a97-a619-d7cd4364e416",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/account"
+                                  },
+                                  "children": ["Sign in"],
+                                  "slot": {
+                                    "name": "link5",
+                                    "type": "link",
+                                    "label": "About"
+                                  },
+                                  "id": "8422583a-81db-4b07-87e1-adac3fa71e09",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "ada4aa40-1e53-4578-958e-1e70d3708111",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/account/orders"
+                                  },
+                                  "children": ["Orders"],
+                                  "slot": {
+                                    "name": "link6",
+                                    "type": "link",
+                                    "label": "Careers"
+                                  },
+                                  "id": "a8352ec5-79ca-4a3c-baba-ad9dd185204c",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "d3db04b5-6c36-4517-a299-161cfcf2f1dd",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/cart"
+                                  },
+                                  "children": ["Cart"],
+                                  "slot": {
+                                    "name": "link7",
+                                    "type": "link",
+                                    "label": "Blog"
+                                  },
+                                  "id": "6d4bce62-014c-4b3b-922d-6ec5e817e3fc",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "daf7ae01-954d-4812-b60d-d86588d52b36",
+                              "ord": "a2"
+                            }
+                          ],
+                          "id": "c1b29a14-9a23-44de-b33a-26b633b4bf32",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "306950fc-2809-4f72-9ed5-c75a822fd117",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "1bce9a2e-04ce-4be2-8f12-6ad8e059e005",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "d9b1cd62-7aec-4672-9df3-086cd0cd4fdd",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "9e12f508-427e-4ad2-a9c4-73293dc34f2c",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "e87bffe1-5128-4c59-9174-3c6ea82cebe2",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "b1585916-bfe5-4409-8b56-40415116f3ad",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "73230b55-b5db-4baa-8929-50524c8199e9",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "7d268b7b-da84-4897-b172-8498ac453c37",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "248713e9-cd33-4f38-8669-f449b317023c",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "2d063c11-16a6-4725-9e4f-63f2323c8614",
+                  "ord": "a1"
+                }
+              ],
+              "id": "1ee495bf-4036-4cd0-8234-3b02554bb788",
+              "ord": "a0"
+            }
+          ],
+          "id": "5542d185-0cfa-4c9d-a59f-3d40ff99ba8c",
+          "ord": "a2"
+        }
+      ],
+      "id": "30c370a8-4718-4b51-943c-713485548e43"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Northgate University — news, research and campus life",
+      "seoDescription": "The official news office of Northgate University — research findings from the labs, campus and community reporting, health and science, arts and athletics, and what is happening on campus.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "c377d211-0cba-4923-8d71-df48abe5247b",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-14",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl gap-10 @4xl:grid-cols-3",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "group flex flex-col gap-5 @4xl:col-span-2",
+                    "attrs": {
+                      "href": "/journal"
+                    },
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=1400&q=80",
+                          "alt": "A Northgate researcher at a microscope in a campus lab",
+                          "loading": "lazy"
+                        },
+                        "id": "fca32e43-aa80-4ea8-b2d3-0520a1a2cd34",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-sm font-semibold uppercase tracking-wide text-accent",
+                        "children": ["Research"],
+                        "id": "047e4602-670e-4b82-9277-d555e58313eb",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold leading-tight tracking-tight text-base-content @3xl:text-5xl",
+                        "children": [
+                          "Northgate scientists find coastal marshes store far more carbon than models assumed"
+                        ],
+                        "id": "4e480838-b6ea-4a11-8af3-6e70970d7b50",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "A six-year survey led by the School of Public Health and the coastal ecology lab remeasured how much carbon a tidal marsh holds below the waterline. The number is large enough to change how the state values the wetlands it has been draining."
+                        ],
+                        "id": "18d8b1fa-e438-4890-9b72-4046d4359085",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-sm text-base-content",
+                        "children": ["By Elena Marsh · School of Arts & Sciences · 6 August"],
+                        "id": "93e4054a-cbd9-440e-baed-7c1277763993",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "0694cd48-292f-4ae7-a6ff-614bd59a4516",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-2 border-t border-base-300 py-5",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-accent",
+                            "children": ["Campus & Community"],
+                            "id": "dfe76946-486b-457a-8d0f-27fa4f609996",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-lg font-semibold leading-snug text-base-content",
+                            "children": ["The first-year move-in that reshaped a neighbourhood"],
+                            "id": "20d247c6-0fdd-4cdb-b98d-175132a9ac20",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm text-base-content",
+                            "children": ["By Theo Park · 5 August"],
+                            "id": "2ce85aa9-e871-413c-9e2e-6f0ef270c062",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "d04c6a75-61b4-444b-977c-0ccb455ab4c8",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-2 border-t border-base-300 py-5",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-accent",
+                            "children": ["Health"],
+                            "id": "89f6a84f-d87b-4bc2-9898-4534ecb84971",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-lg font-semibold leading-snug text-base-content",
+                            "children": ["A campus clinic study rethinks how students sleep"],
+                            "id": "348885b6-02f1-486e-a562-95d8b4ea3aee",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm text-base-content",
+                            "children": ["By Nadia Okonkwo · 5 August"],
+                            "id": "bb8f5638-3fc7-4106-acc4-b5379bb2cec7",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "e8c7778e-25e3-4ca0-8fbb-ad3408fdee54",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-2 border-t border-base-300 py-5",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-accent",
+                            "children": ["Science & Tech"],
+                            "id": "fce84277-9d66-4d36-8bda-b4121ea1fcb7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-lg font-semibold leading-snug text-base-content",
+                            "children": ["Inside the lab teaching robots to read handwriting"],
+                            "id": "7afddc1c-b671-45f8-b4ba-483b09b68eca",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm text-base-content",
+                            "children": ["By Elena Marsh · 4 August"],
+                            "id": "a4f3c6f7-b194-45c9-8829-33516746038a",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "ef985e03-4691-40cf-9ccd-94339c5935b6",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "f44287d9-ef25-40ed-abc2-9c0dde0eb1b6",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "65c13635-7293-4b07-ae38-bab0711ff6cc",
+                "ord": "a0"
+              }
+            ],
+            "id": "4f06f8cc-5621-4a19-a980-c99385d16d8c",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-12 pb-2",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-3",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Across the university"],
+                    "id": "9763592b-4873-4f51-9338-b9b37aca4b76",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg text-base-content",
+                    "children": ["The newest reporting from every corner of campus."],
+                    "id": "36034813-0d9a-4eb2-9bf8-3467ff3b9887",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "7a9b7bd9-0147-402e-a2cc-d13a252b7f6f",
+                "ord": "a0"
+              }
+            ],
+            "id": "7a691a6c-a00a-4a71-ba82-43d46a722497",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "40a44a5f-996e-4373-81d0-02162c725a21",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "178555c1-035d-449d-81fa-2afe217ae27b",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "f07eb093-6f0e-4a12-b026-e35e60e655a4",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "91f643de-9b89-4b40-ba37-6905d36de2ce",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "ee7392c6-d201-4d3c-aac9-79fb0505b900",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "525b1a76-2f39-41b9-a3af-712b755e1d6d",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "05687ae6-6dbb-470a-979e-afed8b8b57b4",
+                "ord": "a0"
+              }
+            ],
+            "id": "f0b0bf90-41f6-4f6d-8c5c-a82fca4ce25a",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Explore Northgate"],
+                        "id": "530b9f59-3855-4250-913d-a19fdb0b6bbe",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg text-base-content",
+                        "children": [
+                          "Reporting from every part of the university — findings from the labs, life on the quad, and the teams that carry the Northgate name."
+                        ],
+                        "id": "00a04c54-c5c5-413c-8897-4b6f7d75f2be",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "2f2a2315-12ca-457a-902e-9a8c1ccc55e1",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @3xl:grid-cols-2 @5xl:grid-cols-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4 border-t border-base-300 pt-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                            "children": ["News"],
+                            "id": "711b5cb0-38e5-429b-9a1b-a312082855b0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "ul",
+                            "class": "flex flex-col gap-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "group flex flex-col gap-1",
+                                    "attrs": {
+                                      "href": "/journal"
+                                    },
+                                    "children": [
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-lg font-semibold leading-snug text-base-content",
+                                        "children": ["University announcements"],
+                                        "id": "2f4c372a-e012-4c0f-9d2b-8120e5657f31",
+                                        "ord": "a0"
+                                      },
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-sm text-base-content",
+                                        "children": ["Policy, appointments and the record"],
+                                        "id": "40ca541d-cf00-4623-8e3d-28bd558345c8",
+                                        "ord": "a1"
+                                      }
+                                    ],
+                                    "id": "23d4de0a-404b-4831-a9af-4ac8d17abc95",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "8fbed18f-f669-4494-a57a-49d2d06a0b4d",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "group flex flex-col gap-1",
+                                    "attrs": {
+                                      "href": "/journal"
+                                    },
+                                    "children": [
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-lg font-semibold leading-snug text-base-content",
+                                        "children": ["Nation & World"],
+                                        "id": "f67be1c2-8607-48ac-a849-2cf7bb3265fc",
+                                        "ord": "a0"
+                                      },
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-sm text-base-content",
+                                        "children": ["Northgate voices on the wider story"],
+                                        "id": "96be5ef5-81aa-4b03-ae17-720e0b9ce140",
+                                        "ord": "a1"
+                                      }
+                                    ],
+                                    "id": "27985842-62b3-4593-9d60-f5159b2dfa58",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "f3d28421-0ce1-4e4f-a6f4-13f50624b72f",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "group flex flex-col gap-1",
+                                    "attrs": {
+                                      "href": "/journal"
+                                    },
+                                    "children": [
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-lg font-semibold leading-snug text-base-content",
+                                        "children": ["Work & Economy"],
+                                        "id": "9c59235f-acdb-4153-996c-d9da01a43454",
+                                        "ord": "a0"
+                                      },
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-sm text-base-content",
+                                        "children": ["Research that reaches beyond campus"],
+                                        "id": "ae7d0eeb-773b-4a9c-b245-6d8eee6a398a",
+                                        "ord": "a1"
+                                      }
+                                    ],
+                                    "id": "96561481-9db7-4cb7-9a38-070a6a7cbb3e",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "00854beb-3690-4b37-ae81-cf1398c57366",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "98b889ac-4a34-4b8e-a86c-b79341fe6d19",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "text-base font-semibold text-accent",
+                            "attrs": {
+                              "href": "/journal"
+                            },
+                            "children": ["More in News →"],
+                            "id": "73220b3e-6cc8-4f55-9aff-06e7ed9b5c59",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "f628f37c-f67f-4898-9051-4153c4f5fd4e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4 border-t border-base-300 pt-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                            "children": ["Research"],
+                            "id": "c0cf01bb-ade7-4009-ab9c-7e9d57ca0bd0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "ul",
+                            "class": "flex flex-col gap-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "group flex flex-col gap-1",
+                                    "attrs": {
+                                      "href": "/journal"
+                                    },
+                                    "children": [
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-lg font-semibold leading-snug text-base-content",
+                                        "children": ["Findings"],
+                                        "id": "6a1891f9-24c0-4107-b018-42305007d6bd",
+                                        "ord": "a0"
+                                      },
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-sm text-base-content",
+                                        "children": ["The marquee work from the labs"],
+                                        "id": "040915e1-4c51-4f18-a73c-ee551eb1a24c",
+                                        "ord": "a1"
+                                      }
+                                    ],
+                                    "id": "3f6a39c6-64bb-4d4b-acd3-6f36427697a7",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "7708b456-5a24-4961-8dff-98bc39f4fcbb",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "group flex flex-col gap-1",
+                                    "attrs": {
+                                      "href": "/journal"
+                                    },
+                                    "children": [
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-lg font-semibold leading-snug text-base-content",
+                                        "children": ["Health & Medicine"],
+                                        "id": "4195d50a-a334-4c7d-b0db-13dd7e36fbe5",
+                                        "ord": "a0"
+                                      },
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-sm text-base-content",
+                                        "children": ["Studies from the medical school"],
+                                        "id": "9e16888a-e7ad-4be8-bfaa-6317f82277bc",
+                                        "ord": "a1"
+                                      }
+                                    ],
+                                    "id": "1b7afa63-5522-44f5-9a1c-e009f6cbeeed",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "c1e22160-da7c-4ccd-b1bc-5dea55c37f8f",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "group flex flex-col gap-1",
+                                    "attrs": {
+                                      "href": "/journal"
+                                    },
+                                    "children": [
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-lg font-semibold leading-snug text-base-content",
+                                        "children": ["Science & Tech"],
+                                        "id": "8d49a543-9faf-42b8-a03d-8165cbb70307",
+                                        "ord": "a0"
+                                      },
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-sm text-base-content",
+                                        "children": ["Engineering, computing and the sciences"],
+                                        "id": "47bb20a9-9d42-4dab-be08-1926a4156abe",
+                                        "ord": "a1"
+                                      }
+                                    ],
+                                    "id": "aaf21554-b114-48ab-9522-016efab56931",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "02a9cee6-29d2-45c7-b427-481f6a0b62a1",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "99f03088-a6ec-4b57-a686-58ce4426cbeb",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "text-base font-semibold text-accent",
+                            "attrs": {
+                              "href": "/journal"
+                            },
+                            "children": ["More in Research →"],
+                            "id": "318b15e8-91ec-44ee-af65-78163420af13",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "740e9a60-3d1f-4c5c-b367-ae23cc4f2714",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4 border-t border-base-300 pt-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                            "children": ["Campus"],
+                            "id": "329376d8-a808-4445-86d8-9f2c8ff09ece",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "ul",
+                            "class": "flex flex-col gap-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "group flex flex-col gap-1",
+                                    "attrs": {
+                                      "href": "/journal"
+                                    },
+                                    "children": [
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-lg font-semibold leading-snug text-base-content",
+                                        "children": ["Campus & Community"],
+                                        "id": "e5811ab4-5e8f-45ef-a3b5-823b0e89084b",
+                                        "ord": "a0"
+                                      },
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-sm text-base-content",
+                                        "children": ["Student life, housing and the city"],
+                                        "id": "726b79c6-4897-41b7-9b18-594f0d52b130",
+                                        "ord": "a1"
+                                      }
+                                    ],
+                                    "id": "58e1d2a9-10d5-48ed-9eb8-494f744c6f5b",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "d0ad1d67-6f48-4fc3-a7ed-ce87329b927f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "group flex flex-col gap-1",
+                                    "attrs": {
+                                      "href": "/journal"
+                                    },
+                                    "children": [
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-lg font-semibold leading-snug text-base-content",
+                                        "children": ["Arts & Culture"],
+                                        "id": "62a45cf9-e68e-4ea7-904f-b38687a3848c",
+                                        "ord": "a0"
+                                      },
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-sm text-base-content",
+                                        "children": ["Music, theatre and the galleries"],
+                                        "id": "95b3a9ad-15be-4484-8293-1e4eee2b9872",
+                                        "ord": "a1"
+                                      }
+                                    ],
+                                    "id": "ef9b27d9-329d-4319-a47b-5cffe4aa80aa",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "45bf7c89-8fd8-4d8b-9f6f-e2277cbecacc",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "group flex flex-col gap-1",
+                                    "attrs": {
+                                      "href": "/journal"
+                                    },
+                                    "children": [
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-lg font-semibold leading-snug text-base-content",
+                                        "children": ["Sustainability"],
+                                        "id": "f664b833-39a7-4d9f-9d4c-8aad99bbd986",
+                                        "ord": "a0"
+                                      },
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-sm text-base-content",
+                                        "children": ["How the campus runs, and greener"],
+                                        "id": "57d144e7-41b1-41db-81fd-f38c291a1e1d",
+                                        "ord": "a1"
+                                      }
+                                    ],
+                                    "id": "cd1f0285-65b2-477f-893e-6effdc7181d1",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "dce9793a-20c6-4d7e-b539-424021c2b7d1",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "3770c900-12ae-4f52-aff4-16d914400c67",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "text-base font-semibold text-accent",
+                            "attrs": {
+                              "href": "/journal"
+                            },
+                            "children": ["More in Campus →"],
+                            "id": "3f75c781-0b5c-4a63-b4d4-096096736a26",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "230d5f84-8560-44d1-aba0-e7c5adb16c20",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4 border-t border-base-300 pt-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                            "children": ["Athletics"],
+                            "id": "7160e2b0-600f-4a30-a121-a5b20baa7be6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "ul",
+                            "class": "flex flex-col gap-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "group flex flex-col gap-1",
+                                    "attrs": {
+                                      "href": "/journal"
+                                    },
+                                    "children": [
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-lg font-semibold leading-snug text-base-content",
+                                        "children": ["Northgate Athletics"],
+                                        "id": "cceec9eb-2b20-4a81-a086-5a140fd0b87a",
+                                        "ord": "a0"
+                                      },
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-sm text-base-content",
+                                        "children": ["Scores, seasons and the teams"],
+                                        "id": "551b1a23-8f06-424f-af1f-b5d0a205cea3",
+                                        "ord": "a1"
+                                      }
+                                    ],
+                                    "id": "b17710f6-8e5b-4711-af15-db1132e4fd90",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "a400a02f-9ec1-4a6a-a3ef-74f5e6866d77",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "group flex flex-col gap-1",
+                                    "attrs": {
+                                      "href": "/journal"
+                                    },
+                                    "children": [
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-lg font-semibold leading-snug text-base-content",
+                                        "children": ["Club & intramural"],
+                                        "id": "b41f0471-063e-4c71-81a5-abc60e4789a0",
+                                        "ord": "a0"
+                                      },
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-sm text-base-content",
+                                        "children": ["Sport beyond the varsity roster"],
+                                        "id": "4c985b18-60ac-4c1b-9090-1315db050770",
+                                        "ord": "a1"
+                                      }
+                                    ],
+                                    "id": "4e19447d-3027-4882-813c-95dacbb833a4",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "a24f0618-45fe-438a-86b1-fed8f815a7f5",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "group flex flex-col gap-1",
+                                    "attrs": {
+                                      "href": "/journal"
+                                    },
+                                    "children": [
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-lg font-semibold leading-snug text-base-content",
+                                        "children": ["Alumni & legends"],
+                                        "id": "bb426acd-7c70-4af9-abc7-2dd752904988",
+                                        "ord": "a0"
+                                      },
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "class": "text-sm text-base-content",
+                                        "children": ["The record book and its keepers"],
+                                        "id": "33a635a4-b368-44f7-bd5c-4a6f1070676f",
+                                        "ord": "a1"
+                                      }
+                                    ],
+                                    "id": "cfab5e32-5a13-401a-b890-a03ff916950d",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "52e167b7-6ade-4a22-a9af-54f66a6fd08a",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "d7cb8f87-7c35-4f0e-b138-cb5a493932f7",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "text-base font-semibold text-accent",
+                            "attrs": {
+                              "href": "/journal"
+                            },
+                            "children": ["More in Athletics →"],
+                            "id": "29d5e860-6dfc-4dc5-ad07-d8c885c33290",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "d8482a3b-ad95-43d5-b49f-50691552fa68",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "4d7dac75-ac4c-46ad-9589-a465fe6aa81f",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e2b0dfc0-92ee-46e9-bb16-ba54fc6fbeb9",
+                "ord": "a0"
+              }
+            ],
+            "id": "09f7482e-9514-4b4b-8451-ae8e8d145a2d",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["On campus this month"],
+                    "id": "0692e851-0d72-4541-a567-08c7dbf62eda",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "ul",
+                    "class": "flex flex-col",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "li",
+                        "class": "flex flex-col gap-4 border-t border-base-300 py-6 @2xl:flex-row @2xl:gap-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-2 @2xl:w-24 @2xl:flex-col @2xl:items-start @2xl:gap-0",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-3xl font-bold leading-none text-primary",
+                                "children": ["12"],
+                                "id": "a42de8ef-a04e-4bf9-9a85-7ebb0b5444a3",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Sep"],
+                                "id": "7e44a7a2-4d49-400c-a6f2-a4d9ecb0bf05",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "cbd09072-e622-45f7-afc8-133c638fb7dc",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["The President’s Lecture: what a coastline is worth"],
+                                "id": "01f5b927-45a2-4bcc-910b-83ff618e0db0",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Elena Marsh and the coastal ecology lab present the marsh-carbon findings, followed by a public Q&A."
+                                ],
+                                "id": "8e5e51d1-93ed-4ce5-9795-5f7f58e054ee",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm text-base-content",
+                                "children": ["Hartwell Hall · 6pm · free and open to the public"],
+                                "id": "420314fb-de27-4466-b6db-30d76d31821f",
+                                "ord": "a2"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "text-base font-semibold text-accent",
+                                "attrs": {
+                                  "href": "/journal"
+                                },
+                                "children": ["Details →"],
+                                "id": "7295a23e-69ac-40b3-8a59-9714d1073955",
+                                "ord": "a3"
+                              }
+                            ],
+                            "id": "9461e975-5a31-4bf0-9938-3374f6ee9e1b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "bb639cdd-c7b6-43c5-872a-f7c7f1171863",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "li",
+                        "class": "flex flex-col gap-4 border-t border-base-300 py-6 @2xl:flex-row @2xl:gap-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-2 @2xl:w-24 @2xl:flex-col @2xl:items-start @2xl:gap-0",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-3xl font-bold leading-none text-primary",
+                                "children": ["27"],
+                                "id": "2609d42c-da80-4bf6-b6b5-2084850dc0e2",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Sep"],
+                                "id": "5beea239-5c09-4fa3-8954-f3bd4113952e",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5068483f-0980-4d85-83ca-62090631837d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Fall Research Showcase"],
+                                "id": "8148f5e9-8dc5-4b82-a061-35f8f9633fcf",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Two hundred undergraduate and graduate projects across every school, in one afternoon under the atrium."
+                                ],
+                                "id": "c38a77ad-5d82-488e-986d-e54e7d233fbb",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm text-base-content",
+                                "children": ["Science Quad Atrium · 1pm · all welcome"],
+                                "id": "4d984d73-9b5d-4028-8038-2866ac8d9947",
+                                "ord": "a2"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "text-base font-semibold text-accent",
+                                "attrs": {
+                                  "href": "/journal"
+                                },
+                                "children": ["Details →"],
+                                "id": "d60da044-7457-4526-b6aa-40bd33dd8e5a",
+                                "ord": "a3"
+                              }
+                            ],
+                            "id": "a3e32bf3-a2b7-4109-90cb-ccdafa6e5dce",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0bf1bc1e-316a-4385-b806-c9398215e652",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "li",
+                        "class": "flex flex-col gap-4 border-t border-base-300 py-6 @2xl:flex-row @2xl:gap-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-2 @2xl:w-24 @2xl:flex-col @2xl:items-start @2xl:gap-0",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-3xl font-bold leading-none text-primary",
+                                "children": ["05"],
+                                "id": "20c6cfc7-8dbe-48db-9ed2-18b2350b5287",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Oct"],
+                                "id": "a772031b-6180-49b5-9d28-c0652a87a4d0",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "2da6a97a-7e47-4cc0-a599-57c048b2eb97",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Northgate Symphony: a century in the hall"],
+                                "id": "881fc16c-fb47-4b49-98d7-a84c1fa0111f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "The student orchestra reopens the restored Whitfield Hall with a programme spanning its hundred years."
+                                ],
+                                "id": "e91cf261-57af-4bae-850f-b6ee6d4033dd",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm text-base-content",
+                                "children": ["Whitfield Hall · 7:30pm · tickets at the box office"],
+                                "id": "03fd852c-5fba-4588-ba76-784e2eb063e3",
+                                "ord": "a2"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "text-base font-semibold text-accent",
+                                "attrs": {
+                                  "href": "/journal"
+                                },
+                                "children": ["Details →"],
+                                "id": "f51eb762-f9f0-43d1-a6b3-f9cf6386bdd6",
+                                "ord": "a3"
+                              }
+                            ],
+                            "id": "d56bf207-540c-49a4-8328-51ca6663ea0f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ec2ad6f7-3424-45bb-9b91-d6b62b41ff3a",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "li",
+                        "class": "flex flex-col gap-4 border-t border-base-300 py-6 @2xl:flex-row @2xl:gap-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-2 @2xl:w-24 @2xl:flex-col @2xl:items-start @2xl:gap-0",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-3xl font-bold leading-none text-primary",
+                                "children": ["19"],
+                                "id": "ef25c1f3-8bca-4134-854e-86a24f466247",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Oct"],
+                                "id": "906215cd-e0d4-4766-83cf-1ed2744671f8",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e2257957-3213-48c9-b523-bd7b7c450e22",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Alumni & Careers Fair"],
+                                "id": "3d8865e2-c9ec-4768-828d-61937c2ed563",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Employers, graduate schools and the alumni network, with drop-in advising for every year."
+                                ],
+                                "id": "53edf9a7-59b5-4270-b2ab-3bbcf2d5a066",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm text-base-content",
+                                "children": ["Reeve Fieldhouse · 10am · students and alumni"],
+                                "id": "21743834-1a74-4d0d-b9f6-81d0c4879b41",
+                                "ord": "a2"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "text-base font-semibold text-accent",
+                                "attrs": {
+                                  "href": "/journal"
+                                },
+                                "children": ["Details →"],
+                                "id": "d98e8592-a606-4f6d-849b-2c307bccee0b",
+                                "ord": "a3"
+                              }
+                            ],
+                            "id": "62b3b447-5590-47de-a354-1c5965cb4f43",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "80d5faba-5b19-4538-8a58-ceef9051525d",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "afdf78b1-5dfa-4cbf-a16c-bf8ed0e16d88",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "6fa1ae92-a5eb-4c3c-9d63-3d415a5dcf77",
+                "ord": "a0"
+              }
+            ],
+            "id": "b2feb4e8-4469-4749-bac5-b8b2d3e50544",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["University Press"],
+                    "id": "09940986-376a-4c71-b41f-5638a08749ba",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "52e63196-c756-4b27-a30a-336ace64ed5b",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "ba82ec9b-3086-4b26-8940-da22e7b50409",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "74b15702-aedf-432a-943e-3e0733039597",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "5ee26c6e-2b4f-4ee6-99e3-948ad8d71faa",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "26160359-5e00-46c6-86fe-9cfb52cd108a",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "6a94ed97-6087-416d-9f4f-799fc4b27f1f",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "510567f3-81ff-4c56-8176-07759516a8cf",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "c1499231-12b2-44c6-a81a-93d726c361be",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "300c88a5-9cec-432f-acb0-56aad55a63bb",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2c694a2b-c733-44c4-8ec3-026ef0a0a879",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "4f8661eb-18db-4ee2-8c97-835285ac461e",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "3067976d-e5fa-443e-bbd8-a57472a5f336",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "480d86aa-6236-4606-a300-8e56812d0a9d",
+            "ord": "a5"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — Northgate University",
+      "seoDescription": "Browse everything Northgate University makes, with prices and options at a glance. University & campus news.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "0a391f71-3d0a-4132-886e-60723431bfbb",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-12 pb-4",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-6xl",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
+                    "children": ["Shop"],
+                    "id": "479265e2-60af-462f-8c26-ecdf55f345eb",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "mt-4 max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": ["Everything we currently have available."],
+                    "id": "35fddda8-0b89-44df-b3bb-55306ee27e91",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e8ad2ba1-7d9b-4f5b-bcd2-e9e7991b11a2",
+                "ord": "a0"
+              }
+            ],
+            "id": "74e5407c-5d27-4ebf-9004-6b385bd5aa8a",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "44b483ba-ebed-4013-8e6f-4f36c430d707",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — Northgate University",
+      "seoDescription": "Explore the collections at Northgate University, grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "19f351b3-61b3-47d1-9a6f-ec9ca09f8e50",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container",
+            "children": [
+              {
+                "kind": "host",
+                "component": "commerce.collections",
+                "class": "mx-auto w-full max-w-6xl px-6 py-6",
+                "locked": "host",
+                "id": "611d6dcc-5e9f-4ed7-95f9-d6a8891a4132",
+                "ord": "a0"
+              }
+            ],
+            "id": "025ea57c-2f7f-46de-a249-b7060143cab9",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — Northgate University",
+      "seoDescription": "Review what is in your cart and check out securely at Northgate University.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "29bd2727-dc0b-4ca0-9d9d-3c0d6f52f679",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "h1",
+                "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
+                "children": ["Your cart"],
+                "id": "6a902db0-bf26-424c-b80a-00b90c8c6ea9",
+                "ord": "a0"
+              },
+              {
+                "kind": "host",
+                "component": "commerce.cart",
+                "class": "mx-auto w-full max-w-4xl px-6 py-10",
+                "locked": "host",
+                "id": "2fd6d512-1507-4052-8e86-5ca8398b8e11",
+                "ord": "a1"
+              }
+            ],
+            "id": "9d08c4bb-ce42-492d-a73b-e61badbd0071",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — Northgate University",
+      "seoDescription": "Search Northgate University for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "e40dbbe5-3fb6-414f-bef9-9398d943c848",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "h1",
+                "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
+                "children": ["Search"],
+                "id": "79467837-1b7a-4487-885c-2f3852bb10fd",
+                "ord": "a0"
+              },
+              {
+                "kind": "host",
+                "component": "commerce.search",
+                "class": "mx-auto w-full max-w-6xl px-6 py-6",
+                "locked": "host",
+                "id": "19429e3e-6beb-40d7-8e33-79eb5691325b",
+                "ord": "a1"
+              }
+            ],
+            "id": "f8d878de-21c2-4bed-a3a0-c567c7332cd4",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — Northgate University",
+      "seoDescription": "Stories, guides and notes from Northgate University.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "bb85fc66-a356-4b04-b8be-fde257b11ba9",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold leading-tight tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The Northgate Newsroom"],
+                    "id": "e1722a0f-c5d4-43a1-b3ed-006811880408",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Research findings, campus life, and the people who make the university — reported by the news office for students, faculty, alumni and the public."
+                    ],
+                    "id": "cd79d085-6af0-4c44-b500-1d60c738769c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "5686454d-0dbe-4749-991f-2b8d0b182bd6",
+                "ord": "a0"
+              }
+            ],
+            "id": "154f7f1d-0fdf-4888-8f6e-b30f6818f730",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "bbb6dece-bf04-4330-a3a7-073707156322",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "e4158281-f0a7-40d8-82f3-de325d8d2907",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "c240bb0e-fbd7-4dff-a272-f64423b83144",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "c7ba6fa4-8264-4c08-912e-fba6e2db9a1f",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "da8c62bc-217d-4c18-bda0-6d3b0e1b20a7",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "d083c0fb-c19c-49b7-9e90-0fc49b830aa8",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "dd99a531-a05b-440d-80ee-b7082573da59",
+                "ord": "a0"
+              }
+            ],
+            "id": "e1db02e1-a7b8-40d7-919a-4ce8ec7d1dd3",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About the Northgate Newsroom — the university news office",
+      "seoDescription": "Who the Northgate Newsroom is and how it works — the official news office reporting the research, teaching and life of the university to the campus, alumni and the public.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "786e7331-7c42-4f25-a073-dd91c712daab",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
+                    "children": ["About the Newsroom"],
+                    "id": "3e9b529c-793c-4e1a-be0a-4bf5f7a8a49f",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The Northgate Newsroom is the official news office of Northgate University. We report on the research, teaching and life of the institution — the findings coming out of the labs, the decisions shaping the campus, and the students, faculty and staff behind them."
+                    ],
+                    "id": "aca03b0c-e698-471d-ab10-a1ec9cfb9084",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Our job is to tell the university’s story plainly and accurately, to a mixed audience of the campus community, alumni, the press and the wider public. When we cover research, we read the study before we write the headline, and we say clearly what has been found and what has not."
+                    ],
+                    "id": "b3f69df7-a099-4ddc-ac08-92b4de5be213",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Media Relations can arrange interviews, provide images and connect reporters with faculty experts. Story ideas from across the university are always welcome."
+                    ],
+                    "id": "360e61ca-0962-46f6-8382-8bb83bb246b1",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "67397353-66e5-4b8b-9180-f08421070ea4",
+                "ord": "a0"
+              }
+            ],
+            "id": "004b422c-0aea-4295-bc9d-02b66bfce5e0",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Northgate University",
+      "seoDescription": "Get in touch with Northgate University — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "c3deda89-0d1a-496a-8cd6-a101934628f9",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
+                    "children": ["Contact the Newsroom"],
+                    "id": "f8250d89-c91a-4c55-b9c2-59766cd0580b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "For a media enquiry, an interview request, images, or a story tip from within the university, reach the news office directly. We respond to press on deadline and read every tip."
+                    ],
+                    "id": "5f10a8b0-915e-47e8-b8f1-b3e345884339",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:news@northgate.example"
+                    },
+                    "children": ["Email Media Relations"],
+                    "id": "bbf28388-9648-4486-80e7-95fdfeb73bd0",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "90cc5875-e1ae-4a9f-8d8b-50928aa8c390",
+                "ord": "a0"
+              }
+            ],
+            "id": "0f5576f3-b22a-4c1e-82bb-c5992a9f0d7a",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Article",
+      "kind": "collection",
+      "recordType": "cms.blog_post",
+      "isDefault": true,
+      "seoTitle": "Article — Northgate University",
+      "seoDescription": "A story from Northgate University — the writing, the reporting and the notes behind it.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "div",
+            "class": "flex flex-col",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "section",
+                "class": "bg-base-200 @container px-6 pt-12 pb-14 @2xl:pt-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto flex w-full max-w-3xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-accent",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["←"],
+                            "id": "08b4c35f-e5a5-409c-b164-da93f7d2f362",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["All stories"],
+                            "id": "d6c01bd0-eab4-4b5f-9151-b5bc99ba0fcb",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a4ea87f1-2f82-4201-996f-b189dfdcf23b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-sm font-semibold uppercase tracking-wide text-accent",
+                        "children": ["Section"],
+                        "data": {
+                          "kind": "visible",
+                          "ref": "category"
+                        },
+                        "id": "9634ee10-77bc-4350-9d0d-d05bc685b712",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold leading-tight tracking-tight text-base-content @2xl:text-5xl",
+                        "children": ["Post title"],
+                        "data": {
+                          "kind": "value",
+                          "ref": "title"
+                        },
+                        "id": "4bedd7d9-1ba1-43da-85a9-4e11630252d9",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-xl leading-relaxed text-base-content",
+                        "children": ["The short summary of this post, written in the CMS."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "excerpt"
+                        },
+                        "id": "65db1e23-bbee-4e25-90ff-f196dcb4d487",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-2 flex items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "h-11 w-11 rounded-full border border-base-300 object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "visible",
+                              "ref": "authorAvatar"
+                            },
+                            "id": "0d66a0bf-3a4c-4776-915c-3d9903575de3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Author name"],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "authorName"
+                                },
+                                "id": "325e3690-ff0d-492d-941c-207b7b454e3b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-sm text-base-content",
+                                "children": ["Published date"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "date"
+                                },
+                                "id": "50d1c4c2-3b71-482c-bca9-4b9d02c60f6d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c9d8fd1c-89c1-43bf-89b8-2c28342bd745",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8080fe88-e980-4f03-b8da-0d1ef5589c5f",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "1a380e1b-4ef1-4995-ac63-50a28aa524e1",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "b356a15c-d6a1-4f65-a7f3-313322ab7b51",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "section",
+                "class": "bg-base-100 @container px-6 py-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto w-full max-w-3xl",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": ""
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "featuredImage"
+                        },
+                        "id": "bc3c4c58-25ea-4965-b085-74ed14a6429d",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "d92884c7-a485-4ba9-88e8-1b6be2d5d806",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "31aa1bb0-29ac-4dd9-aaa7-e29d247d1034",
+                "ord": "a1"
+              }
+            ],
+            "id": "a1d9758d-0320-41a2-a13c-246ebab4a657",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl px-6 pb-20 @2xl:pb-24",
+                "children": [
+                  {
+                    "kind": "host",
+                    "component": "cms.article-body",
+                    "class": "w-full",
+                    "locked": "host",
+                    "id": "a45c79a9-b8a6-4127-9bf2-ac37109d54eb",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "22951e85-ddeb-413e-a970-0a91456f1c5f",
+                "ord": "a0"
+              }
+            ],
+            "id": "b8284596-4489-41bd-920d-0eaf1d677dff",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pb-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-4 rounded-box border border-base-300 bg-base-200 p-6 @2xl:flex-row @2xl:items-center",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "h-16 w-16 rounded-full border border-base-300 object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": ""
+                        },
+                        "data": {
+                          "kind": "visible",
+                          "ref": "authorAvatar"
+                        },
+                        "id": "6cc07783-649b-456f-87dc-8534e35af0bb",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-lg font-semibold text-base-content",
+                            "children": ["Author name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorName"
+                            },
+                            "id": "1d0382c6-5223-48ff-80b9-2a187fd8e461",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["About the author."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorBio"
+                            },
+                            "id": "5f82f312-5e45-452e-9110-76912447df31",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "69c2c2b3-f47b-4ada-b340-bfdb13a36793",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "authorBio"
+                    },
+                    "id": "109cfa8b-4587-4204-a900-f76c9a273fd0",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "2562b7aa-3b91-46c0-ae2b-b2b52eda7338",
+                "ord": "a0"
+              }
+            ],
+            "id": "1d0a31da-3e03-41b4-8059-e82ce7f32d40",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-200 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-2xl font-bold tracking-tight text-base-content @2xl:text-3xl",
+                        "children": ["Keep reading"],
+                        "id": "b02d0e84-5124-4cb5-849a-e607910638ec",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/journal"
+                            },
+                            "children": ["More stories"],
+                            "id": "98cb1918-96a9-4f49-b67b-a6d9f6e5c4ff",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "693b286c-93ea-4220-864d-951b3ddbe94c",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "855664e4-4b18-4510-9271-1db1744ee7ca",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "cad62512-a793-472a-91a8-9d26c378ed6b",
+                "ord": "a0"
+              }
+            ],
+            "id": "d2c8a43b-c806-42a6-b9ac-b537f262684e",
+            "ord": "a3"
+          }
+        ],
+        "data": {
+          "kind": "collection",
+          "ref": "blog_post"
+        },
+        "id": "6e954ed4-a053-414a-89f3-5d32a861ccf2"
+      }
+    }
+  ],
+  "theme": {
+    "name": "quad",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.004 250)",
+      "--color-base-200": "oklch(95% 0.006 250)",
+      "--color-base-300": "oklch(90% 0.008 250)",
+      "--color-base-content": "oklch(18% 0.02 258)",
+      "--color-primary": "oklch(34% 0.1 258)",
+      "--color-secondary": "oklch(46% 0.04 258)",
+      "--color-accent": "oklch(48% 0.18 25)",
+      "--color-neutral": "oklch(24% 0.02 258)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.25rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.375rem",
+      "--border": "1px",
+      "--depth": "0",
+      "--font-sans": "\"Work Sans\", sans-serif",
+      "--font-head": "\"Spectral\", serif",
+      "--color-primary-content": "oklch(98% 0.01 258)",
+      "--color-secondary-content": "oklch(98% 0.01 258)",
+      "--color-accent-content": "oklch(98% 0.01 25)",
+      "--color-neutral-content": "oklch(98% 0.01 258)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(48% 0.18 25)",
+      "--color-highlight-content": "oklch(98% 0.01 25)",
+      "--color-border": "oklch(90% 0.008 250)",
+      "--container-max": "72rem",
+      "--font-heading": "\"Spectral\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(17% 0.016 258)",
+      "--color-base-200": "oklch(14% 0.016 258)",
+      "--color-base-300": "oklch(11% 0.016 258)",
+      "--color-base-content": "oklch(95% 0.006 250)",
+      "--color-primary": "oklch(72% 0.11 258)",
+      "--color-secondary": "oklch(76% 0.05 258)",
+      "--color-accent": "oklch(68% 0.17 25)",
+      "--color-neutral": "oklch(32% 0.016 258)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 258)",
+      "--color-secondary-content": "oklch(15% 0.02 258)",
+      "--color-accent-content": "oklch(15% 0.02 25)",
+      "--color-neutral-content": "oklch(98% 0.01 258)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(68% 0.17 25)",
+      "--color-highlight-content": "oklch(15% 0.02 25)",
+      "--color-border": "oklch(11% 0.016 258)"
+    }
+  }
+}

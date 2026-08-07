@@ -1,0 +1,402 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "data-centre-boom-power-grid",
+    "status": "published",
+    "authorSlug": "dana-ruiz",
+    "categories": ["Artificial intelligence"],
+    "tags": ["Data centres", "Energy"],
+    "body": {
+      "title": "The data-centre boom is quietly rewriting the power grid",
+      "excerpt": "Training the next generation of models needs more electricity than most cities. We followed the contracts, and found utilities planning a decade of build-out around a handful of customers.",
+      "featuredImage": {
+        "$asset": "lead-story"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A single large training cluster can draw as much power as a small city, around the clock, for years. Utilities are not used to a customer like that — one that arrives all at once, never sleeps, and signs a twenty-year contract before the concrete is poured."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The load is real, and it is lumpy"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We reviewed interconnection filings in six states. The pattern is the same everywhere: a cluster of enormous new requests, all from a short list of names, all pushing planners to build generation and transmission a decade ahead of where the models said demand would be."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Who pays for the build-out"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "That is the fight now playing out in rate cases most people will never read. If a utility builds a power plant to serve one data centre and that data centre leaves, the cost does not vanish — it lands on everyone else’s bill. Regulators are only beginning to write the rules that decide who carries that risk."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The compute story has always been told as a chip story. It is turning out to be a power story, and the grid is where the next few years actually get decided."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "seed-round-is-back",
+    "status": "published",
+    "authorSlug": "marcus-bell",
+    "categories": ["Startups"],
+    "tags": ["Venture capital"],
+    "body": {
+      "title": "The seed round is back, and it looks nothing like 2021",
+      "excerpt": "Early-stage money is flowing again — but the terms, the check sizes and the expectations have all quietly reset. A look at what a first round costs a founder now.",
+      "featuredImage": {
+        "$asset": "story-office"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Ask a founder raising today and a founder who raised three years ago to describe a seed round, and you will hear two different products sharing a name."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Smaller, slower, and with more asked of it"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The rounds are getting done, but investors want more traction for the same money and take longer to decide. The party round of a dozen small checks closing in a week is mostly gone; in its place is a lead who wants a board seat and a plan to a real milestone."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What has not changed"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The best companies still raise on their own terms, and the very earliest bets are still made on people more than numbers. What reset was the middle — the ordinary round for the ordinary good company, which is where most of the market actually lives."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "If you are raising now, price it to the company you can honestly become in eighteen months, not the one the last cycle would have funded."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "export-rules-line-by-line",
+    "status": "published",
+    "authorSlug": "priya-anand",
+    "categories": ["Policy"],
+    "tags": ["Regulation", "Chips"],
+    "body": {
+      "title": "What the new export rules actually cover, line by line",
+      "excerpt": "The headlines said “chip ban”. The text says something more specific — and more consequential. We read the rule so you do not have to.",
+      "featuredImage": {
+        "$asset": "story-policy"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Export controls are written in a language designed to be precise and read as if it were designed to be impenetrable. The new rule is neither as broad nor as narrow as the coverage suggested."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "It is about performance, not names"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The rule does not ban a product; it draws a line at a level of capability and controls anything above it. That is deliberate — a threshold survives the next generation of hardware in a way a model number never could."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The parts that will bite"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The provisions that matter most are not the chips themselves but the tooling and the service contracts around them. Control the ability to maintain a fab, and you control the fab, whoever technically owns it."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The politics will move on by next week. The rule will still be there, shaping what gets built where, for years."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "grid-scale-battery-pencils-out",
+    "status": "published",
+    "authorSlug": "dana-ruiz",
+    "categories": ["Climate tech"],
+    "tags": ["Energy", "Batteries"],
+    "body": {
+      "title": "The grid-scale battery that finally pencils out",
+      "excerpt": "For a decade, long-duration storage was the technology that was always five years away. A quiet cost curve just moved it into the money.",
+      "featuredImage": {
+        "$asset": "story-climate"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The problem with renewable power was never making it. It was keeping it — holding a sunny afternoon’s output until a still, dark evening. The technology to do that cheaply is the whole game, and it just got a lot closer."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Cheap chemistry, boring engineering"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The breakthrough is not exotic. It is an unglamorous chemistry that trades energy density for cost, packaged in a way that a utility can actually finance. The magic is in the spreadsheet, not the lab."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Why it matters now"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Once storage is cheap enough to hold a full day, the argument for keeping a gas plant running “just in case” gets much harder to make. That is when a cost curve stops being a chart and starts being a policy."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Watch the procurement announcements over the next year. That is where you will see whether the spreadsheet was right."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "inside-the-fab-race",
+    "status": "published",
+    "authorSlug": "priya-anand",
+    "categories": ["Hardware"],
+    "tags": ["Chips", "Manufacturing"],
+    "body": {
+      "title": "Inside the fab racing to make chips a continent closer",
+      "excerpt": "A new leading-edge fab is rising far from the places that usually build them. We spent two days inside to see whether the economics can possibly work.",
+      "featuredImage": {
+        "$asset": "story-chips"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A modern fab is one of the most complex objects humans build, and almost all of them sit in a handful of places. The bet here is that supply-chain risk has finally made “almost all” a liability worth billions to fix."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The hard part is not the machines"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "You can buy the lithography tools; everyone buys them from the same supplier. The scarce thing is the thousands of people who know how to run them, and the ecosystem of suppliers that grows up around a fab over decades. That cannot be air-freighted in."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The subsidy question"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "None of this pencils out without public money, and everyone involved knows it. The honest debate is not whether to subsidise but what the public buys for the cheque — resilience, jobs, or simply the option of not depending on one strait on the map."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The building will open on schedule. Whether it becomes a real cluster or an expensive island is a ten-year question."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

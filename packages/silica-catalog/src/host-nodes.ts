@@ -3,7 +3,7 @@
 //
 // silicaui 0.22 shipped the `HostNode` primitive (`kind: "host"`): `toHtml` lowers it
 // to an EMPTY mount point (`<div data-sui-host="<key>">`) and the real component is
-// mounted at render time — on the storefront by the React walk (apps/site), on the
+// mounted at render time — on the live site by the React walk (apps/site), on the
 // studio canvas by the host's `renderHostNode` (apps/dashboard).
 //
 // A host node buys TWO independent things. Don't conflate them:
@@ -29,11 +29,13 @@
 // composites that wrap a core in a default editable shell. The two React ends map the
 // SAME keys to their own components:
 //   · apps/dashboard  key → a non-interactive canvas skeleton (`renderHostNode`)
-//   · apps/site       key → the real functional component (the storefront walk)
+//   · apps/site       key → the real functional component (the live-site walk)
 // A key with no live mapping on either end is a half-built surface, so an entry is
 // added here only once its full vertical (skeleton + real component + route) lands.
 
 import { el, host, type HostNode, type Node } from '@wizeworks/silicaui-html';
+
+import { FRAME_RATIOS } from './embed';
 
 /** The host-component keys, namespaced by owning module. Matched verbatim against a
  *  `HostNode.component`; every key in `HOST_COMPONENTS` has a live mapping on BOTH
@@ -104,7 +106,7 @@ export const HOST_KEYS = {
    *  blog-post template exists to show had no way to appear on the canvas at all,
    *  and every tenant fell through to the bare no-template fallback.
    *
-   *  Per-record: the route hands the entry's doc to the storefront renderer, so the
+   *  Per-record: the route hands the entry's doc to the live-site renderer, so the
    *  core needs no props — the author places it, and the routed post fills it. */
   cmsArticleBody: 'cms.article-body',
   /** A light/dark theme toggle — a button that flips the site between its light and dark
@@ -112,10 +114,10 @@ export const HOST_KEYS = {
    *  cannot meet: it is INTERACTIVE (client state + the `sparx_theme` cookie the SSR
    *  no-flash script reads), and it must AUTO-HIDE unless the tenant's appearance policy
    *  actually offers both themes (`toggle`) — under any single-theme / device-follow
-   *  policy it renders nothing. Place it in the frame's navbar; the storefront mounts the
+   *  policy it renders nothing. Place it in the frame's navbar; the live site mounts the
    *  real cookie-backed control (the same one the default header uses), so a silica-framed
    *  site gets a working toggle the shipped `theme-toggle` behavior can't provide (that one
-   *  persists to localStorage, not the cookie the storefront reads). Not pinned. */
+   *  persists to localStorage, not the cookie the live site reads). Not pinned. */
   siteThemeToggle: 'site.theme-toggle',
   /** The site's LEGAL LINKS — privacy / terms / cookie-policy / returns / shipping /
    *  refund, exactly the documents the tenant has actually published, read live from
@@ -131,7 +133,7 @@ export const HOST_KEYS = {
    *
    *  It also needs a conditional a bound tree cannot express (the same reason
    *  `site.brand` has `show`): with nothing published it must render NOTHING — heading
-   *  included — rather than an empty "Legal" column. Mirrors the default storefront
+   *  included — rather than an empty "Legal" column. Mirrors the default site
    *  footer, which appends its Legal column only when `getLegalFooterLinks` is
    *  non-empty. Not pinned: the tenant owns where the links sit (a footer column, a
    *  bottom bar, beside the copyright). */
@@ -156,6 +158,46 @@ export const HOST_KEYS = {
    *  Not pinned: the tenant owns where their pager sits, and a page with no list on
    *  it should be able to delete it. */
   sitePagination: 'site.pagination',
+  /** A MAP of one location — an address, a place name, or a pasted Google Maps link.
+   *
+   *  THE ONE EMBED SPARX RENDERS ITSELF, and the reason is narrow enough to state
+   *  exactly. Everything else framed on a page is silicaui's `Embed` component: the
+   *  ENGINE owns the iframe, recognises the provider and mints the player URL, so a
+   *  video block is a stamped `Embed` and nothing here. `Embed` accepts a maps link too
+   *  — by passing it through UNCHANGED, which works only for the `output=embed` form
+   *  that nobody has. An ordinary Google Maps page URL is answered with
+   *  `X-Frame-Options` and renders as a refused, empty frame, and a plain ADDRESS — the
+   *  one thing a shop owner definitely has — cannot be used at all.
+   *
+   *  So this core exists to take an address and build a URL that works. "Find your shop
+   *  on Google Maps, open the share menu, choose Embed a map, copy the iframe code, take
+   *  the src out of it" is not a thing to ask of someone putting their address on their
+   *  contact page. They type the address. If the engine ever learns to do that, this
+   *  core should go — it is compensation for a gap, not a design.
+   *
+   *  The `find_us` catalog section carries the address as TEXT and always has. This is
+   *  the picture beside it, which is the part visitors actually use. Not pinned: a map
+   *  is the tenant's own content, and deleting it must be ordinary. */
+  siteMap: 'site.map',
+  /** ANYTHING ELSE from another site — a booking calendar, an order form, a reservation
+   *  widget, a donation page.
+   *
+   *  The escape hatch, and it is a core for the same narrow reason the map is. The
+   *  engine's `Embed` frames a recognised set of providers — YouTube and Vimeo, the
+   *  audio/podcast players (Spotify, SoundCloud, Apple Music, Apple Podcasts, since 0.50),
+   *  and Google's own `/maps/embed` string — and renders EVERYTHING else as a plain
+   *  anchor. That is a sound default for an engine and it is not a general embed. The
+   *  previous sparx builder shipped one (the `bx-*` Embed section, still live in
+   *  `apps/site`), so leaving this out would be a capability the platform used to have and
+   *  lost.
+   *
+   *  Unlike the Video block, this one frames a URL the author chose, so it says so:
+   *  https only, sandboxed, and the target's own `X-Frame-Options` is the real gate — a
+   *  site that refuses to be embedded refuses here too. A recognised link (a YouTube or
+   *  Vimeo video, a Spotify/podcast player) is sent BACK to the Video block by the
+   *  pre-publish check rather than framed, because the watch/track page refuses to frame
+   *  (a blank box) when the Video block would mint the real player. Not pinned. */
+  siteEmbed: 'site.embed',
 } as const;
 
 export type HostComponentKey = (typeof HOST_KEYS)[keyof typeof HOST_KEYS];
@@ -204,7 +246,7 @@ export interface HostComponentMeta {
 
 /** Every host core the studio offers, module-grouped. The dashboard turns this into
  *  `hostComponents(): HostComponentDef[]` (carrying each entry's `pinned`, default
- *  true) and the site turns each `key` into the real component the storefront mounts. */
+ *  true) and the site turns each `key` into the real component the live site mounts. */
 export const HOST_COMPONENTS: HostComponentMeta[] = [
   {
     key: HOST_KEYS.commerceCart,
@@ -401,6 +443,79 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     // but body text.
     defaultClass: 'mx-auto w-full max-w-3xl px-6 py-10',
   },
+  {
+    key: HOST_KEYS.siteMap,
+    label: 'Map',
+    category: 'media',
+    // The curated set has no map or pin glyph (and an UNREGISTERED name renders empty —
+    // the footgun the cart entry above documents). `contact` is the registered one that
+    // means this: a map is the contact page's "where we are".
+    icon: 'contact',
+    hint: 'A map showing where you are. Type your address — or paste a Google Maps link — and visitors get a map they can zoom and get directions from.',
+    defaultClass: 'mx-auto w-full max-w-3xl px-6 py-10',
+    props: [
+      {
+        name: 'location',
+        label: 'Address or place',
+        type: 'text',
+        default: '',
+      },
+      {
+        name: 'title',
+        label: 'What the map shows',
+        type: 'text',
+        default: 'Map',
+      },
+      {
+        name: 'zoom',
+        label: 'Zoom',
+        type: 'number',
+        // 15 frames a few surrounding streets — enough to recognise the area without
+        // losing the building. A pasted Maps link overrides this with the zoom the
+        // author was actually looking at.
+        default: 15,
+      },
+      {
+        name: 'ratio',
+        label: 'Shape',
+        type: 'select',
+        default: 'classic',
+        options: FRAME_RATIOS.map((r) => ({ value: r.value, label: r.label })),
+      },
+    ],
+    // Not pinned: a map is the tenant's own content. Locking it would leave an
+    // undeletable empty band on a page they later changed their mind about.
+    pinned: false,
+  },
+  {
+    key: HOST_KEYS.siteEmbed,
+    label: 'Embed from another site',
+    category: 'media',
+    icon: 'code',
+    hint: 'Something from another website — a booking calendar, an order form, a playlist. Paste its link. Some sites don’t allow this; if nothing shows, that site has blocked it.',
+    defaultClass: 'mx-auto w-full max-w-3xl px-6 py-10',
+    props: [
+      { name: 'url', label: 'Link', type: 'text', default: '' },
+      {
+        name: 'title',
+        label: 'What it is',
+        type: 'text',
+        // A frame with no accessible name is announced as "frame" and nothing else, so
+        // a screen-reader user is told something is there and not what. Seeded with a
+        // real default rather than blank, because a blank one is what would ship on
+        // every untouched block.
+        default: 'Embedded content',
+      },
+      {
+        name: 'ratio',
+        label: 'Shape',
+        type: 'select',
+        default: 'classic',
+        options: FRAME_RATIOS.map((r) => ({ value: r.value, label: r.label })),
+      },
+    ],
+    pinned: false,
+  },
 ];
 
 /** Author a functional core as a `HostNode` — the kit's `host()` with the core's
@@ -436,7 +551,7 @@ function defaultHostProps(key: HostComponentKey): Record<string, unknown> | unde
 }
 
 /** A default editable SHELL wrapping a pinned core — the fallback page body the
- *  storefront renders (and the seed the studio opens) for a functional route with no
+ *  live site renders (and the seed the studio opens) for a functional route with no
  *  stored template yet. A titled section header (fully editable/removable) above the
  *  pinned core; the tenant restyles the heading, adds trust badges / upsells around
  *  it, and repositions everything — the core alone stays put. */

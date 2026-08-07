@@ -1,0 +1,20 @@
+[
+  {
+    "slug": "communications-office",
+    "displayName": "Office of Communications",
+    "bio": "The City of Rivermark Office of Communications issues city announcements, service changes, and press releases, and keeps this portal current across every department.",
+    "avatarAssetId": "office-comms"
+  },
+  {
+    "slug": "mayor-elena-ruiz",
+    "displayName": "Office of Mayor Elena Ruiz",
+    "bio": "Elena Ruiz is the Mayor of Rivermark, elected in 2024. The Mayor’s Office leads the annual budget, the city’s strategic priorities, and its work with residents and regional partners.",
+    "avatarAssetId": "official-mayor"
+  },
+  {
+    "slug": "city-clerk",
+    "displayName": "Office of the City Clerk",
+    "bio": "David Okafor is the Rivermark City Clerk. The Clerk’s Office keeps the public record, posts meeting agendas and legal notices, runs municipal elections, and fills public-records requests.",
+    "avatarAssetId": "official-clerk"
+  }
+]

@@ -1,0 +1,2643 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "3534ff70-b781-4d26-8497-108abc57528b",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "41baf774-a82e-4e86-ae40-3da72f9b3914",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "f51513ff-59dd-4079-bae8-39ca7b8dcf6b",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "c8a72b9b-f8e8-41a0-bcf0-0f1b43a373a5",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link4",
+                        "type": "link",
+                        "label": "Company"
+                      },
+                      "id": "afeec23c-42bb-425b-9094-9df3daf1c867",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "dfe71026-2c0e-4115-badd-0d7498ac6de0",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "f6d1af61-32e7-4227-8e7c-4c625508c400",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "49aa6844-2013-45e2-845f-a8c708b25747",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "ce07bd17-6083-4e81-91e3-db72a8b6e7b9",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "518b4312-0639-4fa0-9ce1-12e6521e5a5d",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "2eab3c3b-3b75-455a-a7d2-44d08f4216cd",
+                  "ord": "a2"
+                }
+              ],
+              "id": "b3fd7b8d-7ac1-4192-8ca0-69b54a639811",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "b755cf94-2e32-4481-a1b0-714530e7336a",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "72d54dd8-b384-48e2-b87a-b2244f7c86b3",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "c6cc5120-cb37-4011-9f76-46ce3c0d6c14",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "7053d1ae-d0c6-4b9d-bfbf-0bad7fa025e1",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "4b7be5e1-6c3d-4122-8e2e-37bf52d4d419",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "07848d73-67ee-41fc-a20d-68dd1fbb9e8a",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "0282397f-3a79-411e-8f0d-0644fbaa2f40",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "db2a47a5-0380-47a6-bdf7-acb95144a2a3",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "1477f6e5-cf97-4922-a4bd-348051c07140",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish and sell, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "a109a157-5401-4c51-aad5-ec8e4d9f1b38",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "b63fc4af-7706-4d34-8f0d-7abc39ab3fb9",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "fa95a3cc-6e7f-4a56-90f3-90b502b5bf5f",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "e0cd679a-7004-4630-adaa-03aa2f88fce8",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/shop"
+                                  },
+                                  "children": ["Shop"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "25151e89-e4f8-4b80-a292-adba734cf745",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "d5ae4b90-60c0-43e0-b400-cfbc33f49e85",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/journal"
+                                  },
+                                  "children": ["Journal"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "f14935e8-6f86-40f0-8091-74c69002d2b4",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "38a281cc-5b5f-44b0-820b-a037f9ec93a8",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "e75f941d-b6b0-48c1-adbf-b2facb8bbc53",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "2b1bd4ca-6cf2-4e94-b41c-cd241da2daa4",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "e1f648dc-ccf7-4db4-ba47-684de2419056",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "fcdfad6a-d502-467d-9567-c0eaa3416787",
+                              "ord": "a3"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "id": "3d180889-a18e-45cf-a2fd-4f3c533e3cc7",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "7ee08b96-a8e5-4914-974a-8b8478b6760f",
+                              "ord": "a4"
+                            }
+                          ],
+                          "id": "325e0297-864d-4f3d-bed0-8cfec7445580",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "9eaaa52f-99cc-4420-b073-818c47a26531",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Account"],
+                          "slot": {
+                            "name": "col2",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/account"
+                          },
+                          "id": "420b223d-d71b-453f-b611-59b1143c2ed6",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/account"
+                                  },
+                                  "children": ["Sign in"],
+                                  "slot": {
+                                    "name": "link5",
+                                    "type": "link",
+                                    "label": "About"
+                                  },
+                                  "id": "55c3a5b7-e5ef-474a-b818-888f6bb24c70",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "13858bd6-d4fd-458f-a67a-f08832846985",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/account/orders"
+                                  },
+                                  "children": ["Orders"],
+                                  "slot": {
+                                    "name": "link6",
+                                    "type": "link",
+                                    "label": "Careers"
+                                  },
+                                  "id": "16709b37-697f-43b0-aad3-4c5bd6f1ca3b",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "01a70b32-7058-46ae-8e30-25f84b14637c",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/cart"
+                                  },
+                                  "children": ["Cart"],
+                                  "slot": {
+                                    "name": "link7",
+                                    "type": "link",
+                                    "label": "Blog"
+                                  },
+                                  "id": "8962f47f-785e-4e28-a4ab-b70f7ef03108",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "a1fc3eee-5a7f-4762-aef4-f3f5474d4b7d",
+                              "ord": "a2"
+                            }
+                          ],
+                          "id": "439b1a66-eef4-45bf-a454-fc01836f4831",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "cd21324f-e448-4105-935b-e208b592d5eb",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "a77a3147-865a-4d36-af24-a7c6b573238a",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "f732313f-b191-4c90-90fc-61dd767f83f5",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "d3ec177f-2dba-4cb7-9fc5-12dd250668d5",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "1dd1bc2d-ea82-4d98-89aa-5ebb1690c298",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "658d328e-a407-4798-bbda-1ee0ab7671e0",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "74ddcd24-f742-4119-aeb1-3f5acc46ed8b",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "b8a41469-4007-4b97-8094-c7c5b94b557c",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "48c9ddbe-1024-436f-b243-8948707e6a87",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "9e529b35-a47f-4be2-a311-9c98e1c631d4",
+                  "ord": "a1"
+                }
+              ],
+              "id": "32bd3356-dfac-4bfc-ada2-35c522670b63",
+              "ord": "a0"
+            }
+          ],
+          "id": "7c121d60-0ebf-4671-81ee-594e5a974df9",
+          "ord": "a2"
+        }
+      ],
+      "id": "89beb433-a9fd-4382-90e6-9666db718af2"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "City of Rivermark — services, news, and notices",
+      "seoDescription": "The official portal for the City of Rivermark: pay a bill, apply for a permit, find a meeting, report an issue, and read city news and public notices — all in one place.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "ca0e620f-5453-420e-95c8-8dacdeeb9914",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @2xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl items-center gap-10 @4xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold leading-tight tracking-tight text-primary @3xl:text-5xl",
+                        "children": ["Welcome to the City of Rivermark"],
+                        "id": "10d30038-1f32-4f5f-af9a-7d507fe8d55f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-xl text-lg leading-relaxed text-base-content @2xl:text-xl",
+                        "children": [
+                          "Your city, online. Pay a bill, apply for a permit, find a meeting, or report a problem — the things residents do most, all in one clear place."
+                        ],
+                        "id": "43db1184-179c-43d6-965d-313fb5faf2c8",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4 @2xl:flex-row",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/shop"
+                            },
+                            "children": ["Pay a utility bill"],
+                            "id": "219ca2f3-df53-42b5-a28e-29e7c26faefc",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-outline btn-lg",
+                            "attrs": {
+                              "href": "/contact"
+                            },
+                            "children": ["Report an issue"],
+                            "id": "08e14b54-aa4b-4a74-a744-374f16a94775",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "feaff1f8-cd47-4b6c-95a6-0dda13b1457a",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "12b1ad24-fa6b-4b8d-a8a7-31d0e5a94cb7",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=1400&q=80",
+                      "alt": "The colonnade of the Rivermark city hall",
+                      "loading": "lazy"
+                    },
+                    "id": "5f2ce59a-95e6-4e25-b5a0-d660f58347cb",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "4bb9103f-72b8-44b9-8058-eea15b69d233",
+                "ord": "a0"
+              }
+            ],
+            "id": "1a7d6c44-24e1-4987-9ffa-5093b19b2da8",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["City services"],
+                        "id": "d456ed52-1b2a-43c8-a603-42a654569500",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Everything the city does for residents, grouped so you can find your task without knowing which department owns it."
+                        ],
+                        "id": "8076a0f9-75a0-4396-9196-de31de287712",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "eb5cac74-9369-4435-8592-07f33f0d4f60",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-2 @4xl:grid-cols-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Permits & licenses"],
+                            "id": "379fa29d-99b2-42b3-834e-c563f2877974",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "ul",
+                            "class": "flex flex-col",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "class": "border-t border-base-300",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "block py-3 text-lg font-medium text-primary",
+                                    "attrs": {
+                                      "href": "/contact"
+                                    },
+                                    "children": ["Apply for a building permit"],
+                                    "id": "322f4948-69b3-4090-84c4-f7057b2473d7",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "ccfb9a30-278b-4cdd-b8f6-ec54a8a32ee8",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "class": "border-t border-base-300",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "block py-3 text-lg font-medium text-primary",
+                                    "attrs": {
+                                      "href": "/contact"
+                                    },
+                                    "children": ["Business licenses & registrations"],
+                                    "id": "d0ed7929-2882-4d45-a3a0-24ef3dfb1fa4",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "5220f1e8-f92d-4611-b9dd-2133c6ff0b2b",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "class": "border-t border-base-300",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "block py-3 text-lg font-medium text-primary",
+                                    "attrs": {
+                                      "href": "/contact"
+                                    },
+                                    "children": ["Request public records"],
+                                    "id": "88cb1c5c-95c6-44ce-9b3d-de4560220e8a",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "8b85b28c-8945-4a9d-9234-873341a8675d",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "9b185390-f637-4c46-90d9-fa3741aaab7c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4721751e-0b01-4845-88c3-bb1ab7625ffc",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Utilities & payments"],
+                            "id": "6cbc120f-7244-480d-9e06-f6827dbdb3ad",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "ul",
+                            "class": "flex flex-col",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "class": "border-t border-base-300",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "block py-3 text-lg font-medium text-primary",
+                                    "attrs": {
+                                      "href": "/shop"
+                                    },
+                                    "children": ["Pay a water or sewer bill"],
+                                    "id": "84eb3c5b-a636-4ae4-991d-0a0648d3f1be",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "fc58a11a-c2a9-4efe-ae98-61f1d70c94dc",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "class": "border-t border-base-300",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "block py-3 text-lg font-medium text-primary",
+                                    "attrs": {
+                                      "href": "/contact"
+                                    },
+                                    "children": ["Start or stop service"],
+                                    "id": "069aeded-748c-4ba0-96c7-a57819d36a1a",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "387e3217-35f6-43ef-b0bc-0cc025626368",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "class": "border-t border-base-300",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "block py-3 text-lg font-medium text-primary",
+                                    "attrs": {
+                                      "href": "/contact"
+                                    },
+                                    "children": ["Report an outage"],
+                                    "id": "f1aaa174-1354-4caa-a369-b7b67642e174",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "f05fd0ff-23f9-45a7-af33-b3e2f0351c20",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "e265d851-7a6e-433d-9eb9-8429c7077412",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "321c74e4-0b44-4052-9371-87674a31ab1e",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Transit & streets"],
+                            "id": "478ea23e-1a41-4de8-8c52-0ea74029066e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "ul",
+                            "class": "flex flex-col",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "class": "border-t border-base-300",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "block py-3 text-lg font-medium text-primary",
+                                    "attrs": {
+                                      "href": "/shop"
+                                    },
+                                    "children": ["Buy a monthly transit pass"],
+                                    "id": "81332864-6f0b-4025-b1ac-a47d113ed85f",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "606b5f04-8692-4c7e-84fd-c25a9298ef8b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "class": "border-t border-base-300",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "block py-3 text-lg font-medium text-primary",
+                                    "attrs": {
+                                      "href": "/contact"
+                                    },
+                                    "children": ["Report a pothole or streetlight"],
+                                    "id": "95fdee97-1ceb-466a-8838-9eda61854ec1",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "286459d3-900b-4a50-9b9f-d69ae6ad1251",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "class": "border-t border-base-300",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "block py-3 text-lg font-medium text-primary",
+                                    "attrs": {
+                                      "href": "/journal"
+                                    },
+                                    "children": ["Schedules & road detours"],
+                                    "id": "18bb9f5e-f26f-441c-9a7b-c43ad0cbb747",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "1168ce40-fe88-4ad1-b090-5c5b241b12bf",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "19b6a428-c70b-4d91-9426-e79b7ff36c10",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "7dee159f-e9f8-47f1-b08d-97fe0ef099f6",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Parks & recreation"],
+                            "id": "cd0089ef-f7eb-4137-a0ea-01e7f9ce9cdd",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "ul",
+                            "class": "flex flex-col",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "class": "border-t border-base-300",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "block py-3 text-lg font-medium text-primary",
+                                    "attrs": {
+                                      "href": "/contact"
+                                    },
+                                    "children": ["Reserve a park shelter"],
+                                    "id": "9b387019-140b-4c6e-9c90-8af13b2efacf",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "7198c32c-0302-47c0-8327-491267735fb7",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "class": "border-t border-base-300",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "block py-3 text-lg font-medium text-primary",
+                                    "attrs": {
+                                      "href": "/shop"
+                                    },
+                                    "children": ["Get an annual parks pass"],
+                                    "id": "4a59bc04-2a81-4af2-a616-acc1586a8503",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "b311579d-a878-4245-8743-5e7ebc3d71c2",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "class": "border-t border-base-300",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "block py-3 text-lg font-medium text-primary",
+                                    "attrs": {
+                                      "href": "/journal"
+                                    },
+                                    "children": ["Program & class registration"],
+                                    "id": "649a001a-a54e-41f0-9c32-f202438d869e",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "id": "29d5cbb1-91e9-4337-9686-fa1bb4d68285",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "6fc98218-5b5a-4827-8e46-563ad7ff61a5",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4ccd7455-ab13-46db-82eb-2c5a854638bd",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "e8ab6be8-02a7-4afc-a31a-2b1c6fab81b3",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ca044607-9249-4fd0-b6f0-04ace2c88649",
+                "ord": "a0"
+              }
+            ],
+            "id": "e72f2174-bfb3-4941-8692-3659a023a16a",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3 rounded-box border border-accent bg-base-100 p-6 @2xl:flex-row @2xl:items-center @2xl:gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "w-fit rounded-field bg-accent px-3 py-1 text-sm font-bold uppercase tracking-wide text-accent-content",
+                        "children": ["Alert"],
+                        "id": "d3e192e2-fe59-4313-ab6d-6efeb1a00cb2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "flex-1 text-lg font-semibold leading-snug text-base-content",
+                        "children": [
+                          "Boil-water advisory in effect for the Highlands until further notice. Bring water to a rolling boil before drinking."
+                        ],
+                        "id": "d8252502-aef6-47f9-bfb7-8373f8c16db9",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-lg font-bold text-accent underline",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": ["Read the advisory"],
+                        "id": "4d39d751-fba4-46cc-8b9a-2b6827c6d040",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "dd89cf29-e767-47f8-9f68-0d74f6935f63",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Public notices"],
+                        "id": "757ac8e2-db87-477f-acde-dced6e58b7c5",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Hearings, agendas, and bid postings, published as the public record — newest first."
+                        ],
+                        "id": "59b8841f-f5c2-44af-ae2d-000f799afb4f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "ul",
+                        "class": "flex flex-col",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "li",
+                            "class": "border-t border-base-300",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "flex flex-col gap-2 py-5 @2xl:flex-row @2xl:items-center @2xl:gap-6",
+                                "attrs": {
+                                  "href": "/journal"
+                                },
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "w-fit rounded-field border border-primary px-3 py-1 text-sm font-semibold uppercase tracking-wide text-primary",
+                                    "children": ["Hearing"],
+                                    "id": "0124c96f-ab8a-4f4b-980a-505c1b099937",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "flex-1 text-lg font-semibold leading-snug text-base-content",
+                                    "children": [
+                                      "Notice of public hearing: proposed 4th Street rezoning"
+                                    ],
+                                    "id": "f2498ab4-c029-49bc-a72f-8327d682518c",
+                                    "ord": "a1"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-sm font-medium text-base-content",
+                                    "children": ["Posted 5 August"],
+                                    "id": "f32d9989-8be6-46f5-9002-824c210948a6",
+                                    "ord": "a2"
+                                  }
+                                ],
+                                "id": "a2be9b9d-d479-4c38-b298-70f940286fc4",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "054da775-88c1-490d-9510-0d7cb4d7efec",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "li",
+                            "class": "border-t border-base-300",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "flex flex-col gap-2 py-5 @2xl:flex-row @2xl:items-center @2xl:gap-6",
+                                "attrs": {
+                                  "href": "/journal"
+                                },
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "w-fit rounded-field border border-primary px-3 py-1 text-sm font-semibold uppercase tracking-wide text-primary",
+                                    "children": ["Notice"],
+                                    "id": "7093e818-5489-4e42-97f9-78cb8f6514c1",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "flex-1 text-lg font-semibold leading-snug text-base-content",
+                                    "children": [
+                                      "Snow-route parking rules take effect across the North Ward"
+                                    ],
+                                    "id": "c7502d2d-95a8-4460-b564-49e45c2fbf02",
+                                    "ord": "a1"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-sm font-medium text-base-content",
+                                    "children": ["Posted 4 August"],
+                                    "id": "ba7f93d2-542b-409e-8284-b23ea952833b",
+                                    "ord": "a2"
+                                  }
+                                ],
+                                "id": "11eb5114-108b-41dc-8211-46076aef653d",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "dbc4169e-4a3e-4e32-b784-652db7098ab5",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "li",
+                            "class": "border-t border-base-300",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "flex flex-col gap-2 py-5 @2xl:flex-row @2xl:items-center @2xl:gap-6",
+                                "attrs": {
+                                  "href": "/journal"
+                                },
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "w-fit rounded-field border border-primary px-3 py-1 text-sm font-semibold uppercase tracking-wide text-primary",
+                                    "children": ["RFP"],
+                                    "id": "72cabee9-98df-4550-9f66-40d1a57a2226",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "flex-1 text-lg font-semibold leading-snug text-base-content",
+                                    "children": [
+                                      "Bid posting: street resurfacing program (RFP-27-014)"
+                                    ],
+                                    "id": "9483a880-922f-4f0c-81f5-b2f0da2fba0b",
+                                    "ord": "a1"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-sm font-medium text-base-content",
+                                    "children": ["Posted 2 August"],
+                                    "id": "35eeba28-5542-466c-9060-b272051efaff",
+                                    "ord": "a2"
+                                  }
+                                ],
+                                "id": "90db2161-4472-4944-abbe-3853315a5af8",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "4e30c463-85aa-4816-b4f7-feec6af3af8e",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "li",
+                            "class": "border-t border-base-300",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "flex flex-col gap-2 py-5 @2xl:flex-row @2xl:items-center @2xl:gap-6",
+                                "attrs": {
+                                  "href": "/journal"
+                                },
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "w-fit rounded-field border border-primary px-3 py-1 text-sm font-semibold uppercase tracking-wide text-primary",
+                                    "children": ["Agenda"],
+                                    "id": "ab6596a3-68b3-443d-9767-dbf376948bd8",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "flex-1 text-lg font-semibold leading-snug text-base-content",
+                                    "children": [
+                                      "City Council regular meeting agenda — 12 August, 6:00pm"
+                                    ],
+                                    "id": "bc4bad7e-d54e-438c-94ea-334984a76d2a",
+                                    "ord": "a1"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-sm font-medium text-base-content",
+                                    "children": ["Posted 1 August"],
+                                    "id": "de9053af-0783-4ab8-8866-5f779b5e5101",
+                                    "ord": "a2"
+                                  }
+                                ],
+                                "id": "2c30cf02-ac81-46dc-9e7d-094cc85ee41c",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "e02ad351-b83e-4b0a-9b62-2ffdc154b28c",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "de47de0d-43f0-41ec-8e3d-2c958b734674",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "cd08b272-ffa0-43c7-835a-a01b933de694",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "1361f4fd-8514-4a7d-9e8a-9f18d9b0f380",
+                "ord": "a0"
+              }
+            ],
+            "id": "e3c2a3e6-89b8-431d-b847-d19367af9765",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-10 pb-2",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-3",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["City news & updates"],
+                    "id": "f512baa5-3ea8-4a6b-aa0a-b178e864ce62",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": ["Announcements and service changes from City Hall."],
+                    "id": "70c93cf3-375e-4c81-8618-2c2790626eef",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "0f462d62-fbbb-4b06-8fda-0543828548b7",
+                "ord": "a0"
+              }
+            ],
+            "id": "7e2c201f-0b81-4ccc-bd8c-5d788768150d",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "88bb4b50-db09-44f7-aff0-2a36aa4a6683",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "a7e4ed36-2ce0-47fa-a6b9-51c1666d0319",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "1cc0d00c-4a0d-4fe2-aae0-0a38ef069d5d",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "ebced6dd-6517-4e19-8278-49a5c2aa6384",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "d69593b7-deee-43bc-b68f-468117da6b56",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "42bb18fb-f9c0-41ac-bc8a-2ed35620296a",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "39c71408-3703-4f9b-895d-7568253a5177",
+                "ord": "a0"
+              }
+            ],
+            "id": "4f2d752b-64a7-46ed-b960-73d2ff6b83b8",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Publications & Passes"],
+                    "id": "7054fbb1-fb96-483f-b0c6-a98093ae7d1a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "4c4fab0e-bd4c-4d21-908f-22a32cb22c19",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "f048aff0-157d-4c4e-9b54-5364bd87b770",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "dee3841c-1b1c-49af-aeab-4b4f12fe34d4",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "14e9e5b4-2074-45a8-a7c5-89880d4479ab",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "13548b26-c7ac-4f33-8259-9fc90df6f8d8",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "24e9ad48-f7ad-4ede-bbcf-3b44c9ccd880",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "5f7185ae-f031-459d-af8a-6b2a78405da0",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "324c312d-3e9e-4d40-8ba3-526ddd736d64",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "c1a8420c-a476-4bf7-a822-9f4cebdcf589",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "456447d1-391e-4a31-a7df-8fa016551940",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "62d7b89d-2d84-4c5b-a0a7-82fa09c9bb6b",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "419a17d2-783e-4b29-8143-95ef8cc0c811",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "42ce04ca-430e-4dfa-b070-5482e0a46fef",
+            "ord": "a5"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — City of Rivermark",
+      "seoDescription": "Browse everything City of Rivermark makes, with prices and options at a glance. City & public services.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "da917aa7-0381-4e77-8e2b-4b27ec1bfc41",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-12 pb-4",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-6xl",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
+                    "children": ["Shop"],
+                    "id": "a0fb39fd-fb49-49c1-8954-511348a41571",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "mt-4 max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": ["Everything we currently have available."],
+                    "id": "f82d8db5-bf4a-4f5e-8baf-3b08e0a65c1b",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "029420e8-f044-4c21-a7c2-896d64ea1ebc",
+                "ord": "a0"
+              }
+            ],
+            "id": "d833a4b6-c8e2-453b-871e-3f13721d6918",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "156fdb3c-cc88-4ba3-9b0f-e218050c54cf",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — City of Rivermark",
+      "seoDescription": "Explore the collections at City of Rivermark, grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "9cfca3e2-4ceb-45bf-a0ac-d89892c10326",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container",
+            "children": [
+              {
+                "kind": "host",
+                "component": "commerce.collections",
+                "class": "mx-auto w-full max-w-6xl px-6 py-6",
+                "locked": "host",
+                "id": "8a117cae-0722-4140-b018-2290ed55e655",
+                "ord": "a0"
+              }
+            ],
+            "id": "34e7c05d-5ae3-4160-b324-66dc0f8c7f3b",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — City of Rivermark",
+      "seoDescription": "Review what is in your cart and check out securely at City of Rivermark.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "677645f2-a036-4537-be20-8d0aa255a803",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "h1",
+                "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
+                "children": ["Your cart"],
+                "id": "4b47ad70-4ad4-4f8c-92dd-7044d06754e1",
+                "ord": "a0"
+              },
+              {
+                "kind": "host",
+                "component": "commerce.cart",
+                "class": "mx-auto w-full max-w-4xl px-6 py-10",
+                "locked": "host",
+                "id": "94b99ff4-ff81-4e8c-8b9e-edfeec48015f",
+                "ord": "a1"
+              }
+            ],
+            "id": "0b96766a-34a6-463e-b177-e7168ad53c14",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — City of Rivermark",
+      "seoDescription": "Search City of Rivermark for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "02989e35-e8fb-4aa8-b800-e9438fe1a483",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "h1",
+                "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
+                "children": ["Search"],
+                "id": "62ae7d03-f141-41f4-ab4f-d84931e169a9",
+                "ord": "a0"
+              },
+              {
+                "kind": "host",
+                "component": "commerce.search",
+                "class": "mx-auto w-full max-w-6xl px-6 py-6",
+                "locked": "host",
+                "id": "217c09aa-c9a7-45d0-a5cb-9fb4f31efcf8",
+                "ord": "a1"
+              }
+            ],
+            "id": "e16e303f-5bb0-4419-a807-4d64055caa10",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — City of Rivermark",
+      "seoDescription": "Stories, guides and notes from City of Rivermark.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "1b3d4060-3d75-436f-802b-c760b0ca0e77",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold leading-tight tracking-tight text-primary @3xl:text-6xl",
+                    "children": ["City news & notices"],
+                    "id": "e3bd2b7e-832c-4cdc-91a3-15bb993d3ecc",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Announcements, service changes, and the public record from the City of Rivermark, in plain language, newest first."
+                    ],
+                    "id": "3d38e4a3-e393-4554-89bf-136d4f31cce2",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "eb04aa44-f028-4ed1-ad75-6bfc19426db8",
+                "ord": "a0"
+              }
+            ],
+            "id": "8f67e263-c36b-4143-bae7-d144d4e13030",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "43022689-89f7-41e4-9376-df04bb2d9391",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "bd9f0ee9-bfd3-4172-ae65-87398e9a3590",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "14f5e5b3-8ffa-4c70-a403-e7d741155fcd",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "8ccb60e8-2544-4d95-9bbc-197682c4bd99",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "d6787da5-b7b2-41b1-9a6f-8e2687ce0e4a",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "1beb5611-001d-4a96-b47c-acd81e1c244c",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "51bfa63a-58fd-44ca-9d38-8ded7eebf878",
+                "ord": "a0"
+              }
+            ],
+            "id": "d9e7ed40-e21c-494e-9e73-7cff5abd697f",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About the City of Rivermark",
+      "seoDescription": "Who the City of Rivermark serves and how this portal is organized — plain-language, accessibility-first city government built around the tasks residents actually do.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "bc0dbbaa-d6c4-472e-88c5-03f7653579bb",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold tracking-tight text-primary @2xl:text-5xl",
+                    "children": ["About the City of Rivermark"],
+                    "id": "03e2015a-b4fd-45be-88eb-84000a391900",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Rivermark is a mid-size city of roughly 118,000 residents on the west bank of the Clearwater River. This site is the front door to city government: the services residents use, the meetings that decide how the city is run, and the notices we are required to publish."
+                    ],
+                    "id": "7488d2b1-0c1c-4437-b19e-7809c88adf5d",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "We built this portal around one idea — that finding a city service should not require knowing which department owns it. Everything here is written in plain language, tested against accessibility standards, and organized around the tasks residents actually come to do."
+                    ],
+                    "id": "bc1d38ff-44b2-4a21-b332-5fd1e4edce6c",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "City Hall is at 200 Riverside Plaza and is open Monday through Friday, 8:00am to 5:00pm. Council meetings are open to the public and streamed live; agendas are posted at least 72 hours in advance under Public notices."
+                    ],
+                    "id": "c8628075-1e12-4b6f-b401-b6b18ce1b345",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "abdb3613-ecfc-4aae-b569-7bcfa5c9d5d0",
+                "ord": "a0"
+              }
+            ],
+            "id": "6d031852-db5a-43e1-85d9-2cc73200b6d8",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — City of Rivermark",
+      "seoDescription": "Get in touch with City of Rivermark — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "94d6e729-5f0d-4be2-aebe-bf4a6b0c10c8",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold tracking-tight text-primary @2xl:text-5xl",
+                    "children": ["Contact the city"],
+                    "id": "e8883677-bcac-4cbb-bf0e-20aaa2fcfd7f",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Reach City Hall at 200 Riverside Plaza, Monday through Friday, 8:00am to 5:00pm. For a non-emergency issue — a pothole, a streetlight, a missed pickup — the fastest route is the online service request, staffed during business hours. In an emergency, always call 911."
+                    ],
+                    "id": "8a893897-12bb-45c7-b11f-83ebe73e698e",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:help@rivermark.example"
+                    },
+                    "children": ["Email the city help desk"],
+                    "id": "6ad5c4cb-006d-41cc-a665-4ae3d5fa0a53",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "6211e54b-d3f2-4a19-8641-a1eb222cad09",
+                "ord": "a0"
+              }
+            ],
+            "id": "ea332786-d7f3-48c3-bfc3-d83e31c38b86",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Article",
+      "kind": "collection",
+      "recordType": "cms.blog_post",
+      "isDefault": true,
+      "seoTitle": "Article — City of Rivermark",
+      "seoDescription": "A story from City of Rivermark — the writing, the reporting and the notes behind it.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "div",
+            "class": "flex flex-col",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "section",
+                "class": "bg-base-200 @container px-6 pt-12 pb-14 @2xl:pt-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto flex w-full max-w-3xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "inline-flex w-fit items-center gap-2 text-lg font-semibold text-primary",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["←"],
+                            "id": "96317de6-4e16-49fc-840b-a7861d28351d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["All news & notices"],
+                            "id": "b6335eab-9325-4938-b854-94edee066e8b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "bd2515d8-26c5-43d9-a727-82ad94dff4b0",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                        "children": ["Section"],
+                        "data": {
+                          "kind": "visible",
+                          "ref": "category"
+                        },
+                        "id": "435f720d-e464-42bc-bfd0-38778329ffb3",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold leading-tight tracking-tight text-primary @2xl:text-5xl",
+                        "children": ["Post title"],
+                        "data": {
+                          "kind": "value",
+                          "ref": "title"
+                        },
+                        "id": "a1c1a92f-7d7d-466d-99c6-9b68bf3c0f12",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-xl leading-relaxed text-base-content",
+                        "children": ["The short summary of this post, written in the CMS."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "excerpt"
+                        },
+                        "id": "63759c5b-1f2d-46fb-b2ef-ea45ca8e9425",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-2 flex items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "h-11 w-11 rounded-full border border-base-300 object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "visible",
+                              "ref": "authorAvatar"
+                            },
+                            "id": "651d78dd-cabd-4818-9b68-ec0de7ec7f20",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Author name"],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "authorName"
+                                },
+                                "id": "156c0b32-5eb5-4116-ae47-521f16658624",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-sm font-medium text-base-content",
+                                "children": ["Published date"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "date"
+                                },
+                                "id": "a5f010b0-50ce-4a65-b3bc-437149901956",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "f6e9092a-e997-48e0-a2e6-8c52a4ff6798",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "52589115-9487-4bee-b99a-ba83953a715e",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "de6f73e8-3a87-49ff-aea4-d76ae8e5dc53",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "5a34784e-2b51-49c4-927b-995a1eb8b78b",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "section",
+                "class": "bg-base-100 @container px-6 py-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto w-full max-w-3xl",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": ""
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "featuredImage"
+                        },
+                        "id": "9e58cbdf-85be-47a7-8e72-8599fcf7570e",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "d49fbfc4-eb89-48f7-ba16-c6da7a99f2f5",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "788501d6-037f-4337-abe7-4989ad6249fc",
+                "ord": "a1"
+              }
+            ],
+            "id": "506b3123-1300-484f-849c-fa0ae04a9586",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl px-6 pb-20 @2xl:pb-24",
+                "children": [
+                  {
+                    "kind": "host",
+                    "component": "cms.article-body",
+                    "class": "w-full",
+                    "locked": "host",
+                    "id": "8ea2ac96-108d-4e74-83c7-34b65af57f6b",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "3ba0df31-0de4-4f63-b568-4169f80fb2bf",
+                "ord": "a0"
+              }
+            ],
+            "id": "3bf7e335-c65f-4c93-b11a-e458199f105b",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pb-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-4 rounded-box border border-base-300 bg-base-200 p-6 @2xl:flex-row @2xl:items-center",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "h-16 w-16 rounded-full border border-base-300 object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": ""
+                        },
+                        "data": {
+                          "kind": "visible",
+                          "ref": "authorAvatar"
+                        },
+                        "id": "d9cd386c-3f59-4e0a-9d5c-b6d4913fee17",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-lg font-semibold text-base-content",
+                            "children": ["Author name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorName"
+                            },
+                            "id": "ff11dce2-4ed3-41e3-8d07-cb78b5c92eaf",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["About the author."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorBio"
+                            },
+                            "id": "a33661fb-598f-4421-b79f-97a62cc718db",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "dc78e153-cac6-4ba3-8ab1-98c8a01d117b",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "authorBio"
+                    },
+                    "id": "4332fb61-6a5a-4d78-9a89-cfa884d28c98",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "ed83f307-f77d-4c35-aacf-8623658b33b8",
+                "ord": "a0"
+              }
+            ],
+            "id": "2f61b9f3-492c-4cef-be28-f2d8d2d9061b",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-200 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-2xl font-bold tracking-tight text-base-content @2xl:text-3xl",
+                        "children": ["Keep reading"],
+                        "id": "814fd25d-7b26-42e2-949c-0b503c5b199d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/journal"
+                            },
+                            "children": ["More stories"],
+                            "id": "ffe6e1e8-bef2-48d4-99ef-ca6382e0d8ab",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "e5a3c2d7-6ec5-4722-a68d-c2b436ba548d",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "3be324d4-e915-46b9-b5ee-3955f65c12c9",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "d9bab791-42f5-46e3-9718-d1805f4ffb70",
+                "ord": "a0"
+              }
+            ],
+            "id": "0ac574fe-d97d-4d3c-8e3e-eb10f001b3e4",
+            "ord": "a3"
+          }
+        ],
+        "data": {
+          "kind": "collection",
+          "ref": "blog_post"
+        },
+        "id": "4f98d394-1360-47b5-afac-731d1ace456e"
+      }
+    }
+  ],
+  "theme": {
+    "name": "agency",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(99% 0.003 250)",
+      "--color-base-200": "oklch(95% 0.008 250)",
+      "--color-base-300": "oklch(89% 0.014 250)",
+      "--color-base-content": "oklch(16% 0.02 258)",
+      "--color-primary": "oklch(32% 0.1 258)",
+      "--color-secondary": "oklch(44% 0.05 250)",
+      "--color-accent": "oklch(50% 0.2 25)",
+      "--color-neutral": "oklch(22% 0.02 258)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.25rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.375rem",
+      "--border": "1px",
+      "--depth": "0",
+      "--font-sans": "\"Work Sans\", sans-serif",
+      "--font-head": "\"Archivo\", sans-serif",
+      "--color-primary-content": "oklch(98% 0.01 258)",
+      "--color-secondary-content": "oklch(98% 0.01 250)",
+      "--color-accent-content": "oklch(98% 0.01 25)",
+      "--color-neutral-content": "oklch(98% 0.01 258)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(50% 0.2 25)",
+      "--color-highlight-content": "oklch(98% 0.01 25)",
+      "--color-border": "oklch(89% 0.014 250)",
+      "--container-max": "72rem",
+      "--font-heading": "\"Archivo\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(17% 0.016 258)",
+      "--color-base-200": "oklch(14% 0.016 258)",
+      "--color-base-300": "oklch(11% 0.016 258)",
+      "--color-base-content": "oklch(96% 0.006 250)",
+      "--color-primary": "oklch(72% 0.11 258)",
+      "--color-secondary": "oklch(76% 0.06 250)",
+      "--color-accent": "oklch(70% 0.18 25)",
+      "--color-neutral": "oklch(32% 0.016 258)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 258)",
+      "--color-secondary-content": "oklch(15% 0.02 250)",
+      "--color-accent-content": "oklch(15% 0.02 25)",
+      "--color-neutral-content": "oklch(98% 0.01 258)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(70% 0.18 25)",
+      "--color-highlight-content": "oklch(15% 0.02 25)",
+      "--color-border": "oklch(11% 0.016 258)"
+    }
+  }
+}

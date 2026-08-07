@@ -51,9 +51,12 @@ import { emitBundle, type TemplateSiteSpec } from './template-sites/harness';
 import { writeTemplatePreview } from './template-sites/preview';
 import {
   addToCartForm,
+  pdpAttributes,
   pdpDescription,
   pdpImage,
+  pdpPolicyLinks,
   pdpPriceRow,
+  pdpStockBadge,
   pdpTitle,
   productPage,
 } from './template-sites/pdp';
@@ -510,6 +513,17 @@ interface Product {
   description: string;
   status: 'active';
   productType: string;
+  // The typed product type (docs/143) — every product here is `food_beverage`, so the
+  // PDP's `pdpAttributes` renders each product's OWN ingredients/allergens/weight/storage/
+  // nutrition (real per-product copy, not a hardcoded stack).
+  productTypeKey: 'food_beverage';
+  attributes: {
+    ingredients: string;
+    allergens: string[];
+    netWeight: string;
+    storage: string;
+    nutrition: { label: string; value: string }[];
+  };
   vendor: string;
   tags: string[];
   categoryHandles: string[];
@@ -560,6 +574,21 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['this-months-origins', 'single-origins'],
     seoTitle: 'Ethiopia Guji — washed light-roast single-origin coffee',
     seoDescription: 'A bright, floral washed Ethiopian single origin with peach, bergamot and jasmine notes.',
+    productTypeKey: 'food_beverage',
+    attributes: {
+      ingredients:
+        '100% single-origin arabica coffee — washed Ethiopia Guji, grown at altitude by smallholders in the Guji highlands and roasted light. Nothing else: no flavourings, no blending, no fillers.',
+      allergens: [],
+      netWeight: '250 g / 8.8 oz',
+      storage:
+        'Keep the bag sealed, cool and out of direct sun — the one-way valve lets the fresh coffee degas without going stale. Grind as you brew and drink within four weeks of the roast date to catch it at its brightest.',
+      nutrition: [
+        { label: 'Serving', value: '250 ml brewed, black' },
+        { label: 'Calories', value: '2 kcal' },
+        { label: 'Caffeine', value: '~120 mg' },
+        { label: 'Sugars', value: '0 g' },
+      ],
+    },
     options: [grindOption()],
     variants: grindVariants('LCC-ETH-GUJI', 22),
     images: [{ assetId: 'ethiopia-guji', isPrimary: true, alt: 'The Ethiopia Guji single origin' }],
@@ -577,6 +606,21 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['this-months-origins', 'single-origins'],
     seoTitle: 'Colombia Huila — washed medium-roast single-origin coffee',
     seoDescription: 'A balanced washed Colombian single origin with red apple, caramel and milk-chocolate notes.',
+    productTypeKey: 'food_beverage',
+    attributes: {
+      ingredients:
+        '100% single-origin arabica coffee — washed Colombia Huila from a family farm that has grown coffee on the same slope for three generations, roasted to a warm medium. Just coffee, and one origin.',
+      allergens: [],
+      netWeight: '250 g / 8.8 oz',
+      storage:
+        'Store sealed and cool, away from the sun and the stove. A medium roast is forgiving, but it is still best within four to five weeks of roasting — grind fresh each time and it will thank you.',
+      nutrition: [
+        { label: 'Serving', value: '250 ml brewed, black' },
+        { label: 'Calories', value: '2 kcal' },
+        { label: 'Caffeine', value: '~110 mg' },
+        { label: 'Sugars', value: '0 g' },
+      ],
+    },
     options: [grindOption()],
     variants: grindVariants('LCC-COL-HUILA', 21),
     images: [{ assetId: 'colombia-huila', isPrimary: true, alt: 'The Colombia Huila single origin' }],
@@ -594,6 +638,21 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['this-months-origins', 'single-origins'],
     seoTitle: 'Kenya Nyeri — washed light-roast single-origin coffee',
     seoDescription: 'A bright, structured washed Kenyan single origin with blackcurrant and grapefruit notes.',
+    productTypeKey: 'food_beverage',
+    attributes: {
+      ingredients:
+        '100% single-origin arabica coffee — washed Kenya Nyeri, roasted light to hold on to its blackcurrant snap and syrupy body. One farm, nothing added, nothing hidden.',
+      allergens: [],
+      netWeight: '250 g / 8.8 oz',
+      storage:
+        'Keep it sealed, cool and dark. This is a coffee that rewards freshness — all that fruit fades first, so grind right before you brew and finish the bag inside a month of the roast date.',
+      nutrition: [
+        { label: 'Serving', value: '250 ml brewed, black' },
+        { label: 'Calories', value: '2 kcal' },
+        { label: 'Caffeine', value: '~125 mg' },
+        { label: 'Sugars', value: '0 g' },
+      ],
+    },
     options: [grindOption()],
     variants: grindVariants('LCC-KEN-NYERI', 24),
     images: [{ assetId: 'kenya-nyeri', isPrimary: true, alt: 'The Kenya Nyeri single origin' }],
@@ -611,6 +670,21 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['this-months-origins', 'blends'],
     seoTitle: 'Latitude House Blend — everyday medium-roast coffee blend',
     seoDescription: 'A dependable medium-roast house blend with chocolate, toasted almond and a citrus lift.',
+    productTypeKey: 'food_beverage',
+    attributes: {
+      ingredients:
+        '100% arabica coffee blend — a rotating base of washed Latin American and East African lots, roasted medium. A blend of origins and nothing but coffee: no robusta bulk, no flavouring, no oils sprayed on.',
+      allergens: [],
+      netWeight: '340 g / 12 oz',
+      storage:
+        'A cool, dark shelf and a sealed bag are all it asks. The everyday bag is built to be reliable rather than fleeting, but it is still at its best within five weeks of roasting — grind fresh and keep it out of the fridge.',
+      nutrition: [
+        { label: 'Serving', value: '250 ml brewed, black' },
+        { label: 'Calories', value: '2 kcal' },
+        { label: 'Caffeine', value: '~115 mg' },
+        { label: 'Sugars', value: '0 g' },
+      ],
+    },
     options: [grindOption()],
     variants: grindVariants('LCC-HOUSE', 19),
     images: [{ assetId: 'house-blend', isPrimary: true, alt: 'The Latitude House Blend' }],
@@ -628,6 +702,21 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['blends'],
     seoTitle: 'Midnight Espresso Blend — dark-roast espresso coffee',
     seoDescription: 'A dark, syrupy espresso blend with dark chocolate, dried fig and molasses notes.',
+    productTypeKey: 'food_beverage',
+    attributes: {
+      ingredients:
+        '100% arabica coffee blend, roasted dark for espresso and the moka pot. Just coffee — nothing sprayed on, no sweeteners, no chicory. A darker roast, built to stand up to milk.',
+      allergens: [],
+      netWeight: '340 g / 12 oz',
+      storage:
+        'Keep it sealed and cool; a dark roast carries a little more surface oil, so heat and light turn it stale faster than a light one. Give a fresh bag two days to rest before you dial in your shots.',
+      nutrition: [
+        { label: 'Serving', value: '30 ml single shot' },
+        { label: 'Calories', value: '1 kcal' },
+        { label: 'Caffeine', value: '~75 mg' },
+        { label: 'Sugars', value: '0 g' },
+      ],
+    },
     options: [grindOption()],
     variants: grindVariants('LCC-ESP-MID', 20, 'Espresso'),
     images: [{ assetId: 'espresso-blend', isPrimary: true, alt: 'The Midnight Espresso Blend' }],
@@ -645,6 +734,21 @@ const PRODUCTS: Product[] = [
     collectionHandles: [],
     seoTitle: 'Brazil Cerrado Decaf — sugar-cane decaffeinated coffee',
     seoDescription: 'A soft, nutty sugar-cane-decaffeinated Brazilian coffee with hazelnut and chocolate notes.',
+    productTypeKey: 'food_beverage',
+    attributes: {
+      ingredients:
+        '100% arabica coffee — a natural Brazil Cerrado lot, roasted medium and sugar-cane decaffeinated. Caffeine is removed with a cane-sugar derivative and water, so nothing chemical ever touches the bean.',
+      allergens: [],
+      netWeight: '250 g / 8.8 oz',
+      storage:
+        'Store sealed, cool and out of the sun, exactly like the caffeinated bags. Decaf keeps no better and no worse — grind fresh and enjoy within a month, and it is just as good after dinner as before work.',
+      nutrition: [
+        { label: 'Serving', value: '250 ml brewed, black' },
+        { label: 'Calories', value: '2 kcal' },
+        { label: 'Caffeine', value: '<5 mg (decaffeinated)' },
+        { label: 'Sugars', value: '0 g' },
+      ],
+    },
     options: [grindOption()],
     variants: grindVariants('LCC-DEC-BRZ', 21),
     images: [{ assetId: 'decaf-brazil', isPrimary: true, alt: 'The Brazil Cerrado Decaf' }],
@@ -662,6 +766,21 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['blends'],
     seoTitle: 'Cold Brew Blend — coarse-ground cold brew coffee',
     seoDescription: 'A smooth, low-acid cold brew blend in steep bags, with cocoa and dried-cherry notes.',
+    productTypeKey: 'food_beverage',
+    attributes: {
+      ingredients:
+        'Coarse-ground 100% arabica coffee blend in unbleached, biodegradable steep bags. Just coffee, roasted a touch darker and ground for a long cold steep — add cold water and time.',
+      allergens: [],
+      netWeight: '4 steep bags, 60 g each',
+      storage:
+        'Keep the sealed pouch somewhere dry and cool. Once brewed, the concentrate keeps in a covered jug in the fridge for up to a week — dilute one part concentrate to one part water or milk over plenty of ice.',
+      nutrition: [
+        { label: 'Serving', value: '250 ml prepared, black' },
+        { label: 'Calories', value: '3 kcal' },
+        { label: 'Caffeine', value: '~150 mg' },
+        { label: 'Sugars', value: '0 g' },
+      ],
+    },
     options: [
       { name: 'Pack', displayType: 'dropdown', values: [{ value: '4 steep bags' }, { value: '8 steep bags' }] },
     ],
@@ -684,6 +803,16 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['gear'],
     seoTitle: 'Ceramic Pour-Over Dripper — hand-glazed coffee dripper',
     seoDescription: 'A hand-glazed ceramic pour-over dripper with a tall rib pattern, for an even, controlled brew.',
+    productTypeKey: 'food_beverage',
+    attributes: {
+      ingredients:
+        'Hand-thrown stoneware ceramic with a food-safe, lead-free glaze. Ships with a starter pack of oxygen-bleached paper filters cut to fit.',
+      allergens: [],
+      netWeight: '380 g / 13 oz',
+      storage:
+        'Hand wash in warm water and air dry — the glaze is dishwasher-safe, but hand washing keeps it looking new. Warm it through with a rinse of hot water before you brew so it does not steal heat from the pour.',
+      nutrition: [],
+    },
     options: [
       { name: 'Colour', displayType: 'swatch', values: [{ value: 'Cream' }, { value: 'Terracotta' }] },
     ],
@@ -706,6 +835,16 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['gear'],
     seoTitle: 'Pour-Over Filters — 100 paper coffee filters',
     seoDescription: 'A box of 100 oxygen-bleached paper pour-over filters, cut to fit the Latitude dripper.',
+    productTypeKey: 'food_beverage',
+    attributes: {
+      ingredients:
+        'Oxygen-bleached paper — no chlorine, no adhesives, and nothing that leaves a papery taste in the cup. One hundred filters, cut to fit the Latitude dripper.',
+      allergens: [],
+      netWeight: '100 filters, ~120 g',
+      storage:
+        'Keep the box somewhere dry so the filters do not draw moisture and stick together. Rinse each one through with hot water before you brew to wash off any last paper note and warm the dripper at the same time.',
+      nutrition: [],
+    },
     variants: [{ sku: 'LCC-FILT-100', priceCents: money(9), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'pour-over-filters', isPrimary: true, alt: 'A box of Pour-Over Filters' }],
   },
@@ -722,6 +861,16 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['gear'],
     seoTitle: 'Latitude Enamel Mug — 12oz enamel coffee mug',
     seoDescription: 'A chip-resistant 12oz enamel coffee mug that keeps its heat, at home or on the trail.',
+    productTypeKey: 'food_beverage',
+    attributes: {
+      ingredients:
+        'Enamel-coated steel with a food-safe, chip-resistant vitreous finish and a rolled rim. Holds a generous 12 oz / 350 ml — exactly one good pour-over.',
+      allergens: [],
+      netWeight: '220 g / 7.8 oz',
+      storage:
+        'Hand wash and dry — the enamel is happy on a stovetop and around a campfire, but keep it out of the microwave. A chip earned on a trail is character, not a fault; the steel underneath will not rust.',
+      nutrition: [],
+    },
     options: [
       { name: 'Colour', displayType: 'swatch', values: [{ value: 'Cream' }, { value: 'Terracotta' }] },
     ],
@@ -744,6 +893,16 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['gear'],
     seoTitle: 'Hand Coffee Grinder — conical burr hand grinder',
     seoDescription: 'A compact conical-steel-burr hand coffee grinder, adjustable from espresso-fine to coarse.',
+    productTypeKey: 'food_beverage',
+    attributes: {
+      ingredients:
+        'Conical hardened-steel burrs in a brushed aluminium body, with a stepped adjustment dial and a glass catch jar. Goes from espresso-fine to cold-brew-coarse.',
+      allergens: [],
+      netWeight: '430 g / 15 oz',
+      storage:
+        'Brush the burrs clean of old grounds every few weeks and keep the whole thing dry — never wash the burrs in water, which dulls the steel and rusts it. A dry brush is the entire maintenance routine.',
+      nutrition: [],
+    },
     variants: [{ sku: 'LCC-GRIND-01', priceCents: money(59), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'hand-grinder', isPrimary: true, alt: 'The Hand Coffee Grinder' }],
   },
@@ -760,6 +919,21 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['this-months-origins', 'gifts'],
     seoTitle: 'The Origin Gift Set — coffee and brew-gear gift box',
     seoDescription: 'A gift box of three single origins, a ceramic dripper, filters and an enamel mug in a reusable tin.',
+    productTypeKey: 'food_beverage',
+    attributes: {
+      ingredients:
+        'Three 250 g bags of this month’s single-origin arabica coffee, a hand-glazed ceramic dripper, a starter pack of paper filters and an enamel mug, packed in a reusable tin with a hand-written brew guide. The coffee is 100% coffee — nothing added.',
+      allergens: [],
+      netWeight: '3 × 250 g coffee, plus gear',
+      storage:
+        'Keep the coffee bags sealed and cool and brew each within four weeks of its roast date; hand wash the dripper and the mug. Everything but the coffee is made to last for years — the tin included.',
+      nutrition: [
+        { label: 'Serving', value: '250 ml brewed, black' },
+        { label: 'Calories', value: '2 kcal' },
+        { label: 'Caffeine', value: '~115 mg' },
+        { label: 'Sugars', value: '0 g' },
+      ],
+    },
     variants: [{ sku: 'LCC-GIFT-SET', priceCents: money(72), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'gift-set', isPrimary: true, alt: 'The Origin Gift Set' }],
   },
@@ -776,6 +950,21 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['this-months-origins', 'gifts'],
     seoTitle: 'The Origin Club — monthly single-origin coffee subscription',
     seoDescription: 'A monthly single-origin coffee subscription, roasted to order and shipped free. Pause or cancel any time.',
+    productTypeKey: 'food_beverage',
+    attributes: {
+      ingredients:
+        'A fresh single-origin arabica coffee each month — 100% coffee, roasted to order and ground the way you brew. A different farm and harvest every box, and never a flavouring or a filler.',
+      allergens: [],
+      netWeight: '250 g coffee per month',
+      storage:
+        'Each month’s bag arrives sealed with a one-way valve; keep it cool and out of the sun and brew within four weeks of the roast date printed on the front. Pause the plan any time and the next box simply waits.',
+      nutrition: [
+        { label: 'Serving', value: '250 ml brewed, black' },
+        { label: 'Calories', value: '2 kcal' },
+        { label: 'Caffeine', value: '~120 mg' },
+        { label: 'Sugars', value: '0 g' },
+      ],
+    },
     options: [
       {
         name: 'Plan',
@@ -927,31 +1116,16 @@ const CONTENT = [
 // ── Product detail (the warm, story-led PDP) + Shop ──────────────────────────────
 // Bokksu's PDP is a hand-bound-cookbook spread: a big warm image on the left, a calm
 // buy column on the right — collection label, serif product title, price, a full-width
-// TERRACOTTA promo banner, the real add-to-cart, then the provenance detail stack
-// ORIGIN & ROAST / TASTING NOTES / HOW THE CLUB WORKS / SHIPPING & FRESHNESS (DESIGN
+// TERRACOTTA promo banner, the real add-to-cart, then a provenance detail stack (DESIGN
 // §4 PDP anatomy, §6/§7). Ported to Latitude in the `roastery` theme: `bg-primary` is the
 // deep-terracotta fill the banner + CTA call for, `text-primary-content` its readable ink,
 // and headings pick up the theme's editorial serif. Bound fields (title/price/image/
 // description) come from the shared PDP kit — correct `repeat('product')` scope + `item.*`
-// binds — so this one template serves every product at `/products/:handle`; the layout and
-// the static brand copy are ours. The copy stays product-AGNOSTIC (it dresses a single bag,
-// a gift set and the subscription alike), and the club's cadence is conveyed as STATIC prose
-// in the "How the club works" block — there is no live cadence widget here.
-
-/** One labelled detail block beneath the buy box — a serif-register `<h2>` small-caps
- *  label over a paragraph of static brand copy, divided from the block above by a warm
- *  hairline. The magazine ORIGIN & ROAST / TASTING NOTES / … stack, stacked rather than
- *  tabbed so it reads without JavaScript and needs no behaviour marker. */
-function pdpDetail(label: string, body: string): Node {
-  return el('div', 'flex flex-col gap-2 border-t border-base-300 pt-5', {
-    children: [
-      el('h2', 'text-sm font-semibold uppercase tracking-widest text-base-content', {
-        text: label,
-      }),
-      el('p', 'text-base leading-relaxed text-base-content', { text: body }),
-    ],
-  });
-}
+// binds — so this one template serves every product at `/products/:handle`. The detail
+// stack is no longer hardcoded per template (a bag's storage ≠ a grinder's): `pdpAttributes`
+// repeats the routed product's OWN typed `food_beverage` attributes (docs/143) — ingredients,
+// allergens, net weight, storage and nutrition — and `pdpPolicyLinks` points at the real
+// shipping/returns pages. The layout and the promo banner are ours.
 
 /** The bespoke buy REGION — authored UNSCOPED; `productPage` wraps it in `repeat('product')`.
  *  Left: the big warm product image. Right: the calm buy column, with a terracotta promo
@@ -983,6 +1157,13 @@ function pdpBuyRegion(): Node {
                     compareClass: 'text-lg text-base-content line-through',
                     rowClass: 'flex items-baseline gap-4',
                   }),
+                  // A real low-stock signal in the terracotta primary — shown only when the
+                  // routed product is genuinely running low (never fabricated scarcity).
+                  pdpStockBadge({
+                    className:
+                      'inline-flex w-fit items-center gap-2 rounded-field bg-primary px-3 py-1 text-xs font-semibold uppercase tracking-widest text-primary-content',
+                    label: 'Low stock',
+                  }),
                 ],
               }),
               pdpDescription('text-lg leading-relaxed text-base-content'),
@@ -997,26 +1178,25 @@ function pdpBuyRegion(): Node {
               }),
               // Qty + Add to cart — the deep-terracotta CTA (btn-primary in `roastery`).
               addToCartForm(),
-              // The provenance detail stack.
-              el('div', 'mt-2 flex flex-col gap-5', {
-                children: [
-                  pdpDetail(
-                    'Origin & roast',
-                    'We follow the harvest around the bean belt and buy a single origin at its peak, direct from the growers. Every bag is roasted to order in small batches at our own roastery the week it ships — so what lands on your shelf is days old, not a season old, and still at the brightest point of its life.',
-                  ),
-                  pdpDetail(
-                    'Tasting notes',
-                    'Each coffee arrives with a card telling you who grew it, the farm and region it came from, and exactly how this year’s harvest tasted — plus the grind, ratio and timing we would start with, so your very first cup is a good one.',
-                  ),
-                  pdpDetail(
-                    'How the club works',
-                    'Prefer this on repeat? The Origin Club sends a fresh single-origin harvest to your door each month, ground the way you brew. Choose a 1, 3, 6 or 12-month plan — the longer you stay the more you save, and the year-long plan arrives with a free enamel mug. Pause or cancel any time, no questions.',
-                  ),
-                  pdpDetail(
-                    'Shipping & freshness',
-                    'Roasted late and shipped fast — dispatched free within 48 hours of roasting, tracked to your door. Something not right? Tell us within thirty days and we will put it straight; coffee is meant to be enjoyed, not worried over.',
-                  ),
-                ],
+              // The product's OWN typed attributes (ingredients / allergens / net weight /
+              // storage / nutrition), repeated from `attributeSections` — real per-product
+              // copy, not a hardcoded provenance stack.
+              pdpAttributes({
+                containerClass: 'mt-2 flex flex-col gap-5',
+                sectionClass: 'flex flex-col gap-2 border-t border-base-300 pt-5',
+                labelTag: 'h2',
+                labelClass: 'text-sm font-semibold uppercase tracking-widest text-base-content',
+                valueClass: 'text-base leading-relaxed text-base-content',
+                rowClass:
+                  'flex items-baseline justify-between gap-4 border-b border-base-200 pb-1',
+                rowLabelClass: 'text-base font-medium text-base-content',
+                rowValueClass: 'text-base text-base-content',
+              }),
+              // Shipping & returns — LINKS to the store's real legal pages, never reprinted copy.
+              pdpPolicyLinks({
+                className:
+                  'flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-5 text-sm font-semibold uppercase tracking-widest text-base-content',
+                linkClass: 'underline underline-offset-4',
               }),
             ],
           }),

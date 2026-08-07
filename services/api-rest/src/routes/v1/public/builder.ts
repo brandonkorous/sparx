@@ -47,6 +47,10 @@ const CollectionQuery = z.object({
   // The specific record being rendered — lets a per-record template override win
   // over the type default (docs/51 §6). Omitted on list/index renders.
   recordId: z.string().min(1).max(255).optional(),
+  // The record's SUBTYPE (docs/143 Option B) — a product's product-type key. When set,
+  // a page whose `record_subtype` matches wins over the default page (most-specific-wins),
+  // so a tenant can design a per-type product page (the Apparel page vs the default).
+  recordSubtype: z.string().min(1).max(63).optional(),
 });
 
 const TenantQuery = z.object({
@@ -202,7 +206,8 @@ const publicBuilderRoutes: FastifyPluginAsync = (app) => {
       { tenantId, propertyId },
       q.recordType,
       q.recordId,
-      stage
+      stage,
+      q.recordSubtype
     );
     if (!page) throw notFound('Builder collection template', q.recordType);
     return ok(page);

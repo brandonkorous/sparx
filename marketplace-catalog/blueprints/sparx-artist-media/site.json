@@ -1,0 +1,2694 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-4 px-6 py-5",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden flex-1 items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "1e26e222-095f-478c-b35c-6727c097bea6",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "7e1d17d6-6be3-4eb9-9b56-383de71ba206",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "383119cd-b37c-4d0b-9ae3-2b3c078423d5",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "4a49d085-4492-499a-9e4c-d9e39833e27b",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "flex flex-1 items-center justify-end gap-4",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "nav",
+                      "class": "hidden items-center gap-6 @md:flex",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "a",
+                          "class": "text-sm font-medium text-base-content hover:text-primary",
+                          "attrs": {
+                            "href": "/about"
+                          },
+                          "children": ["About"],
+                          "slot": {
+                            "name": "link3",
+                            "type": "link",
+                            "label": "Docs"
+                          },
+                          "id": "4ea3f41b-9643-4059-adb5-7e7f8648b379",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "a",
+                          "class": "text-sm font-medium text-base-content hover:text-primary",
+                          "attrs": {
+                            "href": "/contact"
+                          },
+                          "children": ["Contact"],
+                          "slot": {
+                            "name": "link4",
+                            "type": "link",
+                            "label": "Company"
+                          },
+                          "id": "e81afa41-29f7-407a-8b7a-5b6c406e8da3",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "eedaf156-61ba-418e-ba3f-99e21ec270fe",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "adad76a1-3f25-4167-b5a7-89beafaa58e7",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "f46fecea-d7d3-4835-a428-f235d4f73a51",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "bb2a2c62-32ab-489e-a4c4-059fa7afe2b2",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "ea35b435-8fef-44b0-b1e1-ff2bac5773c7",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "30e040b2-e9e9-4591-94bc-531cd4139638",
+                  "ord": "a2"
+                }
+              ],
+              "id": "aebaa03d-4ac6-4c8b-bafc-b84f332e5640",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "f3d1ce9d-6a54-48e1-975e-baa5d7897572",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "2457e6b5-efe8-40e0-a645-c4ca0dbbc6fd",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "28937229-c174-4185-bfa7-3843be90f9fd",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "c1dc6194-8793-457f-a8d1-862d332ebd1c",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "d9711971-02b5-4e9d-b6ae-cb8d7d564472",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "74389968-2fa1-4db3-9822-1b7dedc09af9",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "c7c5ce79-7cb0-41fc-80c6-b81655c83ff4",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "6e8d65cd-37ce-49ae-a33e-d66d1c8a321e",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-200 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @3xl:grid-cols-2",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "20c05f2e-ff6e-401d-9784-e96c21c9b825",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-sm text-sm text-base-content",
+                          "children": [
+                            "Join the list — new work, journal notes, and studio news, about once a month."
+                          ],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "d399da75-2338-42a2-a8f8-4b53efedb8c2",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "component",
+                          "component": "Form",
+                          "class": "flex w-full max-w-md flex-col gap-3 @sm:flex-row",
+                          "props": {
+                            "action": "subscribe"
+                          },
+                          "children": [
+                            {
+                              "kind": "component",
+                              "component": "Input",
+                              "class": "input flex-1",
+                              "props": {
+                                "type": "email",
+                                "name": "email",
+                                "placeholder": "you@example.com",
+                                "required": true
+                              },
+                              "id": "46c4df80-e330-481b-b6f3-97325cafd57f",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "component",
+                              "component": "Button",
+                              "class": "btn btn-primary",
+                              "props": {
+                                "label": "Subscribe",
+                                "type": "submit"
+                              },
+                              "slot": {
+                                "name": "cta",
+                                "type": "text",
+                                "label": "Button label"
+                              },
+                              "id": "fefe1f7d-1eef-4005-9143-e8be1976455a",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "9d3dfe72-ac60-47fc-8989-4a8b95670c92",
+                          "ord": "a2"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm text-base-content",
+                          "children": ["No spam, and an unsubscribe link in every issue."],
+                          "slot": {
+                            "name": "note",
+                            "type": "text",
+                            "label": "Reassurance line"
+                          },
+                          "id": "fb1dbe51-b7fe-44ca-8f1e-7b8c53ab7b4e",
+                          "ord": "a3"
+                        }
+                      ],
+                      "id": "932cb908-ed50-4c71-be79-c73f04aefacc",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Explore"],
+                              "slot": {
+                                "name": "col1",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/"
+                              },
+                              "id": "08a3f771-207b-4cc3-840f-69bbf3bf1063",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/shop"
+                                      },
+                                      "children": ["Shop"],
+                                      "slot": {
+                                        "name": "link1",
+                                        "type": "link",
+                                        "label": "Features"
+                                      },
+                                      "id": "dc741330-3f5f-4d5a-a912-22bbde757a07",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "22e90989-ea0b-4e0b-be78-7bd552dddd52",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/journal"
+                                      },
+                                      "children": ["Journal"],
+                                      "slot": {
+                                        "name": "link2",
+                                        "type": "link",
+                                        "label": "Pricing"
+                                      },
+                                      "id": "1203f8c2-7cfb-4e74-af60-5a5859341359",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "b5c12b94-a54e-45b2-a3c6-5fcd408eecf1",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/about"
+                                      },
+                                      "children": ["About"],
+                                      "slot": {
+                                        "name": "link3",
+                                        "type": "link",
+                                        "label": "Changelog"
+                                      },
+                                      "id": "fbf5763e-bf61-4e93-b50a-30fa707ae4da",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "18cf3412-37d4-4709-8506-aeb282ccf4c1",
+                                  "ord": "a2"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/contact"
+                                      },
+                                      "children": ["Contact"],
+                                      "slot": {
+                                        "name": "link4",
+                                        "type": "link",
+                                        "label": "Roadmap"
+                                      },
+                                      "id": "37080fb0-44ee-4124-ae35-a7f171de11aa",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "bdfade48-8677-4a48-a3d5-ca990a25c390",
+                                  "ord": "a3"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/search"
+                                      },
+                                      "children": ["Search"],
+                                      "id": "6037c950-1738-4b4a-9d2a-ff6cac350624",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "3cfbd6ff-b56a-4c48-9509-de6cd441c16a",
+                                  "ord": "a4"
+                                }
+                              ],
+                              "id": "204a2004-fd5a-450d-8027-f033edbc13a8",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "48a7d0aa-6c48-448c-ac78-8aaee6cf13e5",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Account"],
+                              "slot": {
+                                "name": "col2",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/account"
+                              },
+                              "id": "c8976f26-f1fc-4f14-9b02-e1c29e6545af",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account"
+                                      },
+                                      "children": ["Sign in"],
+                                      "slot": {
+                                        "name": "link5",
+                                        "type": "link",
+                                        "label": "About"
+                                      },
+                                      "id": "7eb9b1b3-2ef2-4d00-ba82-0675c4f560cd",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "10f52561-eeff-4804-9b56-c1e147f74a5b",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account/orders"
+                                      },
+                                      "children": ["Orders"],
+                                      "slot": {
+                                        "name": "link6",
+                                        "type": "link",
+                                        "label": "Careers"
+                                      },
+                                      "id": "0dff1b6c-065f-4224-8ee9-14f47c41221e",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "d0444bc8-a526-4755-adac-92ea0a54d2c8",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/cart"
+                                      },
+                                      "children": ["Cart"],
+                                      "slot": {
+                                        "name": "link7",
+                                        "type": "link",
+                                        "label": "Press"
+                                      },
+                                      "id": "55b758cf-6b16-40dd-90f8-197d67d059ab",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "1260ddf0-d67c-44e8-8979-d81ad6018e20",
+                                  "ord": "a2"
+                                }
+                              ],
+                              "id": "1be8632f-5f8c-4163-8d93-c563ffdbaada",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "6e424b2f-85a5-4cac-a8c4-686e5692d30b",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "6a9e530d-6b4f-479a-808f-bd21586b1902",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "09b728b5-2b09-4e05-ab04-896d154768af",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "6d814517-0c4d-4f2c-b303-2e60fd22bfe1",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "5bd049a9-7060-47e1-9342-3bc0d3dfadc1",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex items-center gap-5",
+                      "children": [],
+                      "id": "250bfecb-76ed-4bbd-8186-683f8dcc5169",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "155b029a-01a1-4f5d-9fc3-28f5139e5255",
+                  "ord": "a1"
+                }
+              ],
+              "id": "f84524e9-edf6-4680-9f00-cd8d41773e22",
+              "ord": "a0"
+            }
+          ],
+          "id": "a2b7433d-5b5b-4603-a2e8-d07c0eeff0c3",
+          "ord": "a2"
+        }
+      ],
+      "id": "e9dc1f3d-2267-4aed-9476-788602456316"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Vela — new album Small Hours, out now",
+      "seoDescription": "Vela — a four-piece writing songs for the small hours. The new record Small Hours is out everywhere, and the tour is on the road. Music, tour, and everything in between.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "55585e57-37f1-4118-96b7-80a884c0bc4b",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-14",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-6xl",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "relative overflow-hidden rounded-box border border-base-300",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-video w-full object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1400&q=80",
+                          "alt": "A singer silhouetted against deep red stage light",
+                          "loading": "lazy"
+                        },
+                        "id": "714af4e1-985d-4833-8c4e-d0f47bfe8518",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "absolute inset-x-0 bottom-0 flex justify-start p-4 @2xl:p-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex max-w-xl flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 @2xl:p-8",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                                "children": ["New album — out now"],
+                                "id": "6671aa92-55d8-4864-bd20-2911e6e46810",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "h1",
+                                "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-7xl",
+                                "children": ["Vela"],
+                                "id": "de9a55c7-4419-44a8-ae3e-f6470e9c596e",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-lg leading-relaxed text-base-content",
+                                "children": [
+                                  "Music, tour, and everything in between. Songs for the small hours — the new record, Small Hours, is out everywhere tonight."
+                                ],
+                                "id": "7a8bcfc7-2bc5-4edd-88b4-31ce08b6944b",
+                                "ord": "a2"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex flex-wrap gap-3",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "btn btn-primary btn-lg",
+                                    "attrs": {
+                                      "href": "/journal"
+                                    },
+                                    "children": ["Listen now"],
+                                    "id": "5430e221-6db0-4ac5-ad91-5ad80284d695",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "a",
+                                    "class": "btn btn-outline btn-lg",
+                                    "attrs": {
+                                      "href": "#tour"
+                                    },
+                                    "children": ["Tour dates"],
+                                    "id": "38af8ff8-97c6-46bb-89c5-cb2bad0bc22c",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "b4bcd030-7687-4b8f-828f-567ac8b6bd62",
+                                "ord": "a3"
+                              }
+                            ],
+                            "id": "7d02a531-ccf4-40d1-b6e8-6ded38985114",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "ab161b2d-1ca5-47e7-a3a5-376c0b63e8e5",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "7dbde160-04e0-4317-830b-3b87804cd4c5",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "a399cb37-8fb2-4917-b2d3-5b0c7d3d602a",
+                "ord": "a0"
+              }
+            ],
+            "id": "332c9eb4-fb98-4a99-b68a-b79edbe06c28",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Latest release"],
+                    "id": "ba6bf751-60ab-4833-af37-421b84c6d7c9",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid gap-8 @3xl:grid-cols-2 @3xl:items-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full rounded-box border border-base-300 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1483412033650-1015ddeb83d1?w=1400&q=80",
+                          "alt": "The Small Hours vinyl LP cover",
+                          "loading": "lazy"
+                        },
+                        "id": "c1e93d99-250d-423f-8aa6-a65db4cca157",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                            "children": ["Album · 6 August"],
+                            "id": "73fb5e8d-0f56-487c-99d9-c319f187dcb9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-4xl font-bold leading-none tracking-tight text-base-content",
+                            "children": ["Small Hours"],
+                            "id": "d7666392-b5f8-4c07-8a02-99ebb7cbc00c",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": [
+                              "Ten songs written between two in the morning and first light. Recorded live to tape over a winter in a room with the heating off, mixed loud, and meant to be played that way."
+                            ],
+                            "id": "054d05c8-2011-48db-9221-be9e2060a17e",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-wrap gap-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "inline-flex items-center gap-2 rounded-field border border-base-300 px-4 py-2 text-base font-semibold text-base-content hover:border-primary",
+                                "attrs": {
+                                  "href": "/journal"
+                                },
+                                "children": ["Streaming"],
+                                "id": "b8bdc9ba-3ced-430a-90ec-47ece47257ed",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "inline-flex items-center gap-2 rounded-field border border-base-300 px-4 py-2 text-base font-semibold text-base-content hover:border-primary",
+                                "attrs": {
+                                  "href": "/journal"
+                                },
+                                "children": ["Download"],
+                                "id": "cdce38fb-13ca-4301-9f64-6cb368a3ec3b",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "inline-flex items-center gap-2 rounded-field border border-base-300 px-4 py-2 text-base font-semibold text-base-content hover:border-primary",
+                                "attrs": {
+                                  "href": "/journal"
+                                },
+                                "children": ["Vinyl"],
+                                "id": "04ce92cd-b6bb-4ed7-b427-21aeedda4cc7",
+                                "ord": "a2"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "inline-flex items-center gap-2 rounded-field border border-base-300 px-4 py-2 text-base font-semibold text-base-content hover:border-primary",
+                                "attrs": {
+                                  "href": "/journal"
+                                },
+                                "children": ["Video"],
+                                "id": "4d049c4c-f916-4452-b33a-62c7810ae54a",
+                                "ord": "a3"
+                              }
+                            ],
+                            "id": "35c68957-91bc-4ec4-adbf-1621d9043206",
+                            "ord": "a3"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-wrap gap-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "btn btn-primary btn-lg",
+                                "attrs": {
+                                  "href": "/journal"
+                                },
+                                "children": ["Listen to Small Hours"],
+                                "id": "b927cb59-0494-4e17-a6b1-9d4d13c161b6",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "50c16575-8720-476a-b2a5-a940bcd719c1",
+                            "ord": "a4"
+                          }
+                        ],
+                        "id": "af86b65d-dbc5-47db-9cd3-f929bb5812bd",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "473856f8-4e0a-4650-afb7-3615a88eb723",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "b9b04087-70b9-4264-8a4f-23fca049c2d9",
+                "ord": "a0"
+              }
+            ],
+            "id": "27f696e6-0cb3-45c0-a1c4-64feccb9723b",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "attrs": {
+              "id": "tour"
+            },
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["On tour"],
+                    "id": "43df1a82-7452-4a63-8c4f-80e54f14be42",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The Small Hours tour — a room, a record, and a very late night. Dates below; more added as we route them."
+                    ],
+                    "id": "e0d8678e-9140-49d4-a00e-963c77b283de",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "ul",
+                    "class": "flex flex-col",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "li",
+                        "class": "flex flex-col gap-4 border-t border-base-300 py-6 @2xl:flex-row @2xl:items-center @2xl:gap-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-2 @2xl:w-24 @2xl:flex-col @2xl:items-start @2xl:gap-0",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-3xl font-bold leading-none text-primary",
+                                "children": ["12"],
+                                "id": "88f2fa18-9816-48b0-a058-eb9b850f41ae",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold uppercase tracking-wide text-base-content",
+                                "children": ["Sep"],
+                                "id": "51b98083-0e66-4fa3-9471-3517bce128a1",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "0bbda01e-b185-4930-a127-fae08fff3fab",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1 @2xl:flex-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["The Lantern"],
+                                "id": "0c9527e5-83d3-4b47-b472-d20eeaaee6c8",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base text-base-content",
+                                "children": ["Bristol, UK"],
+                                "id": "9c189e92-d490-4106-bbb3-0e6a9efd25e4",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "16145cd2-090a-423f-88ef-3721077ba4f4",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex @2xl:justify-end",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "text-base font-semibold text-primary",
+                                "attrs": {
+                                  "href": "/journal"
+                                },
+                                "children": ["Tickets →"],
+                                "id": "fa270fc5-89ef-4a2a-801c-9584e9314f57",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "07fac680-3d90-4688-9add-5f8cd3980b73",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "ba77ec8f-8e73-4ece-b6aa-43c8594c0e16",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "li",
+                        "class": "flex flex-col gap-4 border-t border-base-300 py-6 @2xl:flex-row @2xl:items-center @2xl:gap-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-2 @2xl:w-24 @2xl:flex-col @2xl:items-start @2xl:gap-0",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-3xl font-bold leading-none text-primary",
+                                "children": ["15"],
+                                "id": "f6aaaf03-cf04-4c2f-b052-085b8a77a579",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold uppercase tracking-wide text-base-content",
+                                "children": ["Sep"],
+                                "id": "dbb137a8-79c8-40ed-a8ad-c6c8e3730365",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "6c20a572-9f80-4202-9017-b1b523b1f331",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1 @2xl:flex-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Village Underground"],
+                                "id": "1d90f74c-98dd-4b93-b824-99fa47a25164",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base text-base-content",
+                                "children": ["London, UK"],
+                                "id": "34cfc22a-8641-43e6-8643-36a1706204bb",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "a72f123c-5652-4c33-8a2e-aec157cdc7c1",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex @2xl:justify-end",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Sold out"],
+                                "id": "62e99b3c-f1eb-49f9-b02c-26412b368f0a",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "5ffc5caa-8943-46dd-ba04-d8183c1e9a09",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "ce92a233-a4f1-4558-8fce-ad2f8b00c317",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "li",
+                        "class": "flex flex-col gap-4 border-t border-base-300 py-6 @2xl:flex-row @2xl:items-center @2xl:gap-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-2 @2xl:w-24 @2xl:flex-col @2xl:items-start @2xl:gap-0",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-3xl font-bold leading-none text-primary",
+                                "children": ["19"],
+                                "id": "01c4ea45-3925-48af-adb2-816c670c94e1",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold uppercase tracking-wide text-base-content",
+                                "children": ["Sep"],
+                                "id": "4b9624f3-9bb8-4307-9a91-67625d870e70",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "db6fe63f-9b9d-4a06-8986-255c94b5606c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1 @2xl:flex-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Botanique"],
+                                "id": "c94d98e4-04b9-40d8-b405-64b5a6f17e91",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base text-base-content",
+                                "children": ["Brussels, BE"],
+                                "id": "a7ce67fe-aec1-4775-9a67-69ec789de9ff",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c934ac57-7272-4eda-be5f-b71771f9d6cd",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex @2xl:justify-end",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "text-base font-semibold text-primary",
+                                "attrs": {
+                                  "href": "/journal"
+                                },
+                                "children": ["Tickets →"],
+                                "id": "88d4db1e-d0ae-4a03-b257-031ee751823b",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "50eccbdd-218b-4e4e-a4ac-1f2bd55c8ef0",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "c9bc0ddf-93ea-4085-976a-ed4f465e55f1",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "li",
+                        "class": "flex flex-col gap-4 border-t border-base-300 py-6 @2xl:flex-row @2xl:items-center @2xl:gap-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-2 @2xl:w-24 @2xl:flex-col @2xl:items-start @2xl:gap-0",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-3xl font-bold leading-none text-primary",
+                                "children": ["23"],
+                                "id": "c58a73f5-14b2-436d-a785-9f64c5d9b9bf",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold uppercase tracking-wide text-base-content",
+                                "children": ["Sep"],
+                                "id": "d76296d1-c1da-49c6-8745-11b82bbbd4f3",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "ab047d82-7988-4a7a-b12b-2ab1d5af8f49",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1 @2xl:flex-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Lido"],
+                                "id": "3ad5f1ff-8cb9-43cb-8938-19c2597613c5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base text-base-content",
+                                "children": ["Berlin, DE"],
+                                "id": "04ca2867-f7dd-4d9b-9fe0-b448640f7ba7",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "485ff6ff-65e5-4826-8ed9-07c5cd2d3ad9",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex @2xl:justify-end",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "text-base font-semibold text-primary",
+                                "attrs": {
+                                  "href": "/journal"
+                                },
+                                "children": ["Tickets →"],
+                                "id": "5ff5a4d6-c17f-45cc-a81d-8e857b3de72a",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "9ae2f649-1f4d-4d59-ae08-fb9b1d659e2f",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "17207c69-5125-439e-9f5c-f5b685bdf5ae",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "li",
+                        "class": "flex flex-col gap-4 border-t border-base-300 py-6 @2xl:flex-row @2xl:items-center @2xl:gap-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-2 @2xl:w-24 @2xl:flex-col @2xl:items-start @2xl:gap-0",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-3xl font-bold leading-none text-primary",
+                                "children": ["28"],
+                                "id": "03fa2aa2-0fa9-47d6-81f2-01449bb39eca",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold uppercase tracking-wide text-base-content",
+                                "children": ["Sep"],
+                                "id": "5e80f08f-17f4-4cbf-9389-d243910b8e53",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "0936db6f-7506-4f4b-b712-2b344702639d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1 @2xl:flex-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Paradiso"],
+                                "id": "f334082a-521f-41cf-b156-933ccc89ea22",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base text-base-content",
+                                "children": ["Amsterdam, NL"],
+                                "id": "7899e9da-54e3-44bf-9757-f96b443e7279",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "33cd4b6e-475e-4bb3-bdf3-7176b465463b",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex @2xl:justify-end",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Sold out"],
+                                "id": "196b82cf-a178-451d-ab1a-b97666ad001b",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "05c834e9-3df2-42de-a74f-021bd0713461",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "bbbf7712-5e85-4c94-85a3-db08b31221ee",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "li",
+                        "class": "flex flex-col gap-4 border-t border-base-300 py-6 @2xl:flex-row @2xl:items-center @2xl:gap-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-2 @2xl:w-24 @2xl:flex-col @2xl:items-start @2xl:gap-0",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-3xl font-bold leading-none text-primary",
+                                "children": ["04"],
+                                "id": "4d95d149-72ca-43e2-b8de-ecb536f6472d",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold uppercase tracking-wide text-base-content",
+                                "children": ["Oct"],
+                                "id": "dbe1f6dc-4ee3-4a2f-acdf-a8e186083f1a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "90d24029-3e00-41db-9ae0-b75399472b82",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1 @2xl:flex-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["La Maroquinerie"],
+                                "id": "fcd2aa59-c2dd-4fe2-9b13-5246f488ceee",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base text-base-content",
+                                "children": ["Paris, FR"],
+                                "id": "9e7a9f58-321b-4160-845e-fc032e7cddf0",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "f8b8ae22-d064-4b65-95b9-e7d0af7e6fb9",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex @2xl:justify-end",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "text-base font-semibold text-secondary",
+                                "attrs": {
+                                  "href": "/journal"
+                                },
+                                "children": ["Notify me →"],
+                                "id": "fac8b41c-140e-48af-b5f7-6b0bcbd9efd8",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "9575f131-18a6-4ba7-8a8b-db5d87b0e741",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "91c73844-ee71-4f7f-b548-37a4b9b5dc40",
+                        "ord": "a5"
+                      }
+                    ],
+                    "id": "d435aae7-5356-43ce-aa97-2e082d11ed2b",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "5cb1aae3-0c45-46d7-9701-df347ab1dcd4",
+                "ord": "a0"
+              }
+            ],
+            "id": "5b942b48-4e83-4776-aed6-c442f6f53ed3",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-2",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-3",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["From the band"],
+                    "id": "e6404c82-134a-48b8-b98e-bddb28ada27c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Studio notes, single announcements and tour diary — newest first."
+                    ],
+                    "id": "96633ebf-1484-404b-a882-57d154bc3510",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "2cbac8fb-45ba-4df0-8047-6f014f429881",
+                "ord": "a0"
+              }
+            ],
+            "id": "69792f25-5b45-462b-b5af-7a8f2c76918b",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "92636e9a-b345-4cca-8fa7-e9f2bb35a22e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "c0c8469a-bebb-464d-a489-6bd872fea8ca",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "94654fa6-6ed8-4ce0-9c0e-bafd02448408",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "d4e460b2-bfae-4435-82d8-a01ed7425764",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "fceee9e2-73d8-4033-ac0b-d461b598f1f5",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "b80cba25-529d-43f6-adb6-bfb8af3af4f1",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "baefe9bf-9385-4637-abf2-b45e5f1414ae",
+                "ord": "a0"
+              }
+            ],
+            "id": "6a188a15-b4cf-446a-bf37-ff59c029dd97",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Music & Merch"],
+                    "id": "7dffa163-514f-443c-86fa-34882d80791a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "9fe6b055-c0cc-4a40-b93c-33717b7d711b",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "0913509f-abe8-43e8-b38c-ac4c01331d7b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "ef753264-5a68-4f23-a9fd-0ad0a291910e",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "d9a81fc4-3ca0-4fc0-862f-675de23c996a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "2896d818-62ff-4fd3-bbbb-0ccd3256c421",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "d4b0c944-d6da-495d-aca0-450d8aae2332",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "2e4eb04d-798f-4b3e-9672-7669ea49d6bd",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "ee414e59-e2db-4167-9f54-0e68d46d29de",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "19910d07-68e1-40c4-a545-ecb347252547",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "aab5db5a-ad5d-4b78-8a24-f0a9aa4cdd93",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "6d34d723-d4d9-4e00-99ca-5c4f73f5b0a1",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "1e43b21d-45ca-4b8c-9cf1-964e0fe4802b",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "5b6d05f2-595c-49ec-9aa7-ae5a8c04ef70",
+            "ord": "a5"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — Vela",
+      "seoDescription": "Browse everything Vela makes, with prices and options at a glance. Recording artist & band.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "59be19b0-16fc-41d4-aeae-08dd61e703dc",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-12 pb-4",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-6xl",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
+                    "children": ["Shop"],
+                    "id": "0fc72d1f-1a7d-4332-901c-d394e14ff335",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "mt-4 max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": ["Everything we currently have available."],
+                    "id": "12c23406-27f5-40b0-b348-d89be5fd6a0b",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "333cc046-39d1-4638-9306-989264271d5f",
+                "ord": "a0"
+              }
+            ],
+            "id": "72b8821b-26cb-4a28-974d-f967b6781e95",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "2fa9c1ee-1ddf-4bbf-aa96-9f99c3c69486",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — Vela",
+      "seoDescription": "Explore the collections at Vela, grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "a38d4048-34ef-4b7e-8837-708a42d3bd52",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container",
+            "children": [
+              {
+                "kind": "host",
+                "component": "commerce.collections",
+                "class": "mx-auto w-full max-w-6xl px-6 py-6",
+                "locked": "host",
+                "id": "15c86907-d034-48b9-a1ab-eadc5cd1f5f9",
+                "ord": "a0"
+              }
+            ],
+            "id": "9acef548-384b-480c-8f96-4f8b77aa7215",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — Vela",
+      "seoDescription": "Review what is in your cart and check out securely at Vela.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "03af18f1-e5f1-4fad-a8ed-a10f10f015a1",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "h1",
+                "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
+                "children": ["Your cart"],
+                "id": "917ba465-bd44-4251-b837-e0352b5ca103",
+                "ord": "a0"
+              },
+              {
+                "kind": "host",
+                "component": "commerce.cart",
+                "class": "mx-auto w-full max-w-4xl px-6 py-10",
+                "locked": "host",
+                "id": "692ea715-c2e0-4123-a96c-fa9a8d0ff5e8",
+                "ord": "a1"
+              }
+            ],
+            "id": "c9fab6e5-127b-4f1d-9952-6100a8a1e183",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — Vela",
+      "seoDescription": "Search Vela for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "ea723d81-9910-45b4-860b-af0c427fe455",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "h1",
+                "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
+                "children": ["Search"],
+                "id": "c324c111-0914-4b55-afa6-aa0f85790eaf",
+                "ord": "a0"
+              },
+              {
+                "kind": "host",
+                "component": "commerce.search",
+                "class": "mx-auto w-full max-w-6xl px-6 py-6",
+                "locked": "host",
+                "id": "94e78bc0-8ee2-4316-9c8c-a94ff134a726",
+                "ord": "a1"
+              }
+            ],
+            "id": "168c980e-7d52-4f42-b30d-49dd0b9272cf",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — Vela",
+      "seoDescription": "Stories, guides and notes from Vela.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "fd20ec00-0004-4a6f-b76b-7851e6f70c67",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-7xl",
+                    "children": ["The Vela journal"],
+                    "id": "f280b525-8464-49dd-b3e2-8cd465919488",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Studio notes, single releases and postcards from the road — written by the band, published as it happens."
+                    ],
+                    "id": "8eb84fdc-0941-4b0c-9fda-322edfa2f6a6",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e9ab2b02-c213-4e8b-81ea-5d0a574bc217",
+                "ord": "a0"
+              }
+            ],
+            "id": "ff6a8acb-666b-4515-a155-f7998930e931",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "36a0bc55-1981-44f5-99d7-87a07d4a0f66",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "cc27364d-9149-4304-a138-89ba47e13233",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "5c0c2921-6742-48ba-8651-e76a66bad13e",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "f01031b3-bca3-4f15-83ed-a0905bd15bdf",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "dbec6c5b-f71c-4399-88c4-b84b255caed3",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "79370ddd-02e7-42ba-a97b-22e4f0968d2f",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "3b98ee72-75f6-49ad-813a-69df0f29d72f",
+                "ord": "a0"
+              }
+            ],
+            "id": "1ee9d502-c30c-4648-9b95-131a48639c4d",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Vela — the band, the record, the road",
+      "seoDescription": "Who Vela is and how they work — a self-produced, self-booked four-piece who record everything live in one room. No label between you and the band.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "d926f5f7-c731-4e4c-be36-d418e0de3938",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["About Vela"],
+                    "id": "dc48a66d-82a0-47cb-994d-e61825cc2293",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Vela is a four-piece who write songs for the small hours — the ones you play on the drive home when the city has gone quiet. Formed in a shared flat over a winter of power cuts, the band built its sound the way it builds everything: live, in one room, with the lights low."
+                    ],
+                    "id": "81f9b8ad-5a60-4f28-bc2a-ebe7ee9e2b15",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Three records in, they still self-produce, still tour in a van they own, and still answer the fan mail themselves. Small Hours, the new album, was cut to tape in the same flat where the first demos were made — a full circle nobody planned and everybody noticed."
+                    ],
+                    "id": "877e4957-1682-4682-a285-9e5cb6a33ba3",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "This site is where the band puts everything first — the releases, the dates, the notes from the studio floor, and the merch that keeps the van on the road. No label between you and them."
+                    ],
+                    "id": "96e4af2f-6403-4cf6-a9f4-a996edbbd16a",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "00e010cf-9ba3-48c4-87e6-d18a77ffab6e",
+                "ord": "a0"
+              }
+            ],
+            "id": "d4943929-3747-4c72-b161-adfa26c6d6e4",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Vela",
+      "seoDescription": "Get in touch with Vela — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "668a6de8-f01c-47dc-8260-7bcacc00261e",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["Get in touch"],
+                    "id": "efcbe8d1-5758-4953-9c98-632e04ed0b2d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Booking, press, sync licensing, or a note about a show — everything reaches the band. We read all of it, and we answer what we can."
+                    ],
+                    "id": "b9b49050-4975-4640-8458-7a595340f6e4",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:hello@vela.example"
+                    },
+                    "children": ["Email the band"],
+                    "id": "070cb034-821d-4440-94de-d88ed51b98d6",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "45626d28-4754-45df-8490-86c108022aa5",
+                "ord": "a0"
+              }
+            ],
+            "id": "05d4b8fa-e909-4c40-86dd-69c50921c65b",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Article",
+      "kind": "collection",
+      "recordType": "cms.blog_post",
+      "isDefault": true,
+      "seoTitle": "Article — Vela",
+      "seoDescription": "A story from Vela — the writing, the reporting and the notes behind it.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "div",
+            "class": "flex flex-col",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "section",
+                "class": "bg-base-200 @container px-6 pt-12 pb-14 @2xl:pt-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto flex w-full max-w-3xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-primary",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["←"],
+                            "id": "03320172-5392-4ac7-9774-7660482cbc2a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["All posts"],
+                            "id": "2fa812a4-6664-4ddf-9947-a55665aa0f82",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9c479dac-2477-4f88-9165-03022413ccf4",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                        "children": ["Section"],
+                        "data": {
+                          "kind": "visible",
+                          "ref": "category"
+                        },
+                        "id": "81a4781d-7ab5-40c7-8ad4-78094f912f98",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold leading-tight tracking-tight text-base-content @2xl:text-6xl",
+                        "children": ["Post title"],
+                        "data": {
+                          "kind": "value",
+                          "ref": "title"
+                        },
+                        "id": "7683f751-9393-4294-bb43-767fb17c2b4b",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-xl leading-relaxed text-base-content",
+                        "children": ["The short summary of this post, written in the CMS."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "excerpt"
+                        },
+                        "id": "0a640c2e-a7cb-4afe-b508-cce6d4b5c224",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-2 flex items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "h-11 w-11 rounded-full border border-base-300 object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "visible",
+                              "ref": "authorAvatar"
+                            },
+                            "id": "65c6d167-6e1d-46b4-afe9-c8987c60204d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Author name"],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "authorName"
+                                },
+                                "id": "3ccaa7e6-ec43-4fe7-ad6f-d6bc642b75d8",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-sm text-base-content",
+                                "children": ["Published date"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "date"
+                                },
+                                "id": "e8acfcf7-7a1f-43a4-9d00-932966a13e5b",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "50adb016-bc61-478b-9a64-5487401cb528",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "bb3f1cb8-efe1-4db4-b0d9-afee53f18f16",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "cee5a388-2436-4494-a69d-af331c09511a",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "f8cf04ed-5748-485f-94d6-23a907ff1750",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "section",
+                "class": "bg-base-100 @container px-6 py-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto w-full max-w-3xl",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": ""
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "featuredImage"
+                        },
+                        "id": "8f6f98bb-eeb6-4db5-b498-3ec3a3ca27f9",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "0157f92a-03d8-41f3-a206-06c77269f2cb",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "434bcdd2-f7d8-492a-b7ba-4068dd514f68",
+                "ord": "a1"
+              }
+            ],
+            "id": "5f939f39-9efd-4922-87ed-8fa70c63eddb",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl px-6 pb-20 @2xl:pb-24",
+                "children": [
+                  {
+                    "kind": "host",
+                    "component": "cms.article-body",
+                    "class": "w-full",
+                    "locked": "host",
+                    "id": "20aca6e3-6e32-476f-a538-5c641a03d371",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "4fdb7524-1db9-4a27-b64f-97f4fe198f4f",
+                "ord": "a0"
+              }
+            ],
+            "id": "f976cfa5-73e4-4272-9837-eebea004c5d0",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pb-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-4 rounded-box border border-base-300 bg-base-200 p-6 @2xl:flex-row @2xl:items-center",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "h-16 w-16 rounded-full border border-base-300 object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": ""
+                        },
+                        "data": {
+                          "kind": "visible",
+                          "ref": "authorAvatar"
+                        },
+                        "id": "473566fc-d57b-4ca7-9769-06e5cb530194",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-lg font-semibold text-base-content",
+                            "children": ["Author name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorName"
+                            },
+                            "id": "7125b30a-50fc-45ca-88c6-33802c3764f4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["About the author."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorBio"
+                            },
+                            "id": "32600033-0624-4939-b0b6-6eef1801e595",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ff499574-15d7-422f-817e-f91b5d2aefe5",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "authorBio"
+                    },
+                    "id": "90f27a60-dc9a-45ca-9750-4e5faa64d763",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "b8e6a41b-35bf-41b8-ae79-3c6a1a923b3b",
+                "ord": "a0"
+              }
+            ],
+            "id": "2cde3147-b6de-4028-a915-d1224db7c24d",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-200 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-2xl font-bold tracking-tight text-base-content @2xl:text-3xl",
+                        "children": ["Keep reading"],
+                        "id": "e0a095ee-da02-4468-977c-f77297581b93",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/journal"
+                            },
+                            "children": ["More stories"],
+                            "id": "6ce99fde-739e-4aaf-bc07-ebc577a5044e",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "34ddd798-c1b7-4193-9365-0f797e256b3e",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "5326ec7b-f8b4-4f31-bd4b-4660f401f459",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "3be95a80-6ae0-49cf-94f7-ac8febc08785",
+                "ord": "a0"
+              }
+            ],
+            "id": "737ef592-6f23-48b1-97cd-df8c13cc82bf",
+            "ord": "a3"
+          }
+        ],
+        "data": {
+          "kind": "collection",
+          "ref": "blog_post"
+        },
+        "id": "ba0e400f-03fb-4781-b4ec-aa49497be206"
+      }
+    }
+  ],
+  "theme": {
+    "name": "amp",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(17% 0.014 320)",
+      "--color-base-200": "oklch(14% 0.014 320)",
+      "--color-base-300": "oklch(11% 0.014 320)",
+      "--color-base-content": "oklch(96% 0.006 320)",
+      "--color-primary": "oklch(66% 0.24 350)",
+      "--color-secondary": "oklch(78% 0.14 200)",
+      "--color-accent": "oklch(80% 0.13 200)",
+      "--color-neutral": "oklch(30% 0.014 320)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--radius-selector": "0.75rem",
+      "--radius-field": "0.5rem",
+      "--radius-box": "0.75rem",
+      "--depth": "1",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Syne\", sans-serif",
+      "--color-primary-content": "oklch(15% 0.02 350)",
+      "--color-secondary-content": "oklch(15% 0.02 200)",
+      "--color-accent-content": "oklch(15% 0.02 200)",
+      "--color-neutral-content": "oklch(98% 0.01 320)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(80% 0.13 200)",
+      "--color-highlight-content": "oklch(15% 0.02 200)",
+      "--color-border": "oklch(11% 0.014 320)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Syne\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(14% 0.014 320)",
+      "--color-base-200": "oklch(11% 0.014 320)",
+      "--color-base-300": "oklch(8% 0.014 320)",
+      "--color-base-content": "oklch(97% 0.006 320)",
+      "--color-primary": "oklch(62% 0.24 350)",
+      "--color-secondary": "oklch(80% 0.14 200)",
+      "--color-accent": "oklch(82% 0.13 200)",
+      "--color-neutral": "oklch(28% 0.014 320)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 350)",
+      "--color-secondary-content": "oklch(15% 0.02 200)",
+      "--color-accent-content": "oklch(15% 0.02 200)",
+      "--color-neutral-content": "oklch(98% 0.01 320)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(82% 0.13 200)",
+      "--color-highlight-content": "oklch(15% 0.02 200)",
+      "--color-border": "oklch(8% 0.014 320)"
+    }
+  }
+}

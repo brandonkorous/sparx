@@ -1,0 +1,402 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "riverside-bridge-lane-closure",
+    "status": "published",
+    "authorSlug": "communications-office",
+    "categories": ["News"],
+    "tags": ["Roads", "Public Works"],
+    "body": {
+      "title": "Riverside Bridge lane closure begins Monday",
+      "excerpt": "One southbound lane of the Riverside Bridge closes Monday for deck repairs expected to last three weeks. Plan for delays during the morning commute.",
+      "featuredImage": {
+        "$asset": "news-roads"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Starting Monday, Public Works will close the outermost southbound lane of the Riverside Bridge to replace worn expansion joints and resurface the deck. The work is scheduled to run for about three weeks, weather permitting, and the bridge will stay open to traffic the entire time."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What to expect"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Expect the heaviest delays between 7:00 and 9:00 in the morning, when a single southbound lane carries the full commute. Northbound lanes are not affected. Drivers who can shift their trip earlier or later, or use the 9th Street bridge, will save the most time."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Why now"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The joints being replaced were flagged in the city’s last bridge inspection and are the kind of repair that gets far more expensive if it waits. Doing the work now, in dry late-summer weather, lets the new surface cure properly before the first freeze."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Real-time detour information is posted under Schedules & road detours, and message boards on the approaches will show current lane status."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "council-adopts-fy27-budget",
+    "status": "published",
+    "authorSlug": "mayor-elena-ruiz",
+    "categories": ["Press Release"],
+    "tags": ["Budget", "City Council"],
+    "body": {
+      "title": "City Council adopts the FY27 budget",
+      "excerpt": "The Council approved a $214 million budget for the coming year, holding the property-tax rate flat while funding road repair, transit, and a new after-school program.",
+      "featuredImage": {
+        "$asset": "news-council"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "On Tuesday evening the City Council voted 6–1 to adopt the fiscal-year 2027 budget, a $214 million plan that takes effect on October 1. The rate residents pay in city property taxes stays exactly where it is for the third year running."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Where the money goes"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The largest new commitment is $18 million for road and bridge repair, front-loading a backlog the city has been chipping away at for years. Transit keeps its expanded weekend service, and a new after-school program will open at four community centers in the spring."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "How it was decided"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The budget followed three public hearings and an online comment period that drew more than 400 responses. Residents asked, above all, for the roads to be fixed and for transit to keep its weekend hours — both of which the adopted budget funds."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The full adopted budget, including every department’s detail, is posted under Public notices for anyone who wants to read it line by line."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "boil-water-advisory-lifted-highlands",
+    "status": "published",
+    "authorSlug": "city-clerk",
+    "categories": ["Notice"],
+    "tags": ["Water", "Utilities"],
+    "body": {
+      "title": "Boil-water advisory lifted for the Highlands",
+      "excerpt": "Testing has cleared the water supply in the Highlands neighborhood. Residents no longer need to boil water before drinking or cooking.",
+      "featuredImage": {
+        "$asset": "news-water"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The precautionary boil-water advisory issued last Thursday for the Highlands neighborhood is now lifted. Two consecutive rounds of testing came back clear, and Water & Utilities has confirmed the supply is safe for drinking, cooking, and every other use."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What happened"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A water main break near Highland Avenue dropped pressure in the local system, which can let contaminants in. Whenever that happens, the city issues a boil-water advisory as a precaution while crews repair the line and testing confirms the water is safe — which it now has."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What to do now"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "You can resume normal use immediately. As a routine step after any advisory, run each cold-water tap for one minute before drinking, replace any filter cartridges, and empty and refill automatic ice makers once."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Residents with questions can reach Water & Utilities through the city help desk during business hours."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "summer-parks-program-registration-opens",
+    "status": "published",
+    "authorSlug": "communications-office",
+    "categories": ["News"],
+    "tags": ["Parks", "Recreation"],
+    "body": {
+      "title": "Summer parks program registration opens",
+      "excerpt": "Registration for summer camps, swim lessons, and sports leagues opens next week, with reduced-fee and scholarship spots reserved for every program.",
+      "featuredImage": {
+        "$asset": "news-parks"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Parks & Recreation opens registration for its full slate of summer programs next Monday: day camps, learn-to-swim lessons, youth and adult sports leagues, and the popular nature series at Cedar Ridge. Programs run from mid-June through August."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Reserved and reduced-fee spots"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Every program holds a share of its spots for reduced-fee and scholarship registration, and no eligible child is turned away for cost. Households already enrolled in city assistance are pre-qualified; anyone else can apply in the same registration step."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "How to register"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Registration is online through Program & class registration, or in person at any community center with help from staff. Popular camps fill quickly, so it is worth setting a reminder for opening morning."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "An annual parks pass, which covers parking and entry at every park and trailhead, is available in the city shop."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "library-extends-weekend-hours",
+    "status": "published",
+    "authorSlug": "communications-office",
+    "categories": ["News"],
+    "tags": ["Library"],
+    "body": {
+      "title": "The public library extends its weekend hours",
+      "excerpt": "Starting this month, all three Rivermark library branches stay open later on Saturdays and add Sunday afternoon hours, funded in the new budget.",
+      "featuredImage": {
+        "$asset": "news-library"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "All three branches of the Rivermark Public Library are expanding their weekend hours this month. Saturday hours now run until 6:00pm, and every branch adds a Sunday afternoon session from 1:00 to 5:00 — the first regular Sunday hours the system has offered in over a decade."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What the extra hours cover"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The added time is not just for browsing. Weekend hours now include the after-school homework help desk, open computer and printing access, and the meeting rooms residents and small groups can book at no cost."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Made possible by the budget"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The expansion is funded in the fiscal-year 2027 budget the Council just adopted, after weekend access came up repeatedly during the public comment period. It is a direct example of a budget line that started as resident feedback."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Branch locations and full hours are listed in the Rivermark Resident Guide."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

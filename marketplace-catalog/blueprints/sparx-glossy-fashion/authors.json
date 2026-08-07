@@ -1,0 +1,20 @@
+[
+  {
+    "slug": "elena-prevost",
+    "displayName": "Elena Prévost",
+    "bio": "Elena Prévost is the fashion director of Mode & Object. She writes about how people actually get dressed — the editing, the keeping, and the case against buying more.",
+    "avatarAssetId": "author-prevost"
+  },
+  {
+    "slug": "nadia-okonkwo",
+    "displayName": "Nadia Okonkwo",
+    "bio": "Nadia Okonkwo directs beauty coverage at Mode & Object. Her subject is restraint — skin, scent and the discipline of doing less, reported from the chair and the lab.",
+    "avatarAssetId": "author-okonkwo"
+  },
+  {
+    "slug": "julian-hart",
+    "displayName": "Julian Hart",
+    "bio": "Julian Hart is the runway critic of Mode & Object. He reads collections the way others read books, and files from the front row on what a season was actually saying.",
+    "avatarAssetId": "author-hart"
+  }
+]

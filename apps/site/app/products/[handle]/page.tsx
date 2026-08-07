@@ -9,9 +9,10 @@ import { notFound } from 'next/navigation';
 
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { SectionRenderer } from '@/components/section-renderer';
-import { getPublishedSilicaCollection } from '@/lib/silica';
+import { getPublishedSilicaCollection, treeHasHostNode } from '@/lib/silica';
 import { buildSilicaHost, productToSilicaRecord } from '@/lib/silica-data';
-import { SilicaBody } from '@/components/silica-chrome';
+import { SilicaBody, SilicaFunctionalBody } from '@/components/silica-chrome';
+import { SiteHostRenderer } from '@/components/silica-host-cores';
 import {
   getProduct,
   listFitmentDomains,
@@ -105,7 +106,13 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
       // A site-preview token resolves the DRAFT template, so an author restyling the
       // product page can see it before it goes live — the same rule the home and page
       // routes follow. The legacy `getPublishedSite` read below already honoured this.
-      one(sp.sparxSitePreview) ? { previewToken: one(sp.sparxSitePreview) } : {}
+      // `recordSubtype` is the product's typed product-type key (docs/143 Option B): the
+      // resolver picks this product's TYPE-specific page (e.g. the Apparel product page)
+      // when the tenant authored one, else the default product page.
+      {
+        ...(one(sp.sparxSitePreview) ? { previewToken: one(sp.sparxSitePreview) } : {}),
+        ...(product.productTypeKey ? { recordSubtype: product.productTypeKey } : {}),
+      }
     );
     if (silicaTemplate) {
       // No `searchParams`: a product detail page is one record, so nothing paginates.
@@ -116,6 +123,28 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
       });
       // Bare, like the catch-all route — the root layout's silica chrome frames it
       // at the Outlet; the template owns its own section widths.
+      //
+      // A template carrying a host core takes the REACT walk, exactly as the home and
+      // catch-all routes do. `toHtml` lowers a host node to an empty
+      // `<div data-sui-host>` and mounts nothing, so the string path renders a video, a
+      // map, a brand mark or a pager as a blank gap — silently, with the block still
+      // present and selectable in the builder. This route was the last one still taking
+      // the string path unconditionally, which mattered little while nobody could open
+      // the product page; now that it has an address and appears in the page switcher,
+      // it is an ordinary page an author will drop ordinary blocks onto.
+      if (treeHasHostNode(silicaTemplate.root)) {
+        return (
+          <SilicaFunctionalBody
+            root={silicaTemplate.root}
+            symbols={silicaTemplate.symbols}
+            host={resolver}
+            // No `searchParams` and no `paging` for the same reason the resolver has
+            // none: one record, nothing to page. `recordHandle`/`recordId` are what a
+            // per-record core would resolve against.
+            renderHost={SiteHostRenderer({ site, recordHandle: handle, recordId: product.id })}
+          />
+        );
+      }
       return (
         <SilicaBody root={silicaTemplate.root} symbols={silicaTemplate.symbols} host={resolver} />
       );

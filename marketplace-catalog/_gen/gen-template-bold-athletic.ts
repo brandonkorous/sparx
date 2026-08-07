@@ -34,9 +34,12 @@ import { writeTemplatePreview } from './template-sites/preview';
 import { videoBackdrop } from './template-sites/behaviors';
 import {
   addToCartForm,
+  pdpAttributes,
   pdpDescription,
   pdpImage,
+  pdpPolicyLinks,
   pdpPriceRow,
+  pdpStockBadge,
   pdpTitle,
   productPage,
 } from './template-sites/pdp';
@@ -378,6 +381,16 @@ interface Product {
   description: string;
   status: 'active';
   productType: string;
+  // The typed product type (docs/143) — every product here is `apparel`, so the PDP's
+  // `pdpAttributes` renders each product's OWN fabric/fit/care/materials/origin.
+  productTypeKey: 'apparel';
+  attributes: {
+    fabric: string;
+    fit: string;
+    care: string;
+    materials: { name: string; percent: string }[];
+    origin: string;
+  };
   vendor: string;
   tags: string[];
   categoryHandles: string[];
@@ -388,6 +401,14 @@ interface Product {
   variants: Variant[];
   images: { assetId: string; isPrimary: true; alt: string }[];
 }
+
+// Care copy shared across the whole range — genuinely the same for every technical
+// cycling garment here, so it lives once (per-product fabric/fit/origin still differ).
+const TECH_CARE =
+  'Machine wash cold on a gentle cycle, inside out, with like colours; hang to dry. No fabric softener — it clogs the wicking — and no tumble dryer, which cooks the elastane and the chamois. Looked after, this rides hard for years.';
+// A windproof/waterproof shell wants different care — heat and softeners kill the DWR.
+const SHELL_CARE =
+  'Machine wash warm on a gentle cycle, zipped up, with like colours; hang to dry. No fabric softener or tumble dryer — both strip the water-repellent finish. Reproof occasionally to keep water beading off rather than soaking in.';
 
 const money = (dollars: number): number => Math.round(dollars * 100);
 
@@ -426,6 +447,18 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-in', 'bib-shorts'],
     seoTitle: 'Endurance Bib Short — all-day cycling bib shorts',
     seoDescription: 'A multi-density seamless chamois and compressive Italian fabric, built for all-day endurance rides.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A compressive Italian-milled Lycra body over a seamless, multi-density chamois — denser under the sit bones, softer at the edges — carried on a bracing mesh upper so the pad never shifts. Flatlock seams throughout, placed off every contact point.',
+      fit: 'Endurance fit: supportive without race compression, with a higher back and a wide, flat leg gripper for time in the saddle. True to size; between sizes, size up for all-day comfort.',
+      care: TECH_CARE,
+      materials: [
+        { name: 'Italian Lycra', percent: '80%' },
+        { name: 'Elastane', percent: '20%' },
+      ],
+      origin: 'Made in Italy',
+    },
     options: [sizeOption()],
     variants: sizeVariants('THR-BIB-END', 180),
     images: [{ assetId: 'endurance-bib-short', isPrimary: true, alt: 'The Endurance Bib Short' }],
@@ -443,6 +476,18 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['bib-shorts'],
     seoTitle: 'Race Bib Short — compressive race-fit cycling bibs',
     seoDescription: 'A fast, thin chamois in a second-skin compressive cut for race-day riding.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A second-skin compressive weave over a thin, fast race chamois, finished with a wide silicone power band. Every panel is cut close and bonded flat so nothing bags, rolls or robs a watt.',
+      fit: 'Race fit: aggressive and body-hugging, short at the front and long at the back for the drops. Between sizes, size down.',
+      care: TECH_CARE,
+      materials: [
+        { name: 'Compressive nylon', percent: '78%' },
+        { name: 'Elastane', percent: '22%' },
+      ],
+      origin: 'Made in Italy',
+    },
     options: [sizeOption()],
     variants: sizeVariants('THR-BIB-RACE', 220),
     images: [{ assetId: 'race-bib-short', isPrimary: true, alt: 'The Race Bib Short' }],
@@ -460,6 +505,18 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['jerseys'],
     seoTitle: "Climber's Jersey — ultralight summer cycling jersey",
     seoDescription: 'An ultralight open-knit cycling jersey with three deep pockets, built for long summer climbs.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'An ultralight open-knit polyester body that dumps heat on a climb, a half-length front zip to dial the airflow, and three deep drop-in pockets plus a zipped valuables pocket for a full day of food.',
+      fit: 'Climbing fit: close through the body without race compression, so it still breathes on a long ascent. True to size.',
+      care: TECH_CARE,
+      materials: [
+        { name: 'Recycled polyester', percent: '88%' },
+        { name: 'Elastane', percent: '12%' },
+      ],
+      origin: 'Made in Portugal',
+    },
     options: [sizeOption()],
     variants: sizeVariants('THR-JER-CLM', 140),
     images: [{ assetId: 'climbers-jersey', isPrimary: true, alt: "The Climber's Jersey" }],
@@ -477,6 +534,18 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-in', 'jerseys'],
     seoTitle: 'Aero Jersey — race-fit aerodynamic cycling jersey',
     seoDescription: 'A race-close aero cycling jersey with bonded seams and textured sleeve panels.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A race-close body in a slick low-drag weave with textured sleeve panels that trip the airflow, bonded seams throughout and a silicone gripper hem that locks it down in the drops.',
+      fit: 'Aero race fit: very close, cut for the riding position rather than the coffee stop. Between sizes, size down.',
+      care: TECH_CARE,
+      materials: [
+        { name: 'Polyamide', percent: '82%' },
+        { name: 'Elastane', percent: '18%' },
+      ],
+      origin: 'Made in Italy',
+    },
     options: [sizeOption()],
     variants: sizeVariants('THR-JER-AERO', 160),
     images: [{ assetId: 'aero-jersey', isPrimary: true, alt: 'The Aero Jersey' }],
@@ -494,6 +563,18 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['jerseys', 'cold-weather'],
     seoTitle: 'Thermal Roubaix Jersey — brushed thermal winter cycling jersey',
     seoDescription: 'A brushed-back thermal cycling jersey with a tall zip guard, built for cold, dry winter rides.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A brushed-back Roubaix thermal fabric with a deep, warm pile inner, a tall fleece-lined zip guard that keeps the wind off your throat and a dropped tail for coverage in the drops.',
+      fit: 'Winter fit: room for a base layer underneath without bulk. True to size; size up if you layer heavily.',
+      care: TECH_CARE,
+      materials: [
+        { name: 'Brushed polyester', percent: '86%' },
+        { name: 'Elastane', percent: '14%' },
+      ],
+      origin: 'Made in Portugal',
+    },
     options: [sizeOption()],
     variants: sizeVariants('THR-JER-THM', 175),
     images: [{ assetId: 'thermal-jersey', isPrimary: true, alt: 'The Thermal Roubaix Jersey' }],
@@ -511,6 +592,15 @@ const PRODUCTS: Product[] = [
     collectionHandles: [],
     seoTitle: 'Mesh Base Layer — lightweight wicking cycling base layer',
     seoDescription: 'A featherweight open-mesh cycling base layer that moves sweat off the skin fast.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A featherweight open-mesh knit that lifts sweat off the skin and hands it to your jersey, with flatlock seams so nothing rubs under a race fit.',
+      fit: 'Second-skin fit — it should sit snug against the skin to wick properly. True to size.',
+      care: TECH_CARE,
+      materials: [{ name: 'Polypropylene', percent: '100%' }],
+      origin: 'Made in Italy',
+    },
     options: [sizeOption()],
     variants: sizeVariants('THR-BASE-MSH', 55),
     images: [{ assetId: 'mesh-base-layer', isPrimary: true, alt: 'The Mesh Base Layer' }],
@@ -528,6 +618,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-in', 'cold-weather'],
     seoTitle: 'Merino Long-Sleeve Base — winter merino cycling base layer',
     seoDescription: 'A fine merino long-sleeve cycling base layer that regulates heat and resists odour.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A fine merino-blend long-sleeve knit that holds heat when you soft-pedal and sheds it when you go hard, resists odour over back-to-back days and stays warm even when it is damp.',
+      fit: 'Close winter base fit, long in the sleeve and body so it stays tucked. True to size.',
+      care: 'Machine wash cold on the wool cycle, inside out; reshape and dry flat. No fabric softener, no tumble dryer — heat felts merino. Air between rides and it needs washing far less than you think.',
+      materials: [
+        { name: 'Merino wool', percent: '62%' },
+        { name: 'Polyester', percent: '33%' },
+        { name: 'Elastane', percent: '5%' },
+      ],
+      origin: 'Made in Italy',
+    },
     options: [sizeOption()],
     variants: sizeVariants('THR-BASE-MER', 95),
     images: [{ assetId: 'merino-base-layer', isPrimary: true, alt: 'The Merino Long-Sleeve Base' }],
@@ -545,6 +648,15 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-in', 'cold-weather'],
     seoTitle: 'Featherweight Wind Gilet — packable windproof cycling gilet',
     seoDescription: 'A whisper-thin packable windproof cycling gilet with a breathable mesh back.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A whisper-thin windproof ripstop front with a breathable mesh back, a full zip with a chin guard, and a rear pocket it packs down into — smaller than a gel.',
+      fit: 'Close over a jersey, cut to layer without flapping at speed. True to size.',
+      care: SHELL_CARE,
+      materials: [{ name: 'Ripstop nylon', percent: '100%' }],
+      origin: 'Made in Vietnam',
+    },
     options: [sizeOption()],
     variants: sizeVariants('THR-GIL-WND', 130),
     images: [{ assetId: 'wind-gilet', isPrimary: true, alt: 'The Featherweight Wind Gilet' }],
@@ -562,6 +674,15 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['cold-weather'],
     seoTitle: 'Stormshell Rain Jacket — waterproof breathable cycling shell',
     seoDescription: 'A taped-seam three-layer waterproof, breathable cycling rain jacket that packs away small.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A genuinely waterproof, genuinely breathable three-layer laminate shell with fully taped seams, a storm flap over the zip, a dropped tail and a packable rear pocket.',
+      fit: 'Race-cut shell, close enough to layer over a jersey without billowing in a crosswind. True to size.',
+      care: SHELL_CARE,
+      materials: [{ name: '3-layer waterproof laminate', percent: '100%' }],
+      origin: 'Made in Vietnam',
+    },
     options: [sizeOption()],
     variants: sizeVariants('THR-JKT-STM', 240),
     images: [{ assetId: 'stormshell-rain-jacket', isPrimary: true, alt: 'The Stormshell Rain Jacket' }],
@@ -766,20 +887,11 @@ const CONTENT = [
 // + static performance copy are ours. Readable copy stays on `text-base-content` over the
 // white content band — the hi-vis accent is held to the chrome + the buy button.
 
-/** One labelled detail block in the buy-box — an uppercase `<h2>` label over a paragraph of
- *  static performance copy. The "PERFORMANCE / FABRIC / DELIVERY" stack, stacked rather than
- *  tabbed so it reads with no JavaScript and needs no behaviour marker. */
-function pdpDetail(label: string, body: string): Node {
-  return el('div', 'flex flex-col gap-2 border-t border-base-300 pt-5', {
-    children: [
-      el('h2', 'text-sm font-bold uppercase tracking-widest text-base-content', { text: label }),
-      el('p', 'text-base leading-relaxed text-base-content', { text: body }),
-    ],
-  });
-}
-
 /** The bespoke buy REGION — authored UNSCOPED; `productPage` wraps it in `repeat('product')`.
- *  Left: the big on-body product image. Right: the bold, hard-working buy column. */
+ *  Left: the big on-body product image. Right: the bold, hard-working buy column. The detail
+ *  stack is no longer hardcoded per template (a cap's care ≠ a jacket's care): `pdpAttributes`
+ *  repeats the routed product's OWN typed attributes (docs/143), styled in the uppercase
+ *  Threshold voice, and `pdpPolicyLinks` points at the real shipping/returns pages. */
 function pdpBuyRegion(): Node {
   return el('section', 'bg-base-100 @container px-6 py-12 @3xl:py-16', {
     children: [
@@ -808,31 +920,36 @@ function pdpBuyRegion(): Node {
                     compareClass: 'text-lg text-base-content line-through',
                     rowClass: 'flex items-baseline gap-4',
                   }),
+                  // A real low-stock signal, in the hi-vis accent — shown only when the
+                  // routed product is genuinely running low (never fabricated scarcity).
+                  pdpStockBadge({
+                    className:
+                      'inline-flex w-fit items-center gap-2 rounded-field bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-content',
+                    label: 'Low stock',
+                  }),
                 ],
               }),
               pdpDescription('text-lg leading-relaxed text-base-content'),
               // Qty + Add to cart — the near-black mono CTA (btn-primary in `velodrome`).
               addToCartForm(),
-              // The performance detail stack.
-              el('div', 'mt-2 flex flex-col gap-5', {
-                children: [
-                  pdpDetail(
-                    'Performance & fit',
-                    'Cut for time in the saddle, not time in the mirror. The fit sits flat in the riding position — long in the back, short at the front — and moves with you out of the saddle without a single seam catching. Race and endurance fits are called out on each piece; if you ride between sizes, size down for race, up for all-day comfort.'
-                  ),
-                  pdpDetail(
-                    'Fabric & construction',
-                    'Built from Italian-milled performance fabric chosen for one job and ridden until it proved it — compressive where it needs to support, open-knit where it needs to breathe. Bonded hems, laser-cut leg grippers and reinforced stress points mean nothing bags, rolls or lets go on the ride that counts.'
-                  ),
-                  pdpDetail(
-                    'Care',
-                    'Machine wash cold on a gentle cycle, inside out, with like colours, then hang to dry. Skip the fabric softener — it clogs the wicking that keeps you dry — and skip the tumble dryer, which is what kills a chamois before its time. Looked after, this kit rides hard for years.'
-                  ),
-                  pdpDetail(
-                    'Shipping & returns',
-                    'Free tracked shipping on orders over $75, dispatched within one business day. Thirty days to return anything unworn, with tags, for a full refund — and if a seam or a fabric ever fails in normal riding, we replace it. Kit that does not hold up does not get to wear our name.'
-                  ),
-                ],
+              // The product's OWN typed attributes (fabric / fit / care / materials / origin),
+              // repeated from `attributeSections` — real per-product copy, not a hardcoded stack.
+              pdpAttributes({
+                containerClass: 'mt-2 flex flex-col gap-5',
+                sectionClass: 'flex flex-col gap-2 border-t border-base-300 pt-5',
+                labelTag: 'h2',
+                labelClass: 'text-sm font-bold uppercase tracking-widest text-base-content',
+                valueClass: 'text-base leading-relaxed text-base-content',
+                rowClass:
+                  'flex items-baseline justify-between gap-4 border-b border-base-200 pb-1',
+                rowLabelClass: 'text-base font-semibold text-base-content',
+                rowValueClass: 'text-base text-base-content',
+              }),
+              // Shipping & returns — LINKS to the store's real legal pages, never reprinted copy.
+              pdpPolicyLinks({
+                className:
+                  'flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-5 text-sm font-semibold uppercase tracking-widest text-base-content',
+                linkClass: 'underline underline-offset-4',
               }),
             ],
           }),

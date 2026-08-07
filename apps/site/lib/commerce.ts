@@ -209,6 +209,18 @@ export interface PublicProductFitment {
   notes: string | null;
 }
 
+/** One typed attribute section (docs/143) — the type's field order is preserved,
+ *  so a PDP can auto-render these top-to-bottom. `value` is the resolved display
+ *  string (scalar, or a joined summary for a repeater); `items` carries the rows
+ *  of a repeater/object field for a sub-repeat (empty for scalar fields). */
+export interface PublicProductAttributeSection {
+  key: string;
+  label: string;
+  kind: string;
+  value: string;
+  items: { label: string; value: string }[];
+}
+
 export interface PublicProduct extends PublicProductListItem {
   fulfillmentType: string;
   weightGrams: number | null;
@@ -217,6 +229,16 @@ export interface PublicProduct extends PublicProductListItem {
   variants: PublicProductVariant[];
   images: PublicProductImage[];
   fitments: PublicProductFitment[];
+  /** The product's typed product-type key (docs/143), or null when untyped. */
+  productTypeKey: string | null;
+  /** Resolved display value per attribute field — for INDIVIDUAL binding
+   *  (`commerce.product.attributes.fabric`). Empty for an untyped product. */
+  attributes: Record<string, string>;
+  /** Ordered attribute sections — for the AUTO-RENDER repeat on the PDP. */
+  attributeSections: PublicProductAttributeSection[];
+  /** In stock but at/below reorder point — the honest low-stock signal that
+   *  replaced fabricated scarcity. */
+  lowStock: boolean;
 }
 
 export interface PublicCategoryNode {

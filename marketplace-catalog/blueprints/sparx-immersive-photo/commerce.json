@@ -1,0 +1,146 @@
+{
+  "categories": [
+    {
+      "handle": "prints",
+      "name": "Prints",
+      "description": "Signed, numbered archival prints.",
+      "featured": true
+    },
+    {
+      "handle": "gear",
+      "name": "Field gear",
+      "description": "What we actually carry.",
+      "featured": true
+    },
+    {
+      "handle": "books",
+      "name": "Books",
+      "description": "The work, bound to last.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "featured",
+      "name": "Featured",
+      "description": "The prints and gear behind this season’s stories.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["atacama-at-dawn-print", "the-last-glacier-print", "wayfarer-field-bag"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "atacama-at-dawn-print",
+      "title": "Atacama at Dawn — fine-art print",
+      "description": "The cover frame, printed the way we would hang it: a museum-grade archival pigment print on cotton rag, the desert mountains going from blue to gold in the first minute of light. Signed and numbered, shipped flat.",
+      "status": "active",
+      "productType": "Print",
+      "vendor": "Wayfarer",
+      "tags": ["print", "landscape", "travel"],
+      "categoryHandles": ["prints"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "Atacama at Dawn — signed fine-art print | Wayfarer",
+      "seoDescription": "A signed, numbered archival pigment print of the Atacama at first light, on cotton rag.",
+      "variants": [
+        {
+          "sku": "WYF-PRT-ATACAMA",
+          "priceCents": 18000,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "print-atacama",
+          "isPrimary": true,
+          "alt": "A fine-art print of a mountain lake at dawn"
+        }
+      ]
+    },
+    {
+      "handle": "the-last-glacier-print",
+      "title": "The Last Glacier — fine-art print",
+      "description": "From the Rockies photo story: a green glacial valley under a thinning field of ice. An archival pigment print on cotton rag, signed and numbered — a record of a place that will not look this way for long.",
+      "status": "active",
+      "productType": "Print",
+      "vendor": "Wayfarer",
+      "tags": ["print", "landscape", "conservation"],
+      "categoryHandles": ["prints"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "The Last Glacier — signed fine-art print | Wayfarer",
+      "seoDescription": "A signed, numbered archival print of a glacial valley in the Rockies, on cotton rag.",
+      "variants": [
+        {
+          "sku": "WYF-PRT-GLACIER",
+          "priceCents": 18000,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "print-glacier",
+          "isPrimary": true,
+          "alt": "A fine-art print of a green glacial valley"
+        }
+      ]
+    },
+    {
+      "handle": "wayfarer-field-bag",
+      "title": "Wayfarer Field Bag",
+      "description": "The bag we actually carry: a weatherproof waxed-canvas camera bag that holds a body, three lenses, a flask and a notebook, and takes a tripod on the side. Built with a maker in the mountains it is named for.",
+      "status": "active",
+      "productType": "Gear",
+      "vendor": "Wayfarer",
+      "tags": ["gear", "bag", "field"],
+      "categoryHandles": ["gear"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "Wayfarer Field Bag — weatherproof camera bag",
+      "seoDescription": "A weatherproof waxed-canvas camera field bag: a body, three lenses, and a tripod on the side.",
+      "variants": [
+        {
+          "sku": "WYF-BAG-FIELD",
+          "priceCents": 14500,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "gear-bag",
+          "isPrimary": true,
+          "alt": "A weatherproof camera field bag"
+        }
+      ]
+    },
+    {
+      "handle": "latitudes-photobook",
+      "title": "Latitudes — a photobook",
+      "description": "Five years of the journal, edited down to one hundred and twenty photographs and the short essays that go with them. A heavyweight linen-bound book, printed and sewn to last longer than the trips it remembers.",
+      "status": "active",
+      "productType": "Book",
+      "vendor": "Wayfarer",
+      "tags": ["book", "photobook"],
+      "categoryHandles": ["books"],
+      "collectionHandles": [],
+      "seoTitle": "Latitudes — a Wayfarer photobook",
+      "seoDescription": "A linen-bound photobook: one hundred and twenty photographs from five years of the journal.",
+      "variants": [
+        {
+          "sku": "WYF-BOOK-LATITUDES",
+          "priceCents": 6500,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "book-latitudes",
+          "isPrimary": true,
+          "alt": "A hardback photobook on a table"
+        }
+      ]
+    }
+  ]
+}

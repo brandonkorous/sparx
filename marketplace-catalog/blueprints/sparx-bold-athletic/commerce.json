@@ -98,6 +98,23 @@
       "collectionHandles": ["new-in", "bib-shorts"],
       "seoTitle": "Endurance Bib Short — all-day cycling bib shorts",
       "seoDescription": "A multi-density seamless chamois and compressive Italian fabric, built for all-day endurance rides.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A compressive Italian-milled Lycra body over a seamless, multi-density chamois — denser under the sit bones, softer at the edges — carried on a bracing mesh upper so the pad never shifts. Flatlock seams throughout, placed off every contact point.",
+        "fit": "Endurance fit: supportive without race compression, with a higher back and a wide, flat leg gripper for time in the saddle. True to size; between sizes, size up for all-day comfort.",
+        "care": "Machine wash cold on a gentle cycle, inside out, with like colours; hang to dry. No fabric softener — it clogs the wicking — and no tumble dryer, which cooks the elastane and the chamois. Looked after, this rides hard for years.",
+        "materials": [
+          {
+            "name": "Italian Lycra",
+            "percent": "80%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "20%"
+          }
+        ],
+        "origin": "Made in Italy"
+      },
       "options": [
         {
           "name": "Size",
@@ -195,6 +212,23 @@
       "collectionHandles": ["bib-shorts"],
       "seoTitle": "Race Bib Short — compressive race-fit cycling bibs",
       "seoDescription": "A fast, thin chamois in a second-skin compressive cut for race-day riding.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A second-skin compressive weave over a thin, fast race chamois, finished with a wide silicone power band. Every panel is cut close and bonded flat so nothing bags, rolls or robs a watt.",
+        "fit": "Race fit: aggressive and body-hugging, short at the front and long at the back for the drops. Between sizes, size down.",
+        "care": "Machine wash cold on a gentle cycle, inside out, with like colours; hang to dry. No fabric softener — it clogs the wicking — and no tumble dryer, which cooks the elastane and the chamois. Looked after, this rides hard for years.",
+        "materials": [
+          {
+            "name": "Compressive nylon",
+            "percent": "78%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "22%"
+          }
+        ],
+        "origin": "Made in Italy"
+      },
       "options": [
         {
           "name": "Size",
@@ -292,6 +326,23 @@
       "collectionHandles": ["jerseys"],
       "seoTitle": "Climber's Jersey — ultralight summer cycling jersey",
       "seoDescription": "An ultralight open-knit cycling jersey with three deep pockets, built for long summer climbs.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "An ultralight open-knit polyester body that dumps heat on a climb, a half-length front zip to dial the airflow, and three deep drop-in pockets plus a zipped valuables pocket for a full day of food.",
+        "fit": "Climbing fit: close through the body without race compression, so it still breathes on a long ascent. True to size.",
+        "care": "Machine wash cold on a gentle cycle, inside out, with like colours; hang to dry. No fabric softener — it clogs the wicking — and no tumble dryer, which cooks the elastane and the chamois. Looked after, this rides hard for years.",
+        "materials": [
+          {
+            "name": "Recycled polyester",
+            "percent": "88%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "12%"
+          }
+        ],
+        "origin": "Made in Portugal"
+      },
       "options": [
         {
           "name": "Size",
@@ -389,6 +440,23 @@
       "collectionHandles": ["new-in", "jerseys"],
       "seoTitle": "Aero Jersey — race-fit aerodynamic cycling jersey",
       "seoDescription": "A race-close aero cycling jersey with bonded seams and textured sleeve panels.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A race-close body in a slick low-drag weave with textured sleeve panels that trip the airflow, bonded seams throughout and a silicone gripper hem that locks it down in the drops.",
+        "fit": "Aero race fit: very close, cut for the riding position rather than the coffee stop. Between sizes, size down.",
+        "care": "Machine wash cold on a gentle cycle, inside out, with like colours; hang to dry. No fabric softener — it clogs the wicking — and no tumble dryer, which cooks the elastane and the chamois. Looked after, this rides hard for years.",
+        "materials": [
+          {
+            "name": "Polyamide",
+            "percent": "82%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "18%"
+          }
+        ],
+        "origin": "Made in Italy"
+      },
       "options": [
         {
           "name": "Size",
@@ -486,6 +554,23 @@
       "collectionHandles": ["jerseys", "cold-weather"],
       "seoTitle": "Thermal Roubaix Jersey — brushed thermal winter cycling jersey",
       "seoDescription": "A brushed-back thermal cycling jersey with a tall zip guard, built for cold, dry winter rides.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A brushed-back Roubaix thermal fabric with a deep, warm pile inner, a tall fleece-lined zip guard that keeps the wind off your throat and a dropped tail for coverage in the drops.",
+        "fit": "Winter fit: room for a base layer underneath without bulk. True to size; size up if you layer heavily.",
+        "care": "Machine wash cold on a gentle cycle, inside out, with like colours; hang to dry. No fabric softener — it clogs the wicking — and no tumble dryer, which cooks the elastane and the chamois. Looked after, this rides hard for years.",
+        "materials": [
+          {
+            "name": "Brushed polyester",
+            "percent": "86%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "14%"
+          }
+        ],
+        "origin": "Made in Portugal"
+      },
       "options": [
         {
           "name": "Size",
@@ -583,6 +668,19 @@
       "collectionHandles": [],
       "seoTitle": "Mesh Base Layer — lightweight wicking cycling base layer",
       "seoDescription": "A featherweight open-mesh cycling base layer that moves sweat off the skin fast.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A featherweight open-mesh knit that lifts sweat off the skin and hands it to your jersey, with flatlock seams so nothing rubs under a race fit.",
+        "fit": "Second-skin fit — it should sit snug against the skin to wick properly. True to size.",
+        "care": "Machine wash cold on a gentle cycle, inside out, with like colours; hang to dry. No fabric softener — it clogs the wicking — and no tumble dryer, which cooks the elastane and the chamois. Looked after, this rides hard for years.",
+        "materials": [
+          {
+            "name": "Polypropylene",
+            "percent": "100%"
+          }
+        ],
+        "origin": "Made in Italy"
+      },
       "options": [
         {
           "name": "Size",
@@ -680,6 +778,27 @@
       "collectionHandles": ["new-in", "cold-weather"],
       "seoTitle": "Merino Long-Sleeve Base — winter merino cycling base layer",
       "seoDescription": "A fine merino long-sleeve cycling base layer that regulates heat and resists odour.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A fine merino-blend long-sleeve knit that holds heat when you soft-pedal and sheds it when you go hard, resists odour over back-to-back days and stays warm even when it is damp.",
+        "fit": "Close winter base fit, long in the sleeve and body so it stays tucked. True to size.",
+        "care": "Machine wash cold on the wool cycle, inside out; reshape and dry flat. No fabric softener, no tumble dryer — heat felts merino. Air between rides and it needs washing far less than you think.",
+        "materials": [
+          {
+            "name": "Merino wool",
+            "percent": "62%"
+          },
+          {
+            "name": "Polyester",
+            "percent": "33%"
+          },
+          {
+            "name": "Elastane",
+            "percent": "5%"
+          }
+        ],
+        "origin": "Made in Italy"
+      },
       "options": [
         {
           "name": "Size",
@@ -777,6 +896,19 @@
       "collectionHandles": ["new-in", "cold-weather"],
       "seoTitle": "Featherweight Wind Gilet — packable windproof cycling gilet",
       "seoDescription": "A whisper-thin packable windproof cycling gilet with a breathable mesh back.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A whisper-thin windproof ripstop front with a breathable mesh back, a full zip with a chin guard, and a rear pocket it packs down into — smaller than a gel.",
+        "fit": "Close over a jersey, cut to layer without flapping at speed. True to size.",
+        "care": "Machine wash warm on a gentle cycle, zipped up, with like colours; hang to dry. No fabric softener or tumble dryer — both strip the water-repellent finish. Reproof occasionally to keep water beading off rather than soaking in.",
+        "materials": [
+          {
+            "name": "Ripstop nylon",
+            "percent": "100%"
+          }
+        ],
+        "origin": "Made in Vietnam"
+      },
       "options": [
         {
           "name": "Size",
@@ -874,6 +1006,19 @@
       "collectionHandles": ["cold-weather"],
       "seoTitle": "Stormshell Rain Jacket — waterproof breathable cycling shell",
       "seoDescription": "A taped-seam three-layer waterproof, breathable cycling rain jacket that packs away small.",
+      "productTypeKey": "apparel",
+      "attributes": {
+        "fabric": "A genuinely waterproof, genuinely breathable three-layer laminate shell with fully taped seams, a storm flap over the zip, a dropped tail and a packable rear pocket.",
+        "fit": "Race-cut shell, close enough to layer over a jersey without billowing in a crosswind. True to size.",
+        "care": "Machine wash warm on a gentle cycle, zipped up, with like colours; hang to dry. No fabric softener or tumble dryer — both strip the water-repellent finish. Reproof occasionally to keep water beading off rather than soaking in.",
+        "materials": [
+          {
+            "name": "3-layer waterproof laminate",
+            "percent": "100%"
+          }
+        ],
+        "origin": "Made in Vietnam"
+      },
       "options": [
         {
           "name": "Size",

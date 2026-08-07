@@ -1,0 +1,402 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "small-hours-is-out",
+    "status": "published",
+    "authorSlug": "vela",
+    "categories": ["Releases"],
+    "tags": ["Album", "Small Hours"],
+    "body": {
+      "title": "Small Hours is out tonight",
+      "excerpt": "Three years, one winter of power cuts, and a room with the heating off. The new record is finally yours.",
+      "featuredImage": {
+        "$asset": "release-cover"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "It is done. Small Hours — ten songs we have been living inside since a cold January — is out everywhere from midnight tonight. We are not sure we have ever been this nervous to give something away."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "How it was made"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We cut it live to tape in the flat where the first Vela demos were recorded, four of us in one room with the amps turned down enough not to lose the deposit. Nothing is quantised, nothing is fixed after the fact. The mistakes you can hear are the takes we liked best."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What to play it on"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "It is mixed loud and meant to be played that way — in a car, on headphones on a night bus, or off the vinyl at a volume your neighbours will remember. If you can, get the record. The download is in every copy."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Thank you for waiting. Come find us on the road — the dates are up, and we would love to play these for you in a room."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "writing-in-one-room",
+    "status": "published",
+    "authorSlug": "mara-lindqvist",
+    "categories": ["Studio"],
+    "tags": ["Songwriting", "Recording"],
+    "body": {
+      "title": "Why we still record everything in one room",
+      "excerpt": "Everyone told us to track it properly, in a real studio, one instrument at a time. We tried it once. It sounded like a stranger.",
+      "featuredImage": {
+        "$asset": "post-studio"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "There is a version of this band that made a cleaner record. We know, because we spent two weeks in a proper studio making it, and then we quietly threw it away."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The sound is the room"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "When you record together in one space, the bleed between the microphones is the sound. You cannot separate the guitar from the drums, so you stop trying, and what you get instead is four people listening to each other in real time. That listening is the thing I care about most."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What we give up"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "You give up control. You cannot fix one wrong note without losing the whole take, so you keep the wrong notes, and after a while you realise you prefer them. A record with no mistakes is a record with no evidence anyone was there."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Small Hours has a door slamming on track six. It was the wind. We left it in."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "nightshift-single",
+    "status": "published",
+    "authorSlug": "vela",
+    "categories": ["Releases"],
+    "tags": ["Single", "Nightshift"],
+    "body": {
+      "title": "“Nightshift” — the first single, and the video",
+      "excerpt": "The song we nearly cut from the record is the one leading it. Here is why it stayed, and where the video came from.",
+      "featuredImage": {
+        "$asset": "post-single"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "“Nightshift” almost did not make the album. It was too long, too slow, and it took us a year to work out what it was about. Then one night it clicked, and now it opens the record."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The song"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "It is about the people who are awake when everyone else is asleep — the ones cleaning the offices, driving the last buses, sitting up with someone who is unwell. We wanted a song that kept them company."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The video"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We shot it in a single take on a night bus with a borrowed camera and no permit, which we do not recommend. The city you see through the windows is exactly the one we drive through going home from a show."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "It is up now on the streaming links, and on the release page. Play it late."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "tour-diary-bristol",
+    "status": "published",
+    "authorSlug": "theo-vance",
+    "categories": ["Tour"],
+    "tags": ["Tour diary", "On the road"],
+    "body": {
+      "title": "Tour diary: the first night in Bristol",
+      "excerpt": "A blown fuse, a borrowed amp, and four hundred people who did not know the new songs yet sang them back anyway.",
+      "featuredImage": {
+        "$asset": "post-tour"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "First night of the Small Hours tour, and the venue lost power ten minutes before doors. What happened next is the reason any of us still do this."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The blown fuse"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "An old building, a lot of stage lights, and a fuse that had clearly been waiting for us. The house crew found a workaround, a neighbouring bar lent us an amp, and we went on twenty minutes late to a room that had been standing in the dark, patient, the whole time."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The part that got us"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "These are brand new songs — the record was only days old — and by the second chorus of “Nightshift” four hundred people were singing the words back. Nobody had had time to learn them. They just felt where they were going. I watched Mara turn around so the crowd would not see her face."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Fifteen more of these to go. If you are coming to one, come early and say hello at the merch table."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "strings-and-a-choir",
+    "status": "published",
+    "authorSlug": "mara-lindqvist",
+    "categories": ["Studio"],
+    "tags": ["Collaboration", "Behind the scenes"],
+    "body": {
+      "title": "Behind the scenes: the strings and the choir on “Harbour”",
+      "excerpt": "The biggest-sounding song on the quietest record we have made. Here is the room full of people who made it that way.",
+      "featuredImage": {
+        "$asset": "post-behind"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "“Harbour” is the one song on Small Hours we could not make in the flat. It needed more people than the room could hold, so for one day we broke our own rule."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The players"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We brought in a string quartet we have loved for years and a community choir from two streets over — twenty voices who had never heard the song before that morning. We taught them the part by singing it, and recorded the third time through, while it was still new to them."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Keeping it live"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Even with thirty people in the room, we tracked it live, everyone at once, one take kept. You can hear a chair scrape and someone laugh at the end. We kept that too. The bigness is real people in a real room, not a plug-in."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "It closes the record. Headphones, lights off, is how we hear it."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

@@ -1,0 +1,77 @@
+[
+  {
+    "id": "lead-research",
+    "url": "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=1400&q=80",
+    "alt": "A Northgate researcher at a microscope in a campus lab"
+  },
+  {
+    "id": "story-movein",
+    "url": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1400&q=80",
+    "alt": "Students gathered on the Northgate quad"
+  },
+  {
+    "id": "story-sleep",
+    "url": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1400&q=80",
+    "alt": "A clinician reviewing notes in a campus health study"
+  },
+  {
+    "id": "story-robotics",
+    "url": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1400&q=80",
+    "alt": "A student working at a laptop in a robotics lab"
+  },
+  {
+    "id": "story-orchestra",
+    "url": "https://images.unsplash.com/photo-1519683384663-c9b1e5f6f9f0?w=1400&q=80",
+    "alt": "A student orchestra performing in a concert hall"
+  },
+  {
+    "id": "library-hall",
+    "url": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1400&q=80",
+    "alt": "The reading room of the Northgate library"
+  },
+  {
+    "id": "campus-building",
+    "url": "https://images.unsplash.com/photo-1562774053-701939374585?w=1400&q=80",
+    "alt": "A Northgate University building at dusk"
+  },
+  {
+    "id": "events-hall",
+    "url": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1400&q=80",
+    "alt": "An audience in a Northgate lecture hall"
+  },
+  {
+    "id": "author-marsh",
+    "url": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1400&q=80",
+    "alt": "Portrait of Elena Marsh"
+  },
+  {
+    "id": "author-park",
+    "url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=1400&q=80",
+    "alt": "Portrait of Theo Park"
+  },
+  {
+    "id": "author-okonkwo",
+    "url": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=1400&q=80",
+    "alt": "Portrait of Nadia Okonkwo"
+  },
+  {
+    "id": "press-anthology",
+    "url": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1400&q=80",
+    "alt": "The Northgate Press anthology, a hardback book"
+  },
+  {
+    "id": "history-book",
+    "url": "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=1400&q=80",
+    "alt": "An open archival book of Northgate history"
+  },
+  {
+    "id": "alumni-tee",
+    "url": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=1400&q=80",
+    "alt": "A folded Northgate alumni t-shirt"
+  },
+  {
+    "id": "campus-mug",
+    "url": "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=1400&q=80",
+    "alt": "A ceramic Northgate campus mug"
+  }
+]

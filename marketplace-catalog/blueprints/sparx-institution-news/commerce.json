@@ -1,0 +1,140 @@
+{
+  "categories": [
+    {
+      "handle": "press",
+      "name": "University Press",
+      "description": "Books from Northgate University Press.",
+      "featured": true
+    },
+    {
+      "handle": "merch",
+      "name": "Alumni & Merch",
+      "description": "Carry a bit of Northgate with you.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "featured",
+      "name": "Featured",
+      "description": "What the Press and the alumni office are pointing at this term.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["northgate-press-anthology", "northgate-a-history", "northgate-alumni-tee"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "northgate-press-anthology",
+      "title": "Northgate Review — the tenth anthology",
+      "description": "A hardback collection of the best essays, poetry and long-form reporting from a decade of the Northgate Review, the university’s literary and ideas journal. Edited by the faculty of Arts & Sciences.",
+      "status": "active",
+      "productType": "Book",
+      "vendor": "Northgate University Press",
+      "tags": ["press", "book", "anthology"],
+      "categoryHandles": ["press"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "Northgate Review — the tenth anthology | Northgate University Press",
+      "seoDescription": "A hardback decade anthology of essays, poetry and reporting from the Northgate Review.",
+      "variants": [
+        {
+          "sku": "NGP-ANTH-10",
+          "priceCents": 3200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "press-anthology",
+          "isPrimary": true,
+          "alt": "The Northgate Review anthology, a hardback book"
+        }
+      ]
+    },
+    {
+      "handle": "northgate-a-history",
+      "title": "Northgate: A History of the University",
+      "description": "The definitive illustrated history of Northgate, from its founding charter to the modern research campus. Written by the university archivist, with two hundred photographs from the collection.",
+      "status": "active",
+      "productType": "Book",
+      "vendor": "Northgate University Press",
+      "tags": ["press", "book", "history"],
+      "categoryHandles": ["press"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "Northgate: A History of the University | Northgate University Press",
+      "seoDescription": "The definitive illustrated history of Northgate University, by the university archivist.",
+      "variants": [
+        {
+          "sku": "NGP-HIST",
+          "priceCents": 4500,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "history-book",
+          "isPrimary": true,
+          "alt": "An open archival book of Northgate history"
+        }
+      ]
+    },
+    {
+      "handle": "northgate-alumni-tee",
+      "title": "Northgate Alumni Tee",
+      "description": "A heavyweight cotton t-shirt with the Northgate seal printed small on the chest. Cut for everyday wear and made to last a few reunions.",
+      "status": "active",
+      "productType": "Apparel",
+      "vendor": "Northgate University",
+      "tags": ["merch", "apparel", "alumni"],
+      "categoryHandles": ["merch"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "Northgate Alumni Tee — heavyweight cotton t-shirt",
+      "seoDescription": "A heavyweight cotton t-shirt with the Northgate seal, cut for everyday wear.",
+      "variants": [
+        {
+          "sku": "NG-TEE-ALUM",
+          "priceCents": 2600,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "alumni-tee",
+          "isPrimary": true,
+          "alt": "A folded Northgate alumni t-shirt"
+        }
+      ]
+    },
+    {
+      "handle": "northgate-campus-mug",
+      "title": "Northgate Campus Mug",
+      "description": "A stoneware mug with a line drawing of Hartwell Hall wrapped around it. Holds a proper amount of coffee for a long afternoon in the stacks.",
+      "status": "active",
+      "productType": "Merch",
+      "vendor": "Northgate University",
+      "tags": ["merch", "mug"],
+      "categoryHandles": ["merch"],
+      "collectionHandles": [],
+      "seoTitle": "Northgate Campus Mug — stoneware mug",
+      "seoDescription": "A stoneware mug with a line drawing of Hartwell Hall.",
+      "variants": [
+        {
+          "sku": "NG-MUG",
+          "priceCents": 1800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "campus-mug",
+          "isPrimary": true,
+          "alt": "A ceramic Northgate campus mug"
+        }
+      ]
+    }
+  ]
+}

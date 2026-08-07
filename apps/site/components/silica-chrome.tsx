@@ -32,7 +32,7 @@ import {
   type ResolveHost,
   type SymbolDef,
 } from '@wizeworks/silicaui-html';
-import { dropEmptyUrlAttrs, renderSilicaBody, responsiveImages } from '@sparx/silica-catalog';
+import { finalizeTree, renderSilicaBody } from '@sparx/silica-catalog';
 
 /** Mounts the real interactive component for a pinned functional core (docs/122) —
  *  keyed by the host node's `component`. The route supplies this (closing over its own
@@ -90,21 +90,56 @@ const VOID_ELEMENTS = new Set([
   'wbr',
 ]);
 
-// HTML attribute → React prop remaps for the handful that differ (chrome uses `a`,
-// `nav`, `button`, `img`, `svg`). Everything else (`href`, `src`, `alt`, `type`,
-// `role`, `target`, `rel`, `aria-*`, `data-*`) is a valid React DOM prop as-is.
+// HTML attribute → React prop, for the names whose React spelling is NOT derivable
+// from the HTML one. A node's `attrs` carry real HTML names because that is what
+// `toHtml` has to emit for the compiled storefront; React wants its own spelling for
+// some of them and warns on the rest ("Invalid DOM property `autoplay`. Did you mean
+// `autoPlay`?"), so the React walk translates on the way in. Everything else
+// (`href`, `src`, `alt`, `type`, `role`, `target`, `rel`, `aria-*`, `data-*`) is a
+// valid React DOM prop as-is.
+//
+// Keep in step with silica's `sanitizeElement` allow-set — that whitelist is the
+// universe of names reaching here, so an attribute added there that React spells
+// differently logs a console error on every affected node until it is listed.
 const ATTR_REMAP: Record<string, string> = {
   tabindex: 'tabIndex',
   colspan: 'colSpan',
   rowspan: 'rowSpan',
   maxlength: 'maxLength',
+  minlength: 'minLength',
   for: 'htmlFor',
   autocomplete: 'autoComplete',
   autofocus: 'autoFocus',
   readonly: 'readOnly',
   novalidate: 'noValidate',
   contenteditable: 'contentEditable',
+  crossorigin: 'crossOrigin',
+  srcset: 'srcSet',
+  inputmode: 'inputMode',
+  enctype: 'encType',
+  spellcheck: 'spellCheck',
+  // media — a `<video>`/`<audio>` in the frame (a muted looping hero background)
+  autoplay: 'autoPlay',
+  playsinline: 'playsInline',
+  // `<time datetime>`
+  datetime: 'dateTime',
 };
+
+// The two hyphenated namespaces React passes through verbatim; everything else
+// hyphenated is an SVG presentation attribute it wants camelCased.
+const VERBATIM_ATTR_PREFIX = /^(?:data|aria)-/;
+
+/** The React prop name for one sanitized attribute. Every hyphenated SVG attribute
+ *  React knows (`stroke-width`, `clip-path`, `stop-color`, `dominant-baseline`, …)
+ *  is its HTML name kebab→camel with no exceptions, so deriving those closes the
+ *  whole class — a pasted brand logo keeps its strokes and gradients instead of
+ *  filling the console. */
+function reactAttrName(name: string): string {
+  const remapped = ATTR_REMAP[name];
+  if (remapped) return remapped;
+  if (!name.includes('-') || VERBATIM_ATTR_PREFIX.test(name)) return name;
+  return name.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase());
+}
 
 interface DataMarker {
   kind: string;
@@ -164,7 +199,7 @@ function attrProps(
 ): Record<string, unknown> {
   const { attrs: safe } = sanitizeElement(tag, attrs);
   const out: Record<string, unknown> = {};
-  for (const [k, v] of Object.entries(safe ?? {})) out[ATTR_REMAP[k] ?? k] = v;
+  for (const [k, v] of Object.entries(safe ?? {})) out[reactAttrName(k)] = v;
   return out;
 }
 
@@ -222,11 +257,12 @@ export function SilicaChrome({
   // bound logo link), and an unhoisted carrier would render a stray hidden input
   // into the chrome. Always run — it also strips carriers that never resolved.
   //
-  // `responsiveImages` is part of that pipeline and was MISSING here, which is the
-  // whole reason the header logo shipped as a single full-width file on every page of
-  // every site. "Mirror the pipeline" was the stated intent; only two of its three
-  // steps were actually mirrored. See the note on `SilicaFunctionalBody`.
-  return walk(responsiveImages(dropEmptyUrlAttrs(resolved)), 'frame', {
+  // The pipeline is `finalizeTree` now, not a hand-copied list of its steps. It was
+  // copied here once and lost `responsiveImages`, which is the whole reason the header
+  // logo shipped as a single full-width file on every page of every site; a later stage
+  // then went to the HTML path only. "Mirror the pipeline" is the stated intent, so
+  // mirror it by CALLING it. See the note on `SilicaFunctionalBody`.
+  return walk(finalizeTree(resolved), 'frame', {
     outlet: children,
     ...(renderHost ? { renderHost } : {}),
   });
@@ -267,7 +303,9 @@ export function SilicaFunctionalBody({
   // and every image on it shipped at one full-size URL — 28 of them on the storefront home,
   // while `/blog` (no host node, so the HTML path) correctly offered 400/800/1200/2000.
   //
-  // Runs LAST and outermost, exactly as in `render.ts`: a bound image's src only exists
-  // after `resolveTree`, so anything earlier has no URL to build a `srcset` from.
-  return walk(responsiveImages(dropEmptyUrlAttrs(resolved)), 'body', { renderHost });
+  // Runs LAST and outermost, exactly as in `render.ts` — which is now literally the same
+  // function: a bound image's src only exists after `resolveTree`, so anything earlier has
+  // no URL to build a `srcset` from, and an image left with no src at all has to be given
+  // the placeholder after that.
+  return walk(finalizeTree(resolved), 'body', { renderHost });
 }

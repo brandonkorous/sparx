@@ -1,0 +1,2769 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "30cbccc7-008d-4112-8eb1-19c715c23c98",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "2cbeb2b6-1638-45f9-8a66-01ce64594a69",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "a21e58b3-b34b-46c9-aff0-0e19a813b90c",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "4ef4df6b-5d92-483b-8d9e-70829725d823",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link4",
+                        "type": "link",
+                        "label": "Company"
+                      },
+                      "id": "73e5460d-0029-4221-b437-fc900e5746d6",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "b4b6adad-2d74-42f9-b40d-0b3f93daf75d",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "e6bac773-c0ee-4fb2-af83-0fb9560f07a1",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "69a63fdc-0cd1-4d85-849f-953313382214",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "e680acd6-2a58-4b6f-b2e4-c2747e85bfc0",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "1d1495f2-3b0f-4d7a-a7ce-7db284f8dc09",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "bfd2e296-0a79-41d1-b9cb-1f1e0a0da760",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "232e0352-c960-4711-a7b0-9c6e6c0dada9",
+                  "ord": "a2"
+                }
+              ],
+              "id": "5a7f7467-b21f-4bfd-a751-fbfc89d689b8",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "7c100ed9-fd7a-418b-8ece-5d080e0581a5",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "f03a79bc-bd07-44d0-898d-3d88dd4e1902",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "681001cd-8c54-41fb-b958-731cd301d512",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "4e39e2bd-34ec-4867-8747-5fc7685dcdf7",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "f11b81e9-3e8e-41ac-8528-3a9e354a63e6",
+                  "ord": "a4"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "b86503fa-5ada-4bb8-a02b-d8adac73a5f9",
+                  "ord": "a5"
+                }
+              ],
+              "part": "panel",
+              "id": "faa42644-a229-46f5-9f2b-a6b4c62429db",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "8acb1b94-2c94-4608-9174-e3d01747feaf",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "0aa48bfa-c68e-4944-b8b8-20c7e142de03",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-200 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @3xl:grid-cols-2",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "1eb22305-61a0-4602-896f-58436a2cec20",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-sm text-sm text-base-content",
+                          "children": [
+                            "Join the list — new work, journal notes, and studio news, about once a month."
+                          ],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "a983efb4-a70b-4c00-86d9-f85db6b5ba0f",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "component",
+                          "component": "Form",
+                          "class": "flex w-full max-w-md flex-col gap-3 @sm:flex-row",
+                          "props": {
+                            "action": "subscribe"
+                          },
+                          "children": [
+                            {
+                              "kind": "component",
+                              "component": "Input",
+                              "class": "input flex-1",
+                              "props": {
+                                "type": "email",
+                                "name": "email",
+                                "placeholder": "you@example.com",
+                                "required": true
+                              },
+                              "id": "f8c507dd-f2b1-4b80-89cf-22f73a02b655",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "component",
+                              "component": "Button",
+                              "class": "btn btn-primary",
+                              "props": {
+                                "label": "Subscribe",
+                                "type": "submit"
+                              },
+                              "slot": {
+                                "name": "cta",
+                                "type": "text",
+                                "label": "Button label"
+                              },
+                              "id": "fac5ab59-1592-41d6-8044-a04afe886aa0",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "6dbe24f9-353b-43bc-8dce-90eb49a76d17",
+                          "ord": "a2"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm text-base-content",
+                          "children": ["No spam, and an unsubscribe link in every issue."],
+                          "slot": {
+                            "name": "note",
+                            "type": "text",
+                            "label": "Reassurance line"
+                          },
+                          "id": "6d9d602b-afae-433a-bdfa-ea37233951cf",
+                          "ord": "a3"
+                        }
+                      ],
+                      "id": "9d953670-709f-4e67-8751-c3c027b181a3",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Explore"],
+                              "slot": {
+                                "name": "col1",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/"
+                              },
+                              "id": "fe106915-7a2f-4abf-b3a7-da852fef33b1",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/shop"
+                                      },
+                                      "children": ["Shop"],
+                                      "slot": {
+                                        "name": "link1",
+                                        "type": "link",
+                                        "label": "Features"
+                                      },
+                                      "id": "91b80280-49ba-453e-b463-965a5c2c1d76",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "3af0b7c6-b91c-41d7-9875-4a0fc18fe661",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/journal"
+                                      },
+                                      "children": ["Journal"],
+                                      "slot": {
+                                        "name": "link2",
+                                        "type": "link",
+                                        "label": "Pricing"
+                                      },
+                                      "id": "ab8ad677-b0b7-44ec-8d96-eed4dcbc47f0",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "7539c4dd-a231-418b-99c3-af418f4a0de5",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/about"
+                                      },
+                                      "children": ["About"],
+                                      "slot": {
+                                        "name": "link3",
+                                        "type": "link",
+                                        "label": "Changelog"
+                                      },
+                                      "id": "e7210d89-97eb-4856-a80b-cda479badd1d",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "f13e4a1e-9b5c-4632-b879-8c17bdbea84e",
+                                  "ord": "a2"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/contact"
+                                      },
+                                      "children": ["Contact"],
+                                      "slot": {
+                                        "name": "link4",
+                                        "type": "link",
+                                        "label": "Roadmap"
+                                      },
+                                      "id": "97e9111f-dce6-41f8-8899-9096c1c1fe62",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "01621ace-07ac-467d-88f4-e393d2a2db30",
+                                  "ord": "a3"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/search"
+                                      },
+                                      "children": ["Search"],
+                                      "id": "9b7c2a8b-4ee3-425a-870d-05fcd09ab494",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "06ee0014-c0a3-455b-90f0-3e9ff96ede79",
+                                  "ord": "a4"
+                                }
+                              ],
+                              "id": "142c9bd7-3995-4591-9669-dcd06ad332e4",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "78d2523e-7ece-438a-a19f-cee7f16c3658",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Account"],
+                              "slot": {
+                                "name": "col2",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/account"
+                              },
+                              "id": "1859e49c-43e8-4785-bc6b-15a89ead0472",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account"
+                                      },
+                                      "children": ["Sign in"],
+                                      "slot": {
+                                        "name": "link5",
+                                        "type": "link",
+                                        "label": "About"
+                                      },
+                                      "id": "07d1a664-e52d-4795-bf55-ed42e05b7f12",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "bfbcf4cc-30fd-4b65-af0c-aa4a5b6afa72",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account/orders"
+                                      },
+                                      "children": ["Orders"],
+                                      "slot": {
+                                        "name": "link6",
+                                        "type": "link",
+                                        "label": "Careers"
+                                      },
+                                      "id": "f0283342-6a74-4ec0-9a78-cbccb2c5660f",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "44e1930b-841f-4da6-8e47-03faf23d0dd6",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/cart"
+                                      },
+                                      "children": ["Cart"],
+                                      "slot": {
+                                        "name": "link7",
+                                        "type": "link",
+                                        "label": "Press"
+                                      },
+                                      "id": "725d513e-96ee-43f2-905f-a95277bece8c",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "4d5f7804-62ab-42bb-ae0e-af3915ae7794",
+                                  "ord": "a2"
+                                }
+                              ],
+                              "id": "539fe835-5871-4eaa-b7ae-88f254f1bfc2",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "d01bd206-869c-4561-829a-9213e7b6ba83",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "e8eb585a-964f-405e-8fa1-072484e92106",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "305238a5-0361-4ef3-be51-583b82f84d3e",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "b59df83c-35c2-4f62-90c7-61ee7bf801e2",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "0ec1db31-cbdd-4de2-a295-8233448b3732",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex items-center gap-5",
+                      "children": [],
+                      "id": "ada67231-0156-431f-8c61-8f1f2dae2116",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "0080d286-5998-412e-8ed1-d74a047e9999",
+                  "ord": "a1"
+                }
+              ],
+              "id": "37705ec6-da48-4897-b6fb-40f5311e1254",
+              "ord": "a0"
+            }
+          ],
+          "id": "a4614dbd-e9ea-4c6b-9028-4c7bc94a8c94",
+          "ord": "a2"
+        }
+      ],
+      "id": "02baebbd-9928-4b6b-8db5-b06b7f6a2066"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "The Meridian — essays, ideas & criticism",
+      "seoDescription": "The Meridian is a reader-funded magazine of essays, reporting, fiction and criticism — writing worth your evening, published a little more slowly than the rest of the internet.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "c236ecb8-72c2-47ed-8211-d943fc301f4b",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl gap-10 @4xl:grid-cols-3",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "group flex flex-col gap-5 @4xl:col-span-2",
+                    "attrs": {
+                      "href": "/blog/in-praise-of-the-long-paragraph"
+                    },
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1400&q=80",
+                          "alt": "Open books stacked on a wooden reading table",
+                          "loading": "lazy"
+                        },
+                        "id": "cfc9eb1d-76eb-4f38-ad62-d74fcdbfe03c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                        "children": ["Essays"],
+                        "id": "3959f3ed-fff4-4aed-9f39-dbf4036e2e2b",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold leading-tight tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["In praise of the long paragraph"],
+                        "id": "dcd09bd8-376c-44b3-aaca-9582c5bf5bcb",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-xl leading-relaxed text-base-content",
+                        "children": [
+                          "We have trained ourselves to read in fragments, one glowing card at a time. What we lose is the single most useful thing prose can do: hold a thought long enough to change your mind about it."
+                        ],
+                        "id": "1141340e-2198-472c-b2ed-3c7fc007ad9c",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-base text-base-content",
+                        "children": ["By Eleanor Vance · 6 August"],
+                        "id": "d47af547-ae72-440a-b11f-d70f3cb711b2",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "b2a06577-b547-4675-9a61-cd60fca108e3",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-2 border-t border-base-300 py-5",
+                        "attrs": {
+                          "href": "/blog/the-last-letterpress-in-the-valley"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                            "children": ["Reporting"],
+                            "id": "1ffe652c-af77-47ec-ba0c-e55de65f7077",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold leading-snug text-base-content",
+                            "children": ["The last letterpress in the valley"],
+                            "id": "8fdcad19-5fb5-4c77-a7d3-1262a1f20947",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["By Julian Mercer"],
+                            "id": "3f956ccd-efb9-4359-9506-f6b736fc6630",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "4904aba0-6b01-4565-b224-d52c4e362337",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-2 border-t border-base-300 py-5",
+                        "attrs": {
+                          "href": "/blog/the-tenant"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                            "children": ["Fiction"],
+                            "id": "f4e44d53-3820-4da4-b4ea-c31c90627442",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold leading-snug text-base-content",
+                            "children": ["The tenant"],
+                            "id": "d763685a-0659-4f5b-9745-ac0330736363",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["By Sofia Adeyemi"],
+                            "id": "23b46023-430f-4d51-9b0f-472d38f1b4e0",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "4e7ae695-e34e-4306-b738-cc4ca11bb401",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-2 border-t border-base-300 py-5",
+                        "attrs": {
+                          "href": "/blog/what-we-mean-when-we-call-a-book-difficult"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                            "children": ["Criticism"],
+                            "id": "cf307806-13f3-4b40-a9d0-81c6b9deedbc",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold leading-snug text-base-content",
+                            "children": ["What we mean when we call a book difficult"],
+                            "id": "c81390bc-4e4e-45b9-8f48-ad8a0bdc5db5",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["By Eleanor Vance"],
+                            "id": "7739424d-f2d2-4bfc-9e22-4f0cd8962dfe",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "9e7f42d7-f544-47a5-bec9-b533bf6efb13",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-2 border-t border-base-300 py-5",
+                        "attrs": {
+                          "href": "/blog/notes-on-walking-a-city-at-night"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                            "children": ["Notebook"],
+                            "id": "8ab30465-d187-4af6-be32-a1a2bb86886b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold leading-snug text-base-content",
+                            "children": ["Notes on walking a city at night"],
+                            "id": "3e1a2592-e0bf-4b0d-85d8-3fc8ad43c238",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["By Julian Mercer"],
+                            "id": "1eab626f-07bc-4c5d-9ce4-5feaeaef2f01",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "aee80203-98d6-4f53-b4e2-f9544b4b2e96",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "7becdd2d-e470-4119-a264-f4bde52e7db8",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "8689658b-ddd0-4ea5-a4ca-65e0412967b8",
+                "ord": "a0"
+              }
+            ],
+            "id": "720f9686-ee96-41ca-9a4b-9e58c654aa66",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-12 pb-2",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-3",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["The latest"],
+                    "id": "25fa9eae-434f-4453-a624-dcf6e58f90ef",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": ["New writing from The Meridian, most recent first."],
+                    "id": "e022ff47-3e59-446d-87e6-56382841d604",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "bbcb43d7-227f-456c-ac54-66d8fa896bfa",
+                "ord": "a0"
+              }
+            ],
+            "id": "0f39207d-bfd4-40f4-987b-2ab9f566fd01",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "15d01a86-bebd-4414-8a56-1a2fe8de86e5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "0fcdeb78-66b3-4e05-81cc-922935637e53",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "4e944b0a-9741-4665-a549-231263411748",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "fa9cedf2-4d44-4607-a8c6-6c0f1c07de85",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "071bac64-dcf9-4cb1-8797-a4665db589ee",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "16d96f3f-6da1-4e0a-bd24-39ebb2e95bc1",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "9c36de6e-e5df-4c46-b73b-13877ee5b6f0",
+                "ord": "a0"
+              }
+            ],
+            "id": "1092bf3f-f29c-4157-a4e3-038d3dd8d792",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-4xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["In this issue"],
+                    "id": "9135c92b-e8bc-4d61-8c75-e5ae27cc7a79",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "ol",
+                    "class": "flex flex-col",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "li",
+                        "class": "border-t border-base-300",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "group flex flex-col gap-3 py-6 @2xl:flex-row @2xl:gap-8",
+                            "attrs": {
+                              "href": "/blog/in-praise-of-the-long-paragraph"
+                            },
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-bold leading-none text-primary @2xl:w-16",
+                                "children": ["I"],
+                                "id": "46cc2f2b-67b0-47d2-972d-0712fb12d013",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex flex-col gap-2",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                                    "children": ["Essays"],
+                                    "id": "e6b173d9-d907-472b-8b3d-f016f1839e65",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "h3",
+                                    "class": "text-2xl font-semibold leading-snug text-base-content",
+                                    "children": ["In praise of the long paragraph"],
+                                    "id": "5a3fbc2c-a2a9-42b1-a55d-c63fe4ec7358",
+                                    "ord": "a1"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "p",
+                                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                                    "children": [
+                                      "On attention, patience, and the sentences that ask something of you."
+                                    ],
+                                    "id": "5d36d948-bf4b-4b2b-af5e-20b249efd39f",
+                                    "ord": "a2"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "p",
+                                    "class": "text-base text-base-content",
+                                    "children": ["By Eleanor Vance"],
+                                    "id": "ae061844-2db2-41fa-ae3b-9d8e05999343",
+                                    "ord": "a3"
+                                  }
+                                ],
+                                "id": "3cab70bd-ff7c-4045-bcbd-bf1b3ce94673",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "111e3e7b-ba15-4f41-979c-4e4b1c07022e",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "0385812d-6965-43dc-8af1-41583b158d88",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "li",
+                        "class": "border-t border-base-300",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "group flex flex-col gap-3 py-6 @2xl:flex-row @2xl:gap-8",
+                            "attrs": {
+                              "href": "/blog/the-last-letterpress-in-the-valley"
+                            },
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-bold leading-none text-primary @2xl:w-16",
+                                "children": ["II"],
+                                "id": "50288064-e418-4603-bfce-87ba534360a2",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex flex-col gap-2",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                                    "children": ["Reporting"],
+                                    "id": "db9bfbe2-9706-4533-9b06-edcf34ccfcf1",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "h3",
+                                    "class": "text-2xl font-semibold leading-snug text-base-content",
+                                    "children": ["The last letterpress in the valley"],
+                                    "id": "f7270590-c317-43ef-ba1b-77238c875d87",
+                                    "ord": "a1"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "p",
+                                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                                    "children": [
+                                      "A workshop that still sets type by hand, and the reason people drive two hours to watch."
+                                    ],
+                                    "id": "5dcc97b2-6cd6-435d-8851-149718cd850a",
+                                    "ord": "a2"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "p",
+                                    "class": "text-base text-base-content",
+                                    "children": ["By Julian Mercer"],
+                                    "id": "b22a9853-0baa-4724-b784-e4703a060d0e",
+                                    "ord": "a3"
+                                  }
+                                ],
+                                "id": "3e4a1fa0-1dce-4dca-bf84-7132deccba76",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "f936c68f-dbb9-401a-8d7a-b9fdc97d2b73",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "d8c43daf-7fc1-4637-b443-b95e26d12baf",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "li",
+                        "class": "border-t border-base-300",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "group flex flex-col gap-3 py-6 @2xl:flex-row @2xl:gap-8",
+                            "attrs": {
+                              "href": "/blog/the-tenant"
+                            },
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-bold leading-none text-primary @2xl:w-16",
+                                "children": ["III"],
+                                "id": "99e19cb7-0efa-4821-8e67-e95512182e4f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex flex-col gap-2",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                                    "children": ["Fiction"],
+                                    "id": "8f174993-741b-4cc8-ac9d-776896928a2d",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "h3",
+                                    "class": "text-2xl font-semibold leading-snug text-base-content",
+                                    "children": ["The tenant"],
+                                    "id": "775c0a8e-a15d-4537-a205-fc0e6121c268",
+                                    "ord": "a1"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "p",
+                                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                                    "children": [
+                                      "A short story about the man upstairs, and the sound that would not resolve."
+                                    ],
+                                    "id": "05708880-41d8-4b0e-a8e4-827407c8abdf",
+                                    "ord": "a2"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "p",
+                                    "class": "text-base text-base-content",
+                                    "children": ["By Sofia Adeyemi"],
+                                    "id": "78fcfeed-665e-42a1-813b-fec45d6b22b5",
+                                    "ord": "a3"
+                                  }
+                                ],
+                                "id": "314e9e0c-e968-48fc-9be0-32a2028a25da",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c24fffbe-f9e7-49df-893b-ebd60b30467d",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "07175e26-db77-47b9-8e1d-e610962c43f9",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "li",
+                        "class": "border-t border-base-300",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "group flex flex-col gap-3 py-6 @2xl:flex-row @2xl:gap-8",
+                            "attrs": {
+                              "href": "/blog/what-we-mean-when-we-call-a-book-difficult"
+                            },
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-bold leading-none text-primary @2xl:w-16",
+                                "children": ["IV"],
+                                "id": "0e75a448-8151-4e8e-bf90-0fd46c8020a4",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex flex-col gap-2",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                                    "children": ["Criticism"],
+                                    "id": "d16249db-83d4-487e-b4da-aa53d1361886",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "h3",
+                                    "class": "text-2xl font-semibold leading-snug text-base-content",
+                                    "children": ["What we mean when we call a book difficult"],
+                                    "id": "dc250e9a-388a-40c9-b898-28c89c5fae77",
+                                    "ord": "a1"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "p",
+                                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                                    "children": [
+                                      "Difficulty is not a flaw to be forgiven or a virtue to be admired. It is a promise."
+                                    ],
+                                    "id": "4e9868ef-1a00-4408-b260-d629a51ded3f",
+                                    "ord": "a2"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "p",
+                                    "class": "text-base text-base-content",
+                                    "children": ["By Eleanor Vance"],
+                                    "id": "5d58f058-2511-4784-be9b-7cab7edb68ae",
+                                    "ord": "a3"
+                                  }
+                                ],
+                                "id": "e1690d24-9539-4b98-9c6c-7577128ef7d1",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "f0573e8c-e7f2-4c40-8428-3a6596bc801f",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "7c186ff8-80c8-4452-a75e-42e15428cd92",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "li",
+                        "class": "border-t border-base-300",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "group flex flex-col gap-3 py-6 @2xl:flex-row @2xl:gap-8",
+                            "attrs": {
+                              "href": "/blog/notes-on-walking-a-city-at-night"
+                            },
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-bold leading-none text-primary @2xl:w-16",
+                                "children": ["V"],
+                                "id": "e553b353-894d-42a4-ad64-8bbe85b1bebc",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex flex-col gap-2",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                                    "children": ["Notebook"],
+                                    "id": "923128d8-1e19-4a4e-a345-d58e416e9012",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "h3",
+                                    "class": "text-2xl font-semibold leading-snug text-base-content",
+                                    "children": ["Notes on walking a city at night"],
+                                    "id": "9637d880-4b3a-48f6-b44b-a28467a1e7fe",
+                                    "ord": "a1"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "p",
+                                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                                    "children": [
+                                      "The hours after midnight, when a place stops performing and finally tells the truth."
+                                    ],
+                                    "id": "0d090b45-b103-453c-8183-5325d1f4fdfd",
+                                    "ord": "a2"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "p",
+                                    "class": "text-base text-base-content",
+                                    "children": ["By Julian Mercer"],
+                                    "id": "38984c0c-fb27-4715-9b03-6aa079bb99f0",
+                                    "ord": "a3"
+                                  }
+                                ],
+                                "id": "5f4b2ba3-e3f8-49bf-b76b-b63317059920",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "2da7f3b4-8d74-47d4-aa90-914e42fb7cbe",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "e2ff966c-d240-40c9-aa94-db932a08cd49",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "998929c5-20eb-4d64-826b-1e3bf5abbf92",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e43a7aee-2f93-4a1a-87b4-0b46a0d56f30",
+                "ord": "a0"
+              }
+            ],
+            "id": "79eeafa2-11e0-414d-adba-701420c1c18d",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Departments"],
+                    "id": "2b1b0e56-315f-4d45-8c87-e2c7eaf50637",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid gap-x-10 @3xl:grid-cols-2 @5xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-2 border-t border-base-300 py-6",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-2xl font-semibold text-base-content",
+                            "children": ["Essays"],
+                            "id": "80df5246-6371-4c73-9cf8-7448dd5615a1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": [
+                              "Arguments given the room to develop — on culture, memory, work, and how we live now."
+                            ],
+                            "id": "0bdae958-781a-4f37-8ae3-337334642e51",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "83b95be1-2fa3-46fa-a131-0d286bd622b6",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-2 border-t border-base-300 py-6",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-2xl font-semibold text-base-content",
+                            "children": ["Reporting"],
+                            "id": "d5e0842d-87ae-4034-8bbe-9265b52ff7e3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": [
+                              "People and places, reported patiently and told at length."
+                            ],
+                            "id": "ef8718e2-9a2f-40f8-80a4-11c93a27ba60",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "db572896-110a-4115-b9de-0070a74112a2",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-2 border-t border-base-300 py-6",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-2xl font-semibold text-base-content",
+                            "children": ["Fiction"],
+                            "id": "f92ee556-2627-4f76-83a5-95d3e85cb469",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": [
+                              "New short stories from writers we are proud to publish first."
+                            ],
+                            "id": "8b46ef00-27ad-4d7e-9f53-16339e6945fd",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9703ce5e-5e23-4de2-80f9-b5b4d39e7cc3",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-2 border-t border-base-300 py-6",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-2xl font-semibold text-base-content",
+                            "children": ["Criticism"],
+                            "id": "9fedb11e-ebaf-4a43-9be6-c3714be92805",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": [
+                              "Close, generous reading of books, film, and the ideas underneath them."
+                            ],
+                            "id": "4faab69a-030d-4e56-bd56-4f832ae97140",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "132647cb-be71-48b6-ac67-c64f02b57c61",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-2 border-t border-base-300 py-6",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-2xl font-semibold text-base-content",
+                            "children": ["Notebook"],
+                            "id": "7b6056fb-2db0-47da-83c0-d517a22bb669",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": [
+                              "Shorter dispatches — observation, doubt, the thinking before the essay."
+                            ],
+                            "id": "379306e1-232a-477b-9184-e335210909d1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c5c5e038-7559-4e18-b710-175cbb5b9793",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-2 border-t border-base-300 py-6",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-2xl font-semibold text-base-content",
+                            "children": ["The Archive"],
+                            "id": "920f5db2-fd00-4c68-ac4e-b2bd908a36ec",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": [
+                              "Ten years of the magazine, open to read whenever the mood is right."
+                            ],
+                            "id": "61823102-ec6d-4866-8f78-965e2001fac5",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "38a120af-2dac-4bc5-aa57-7dbcf428efa3",
+                        "ord": "a5"
+                      }
+                    ],
+                    "id": "9d9313ee-3996-450a-99e4-527c7282e741",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e3d22746-1e9d-4963-b14a-a8e58402b64b",
+                "ord": "a0"
+              }
+            ],
+            "id": "76e8a76d-16d6-4cd8-85fa-991375d6575c",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["From the Meridian Store"],
+                    "id": "6f9b3329-4b01-44fd-a58b-3b9e1a81a04e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "84251f5d-f4fc-47a5-8461-765c56082566",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "3128c6ba-bca5-43b2-b88e-95cbda72582b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "627e2fc7-b62a-45dc-b414-0194ba8ddb4c",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "75a6355d-4b33-422f-aa80-4f36cf26ebb0",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "4c6a5683-bc75-4746-9d42-59bbfd93887e",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "7894522d-37ee-4756-a2a9-16955bf38d25",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "ee572d87-f0b6-4aac-8c10-082fe401acd2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "d11112fb-839e-4ca6-a603-cb0e11da4b23",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "2e867021-c010-4bba-919c-e1b1e7a85076",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "fa666e68-3b24-4c74-aaa4-e6f8f471e91f",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "d34f13e1-6c6c-4cd3-9720-614079eb79db",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "a24bfccd-78d5-47db-9738-22cd94c90a91",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "018e5040-ad35-43fd-a3fd-c4a5f318032e",
+            "ord": "a5"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — The Meridian",
+      "seoDescription": "Browse everything The Meridian makes, with prices and options at a glance. Essays, ideas & criticism.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "73cf169d-2709-4626-9f3e-7504db7e9e1d",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-12 pb-4",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-6xl",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
+                    "children": ["Shop"],
+                    "id": "c6e7dda9-0c15-4aad-9e48-e54fa9b9955e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "mt-4 max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": ["Everything we currently have available."],
+                    "id": "be6f3e74-eea9-44e3-8a2e-95100c227cef",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "6552d325-2a13-4e1e-861d-08b3e77286e6",
+                "ord": "a0"
+              }
+            ],
+            "id": "fa558af0-5eb5-4033-bfd0-aa4f8ee18e0a",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "61014c24-5c63-4804-bbdf-e7130b2202ed",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — The Meridian",
+      "seoDescription": "Explore the collections at The Meridian, grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "0d46184b-cb78-4d45-8f5b-9876166b4d59",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container",
+            "children": [
+              {
+                "kind": "host",
+                "component": "commerce.collections",
+                "class": "mx-auto w-full max-w-6xl px-6 py-6",
+                "locked": "host",
+                "id": "2bea8cd1-b1ed-4302-b51c-e26b1d01c680",
+                "ord": "a0"
+              }
+            ],
+            "id": "1d9d1a31-bd62-4ed3-9de4-dfd86c073a3d",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — The Meridian",
+      "seoDescription": "Review what is in your cart and check out securely at The Meridian.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "8e62ab0e-ef7e-4ae2-b0dd-fe99c996a268",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "h1",
+                "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
+                "children": ["Your cart"],
+                "id": "6333067d-8bdf-40ed-a1e3-c1a3a324f94b",
+                "ord": "a0"
+              },
+              {
+                "kind": "host",
+                "component": "commerce.cart",
+                "class": "mx-auto w-full max-w-4xl px-6 py-10",
+                "locked": "host",
+                "id": "f654b8c3-281e-41e8-afc9-a914f4c67059",
+                "ord": "a1"
+              }
+            ],
+            "id": "21feac6b-33d4-4984-9296-aa43f35b23db",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — The Meridian",
+      "seoDescription": "Search The Meridian for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "c2cc8497-93b6-4079-9bf7-0435e5d91b47",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "h1",
+                "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
+                "children": ["Search"],
+                "id": "e66813bd-eb66-4cfc-862c-3ae69b3e4fde",
+                "ord": "a0"
+              },
+              {
+                "kind": "host",
+                "component": "commerce.search",
+                "class": "mx-auto w-full max-w-6xl px-6 py-6",
+                "locked": "host",
+                "id": "ae7a1e54-3630-4fed-a0e7-b383035fa716",
+                "ord": "a1"
+              }
+            ],
+            "id": "b2ded02f-e357-49dc-b131-34669f3e6872",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — The Meridian",
+      "seoDescription": "Stories, guides and notes from The Meridian.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "235438cc-c9f9-40f8-bd72-a7188eb1ab43",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-4xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-tight tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The Meridian"],
+                    "id": "3fae0ad3-7fc8-4b43-9f61-be0418d283a1",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-xl leading-relaxed text-base-content",
+                    "children": [
+                      "Essays, reporting, fiction and criticism — writing worth your evening, published a little more slowly than the rest of the internet."
+                    ],
+                    "id": "47dc660e-b668-4876-a589-14f63e9ff564",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "d16725fe-71b5-40af-99a7-92aec84e5e4f",
+                "ord": "a0"
+              }
+            ],
+            "id": "6ce78d5d-3c8d-4ff0-adf7-3b30943429c9",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "17f1b319-f81e-4fc7-879d-b90bca5af179",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "b622ee2c-2b9a-4379-bf5b-a5a840aef2fd",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "72db78e9-bac6-4ab5-a1a0-b62fb6abeb16",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "95aecda0-12d8-4226-b5c3-4c710d86af7c",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "1c194045-e664-4bc8-ab71-7fd29b3504aa",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "596db058-37b6-41be-b49f-cb6aa9e4501d",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "0f5620fa-b992-48e9-98a0-bb29fd732832",
+                "ord": "a0"
+              }
+            ],
+            "id": "6107ffb7-7212-43ce-a692-331edb03377a",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About The Meridian — a reader-funded magazine of ideas",
+      "seoDescription": "Who The Meridian is and how it is funded — reader-supported longform with no advertiser behind it, in print four times a year and online every week.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "20747945-624d-4190-8a59-cd3f7e0f8d82",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
+                    "children": ["About The Meridian"],
+                    "id": "61d5df5d-159b-40ac-9913-554eba657c5b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The Meridian is a magazine of essays and ideas. We publish long — a piece here can run four thousand words if the argument earns them — because the writing we care about is the kind that needs room to breathe. We would rather run one essay that changes how you see a thing than ten posts that confirm what you already believed."
+                    ],
+                    "id": "e4388bd3-6f94-49d6-84e8-35a793433884",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "We are reader-funded, and that is not a detail. It means our only obligation is to you, the person reading — not to an advertiser, not to an algorithm, not to whatever the feed decided was urgent this morning. A membership pays a writer to spend three weeks on a piece, and pays us to hold it until it is finished."
+                    ],
+                    "id": "fa748b3d-d8ee-4a69-a83d-a6a1a4b49757",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "We come out four times a year in print, and every week online. The archive is open. Start anywhere."
+                    ],
+                    "id": "50f25e40-2c8d-47d1-b133-c6ea7428ddd6",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "1a6e6a4f-0cef-44ed-a41b-542db3ef31e1",
+                "ord": "a0"
+              }
+            ],
+            "id": "be1b635f-e40f-4caa-bf45-6ac012bc31b7",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — The Meridian",
+      "seoDescription": "Get in touch with The Meridian — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "ec93a908-e9cc-49ab-bbc8-05f00d9caff5",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
+                    "children": ["Write to the editors"],
+                    "id": "6960458a-282c-45f8-a5f6-1564b24dcdf0",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "A pitch, a letter about something we ran, a correction we should make — we read all of it. Submissions and letters go to the same desk, and a real person writes back."
+                    ],
+                    "id": "d1faf8e8-f706-4641-8641-eaa7d25222d5",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:editors@themeridian.example"
+                    },
+                    "children": ["Email the editors"],
+                    "id": "44bb2717-95d9-4164-a23d-33d5172b2fdb",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "a46c36cb-f705-466a-ad57-3760a7f3f2d4",
+                "ord": "a0"
+              }
+            ],
+            "id": "cc37aef2-27cf-41ff-a693-c7d62732d257",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Article",
+      "kind": "collection",
+      "recordType": "cms.blog_post",
+      "isDefault": true,
+      "seoTitle": "Article — The Meridian",
+      "seoDescription": "A story from The Meridian — the writing, the reporting and the notes behind it.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "div",
+            "class": "flex flex-col",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "section",
+                "class": "bg-base-100 @container px-6 pt-14 pb-10 @2xl:pt-20",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto flex w-full max-w-3xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-primary",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["←"],
+                            "id": "9c439c1d-425f-49d9-89bf-abcf8091ea28",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["The Meridian"],
+                            "id": "b98aa871-3650-4e0e-8e5a-20b3fae1ecdf",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8fe6e223-aa70-4468-a73a-6ecc03c28af5",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                        "children": ["Section"],
+                        "data": {
+                          "kind": "visible",
+                          "ref": "category"
+                        },
+                        "id": "d821e6f4-9860-4389-a5e7-605a341e40ca",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold leading-tight tracking-tight text-base-content @2xl:text-5xl",
+                        "children": ["Post title"],
+                        "data": {
+                          "kind": "value",
+                          "ref": "title"
+                        },
+                        "id": "5ad7b72c-f836-49cd-8c30-dd6cf7e54188",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-xl leading-relaxed text-base-content",
+                        "children": ["The short summary of this post, written in the CMS."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "excerpt"
+                        },
+                        "id": "1b98e946-a560-4c4d-b095-84ca1776464e",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-2 flex items-center gap-3 border-t border-base-300 pt-5",
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "h-12 w-12 rounded-full border border-base-300 object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "visible",
+                              "ref": "authorAvatar"
+                            },
+                            "id": "36e3630b-c944-45c3-931a-fa23b151d006",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Author name"],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "authorName"
+                                },
+                                "id": "54259a5c-5b47-407a-aab5-9755a03007ab",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base text-base-content",
+                                "children": ["Published date"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "date"
+                                },
+                                "id": "e4c342f4-1699-4884-a3c1-8ea48b48135a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "03111efb-29f8-4106-b34c-d51e03b519ce",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "df19af62-c53d-46b8-84c2-e0ce03606189",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "7012be14-101e-439d-b39c-f042f2883da7",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "91a677a5-b877-4357-8f9b-a2d36ce746d2",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "section",
+                "class": "bg-base-100 @container px-6 pb-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto w-full max-w-3xl",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": ""
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "featuredImage"
+                        },
+                        "id": "90130a99-3a4c-4900-b781-f32ea80a8883",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "0cea758b-9a0a-4536-b6f8-6ce91e71adbe",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "03644b19-000f-4ab0-96f7-14ed938e3486",
+                "ord": "a1"
+              }
+            ],
+            "id": "e934ad64-350d-4e3d-b36c-ef9a22a05cae",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl px-6 pb-20 @2xl:pb-24",
+                "children": [
+                  {
+                    "kind": "host",
+                    "component": "cms.article-body",
+                    "class": "w-full",
+                    "locked": "host",
+                    "id": "4603e807-bc26-4d5f-a107-6240e35634f9",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "c0afa372-00a0-4706-b69e-287b067d73c7",
+                "ord": "a0"
+              }
+            ],
+            "id": "9d0422fa-89be-4565-af56-7c10ac9b1a32",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pb-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-4 rounded-box border border-base-300 bg-base-200 p-6 @2xl:flex-row @2xl:items-center",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "h-16 w-16 rounded-full border border-base-300 object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": ""
+                        },
+                        "data": {
+                          "kind": "visible",
+                          "ref": "authorAvatar"
+                        },
+                        "id": "19aaa5b9-b226-42ed-be02-7566589fb1f9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-lg font-semibold text-base-content",
+                            "children": ["Author name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorName"
+                            },
+                            "id": "ab7aa84d-582f-4097-95db-1442c713739a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["About the author."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorBio"
+                            },
+                            "id": "4323b7dc-76b0-408d-b58c-823c24b2075e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0436b194-33d9-4f90-9a98-9cfaa219eef6",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "authorBio"
+                    },
+                    "id": "f6c8b37e-f721-4a58-a85c-d4fe50f815c2",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "27a4ef5b-cb47-4e06-8051-15528e06cb28",
+                "ord": "a0"
+              }
+            ],
+            "id": "780c4619-0237-44df-925e-cef49d5980f5",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-200 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-2xl font-bold tracking-tight text-base-content @2xl:text-3xl",
+                        "children": ["Keep reading"],
+                        "id": "629fa00d-1596-4d7f-9124-10f7f091e907",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/journal"
+                            },
+                            "children": ["More stories"],
+                            "id": "70f48418-3050-4b92-9adb-1f9f68e96af9",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "066ec13c-287d-41e5-8478-9324768f14cf",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "9364909a-db37-4ed4-9f84-d2a9c5e4fc1b",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "f430e863-e330-4b9d-9f05-f19af61e24f5",
+                "ord": "a0"
+              }
+            ],
+            "id": "a3e3a947-fe39-40ba-8d59-4ddb1b853ae8",
+            "ord": "a3"
+          }
+        ],
+        "data": {
+          "kind": "collection",
+          "ref": "blog_post"
+        },
+        "id": "2854b5d9-ac97-4add-ad43-ae8f598f5c1b"
+      }
+    }
+  ],
+  "theme": {
+    "name": "broadsheet",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.004 85)",
+      "--color-base-200": "oklch(95% 0.006 82)",
+      "--color-base-300": "oklch(90% 0.008 80)",
+      "--color-base-content": "oklch(16% 0.004 60)",
+      "--color-primary": "oklch(50% 0.2 27)",
+      "--color-secondary": "oklch(42% 0.02 60)",
+      "--color-accent": "oklch(50% 0.2 27)",
+      "--color-neutral": "oklch(22% 0.006 60)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(50% 0.19 12)",
+      "--radius-selector": "0rem",
+      "--radius-field": "0.125rem",
+      "--radius-box": "0rem",
+      "--border": "1px",
+      "--depth": "0",
+      "--font-sans": "\"Spectral\", serif",
+      "--font-head": "\"Playfair Display\", serif",
+      "--color-primary-content": "oklch(98% 0.01 27)",
+      "--color-secondary-content": "oklch(98% 0.01 60)",
+      "--color-accent-content": "oklch(98% 0.01 27)",
+      "--color-neutral-content": "oklch(98% 0.006 60)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 12)",
+      "--color-danger": "oklch(50% 0.19 12)",
+      "--color-danger-content": "oklch(98% 0.01 12)",
+      "--color-highlight": "oklch(50% 0.2 27)",
+      "--color-highlight-content": "oklch(98% 0.01 27)",
+      "--color-border": "oklch(90% 0.008 80)",
+      "--container-max": "72rem",
+      "--font-heading": "\"Playfair Display\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(16% 0.004 60)",
+      "--color-base-200": "oklch(13% 0.004 60)",
+      "--color-base-300": "oklch(10% 0.004 60)",
+      "--color-base-content": "oklch(95% 0.004 85)",
+      "--color-primary": "oklch(64% 0.19 27)",
+      "--color-secondary": "oklch(70% 0.02 60)",
+      "--color-accent": "oklch(64% 0.19 27)",
+      "--color-neutral": "oklch(30% 0.006 60)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(66% 0.18 12)",
+      "--color-primary-content": "oklch(15% 0.02 27)",
+      "--color-secondary-content": "oklch(15% 0.02 60)",
+      "--color-accent-content": "oklch(15% 0.02 27)",
+      "--color-neutral-content": "oklch(98% 0.006 60)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 12)",
+      "--color-danger": "oklch(66% 0.18 12)",
+      "--color-danger-content": "oklch(15% 0.02 12)",
+      "--color-highlight": "oklch(64% 0.19 27)",
+      "--color-highlight-content": "oklch(15% 0.02 27)",
+      "--color-border": "oklch(10% 0.004 60)"
+    }
+  }
+}

@@ -172,6 +172,18 @@ export function productToSilicaRecord(
     // has no live variant, so `onAction`'s empty-variant guard blocks the submit.
     variantId: defaultVariant?.id ?? '',
     url: p.handle ? `/products/${p.handle}` : '',
+    // Typed attributes (docs/143). BOTH shapes ride the record so the two binding
+    // modes work off the same product: `attributes.<key>` for an individual field
+    // bind (a per-type page places Fabric here, Care there), and `attributeSections`
+    // for the default page's auto-render repeat (one labeled section per attribute,
+    // no field keys hardcoded). `attributeSections[i].items` carries repeater rows
+    // for a nested sub-repeat.
+    attributes: p.attributes ?? {},
+    attributeSections: p.attributeSections ?? [],
+    // The honest inventory signals the PDP badge binds (`visibleWhen` low_stock),
+    // replacing fabricated "Selling fast" scarcity.
+    inStock: p.inStock,
+    lowStock: p.lowStock,
   };
 }
 

@@ -40,9 +40,12 @@ import { writeTemplatePreview } from './template-sites/preview';
 import { tabbedShowcase } from './template-sites/behaviors';
 import {
   addToCartForm,
+  pdpAttributes,
   pdpDescription,
   pdpImage,
+  pdpPolicyLinks,
   pdpPriceRow,
+  pdpStockBadge,
   pdpTitle,
   productPage,
 } from './template-sites/pdp';
@@ -424,6 +427,17 @@ interface Product {
   description: string;
   status: 'active';
   productType: string;
+  // The typed product type (docs/143) — every product here is `cosmetics`, so the PDP's
+  // `pdpAttributes` renders each product's OWN key ingredients / how-to-use / skin type /
+  // size / full INCI list rather than one hardcoded counter stack.
+  productTypeKey: 'cosmetics';
+  attributes: {
+    keyIngredients: string;
+    howToUse: string;
+    skinType: string[];
+    volume: string;
+    fullIngredients: string;
+  };
   vendor: string;
   tags: string[];
   categoryHandles: string[];
@@ -495,6 +509,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['best-sellers', 'new-in', 'the-edit'],
     seoTitle: 'Second Skin Luminous Foundation — 24-shade liquid foundation',
     seoDescription: 'A luminous, medium-buildable liquid foundation in 24 inclusive shades across every undertone.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'Sodium hyaluronate and squalane hold water in the skin for a soft, luminous finish, while light-diffusing spherical pigments blur without masking. Glycerin keeps it comfortable through a long wear.',
+      howToUse:
+        'Shake, then apply one to two pumps with a damp sponge or the Buffing Foundation Brush, working from the centre of the face outward. Build only where you want more coverage, and set the T-zone with Cloud Set powder if you tend to shine.',
+      skinType: ['all'],
+      volume: '30 ml / 1.0 fl oz',
+      fullIngredients:
+        'Aqua, Cyclopentasiloxane, Glycerin, Dimethicone, PEG-10 Dimethicone, Squalane, Sodium Hyaluronate, Tocopheryl Acetate, Phenoxyethanol, Titanium Dioxide (CI 77891), Iron Oxides (CI 77491, CI 77492, CI 77499).',
+    },
     ...shaded('MV-FND', 42, FOUNDATION_SHADES),
     images: [{ assetId: 'second-skin-foundation', isPrimary: true, alt: 'Second Skin Luminous Foundation' }],
   },
@@ -511,6 +536,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['best-sellers', 'the-edit'],
     seoTitle: 'Under-Eye Brightening Concealer — crease-resistant concealer',
     seoDescription: 'A creamy, crease-resistant brightening concealer in eight matchable shades.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'Light-reflecting pigments lift shadow under the eye, caffeine helps de-puff, and a peptide plus vitamin E keep the creamy base from settling into fine lines through the day.',
+      howToUse:
+        'Dot a little onto the under-eye and any spots you want to cover, then tap out with a fingertip or a small brush — never drag. Match your shade, or go one lighter under the eye to brighten. Press with Cloud Set powder to lock it.',
+      skinType: ['all'],
+      volume: '6 ml / 0.2 fl oz',
+      fullIngredients:
+        'Aqua, Dimethicone, Glycerin, Isododecane, Caffeine, Palmitoyl Tripeptide-1, Tocopheryl Acetate, Mica, Phenoxyethanol, Titanium Dioxide (CI 77891), Iron Oxides (CI 77491, CI 77492, CI 77499).',
+    },
     ...shaded('MV-CNC', 26, CONCEALER_SHADES),
     images: [{ assetId: 'brightening-concealer', isPrimary: true, alt: 'Under-Eye Brightening Concealer' }],
   },
@@ -527,6 +563,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-in'],
     seoTitle: 'Cloud Set Loose Powder — soft-matte setting powder',
     seoDescription: 'A finely milled loose setting powder that blurs and sets without flattening the glow.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'Micro-fine silica and rice starch soak up excess oil and soft-blur pores, while boron nitride scatters light so skin sets matte without going flat or chalky.',
+      howToUse:
+        'Load a fluffy brush or the puff, tap off the excess, and press — do not sweep — into the under-eye and T-zone to lock concealer and foundation. A little is plenty; build only where you shine.',
+      skinType: ['combination', 'oily'],
+      volume: '8 g / 0.28 oz',
+      fullIngredients:
+        'Silica, Oryza Sativa (Rice) Starch, Mica, Zinc Stearate, Boron Nitride, Dimethicone, Tocopheryl Acetate, Titanium Dioxide (CI 77891), Iron Oxides (CI 77492, CI 77499).',
+    },
     ...shaded('MV-PWD', 30, POWDER_SHADES),
     images: [{ assetId: 'cloud-set-powder', isPrimary: true, alt: 'Cloud Set Loose Powder' }],
   },
@@ -543,6 +590,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-in'],
     seoTitle: 'Soft Focus Blurring Primer — pore-blurring makeup primer',
     seoDescription: 'A weightless blurring primer that grips makeup and softens the look of pores and texture.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'A silky silica-and-blurring-polymer base fills the look of pores and fine texture so makeup sits smoother, while niacinamide works over time to refine the skin underneath.',
+      howToUse:
+        'After moisturiser, smooth a pea-sized amount over clean skin — concentrating on the centre of the face where pores show most — and let it set for a moment before foundation. Wear it alone on a no-makeup day, too.',
+      skinType: ['all'],
+      volume: '30 ml / 1.0 fl oz',
+      fullIngredients:
+        'Aqua, Dimethicone, Silica, Cyclopentasiloxane, Niacinamide, Glycerin, Dimethicone/Vinyl Dimethicone Crosspolymer, Tocopheryl Acetate, Phenoxyethanol.',
+    },
     variants: [{ sku: 'MV-PRM-01', priceCents: money(32), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'soft-focus-primer', isPrimary: true, alt: 'Soft Focus Blurring Primer' }],
   },
@@ -559,6 +617,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['best-sellers'],
     seoTitle: 'Lock-It Setting Spray — long-wear makeup setting spray',
     seoDescription: 'A fine-mist setting spray that melts powder into skin and holds a full face all day.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'Flexible film-forming polymers lock makeup in place through heat and long days, while aloe and glycerin melt any powdery edge back into skin for a fresh, second-skin finish.',
+      howToUse:
+        'Hold six inches from the face, close your eyes, and mist twice in an X and a T once the full look is on. Let it dry down without touching. A quick spritz mid-day revives a tired base, too.',
+      skinType: ['all'],
+      volume: '100 ml / 3.4 fl oz',
+      fullIngredients:
+        'Aqua, Alcohol Denat., Glycerin, VP/VA Copolymer, Aloe Barbadensis Leaf Juice, Panthenol, Sodium Hyaluronate, Phenoxyethanol.',
+    },
     variants: [{ sku: 'MV-SPR-01', priceCents: money(28), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'lock-it-setting-spray', isPrimary: true, alt: 'Lock-It Setting Spray' }],
   },
@@ -575,6 +644,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['best-sellers', 'new-in', 'the-edit', 'vegan-favourites'],
     seoTitle: 'Sunlit Cream Blush — dewy cream blush in 8 shades',
     seoDescription: 'A blendable cream blush for a lit-from-within flush, in eight shades from peach to berry.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'A jojoba-ester and vitamin-E balm carries buildable pigment that melts into skin for a dewy, lit-from-within flush — no powdery cake, no hard line where it lands.',
+      howToUse:
+        'Tap one or two dots high on the cheeks with a fingertip and blend up toward the temple while the balm is still slippery. Layer for more colour; a touch on the lips ties the look together.',
+      skinType: ['dry', 'normal'],
+      volume: '5 g / 0.17 oz',
+      fullIngredients:
+        'Caprylic/Capric Triglyceride, Hydrogenated Polyisobutene, Ozokerite, Jojoba Esters, Tocopheryl Acetate, Mica, Titanium Dioxide (CI 77891), Iron Oxides (CI 77491), Red 7 Lake (CI 15850).',
+    },
     ...shaded('MV-BLS', 24, BLUSH_SHADES),
     images: [{ assetId: 'sunlit-cream-blush', isPrimary: true, alt: 'Sunlit Cream Blush' }],
   },
@@ -591,6 +671,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['the-edit'],
     seoTitle: 'Sculpt Contour Stick — cream contour stick in 6 shades',
     seoDescription: 'A creamy contour stick with a soft, shadowy finish that defines without a muddy line.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'Cool-toned pigments read like a real shadow rather than a stripe of bronzer, in a shea-and-jojoba stick that stays creamy enough to blend seamlessly before it sets.',
+      howToUse:
+        'Draw a light line where the light would not naturally reach — under the cheekbone, along the hairline, either side of the nose — then blend up and back with a finger or a brush until the edge disappears.',
+      skinType: ['dry', 'normal'],
+      volume: '6 g / 0.21 oz',
+      fullIngredients:
+        'Caprylic/Capric Triglyceride, Ozokerite, Butyrospermum Parkii (Shea) Butter, Simmondsia Chinensis (Jojoba) Seed Oil, Tocopheryl Acetate, Titanium Dioxide (CI 77891), Iron Oxides (CI 77491, CI 77492, CI 77499).',
+    },
     ...shaded('MV-CTR', 26, CONTOUR_SHADES),
     images: [{ assetId: 'sculpt-contour-stick', isPrimary: true, alt: 'Sculpt Contour Stick' }],
   },
@@ -607,6 +698,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['best-sellers', 'new-in', 'the-edit', 'vegan-favourites'],
     seoTitle: 'Velvet Matte Liquid Lip — long-wear liquid lipstick in 16 shades',
     seoDescription: 'A full-pigment liquid lipstick that sets to a comfortable velvet matte, in 16 shades.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'Full-coverage pigments in a lightweight silicone base set to a transfer-resistant velvet matte, with vitamin E to keep it comfortable so it never feels like it is drying your lips out.',
+      howToUse:
+        'Outline the cupid’s bow first, then fill from the centre out in one thin coat and press your lips together — it is full pigment, so a second coat only slides. Line first with Precision Lip Liner for the longest wear.',
+      skinType: ['all'],
+      volume: '4 ml / 0.14 fl oz',
+      fullIngredients:
+        'Dimethicone, Trimethylsiloxysilicate, Isododecane, Disteardimonium Hectorite, Tocopheryl Acetate, Silica, Iron Oxides (CI 77491), Red 7 Lake (CI 15850), Red 28 Lake (CI 45410).',
+    },
     ...shaded('MV-LIP', 22, LIQUID_LIP_SHADES),
     images: [{ assetId: 'velvet-matte-liquid-lip', isPrimary: true, alt: 'Velvet Matte Liquid Lip' }],
   },
@@ -623,6 +725,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-in', 'gift-sets'],
     seoTitle: 'Glass Shine Lip Oil — conditioning tinted lip oil',
     seoDescription: 'A cushiony lip oil with a glass-clear shine and a wash of colour, in eight tints.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'Jojoba oil and squalane cushion and condition while sodium hyaluronate draws in water, so lips look plumper and glass-shiny with a sheer wash of colour — never tacky or sticky.',
+      howToUse:
+        'Sweep the doe-foot wand across bare lips for everyday shine, or press a little over the centre of a matte lip to make it look fuller. Reapply whenever lips feel dry — it doubles as a treatment.',
+      skinType: ['all'],
+      volume: '5 ml / 0.17 fl oz',
+      fullIngredients:
+        'Hydrogenated Polyisobutene, Simmondsia Chinensis (Jojoba) Seed Oil, Squalane, Silica Dimethyl Silylate, Tocopheryl Acetate, Sodium Hyaluronate, Red 7 Lake (CI 15850).',
+    },
     ...shaded('MV-OIL', 20, LIP_OIL_SHADES),
     images: [{ assetId: 'glass-shine-lip-oil', isPrimary: true, alt: 'Glass Shine Lip Oil' }],
   },
@@ -639,6 +752,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['the-edit'],
     seoTitle: 'Precision Lip Liner — retractable creamy lip liner in 10 shades',
     seoDescription: 'A retractable lip liner with a fine, creamy tip, in ten shades to match the liquid lip.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'A creamy wax-and-oil core glides without dragging and grips colour in place, with vitamin E so the fine tip stays smooth to the last of the twist-up.',
+      howToUse:
+        'Trace the natural lip line, then fill the whole lip in rather than just the border — a fully lined lip gives lipstick something to hold, so colour fades evenly instead of leaving a ring. Wear alone for a soft stain.',
+      skinType: ['all'],
+      volume: '0.3 g / 0.01 oz',
+      fullIngredients:
+        'Caprylic/Capric Triglyceride, Hydrogenated Vegetable Oil, Candelilla Wax, Tocopheryl Acetate, Titanium Dioxide (CI 77891), Iron Oxides (CI 77491, CI 77499), Red 7 Lake (CI 15850).',
+    },
     ...shaded('MV-LNR', 16, LIP_LINER_SHADES),
     images: [{ assetId: 'precision-lip-liner', isPrimary: true, alt: 'Precision Lip Liner' }],
   },
@@ -655,6 +779,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['best-sellers', 'new-in', 'the-edit', 'gift-sets'],
     seoTitle: 'Bloom 9-Pan Eyeshadow Palette — Warm, Cool & Rose',
     seoDescription: 'A blendable nine-pan eyeshadow palette in three edits: Warm, Cool and Rose.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'Finely milled pressed pigments blend soft and stay put with low fallout; the single shimmer is bound in a silicone slip for a smooth, foil-able finish rather than a scatter of glitter.',
+      howToUse:
+        'Sweep the lightest matte over the whole lid, deepen the outer corner and crease with the mid-tones, and press the shimmer onto the centre of the lid with a fingertip. Every pan works together, so you cannot go wrong.',
+      skinType: ['all'],
+      volume: '9 g / 0.32 oz (9 x 1 g)',
+      fullIngredients:
+        'Talc, Mica, Caprylic/Capric Triglyceride, Zinc Stearate, Dimethicone, Tocopheryl Acetate, Titanium Dioxide (CI 77891), Iron Oxides (CI 77491, CI 77492, CI 77499), Tin Oxide.',
+    },
     options: [
       { name: 'Palette', displayType: 'swatch', values: [{ value: 'Warm' }, { value: 'Cool' }, { value: 'Rose' }] },
     ],
@@ -678,6 +813,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['best-sellers', 'vegan-favourites'],
     seoTitle: 'Featherweight Mascara — lengthening clump-free mascara',
     seoDescription: 'A lengthening mascara that separates and lifts without clumping, in Black or Brown.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'Flexible film-forming polymers and carnauba wax coat and lengthen each lash without weighing it down, and provitamin B5 conditions — so it holds a curl all day, then slides off with warm water.',
+      howToUse:
+        'Wiggle the tapered brush from root to tip, rolling upward to separate and lift; a second coat while the first is still wet builds length without a clump. Reach the inner and outer corners with the brush tip.',
+      skinType: ['all', 'sensitive'],
+      volume: '9 ml / 0.3 fl oz',
+      fullIngredients:
+        'Aqua, Synthetic Beeswax, Copernicia Cerifera (Carnauba) Wax, Acacia Senegal Gum, Panthenol, Butylene Glycol, Stearic Acid, Phenoxyethanol, Iron Oxides (CI 77499).',
+    },
     options: [
       { name: 'Shade', displayType: 'swatch', values: [{ value: 'Black' }, { value: 'Brown' }] },
     ],
@@ -700,6 +846,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['the-edit'],
     seoTitle: 'Brow Sculpt Pomade — waterproof brow pomade in 6 shades',
     seoDescription: 'A waterproof brow pomade that shapes, fills and holds a natural brow, in six shades.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'A waterproof wax-and-pigment cream shapes and fills with hair-like strokes, then sets to hold unruly brows in place through heat and humidity without stiffness or flaking.',
+      howToUse:
+        'Pick up a tiny amount on an angled brush and draw short, feathery strokes through sparse spots and along the tail, following the direction of the hair. Blend the front up with the spoolie end so it never looks blocky.',
+      skinType: ['all'],
+      volume: '4 g / 0.14 oz',
+      fullIngredients:
+        'Aqua, Cyclopentasiloxane, Synthetic Wax, Trimethylsiloxysilicate, Copernicia Cerifera (Carnauba) Wax, Phenoxyethanol, Iron Oxides (CI 77491, CI 77492, CI 77499).',
+    },
     ...shaded('MV-BRW', 20, BROW_SHADES),
     images: [{ assetId: 'brow-sculpt-pomade', isPrimary: true, alt: 'Brow Sculpt Pomade' }],
   },
@@ -716,6 +873,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-in'],
     seoTitle: 'Skinny Gel Eyeliner — waterproof retractable gel liner',
     seoDescription: 'A retractable waterproof gel eyeliner with a fine tip, in six shades.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'A creamy gel-wax core lays down opaque colour in one pass and sets waterproof within seconds, so a line stays crisp — or a smoke stays soft — through a long day and warm weather.',
+      howToUse:
+        'For a clean line, draw along the upper lash line from inner to outer corner and flick the tail while the gel is still workable. For a smoky eye, trace it close to the lashes and smudge with a brush before it sets.',
+      skinType: ['all', 'sensitive'],
+      volume: '0.4 g / 0.014 oz',
+      fullIngredients:
+        'Aqua, Cyclopentasiloxane, Synthetic Beeswax, Trimethylsiloxysilicate, Butylene Glycol, Copernicia Cerifera (Carnauba) Wax, Phenoxyethanol, Iron Oxides (CI 77499), Ultramarines (CI 77007).',
+    },
     ...shaded('MV-EYL', 18, EYELINER_SHADES),
     images: [{ assetId: 'skinny-gel-eyeliner', isPrimary: true, alt: 'Skinny Gel Eyeliner' }],
   },
@@ -732,6 +900,17 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['gift-sets', 'vegan-favourites'],
     seoTitle: 'The Buffing Foundation Brush — dense synthetic foundation brush',
     seoDescription: 'A dense, domed synthetic brush that buffs liquid and cream foundation to a seamless finish.',
+    productTypeKey: 'cosmetics',
+    attributes: {
+      keyIngredients:
+        'Dense, soft synthetic Taklon fibres — cruelty-free and non-absorbent, so they buff liquid and cream foundation into skin rather than drinking it up, for a streak-free, second-skin finish.',
+      howToUse:
+        'Dot foundation onto the face, then buff in small circles with the domed head and finish with light downward strokes to lay the fibres flat. Wash weekly with a gentle soap, reshape the head, and dry bristles-down.',
+      skinType: ['all'],
+      volume: 'Domed head, 16 cm balanced handle',
+      fullIngredients:
+        'Soft synthetic Taklon fibres, a matte anodised-aluminium ferrule, and an FSC-certified birch handle. Cruelty-free and vegan by construction.',
+    },
     variants: [{ sku: 'MV-BSH-01', priceCents: money(28), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'buffing-foundation-brush', isPrimary: true, alt: 'The Buffing Foundation Brush' }],
   },
@@ -926,20 +1105,11 @@ const CONTENT = [
 // The live shade-swatch selector is a later behaviors phase (see the file header) — the
 // selector control is deliberately NOT built here, so the detail reads without JavaScript.
 
-/** One labelled counter-detail block — an uppercase `<h2>` small-caps label over a
- *  paragraph of static brand copy. The reference's SHADE & FINISH / HOW TO USE /
- *  INGREDIENTS accordion stack, laid out flat so it reads without a behavior marker. */
-function pdpDetail(label: string, body: string): Node {
-  return el('div', 'flex flex-col gap-2 border-t border-base-300 pt-5', {
-    children: [
-      el('h2', 'text-sm font-bold uppercase tracking-widest text-base-content', { text: label }),
-      el('p', 'text-base leading-relaxed text-base-content', { text: body }),
-    ],
-  });
-}
-
 /** The bespoke buy REGION — authored UNSCOPED; `productPage` wraps it in `repeat('product')`.
- *  Left: the big pack shot. Right: the magenta-actioned counter buy column. */
+ *  Left: the big pack shot. Right: the magenta-actioned counter buy column. The detail stack
+ *  is no longer hardcoded per template (a serum's ingredients ≠ a cleanser's): `pdpAttributes`
+ *  repeats the routed product's OWN typed cosmetics attributes (docs/143) in the counter voice,
+ *  and `pdpPolicyLinks` points at the store's real shipping/returns pages. */
 function pdpBuyRegion(): Node {
   return el('section', 'bg-base-100 @container px-6 py-12 @3xl:py-16', {
     children: [
@@ -968,6 +1138,13 @@ function pdpBuyRegion(): Node {
                     compareClass: 'text-lg text-base-content line-through',
                     rowClass: 'flex items-baseline gap-4',
                   }),
+                  // A real low-stock signal, in the theme's hot magenta — shown only when the
+                  // routed product is genuinely running low (never fabricated scarcity).
+                  pdpStockBadge({
+                    className:
+                      'inline-flex w-fit items-center gap-2 rounded-field bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-content',
+                    label: 'Low stock',
+                  }),
                 ],
               }),
               pdpDescription('text-lg leading-relaxed text-base-content'),
@@ -978,26 +1155,25 @@ function pdpBuyRegion(): Node {
               el('p', 'text-sm font-medium text-base-content', {
                 text: 'Cruelty-free · vegan wherever the formula allows · a free sample with every order',
               }),
-              // The counter detail stack.
-              el('div', 'mt-2 flex flex-col gap-5', {
-                children: [
-                  pdpDetail(
-                    'Shade & finish',
-                    'Every Maeve colour is built across warm, cool and neutral undertones, so the shade that suits you is a real one and not the closest guess. Swatch a base along the jaw and a lip or cheek colour on the back of the hand, then check it in daylight near a window — the shade that disappears is yours. Finishes run from a luminous glow to a comfortable velvet matte and a glass shine, so you can pick the look, not just the colour.'
-                  ),
-                  pdpDetail(
-                    'How to apply',
-                    'Build in thin layers and let each one set — pigment this rich means it, so a little goes further than you think. Press creams in with a fingertip for a lit-from-within finish, buff a base with a dense brush, and set only where you shine. One coat of a lip or liner is usually plenty; blot once if you want it truly locked. Full step-by-steps for every look live in The Maeve Edit.'
-                  ),
-                  pdpDetail(
-                    'Ingredients & good to know',
-                    'Cruelty-free, and vegan wherever the formula allows. Dermatologist-tested, non-comedogenic, and made without parabens or phthalates — kind enough to wear every day. A full ingredient list is printed on every carton; if you have a known sensitivity, patch-test on the inner arm first and leave it a day before a full face.'
-                  ),
-                  pdpDetail(
-                    'Shipping & returns',
-                    'Free standard shipping over $50, and every order is packed with samples so you can try before you commit. Dispatched within one to two business days, tracked to your door. Not your shade? Return any item — even opened — within thirty days for a full refund or a swap. Getting the match right is the whole point, so we make the swap easy.'
-                  ),
-                ],
+              // The product's OWN typed attributes (key ingredients / how to use / skin type /
+              // size / full INCI) — repeated from `attributeSections`, real per-product copy
+              // rather than one hardcoded counter stack, in the same small-caps counter voice.
+              pdpAttributes({
+                containerClass: 'mt-2 flex flex-col gap-5',
+                sectionClass: 'flex flex-col gap-2 border-t border-base-300 pt-5',
+                labelTag: 'h2',
+                labelClass: 'text-sm font-bold uppercase tracking-widest text-base-content',
+                valueClass: 'text-base leading-relaxed text-base-content',
+                rowClass:
+                  'flex items-baseline justify-between gap-4 border-b border-base-200 pb-1',
+                rowLabelClass: 'text-base font-semibold text-base-content',
+                rowValueClass: 'text-base text-base-content',
+              }),
+              // Shipping & returns — LINKS to the store's real legal pages, never reprinted copy.
+              pdpPolicyLinks({
+                className:
+                  'flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-5 text-sm font-semibold uppercase tracking-widest text-base-content',
+                linkClass: 'underline underline-offset-4',
               }),
             ],
           }),

@@ -1,0 +1,402 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "quiet-power-of-doing-less",
+    "status": "published",
+    "authorSlug": "ada-okonkwo",
+    "categories": ["Society"],
+    "tags": ["Attention", "Decisions"],
+    "body": {
+      "title": "The quiet power of doing less",
+      "excerpt": "We treat a full calendar as proof of a full life. In this talk, Ada Okonkwo makes the case that most of what we call productivity is just motion — and that the hardest, most valuable skill is choosing what not to do.",
+      "featuredImage": {
+        "$asset": "talk-doing-less"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Ask someone how they are and they will tell you how busy they are, as if the two were the same answer. We have built a culture that reads a packed day as evidence of a well-lived one — and it is quietly making us worse at the things that actually matter."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Motion is not progress"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Most of what fills a day is motion: the reply that could have waited, the meeting that could have been a sentence, the task we do because it is easy and visible rather than because it is important. Motion feels like progress because it is tiring, and we have learned to trust tiredness as a signal. It is not one."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The skill is subtraction"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The people who do genuinely important work are not the ones who do the most things. They are the ones who have gotten ruthless about which few things deserve them, and unapologetic about letting the rest go undone. Subtraction is a skill, and like any skill it feels wrong before it feels natural."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "So here is the exercise I leave every audience with: look at tomorrow, and cross off the one thing you are dreading that no one would actually miss. Notice what you do with the hour it gives back. That hour is the whole talk."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "what-a-river-taught-me-about-time",
+    "status": "published",
+    "authorSlug": "ren-castellano",
+    "categories": ["Nature"],
+    "tags": ["Rivers", "Patience"],
+    "body": {
+      "title": "What a river taught me about time",
+      "excerpt": "Ren Castellano spent a year walking the length of one river, from spring to sea. What he found was less a lesson about water than about time — how slowly the important things move, and how much we miss by hurrying.",
+      "featuredImage": {
+        "$asset": "talk-river-time"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A river looks like it is in a hurry, and it is not. The water moving past your feet has been on its way for weeks, and the valley it cut took longer than any of us can picture. I spent a year walking one river from its spring to the sea, and it slowly rearranged how I think about time."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The slow work is the real work"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Everything a river does that matters — the canyon, the delta, the bend that moves a mile in a century — it does slowly, at a pace no single day would ever reveal. We are built to notice the flood and ignore the erosion, and so we mistake the dramatic for the important. The river is almost never dramatic. It is almost always working."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "You cannot rush a season"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "There is no version of the walk where I get to the sea faster by wanting it more. The river ignores urgency completely, and there is something enormously freeing in spending time with a thing that cannot be hurried. It gives you permission to let your own slow work be slow."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "When people ask what the river taught me, they want a tidy sentence. Here is the closest one I have: the things that will still matter in a hundred years are moving at exactly the speed they should be. Our impatience is the only thing that is early."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "designing-for-the-next-hundred-years",
+    "status": "published",
+    "authorSlug": "mira-halvorsen",
+    "categories": ["Design"],
+    "tags": ["Longevity", "Craft"],
+    "body": {
+      "title": "Designing for the next hundred years",
+      "excerpt": "Most of what we build is designed to be replaced. Mira Halvorsen asks what changes when you design instead for the person who will use the thing in a century — and why that question makes better objects, buildings and institutions today.",
+      "featuredImage": {
+        "$asset": "talk-hundred-years"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We design almost everything to be replaced. The phone is built for three years, the building for thirty, the software for whenever the next version ships. Planned replacement is not a scandal — it is just the default — but it quietly shapes everything we make into something a little disposable."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The hundred-year user"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "I ask my students to design for a person who will use the thing in a hundred years — someone they will never meet, in a world they cannot predict. It sounds like an impossible constraint. In practice it is clarifying. You stop optimising for the launch and start asking what will still make sense, still be repairable, still be legible, long after the trend that produced it is forgotten."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Longevity is a kindness"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A thing built to last is a kindness to a stranger. It says: someone before you thought about you. The best old buildings, tools and institutions all carry that quality — they were made by people who assumed the future would arrive and tried to leave it something worth having."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "You do not need a hundred-year budget to design this way. You need the hundred-year question, asked early, out loud, before the first decision hardens. Ask it, and watch how much of the disposable falls away on its own."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "the-math-of-second-chances",
+    "status": "published",
+    "authorSlug": "ada-okonkwo",
+    "categories": ["Science"],
+    "tags": ["Probability", "Fairness"],
+    "body": {
+      "title": "The math of second chances",
+      "excerpt": "A single failure tells you almost nothing. Ada Okonkwo walks through the simple probability that explains why our instinct to judge people on one bad outcome is not just unkind — it is statistically wrong.",
+      "featuredImage": {
+        "$asset": "talk-second-chances"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We are quick to draw a line through a single point. Someone fails once and we treat it as data about who they are, when the mathematics says a single outcome is one of the least informative things you can observe."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "One point is not a line"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Any outcome is a mix of skill, effort and luck, and from a single result you genuinely cannot separate them. The same coin that just came up tails is not a worse coin than the one that came up heads. Judging a person on one attempt is drawing a line through one point — and a line through one point can go anywhere you already wanted it to."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The case for another try"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "This is not a soft argument, it is a statistical one: the second attempt is where the signal lives. Give people another try and their true ability starts to show through the noise. Systems that offer second chances are not being generous so much as being accurate — they are collecting the data that a first impression threw away."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "So the next time you are tempted to close the book on someone after one bad chapter, remember that you are working with a sample size of one. The honest thing to do with a sample of one is to keep reading."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "why-your-city-should-be-walkable",
+    "status": "published",
+    "authorSlug": "ren-castellano",
+    "categories": ["Society"],
+    "tags": ["Cities", "Streets"],
+    "body": {
+      "title": "Why your city should be walkable",
+      "excerpt": "A walkable street is not a nostalgia project. Ren Castellano lays out how the simple act of designing a city around people on foot changes its health, its economy, and the odds that strangers ever meet.",
+      "featuredImage": {
+        "$asset": "talk-walkable-city"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The most radical thing a city can do is make it pleasant to walk. It sounds quaint next to grand plans and big budgets, and it quietly outperforms almost all of them."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "A street is a public room"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "When a street is built for people on foot, it stops being a channel for moving cars and becomes a room the whole neighbourhood shares. People linger, shops that need footfall survive, and strangers cross paths often enough to become familiar. None of that happens at forty miles an hour behind glass."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The health is a side effect"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The health benefits of a walkable city are enormous, and the interesting part is that nobody has to choose them. You do not decide to exercise; you decide to buy bread, and the city was arranged so that the walk came free with the errand. The best public health policy is often just good street design wearing a disguise."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "You can measure a city by asking one question: would you let an eight-year-old walk to get an ice cream alone? Where the answer is yes, almost everything else is working. Where it is no, we have built the whole place around the wrong thing."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

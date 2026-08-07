@@ -1,0 +1,140 @@
+{
+  "categories": [
+    {
+      "handle": "gear",
+      "name": "Gear",
+      "description": "Kit for your desk and your bag.",
+      "featured": true
+    },
+    {
+      "handle": "apparel",
+      "name": "Apparel",
+      "description": "Wear the studio.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "featured",
+      "name": "Featured",
+      "description": "What the studio is wearing and carrying this season.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["field-kit-dock", "studio-tee", "sticker-pack"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "field-kit-dock",
+      "title": "The Field Kit Dock",
+      "description": "The desk-side dock that turns the Deck into a full workstation: one cable to charge, one to your display, and a wake time you will not believe until you try it. Machined aluminium, built to outlast the hardware it holds.",
+      "status": "active",
+      "productType": "Hardware",
+      "vendor": "Launch Notes",
+      "tags": ["Deck", "Field Kit"],
+      "categoryHandles": ["gear"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "The Field Kit Dock — Launch Notes",
+      "seoDescription": "A machined aluminium dock that turns the Deck into a full workstation.",
+      "variants": [
+        {
+          "sku": "LN-DOCK-01",
+          "priceCents": 8900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "product-dock",
+          "isPrimary": true,
+          "alt": "The Field Kit Dock on a desk"
+        }
+      ]
+    },
+    {
+      "handle": "studio-tee",
+      "title": "Studio Tee",
+      "description": "A heavyweight cotton tee with the Launch Notes mark printed small on the chest. The one the team actually wears on release day. Pre-shrunk, and soft enough that you will forget it is merch.",
+      "status": "active",
+      "productType": "Apparel",
+      "vendor": "Launch Notes",
+      "tags": ["Apparel"],
+      "categoryHandles": ["apparel"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "Studio Tee — Launch Notes",
+      "seoDescription": "A heavyweight cotton tee with the Launch Notes mark.",
+      "variants": [
+        {
+          "sku": "LN-TEE-01",
+          "priceCents": 2800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "product-tee",
+          "isPrimary": true,
+          "alt": "The Launch Notes studio tee"
+        }
+      ]
+    },
+    {
+      "handle": "sticker-pack",
+      "title": "Sticker Pack",
+      "description": "Twelve die-cut vinyl stickers: the studio mark, every product logo, and a couple of in-jokes only the community will get. Weatherproof, laptop-tested, and the fastest way to spot a fellow maker.",
+      "status": "active",
+      "productType": "Gear",
+      "vendor": "Launch Notes",
+      "tags": ["Apparel"],
+      "categoryHandles": ["gear"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "Sticker Pack — Launch Notes",
+      "seoDescription": "Twelve weatherproof die-cut vinyl stickers from the studio.",
+      "variants": [
+        {
+          "sku": "LN-STICK-01",
+          "priceCents": 900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "product-stickers",
+          "isPrimary": true,
+          "alt": "The Launch Notes sticker pack"
+        }
+      ]
+    },
+    {
+      "handle": "studio-hoodie",
+      "title": "Studio Hoodie",
+      "description": "A midweight brushed-fleece hoodie in studio grey, with the mark embroidered at the cuff. Built for a long night before a launch and comfortable enough for the morning after it ships.",
+      "status": "active",
+      "productType": "Apparel",
+      "vendor": "Launch Notes",
+      "tags": ["Apparel"],
+      "categoryHandles": ["apparel"],
+      "collectionHandles": [],
+      "seoTitle": "Studio Hoodie — Launch Notes",
+      "seoDescription": "A midweight brushed-fleece hoodie with an embroidered studio mark.",
+      "variants": [
+        {
+          "sku": "LN-HOOD-01",
+          "priceCents": 6200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "product-hoodie",
+          "isPrimary": true,
+          "alt": "The Launch Notes studio hoodie"
+        }
+      ]
+    }
+  ]
+}

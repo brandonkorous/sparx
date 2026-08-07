@@ -1,0 +1,20 @@
+[
+  {
+    "slug": "dana-ruiz",
+    "displayName": "Dana Ruiz",
+    "bio": "Dana Ruiz covers artificial intelligence and the infrastructure it runs on, from the chips to the power grid. She has been reporting on the technology industry for twelve years.",
+    "avatarAssetId": "author-ruiz"
+  },
+  {
+    "slug": "marcus-bell",
+    "displayName": "Marcus Bell",
+    "bio": "Marcus Bell writes about startups and the money behind them — who is raising, who is spending, and what the terms actually mean for the people building the companies.",
+    "avatarAssetId": "author-bell"
+  },
+  {
+    "slug": "priya-anand",
+    "displayName": "Priya Anand",
+    "bio": "Priya Anand reports on technology policy and hardware, reading the rules and the supply chains so you do not have to. She was previously a semiconductor analyst.",
+    "avatarAssetId": "author-anand"
+  }
+]

@@ -30,6 +30,8 @@ import { ArticleBody } from '@/components/cms/article-body';
 import { ModeToggle } from '@/components/mode-toggle';
 import { LegalFooterLinks, toLegalHeading } from '@/components/legal-footer-links';
 import { ListPagination, type ListPagingFacts } from '@/components/list-pagination';
+import { SiteEmbed } from '@/components/embed/site-embed';
+import { SiteMap } from '@/components/embed/site-map';
 import { mediaUrl } from '@/lib/media';
 import type { LegalLink } from '@/lib/legal';
 import type { ResolvedSite } from '@/lib/site-context';
@@ -159,6 +161,19 @@ export function SiteHostRenderer(ctx: HostCoreContext): HostRenderer {
             links={ctx.legalLinks ?? []}
             heading={toLegalHeading(node.props?.heading)}
           />
+        );
+      case HOST_KEYS.siteMap:
+      case HOST_KEYS.siteEmbed:
+        // Self-contained: the address or link is the author's own prop, so no route
+        // context is threaded. Both render NOTHING while their field is empty or
+        // unusable — the author hears about it on the canvas and in the pre-publish
+        // check, never a visitor via an empty box. VIDEO is not here and should not be:
+        // it is silicaui's own `Embed` component, stamped from the palette, because the
+        // engine already frames YouTube and Vimeo properly.
+        return node.component === HOST_KEYS.siteMap ? (
+          <SiteMap props={node.props} />
+        ) : (
+          <SiteEmbed props={node.props} />
         );
       case HOST_KEYS.siteBrand:
         // The brand mark — resolved straight off the site the route already has, so the

@@ -1,0 +1,2877 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "9fe861a1-b0da-4be2-a734-a0263c32ff3b",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "54929bcb-54e3-43a3-91ef-4e9ea92404c4",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "e8fd0ca4-6b57-420e-a05f-11e21e3bb2fa",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "01b1e7fc-9f6f-47a9-acdf-4acc02d0d974",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link4",
+                        "type": "link",
+                        "label": "Company"
+                      },
+                      "id": "5d3d0099-e4b7-4748-93b5-1f2bb06e8798",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "cdc0b7fd-e50c-4973-bbbd-79073fdef241",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "418a2390-f0f4-41ee-baa0-1b95a51355b1",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "e818df4d-8065-41dc-a57d-01d135513498",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "5678d06d-4244-43cd-9042-db4f121b0eff",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "2bc2c194-316c-482a-af7e-c7e50f5323e2",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "df6ba656-9b17-4cd5-9cc2-9e6d7b85ac12",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "a67dd2b4-11a2-4893-a7d2-2dd5ae4c5c00",
+                  "ord": "a2"
+                }
+              ],
+              "id": "f32436ea-7887-4321-ab31-9912a019a033",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "f76a6d8a-4fb5-470f-97cd-b64fdf56a926",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "e7bd2d95-14bd-4f63-8f17-7619ed3643b1",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "80f48e47-bab9-4db9-942d-27e31fdf19c8",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "c50d3e20-8666-4b62-be1f-4107e692e852",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "2a9c652c-5700-4d83-9631-fb22dd0c8826",
+                  "ord": "a4"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "2645adeb-4ca6-4898-b79f-a6b6f2a29a8d",
+                  "ord": "a5"
+                }
+              ],
+              "part": "panel",
+              "id": "76742003-456f-42a3-857d-796ffa711d78",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "44370aaa-a7e0-4748-a7fd-e9935c53a621",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "700d3353-4f95-4557-80d2-a5e229cab3b3",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-200 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @3xl:grid-cols-2",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "316ada34-2987-4417-90e2-68eee6488b21",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-sm text-sm text-base-content",
+                          "children": [
+                            "Join the list — new work, journal notes, and studio news, about once a month."
+                          ],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "4ea27c18-e874-4ba1-b0e9-526f8d893871",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "component",
+                          "component": "Form",
+                          "class": "flex w-full max-w-md flex-col gap-3 @sm:flex-row",
+                          "props": {
+                            "action": "subscribe"
+                          },
+                          "children": [
+                            {
+                              "kind": "component",
+                              "component": "Input",
+                              "class": "input flex-1",
+                              "props": {
+                                "type": "email",
+                                "name": "email",
+                                "placeholder": "you@example.com",
+                                "required": true
+                              },
+                              "id": "9225bb36-8019-488f-beaf-c70c2ee8da45",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "component",
+                              "component": "Button",
+                              "class": "btn btn-primary",
+                              "props": {
+                                "label": "Subscribe",
+                                "type": "submit"
+                              },
+                              "slot": {
+                                "name": "cta",
+                                "type": "text",
+                                "label": "Button label"
+                              },
+                              "id": "0d73e426-a36c-4d66-83da-f8e6f7af1ed8",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "5a4c58fe-6433-4e81-8560-b1d0a486254c",
+                          "ord": "a2"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm text-base-content",
+                          "children": ["No spam, and an unsubscribe link in every issue."],
+                          "slot": {
+                            "name": "note",
+                            "type": "text",
+                            "label": "Reassurance line"
+                          },
+                          "id": "97d4089a-df48-4eb6-99eb-8d3140a1ca92",
+                          "ord": "a3"
+                        }
+                      ],
+                      "id": "f7fe0e5d-5e09-4ead-ad9b-b9e1ee6eaa42",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Explore"],
+                              "slot": {
+                                "name": "col1",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/"
+                              },
+                              "id": "c9e2289f-3d0f-45b2-8200-3031468f6c97",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/shop"
+                                      },
+                                      "children": ["Shop"],
+                                      "slot": {
+                                        "name": "link1",
+                                        "type": "link",
+                                        "label": "Features"
+                                      },
+                                      "id": "c937f982-2ccf-49cc-a9f6-c5262b6f768f",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "cb3d198a-01d1-42f0-882d-a6962aaff1a7",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/journal"
+                                      },
+                                      "children": ["Journal"],
+                                      "slot": {
+                                        "name": "link2",
+                                        "type": "link",
+                                        "label": "Pricing"
+                                      },
+                                      "id": "6796291a-ab7c-4d2d-8841-8990c97708e6",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "1db51b8b-cd03-4d75-9536-b9b3ff24086c",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/about"
+                                      },
+                                      "children": ["About"],
+                                      "slot": {
+                                        "name": "link3",
+                                        "type": "link",
+                                        "label": "Changelog"
+                                      },
+                                      "id": "6b884ece-0872-4ed4-a49b-cf3dd67ad94c",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "aeb329bb-bd24-4697-ac1d-5fe2900c447d",
+                                  "ord": "a2"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/contact"
+                                      },
+                                      "children": ["Contact"],
+                                      "slot": {
+                                        "name": "link4",
+                                        "type": "link",
+                                        "label": "Roadmap"
+                                      },
+                                      "id": "5528b5ad-c7ac-41fe-bfe4-788e87efb7ca",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "08d69c70-09e8-4c9a-93ad-c21bdcaca93b",
+                                  "ord": "a3"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/search"
+                                      },
+                                      "children": ["Search"],
+                                      "id": "aa8bdf0e-9451-4065-9654-7d9ae01996c9",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "c1bc75b3-856c-4c6e-b2d6-c664a3c3cf1a",
+                                  "ord": "a4"
+                                }
+                              ],
+                              "id": "57321a5c-d99d-429b-968b-393af417f1c1",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "f9dbaf0d-7a13-4145-885d-aa8ecca2ec88",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Account"],
+                              "slot": {
+                                "name": "col2",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/account"
+                              },
+                              "id": "dceecacf-7e4e-4403-8ec1-3ac37779e18d",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account"
+                                      },
+                                      "children": ["Sign in"],
+                                      "slot": {
+                                        "name": "link5",
+                                        "type": "link",
+                                        "label": "About"
+                                      },
+                                      "id": "97c1e81f-3f65-47d9-821a-5c84ea1aa1db",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "e377471a-a5fe-48c3-a1b6-37c5786f830d",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account/orders"
+                                      },
+                                      "children": ["Orders"],
+                                      "slot": {
+                                        "name": "link6",
+                                        "type": "link",
+                                        "label": "Careers"
+                                      },
+                                      "id": "97c6eff4-f301-4161-9fc9-6dd159f8793e",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "a3e1e960-3f34-4f07-b8c4-41d19e1fb19a",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/cart"
+                                      },
+                                      "children": ["Cart"],
+                                      "slot": {
+                                        "name": "link7",
+                                        "type": "link",
+                                        "label": "Press"
+                                      },
+                                      "id": "f11d5039-7d9a-434b-bcf7-a898d172fcf7",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "2930eedc-3123-48e9-818f-5b1c1209d69a",
+                                  "ord": "a2"
+                                }
+                              ],
+                              "id": "786456cf-1dcc-4932-a196-87e89e057852",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "93f7c0ed-4349-4cdc-a8ed-a8d4c858e5f8",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "0a99314c-7d11-4759-8d26-e3b1fa0004ea",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "868f15af-de57-4b6a-847d-f00395be47a7",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "a1441bf8-553c-4cc1-9969-c2101aa43ab8",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "94b71c2c-5939-4a08-83d3-b8add1d4f56e",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex items-center gap-5",
+                      "children": [],
+                      "id": "5e0efbf0-c0b5-4e7d-95c6-cd877513aa8b",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "c9ee31fb-0833-4c48-a91c-616191082bc7",
+                  "ord": "a1"
+                }
+              ],
+              "id": "0910f192-a13e-4414-9e3f-e5b1f87ee9c9",
+              "ord": "a0"
+            }
+          ],
+          "id": "985d9c34-b726-49af-b259-296fbbdf8172",
+          "ord": "a2"
+        }
+      ],
+      "id": "f5b1345a-40f0-48d0-9de3-8eea0d18f62a"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "The Commons — ideas and talks, free for everyone",
+      "seoDescription": "The Commons is a nonprofit stage for public thinking — talks and essays from people worth listening to, gathered in one place and kept free for everyone.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "89e64248-2bf5-4562-bb10-cf8cca47a0d1",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-20 @3xl:py-28",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "span",
+                    "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                    "children": ["The Commons"],
+                    "id": "2f622b3c-985b-4def-8fc0-db0215a19dea",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-4xl text-4xl font-bold leading-tight tracking-tight text-base-content @3xl:text-6xl",
+                    "children": [
+                      "The best ideas deserve a room, an audience, and the time to actually land."
+                    ],
+                    "id": "581e3d3d-b2e1-454a-82f5-837d819e10ce",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-xl leading-relaxed text-base-content",
+                    "children": [
+                      "The Commons is a nonprofit stage for public thinking — talks and essays from the people worth listening to, gathered in one place and kept free for everyone. Pull up a chair."
+                    ],
+                    "id": "29b49bd4-f316-44ed-a816-9c8090191cce",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-4 @2xl:flex-row",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": ["Watch the talks"],
+                        "id": "f2f7b4e5-4297-43f2-97a2-26f5434db60b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-lg btn-neutral btn-outline",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": ["Become a member"],
+                        "id": "4164c798-cf55-4e29-8021-ea4f28da01c5",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "589a1aad-91dd-45d4-bdaf-d697069a06b1",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "7bfefd74-b783-440e-b97d-191f15e43475",
+                "ord": "a0"
+              }
+            ],
+            "id": "45917000-b1fd-4a20-807e-4d6e7589acb0",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Talks worth watching"],
+                        "id": "2b937629-6a0e-4814-8c38-a525da058676",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg text-base-content",
+                        "children": [
+                          "Curated from the stage — an idea, a person, and the time to make the case."
+                        ],
+                        "id": "b468d8af-32cb-4233-955c-7656d12f5946",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "0860c76e-4894-42f2-82dc-cc8d908dd8ba",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid gap-8 @2xl:grid-cols-2 @4xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-4",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1400&q=80",
+                              "alt": "Poster for “The quiet power of doing less”",
+                              "loading": "lazy"
+                            },
+                            "id": "4e1c2546-5545-4ef8-9522-78c338cc3f3e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                            "children": ["Society"],
+                            "id": "1758e669-f21d-4e23-94a5-8817b2cd2d70",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold leading-snug text-base-content",
+                            "children": ["The quiet power of doing less"],
+                            "id": "cb6957c5-b80a-4907-9a37-7dcfdfbd2503",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base text-base-content",
+                            "children": ["Ada Okonkwo"],
+                            "id": "69a04caa-d9ff-40e4-8c45-e51a5ae48c15",
+                            "ord": "a3"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-semibold text-primary",
+                            "children": ["Watch the talk →"],
+                            "id": "0396b563-6506-4e58-981a-25322378396e",
+                            "ord": "a4"
+                          }
+                        ],
+                        "id": "1be7f8bb-4f83-46d5-b7a7-c01ac1a89c66",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-4",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1400&q=80",
+                              "alt": "Poster for “What a river taught me about time”",
+                              "loading": "lazy"
+                            },
+                            "id": "b88caa76-359e-4a8b-96fc-f1b678b57303",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                            "children": ["Nature"],
+                            "id": "d1af501e-99f0-49eb-b016-008a54622bad",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold leading-snug text-base-content",
+                            "children": ["What a river taught me about time"],
+                            "id": "e93a5776-91c8-42f5-9d2d-d3be5432d462",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base text-base-content",
+                            "children": ["Ren Castellano"],
+                            "id": "d69b706b-c84c-4f68-994a-b947154addd8",
+                            "ord": "a3"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-semibold text-primary",
+                            "children": ["Watch the talk →"],
+                            "id": "320ff0b5-b312-4141-9c34-5d76a0584ef1",
+                            "ord": "a4"
+                          }
+                        ],
+                        "id": "c421c48f-3cce-4eef-b342-43c139b36af4",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-4",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1400&q=80",
+                              "alt": "Poster for “Designing for the next hundred years”",
+                              "loading": "lazy"
+                            },
+                            "id": "1bb275ad-f820-41c2-a4ea-ae17ffda2498",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                            "children": ["Design"],
+                            "id": "cb146a7d-9e63-48d0-b8a1-beb084d15535",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold leading-snug text-base-content",
+                            "children": ["Designing for the next hundred years"],
+                            "id": "18f9a7b2-3155-4304-866b-20b5433e8c2a",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base text-base-content",
+                            "children": ["Mira Halvorsen"],
+                            "id": "320d5415-c16b-47cb-9559-03d9a8f1aabe",
+                            "ord": "a3"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-semibold text-primary",
+                            "children": ["Watch the talk →"],
+                            "id": "c70399ad-494c-4e4f-b5b7-2888cf9fcdde",
+                            "ord": "a4"
+                          }
+                        ],
+                        "id": "64745b92-1256-4435-a717-a5a006df1b0a",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-4",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=1400&q=80",
+                              "alt": "Poster for “The math of second chances”",
+                              "loading": "lazy"
+                            },
+                            "id": "fc97c48d-fa10-48d7-a533-b8bf331bae57",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                            "children": ["Science"],
+                            "id": "e51e7ef7-a33c-47f5-a83f-ffc027bfe9f5",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold leading-snug text-base-content",
+                            "children": ["The math of second chances"],
+                            "id": "b235f1ef-6c4e-4e71-8a72-f35f6f1e8f70",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base text-base-content",
+                            "children": ["Ada Okonkwo"],
+                            "id": "96710918-3b18-4546-8c7a-40ef2b691248",
+                            "ord": "a3"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-semibold text-primary",
+                            "children": ["Watch the talk →"],
+                            "id": "9fe28192-0c56-488d-85c0-e5515908f425",
+                            "ord": "a4"
+                          }
+                        ],
+                        "id": "f5e8c120-2531-49f2-b089-e89f250e30c5",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-4",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1400&q=80",
+                              "alt": "Poster for “Why your city should be walkable”",
+                              "loading": "lazy"
+                            },
+                            "id": "1b4128fd-b72d-457d-91fc-e998e4762968",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                            "children": ["Society"],
+                            "id": "12967a9d-56ca-48ed-828f-529bc6fbda42",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold leading-snug text-base-content",
+                            "children": ["Why your city should be walkable"],
+                            "id": "0294040e-bc13-481f-bfdd-9f93cc773ed7",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base text-base-content",
+                            "children": ["Ren Castellano"],
+                            "id": "54c20b44-48f9-4691-9fa1-9d208b0a6cec",
+                            "ord": "a3"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-semibold text-primary",
+                            "children": ["Watch the talk →"],
+                            "id": "5d1a9cd4-4758-4de6-96e6-63be81c3d1f3",
+                            "ord": "a4"
+                          }
+                        ],
+                        "id": "a0c2fb09-ece7-4e44-8748-db6166f38c76",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-4",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1400&q=80",
+                              "alt": "Poster for “The forgotten art of listening”",
+                              "loading": "lazy"
+                            },
+                            "id": "e8e7767e-2865-4cb6-9ab7-91178eaef76f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                            "children": ["Society"],
+                            "id": "f2a3bc0d-2d74-430f-bf39-393168ff60a2",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold leading-snug text-base-content",
+                            "children": ["The forgotten art of listening"],
+                            "id": "6c1c5021-d50c-4c78-828d-3be20610976d",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base text-base-content",
+                            "children": ["Mira Halvorsen"],
+                            "id": "868b970f-3060-4260-a35c-a88cbd08e32f",
+                            "ord": "a3"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-semibold text-primary",
+                            "children": ["Watch the talk →"],
+                            "id": "1c095e40-7baa-46c7-af12-939a752f21e5",
+                            "ord": "a4"
+                          }
+                        ],
+                        "id": "054b90a0-edf4-430f-aaa8-35a1bd4614a3",
+                        "ord": "a5"
+                      }
+                    ],
+                    "id": "f13076e1-0c55-49fd-bb0d-b052bca1f9a8",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "83438ae3-9f2b-427a-a5cb-922549d15080",
+                "ord": "a0"
+              }
+            ],
+            "id": "c91a4fbe-8281-4163-b207-7b3873462c3e",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Browse by idea"],
+                    "id": "39fcab18-e3b2-4e05-96a2-9cf970a292b1",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid gap-6 @2xl:grid-cols-2 @4xl:grid-cols-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-2 rounded-box border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Society"],
+                            "id": "f4312932-7d2e-4d86-9c62-4e6ddcd1e49b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["How we live together, and how we might do it better."],
+                            "id": "c752b5b3-2252-46ef-ba9a-72a98dbea2c1",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-semibold text-primary",
+                            "children": ["Explore →"],
+                            "id": "a156d57d-5684-4cba-82f0-5321aad10c8b",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "9bff7129-6338-4b9c-b6ba-94ce394311b0",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-2 rounded-box border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Nature"],
+                            "id": "6eb39cf2-261c-4dee-9e5f-fa9939e00feb",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The living world, and our place inside it."],
+                            "id": "f7257878-662a-4184-bd98-68db8676b512",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-semibold text-primary",
+                            "children": ["Explore →"],
+                            "id": "bad08931-b3ea-483d-8241-1a7f67fa2405",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "4d75d076-1aef-4225-b0b7-327a4779cc88",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-2 rounded-box border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Design"],
+                            "id": "afec7165-e736-4811-9337-a51e85ccce9d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Making things that last, on purpose."],
+                            "id": "4813321b-ee0e-4076-95b7-a7120493b491",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-semibold text-primary",
+                            "children": ["Explore →"],
+                            "id": "71b2db50-1470-410a-9940-8a2c2a6f1ce3",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "34a7c03a-7668-4fb2-918c-e700de6dcc33",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-2 rounded-box border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Science"],
+                            "id": "cc7eabe7-ea50-49ef-87d2-040083d59ca7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["What we know, how we know it, and what comes next."],
+                            "id": "1e0c9603-9a98-4c5d-a5aa-0856d2158eb1",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-semibold text-primary",
+                            "children": ["Explore →"],
+                            "id": "22317700-e260-452f-96d2-34192960d0dc",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "65bd9072-d6c7-40d6-b26a-263019b404cc",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "4d596377-4f6c-4d90-bcde-1cc689f233d8",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "5e0a1f82-ab54-4d4b-8fbd-3d73e8963618",
+                "ord": "a0"
+              }
+            ],
+            "id": "a55f85db-52b5-4eed-a8cb-bfb0493713db",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-2",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-3",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["From the journal"],
+                    "id": "dfc0dd8e-b205-428f-819f-3afa359f29ea",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg text-base-content",
+                    "children": ["Essays and notes from the desk, newest first."],
+                    "id": "052f1579-7106-4d4c-96dc-dcb59fa058a8",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "7825f46f-c880-4d89-a131-3127b09f5476",
+                "ord": "a0"
+              }
+            ],
+            "id": "192d3b99-b67c-47cf-a633-0aa4c593f452",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "b4b97c92-cdfd-45a6-8432-cee31ca2fc6f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "fb33c182-0aee-4c2b-a011-3aad3f59ecb5",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "1aea48ac-b7c6-426d-ba59-b4ebbc91a9da",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "03f036a9-d72a-46eb-9b37-13b3804531d8",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "cfffd823-3358-4ee8-9c24-1654055d7e4b",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "8287ebbc-288e-4d80-80a1-9321e76b8409",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "f4e24b50-f2f9-4b72-afce-5ed970ee452f",
+                "ord": "a0"
+              }
+            ],
+            "id": "9e98d272-1204-451d-9afd-c4c074fcaddb",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Upcoming at The Commons"],
+                    "id": "7a31b12f-4f2b-42c8-9e7b-397d9bb32a00",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "ul",
+                    "class": "flex flex-col",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "li",
+                        "class": "flex flex-col gap-4 border-t border-base-300 py-6 @2xl:flex-row @2xl:gap-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-2 @2xl:w-24 @2xl:flex-col @2xl:items-start @2xl:gap-0",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-3xl font-bold leading-none text-primary",
+                                "children": ["24"],
+                                "id": "da4c5086-b351-4604-86e3-2d8eca574ea8",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Sep"],
+                                "id": "09238a10-3b7a-4f73-94e7-d7293ba6439d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "af34822f-95d9-4e24-aec2-84fbfe1da6ae",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["The Commons 2026: an evening of talks"],
+                                "id": "d5ca828b-07cb-4793-b02d-1dac0ae58e7a",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Six speakers, one stage, one long night of ideas — our flagship gathering, open to members and the curious alike."
+                                ],
+                                "id": "dc318e17-29a4-473e-85ea-85e46d692d38",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm text-base-content",
+                                "children": ["Chicago · 6pm CT"],
+                                "id": "46b1cf46-ef66-4460-901d-4284144f7fdc",
+                                "ord": "a2"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "text-base font-semibold text-primary",
+                                "attrs": {
+                                  "href": "/journal"
+                                },
+                                "children": ["Reserve a seat →"],
+                                "id": "d2140206-2d1d-4f26-978a-7c7f88e689d2",
+                                "ord": "a3"
+                              }
+                            ],
+                            "id": "01f481ae-634e-483b-90d2-fb4cb29fdc9a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1d3c7622-215b-4ca5-99f5-c3b5d24dbdb5",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "li",
+                        "class": "flex flex-col gap-4 border-t border-base-300 py-6 @2xl:flex-row @2xl:gap-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-2 @2xl:w-24 @2xl:flex-col @2xl:items-start @2xl:gap-0",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-3xl font-bold leading-none text-primary",
+                                "children": ["11"],
+                                "id": "98a4a603-b96c-467e-81b8-51b46bb670b4",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Oct"],
+                                "id": "fd386c47-d47b-402f-9ebe-cba5713e754b",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "7a9aca6e-38a4-428b-856b-b5b4d1707363",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Salon: what we owe the future"],
+                                "id": "ce8f86c9-9c2d-402f-9cd2-d9a4c4eafb5f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "A small, in-the-round conversation with three of our speakers on the ideas that outlast us."
+                                ],
+                                "id": "4cfe0fea-bc5c-413c-be40-a87e0b5a405d",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm text-base-content",
+                                "children": ["Members only · online"],
+                                "id": "f6059533-1909-412d-a36e-0bdb3b74f666",
+                                "ord": "a2"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "text-base font-semibold text-primary",
+                                "attrs": {
+                                  "href": "/journal"
+                                },
+                                "children": ["Reserve a seat →"],
+                                "id": "fc68a731-4db2-47e0-b501-a6ba865ef8c0",
+                                "ord": "a3"
+                              }
+                            ],
+                            "id": "391cfa0d-90dc-443c-bb36-988dd72d11ca",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "609c6e48-065e-4e0f-9056-d8e25208f522",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "li",
+                        "class": "flex flex-col gap-4 border-t border-base-300 py-6 @2xl:flex-row @2xl:gap-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-2 @2xl:w-24 @2xl:flex-col @2xl:items-start @2xl:gap-0",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-3xl font-bold leading-none text-primary",
+                                "children": ["02"],
+                                "id": "23a371eb-fdca-48e9-b9e6-6cb563c098a1",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Nov"],
+                                "id": "bc7fb6a7-d6dd-4ae2-9694-b1e6d9f8d44f",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "f09871e1-1032-4f35-8bac-e32afff18eea",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Workshop: how to give the talk of your life"],
+                                "id": "db44768e-6f5a-4fca-8de4-65a2f9e1b25b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "A working afternoon for anyone with an idea and the nerve to stand up and share it."
+                                ],
+                                "id": "602c53d3-ed01-4580-b245-3ea08376e10d",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm text-base-content",
+                                "children": ["Portland · 1pm PT"],
+                                "id": "d1af62b5-8529-4aac-a248-26a45f09322d",
+                                "ord": "a2"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "text-base font-semibold text-primary",
+                                "attrs": {
+                                  "href": "/journal"
+                                },
+                                "children": ["Reserve a seat →"],
+                                "id": "78e3bb73-6159-49b1-807d-cbc2441b7f83",
+                                "ord": "a3"
+                              }
+                            ],
+                            "id": "7df4a196-b393-474a-b4da-dba641ed9828",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "7a6c015c-7fe5-49ea-9535-74d5f0ad08d8",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "5f5f321b-17d7-4d26-aafa-ef542758480f",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "3cb73076-12c3-46ad-a949-41339669e631",
+                "ord": "a0"
+              }
+            ],
+            "id": "bb754f74-4a68-496c-bbda-d2271e8f0e28",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-start gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Ideas are worth sharing — help us keep them free"],
+                    "id": "5da17acc-ad23-4aa4-b8ef-49216d095a64",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Every talk on The Commons is free to watch, and it stays that way because members pay for the room, the recording and the years of archive behind it. Join them, or take a little of the stage home with you."
+                    ],
+                    "id": "17bd91b3-ae0f-400e-b055-c6d454e5aafb",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "9f3b4c77-1785-472c-a91a-bfd6bd48e2d7",
+                "ord": "a0"
+              }
+            ],
+            "id": "18bbce25-22ae-4cff-a967-1d70371ea558",
+            "ord": "a6"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Support the Commons"],
+                    "id": "1dac5156-22f7-4e0c-934a-d7afb34cda0d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "b7d9f6a4-913d-4e9e-af6a-1fa5a6c51041",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "3a019316-7a55-4e7d-bef7-334ced08b201",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "a2468ac5-e69d-4d35-9bab-7b0eccad5afe",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "4b32f9d1-5f22-40f0-956c-58cce4ad6e7f",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "f9a85d12-85de-4577-9682-2f4a4eae16c4",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "d7796c4f-93e4-4773-a2e2-782ad9b2771c",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "35e985a9-9a56-4f18-b819-878e27dd9a82",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "56f181ac-9e47-413f-b74d-bb6ca250fd5b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "7ae8930b-2f91-4ba1-a0c8-815e5f1b62c0",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "412aa5ad-34d8-4f73-a4e8-0d4f34431be2",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "25445c21-cfa1-4d1f-9c51-1d1c28ffc52a",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "999fea75-d15a-4250-9a4d-b2c841a86ab0",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "c08d0739-6155-4aad-9da4-dfc7056f9eee",
+            "ord": "a7"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — The Commons",
+      "seoDescription": "Browse everything The Commons makes, with prices and options at a glance. Ideas, talks & public thinking.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "7741674e-1cf6-4215-9eea-6b985311884f",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-12 pb-4",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-6xl",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
+                    "children": ["Shop"],
+                    "id": "276a149f-14d5-4e8f-9c00-a3bba3ebc3fa",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "mt-4 max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": ["Everything we currently have available."],
+                    "id": "5994edd1-a961-4bff-a733-0de98511be5c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "92feaddb-1f78-492c-8517-41cd12b460a1",
+                "ord": "a0"
+              }
+            ],
+            "id": "2f00c2bc-e350-45a5-990a-88c8ba848f09",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "65280e52-6472-444c-984b-b274167adbcd",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — The Commons",
+      "seoDescription": "Explore the collections at The Commons, grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "1f4659ab-a3e9-4011-9006-43fc4bb014a3",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container",
+            "children": [
+              {
+                "kind": "host",
+                "component": "commerce.collections",
+                "class": "mx-auto w-full max-w-6xl px-6 py-6",
+                "locked": "host",
+                "id": "b7485941-1800-4f84-aa5e-23dd9ebfee5a",
+                "ord": "a0"
+              }
+            ],
+            "id": "b6640233-7034-47fa-9d6d-b7213a7e0065",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — The Commons",
+      "seoDescription": "Review what is in your cart and check out securely at The Commons.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "86fd4555-a50a-4d0e-8307-d140298eddf8",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "h1",
+                "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
+                "children": ["Your cart"],
+                "id": "5689a687-ae1a-44ac-9284-35d11626caa1",
+                "ord": "a0"
+              },
+              {
+                "kind": "host",
+                "component": "commerce.cart",
+                "class": "mx-auto w-full max-w-4xl px-6 py-10",
+                "locked": "host",
+                "id": "59d02fe9-46c1-4cfd-94db-c6a1ded0fc09",
+                "ord": "a1"
+              }
+            ],
+            "id": "9c5b4e50-3b98-491b-9170-90aa2b328afd",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — The Commons",
+      "seoDescription": "Search The Commons for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "ecdea384-b658-4df4-94d7-db67dc74e93c",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "h1",
+                "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
+                "children": ["Search"],
+                "id": "5bc78218-630a-49bc-a2b8-4d2648304edc",
+                "ord": "a0"
+              },
+              {
+                "kind": "host",
+                "component": "commerce.search",
+                "class": "mx-auto w-full max-w-6xl px-6 py-6",
+                "locked": "host",
+                "id": "a8b136dc-2ad9-44e8-95a6-36ea706767ec",
+                "ord": "a1"
+              }
+            ],
+            "id": "206a15a8-6c1b-4e23-9c72-b8808c7fd1d4",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — The Commons",
+      "seoDescription": "Stories, guides and notes from The Commons.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "fdac2591-fdd1-4afa-8615-b4b54b278eed",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold leading-tight tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The Commons Journal"],
+                    "id": "de39d1af-efd7-45be-97bd-ff973f9a80f2",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Talks and essays from the stage — the ideas, the people behind them, and the notes we could not fit into an evening."
+                    ],
+                    "id": "d18a0baa-af3c-4feb-bfe8-054837974b21",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "a111699b-ff1b-430b-b59e-be810ad337f6",
+                "ord": "a0"
+              }
+            ],
+            "id": "8f18fbf0-5722-4134-96f9-44a059f6d213",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "8f4fd024-ee46-40e9-add2-3370215828eb",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "a20d8a65-73c2-455e-8ec7-49875da1303a",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "30cf9f1b-f585-40d6-ab56-29e77453c710",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "e30f4d7a-7ef4-4d41-9a73-d57859c06ce6",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "5e2185e5-cd27-4926-9de2-9243c9a52fea",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "dd399d86-864e-4561-8a15-e89aa9cc6d0c",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "684f3f7c-e600-4b9b-9ce3-0aca48c19e70",
+                "ord": "a0"
+              }
+            ],
+            "id": "d837a6c4-b0cf-436d-88cb-9d9ac0038d47",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About The Commons — a nonprofit stage for ideas",
+      "seoDescription": "Who The Commons is and how it is paid for — member-funded talks and essays that keep an open stage free of anyone who would rather we stay quiet.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "26d41b2f-3b1b-466e-a978-5bb463d55e4a",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
+                    "children": ["About The Commons"],
+                    "id": "9a3e743b-aa67-4fcb-947b-f1273051be7e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The Commons is a nonprofit dedicated to a simple idea: that a good idea, given a stage and an honest hour, can change how someone sees the world. We find people worth listening to, give them the room to make their case, and keep the recording free for anyone who wants to watch."
+                    ],
+                    "id": "5a84f826-5a24-41c6-9afd-9c0d2f25ff81",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "We take no money from anyone who would rather we not say something. Our talks and essays are paid for by members and supporters, which is the only arrangement that lets a stage stay genuinely open — to the unfashionable idea, the quiet expert, and the argument that needs more than a headline to land."
+                    ],
+                    "id": "d04d03dc-e49c-45ba-90e5-847c907b79aa",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "9e3ff4ca-bdc6-4128-81e2-720a25e35793",
+                "ord": "a0"
+              }
+            ],
+            "id": "87f9e810-0aa1-445e-a662-7e6a5fc272d7",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — The Commons",
+      "seoDescription": "Get in touch with The Commons — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "9107e9e0-d6dc-4c94-8524-f30b1cd23597",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
+                    "children": ["Bring us an idea"],
+                    "id": "d646ccd4-ab94-47ad-87a7-60ed58dc6f7d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Have a talk in you, a speaker to nominate, or a question about membership? We read everything, and we answer the ones we can. Tell us what you are thinking about."
+                    ],
+                    "id": "2271cbab-a22b-4bf6-b788-ef6767776899",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:hello@thecommons.example"
+                    },
+                    "children": ["Email The Commons"],
+                    "id": "b0aa7816-2184-412e-9ea9-2fad3dacdbfe",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "636eaba2-469f-4013-846f-fe08e43b3c74",
+                "ord": "a0"
+              }
+            ],
+            "id": "ec885cf3-3cec-4721-9143-c4799741e02d",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Article",
+      "kind": "collection",
+      "recordType": "cms.blog_post",
+      "isDefault": true,
+      "seoTitle": "Article — The Commons",
+      "seoDescription": "A story from The Commons — the writing, the reporting and the notes behind it.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "div",
+            "class": "flex flex-col",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "section",
+                "class": "bg-base-200 @container px-6 pt-12 pb-14 @2xl:pt-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto flex w-full max-w-3xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-primary",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["←"],
+                            "id": "d9d5f8d1-e69e-433b-9ade-7c1e4d6caba6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["All talks"],
+                            "id": "d9ce2818-5163-4cf3-8a74-a8ea3a117302",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "7a9c156c-5038-43d7-9b8c-c05143d286dc",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                        "children": ["Section"],
+                        "data": {
+                          "kind": "visible",
+                          "ref": "category"
+                        },
+                        "id": "b51720f8-a626-4ec3-a1ad-64518769e0a1",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold leading-tight tracking-tight text-base-content @2xl:text-5xl",
+                        "children": ["Post title"],
+                        "data": {
+                          "kind": "value",
+                          "ref": "title"
+                        },
+                        "id": "e9478262-b717-404f-9002-3097592793a3",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-xl leading-relaxed text-base-content",
+                        "children": ["The short summary of this post, written in the CMS."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "excerpt"
+                        },
+                        "id": "bc3417f0-9868-4ac6-9bc9-18019dad2077",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-2 flex items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "h-11 w-11 rounded-full border border-base-300 object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "visible",
+                              "ref": "authorAvatar"
+                            },
+                            "id": "28c372d2-cfa2-42ad-bb0f-f2c5731cd7b3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Author name"],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "authorName"
+                                },
+                                "id": "6b34a39e-508d-4045-ab6e-9c6078aea41c",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-sm text-base-content",
+                                "children": ["Published date"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "date"
+                                },
+                                "id": "193b2d43-7300-4fc5-a605-1c7f4d0a9276",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "084fc8aa-225d-41d1-96a8-5f9cf9a84771",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6f1cdf0e-175c-4c17-9955-09c86c369481",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "57af5063-8369-4308-8324-0c981b0fad98",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "f70c0875-faf0-4c7c-951d-6a025dff69e3",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "section",
+                "class": "bg-base-100 @container px-6 py-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto w-full max-w-3xl",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": ""
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "featuredImage"
+                        },
+                        "id": "158b352e-b8c3-4203-93c2-85e0abf011f5",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "dad1e4db-6fd4-4ad8-8c47-1113f56bf614",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "a9dea5c3-c826-4f24-9b01-36c98e6b703e",
+                "ord": "a1"
+              }
+            ],
+            "id": "722f1b0f-53f0-4c07-af19-c59199ec51ac",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl px-6 pb-20 @2xl:pb-24",
+                "children": [
+                  {
+                    "kind": "host",
+                    "component": "cms.article-body",
+                    "class": "w-full",
+                    "locked": "host",
+                    "id": "3b1fb35f-0c35-4686-a67f-2d4f1194169b",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "75f72791-50b6-458d-be2e-bc8b8c941963",
+                "ord": "a0"
+              }
+            ],
+            "id": "19fe377c-0992-4388-97fb-50e2f4286abb",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pb-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-4 rounded-box border border-base-300 bg-base-200 p-6 @2xl:flex-row @2xl:items-center",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "h-16 w-16 rounded-full border border-base-300 object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": ""
+                        },
+                        "data": {
+                          "kind": "visible",
+                          "ref": "authorAvatar"
+                        },
+                        "id": "b94f4029-d74f-4f12-b1c5-5a580e9b4804",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-lg font-semibold text-base-content",
+                            "children": ["Author name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorName"
+                            },
+                            "id": "1907288e-445b-4e92-b4c4-f672e393f6b0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["About the author."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorBio"
+                            },
+                            "id": "5697c18d-c8cd-439e-bc94-0e3a04d74368",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "27ae98cf-dda4-44d7-85c2-ed73d6a23ef2",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "authorBio"
+                    },
+                    "id": "db5357c4-7e4b-4e15-b009-4e9cb56f88a2",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "6599fe29-d504-4de1-9e61-0b2ea16fbcee",
+                "ord": "a0"
+              }
+            ],
+            "id": "703535a3-0aa2-4b84-a81e-4e2bae24ce0a",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-200 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-2xl font-bold tracking-tight text-base-content @2xl:text-3xl",
+                        "children": ["Keep reading"],
+                        "id": "0792a85f-bd3b-46af-92b9-45aae0829025",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/journal"
+                            },
+                            "children": ["More stories"],
+                            "id": "6cbc23f5-10d7-4054-b2c4-ec3eec61b0d4",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "2afed59c-640d-45c3-9270-b53b1224ea6f",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "3397b302-2555-46e2-955d-af05f63ce983",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "ee952576-05c2-46c4-a002-29adb9a2e8ec",
+                "ord": "a0"
+              }
+            ],
+            "id": "adeb16d2-0851-4957-a648-c4df1d86a5ea",
+            "ord": "a3"
+          }
+        ],
+        "data": {
+          "kind": "collection",
+          "ref": "blog_post"
+        },
+        "id": "52036339-f14c-452c-b6e7-9dac3dee52b7"
+      }
+    }
+  ],
+  "theme": {
+    "name": "podium",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(99% 0.004 40)",
+      "--color-base-200": "oklch(96% 0.008 40)",
+      "--color-base-300": "oklch(91% 0.012 38)",
+      "--color-base-content": "oklch(19% 0.01 40)",
+      "--color-primary": "oklch(56% 0.18 32)",
+      "--color-secondary": "oklch(44% 0.03 40)",
+      "--color-accent": "oklch(56% 0.18 32)",
+      "--color-neutral": "oklch(24% 0.01 40)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "1rem",
+      "--radius-field": "0.5rem",
+      "--radius-box": "0.875rem",
+      "--depth": "1",
+      "--font-sans": "\"Work Sans\", sans-serif",
+      "--font-head": "\"Outfit\", sans-serif",
+      "--color-primary-content": "oklch(98% 0.01 32)",
+      "--color-secondary-content": "oklch(98% 0.01 40)",
+      "--color-accent-content": "oklch(98% 0.01 32)",
+      "--color-neutral-content": "oklch(98% 0.01 40)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(56% 0.18 32)",
+      "--color-highlight-content": "oklch(98% 0.01 32)",
+      "--color-border": "oklch(91% 0.012 38)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Outfit\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(18% 0.012 40)",
+      "--color-base-200": "oklch(15% 0.012 40)",
+      "--color-base-300": "oklch(12% 0.012 40)",
+      "--color-base-content": "oklch(95% 0.006 40)",
+      "--color-primary": "oklch(64% 0.18 32)",
+      "--color-secondary": "oklch(74% 0.03 40)",
+      "--color-accent": "oklch(64% 0.18 32)",
+      "--color-neutral": "oklch(32% 0.01 40)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 32)",
+      "--color-secondary-content": "oklch(15% 0.02 40)",
+      "--color-accent-content": "oklch(15% 0.02 32)",
+      "--color-neutral-content": "oklch(98% 0.01 40)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(64% 0.18 32)",
+      "--color-highlight-content": "oklch(15% 0.02 32)",
+      "--color-border": "oklch(12% 0.012 40)"
+    }
+  }
+}

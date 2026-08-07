@@ -1,0 +1,72 @@
+[
+  {
+    "id": "lead-release",
+    "url": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1400&q=80",
+    "alt": "A studio monitor lit in the dark"
+  },
+  {
+    "id": "cover-news",
+    "url": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1400&q=80",
+    "alt": "A close-up of a circuit board"
+  },
+  {
+    "id": "cover-nimbus",
+    "url": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1400&q=80",
+    "alt": "A precision arm on an assembly line"
+  },
+  {
+    "id": "cover-deck",
+    "url": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1400&q=80",
+    "alt": "Hardware racked and lit in blue"
+  },
+  {
+    "id": "cover-guides",
+    "url": "https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=1400&q=80",
+    "alt": "A studio team working together at desks"
+  },
+  {
+    "id": "cover-aurora",
+    "url": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1400&q=80",
+    "alt": "A field of stars over a dark horizon"
+  },
+  {
+    "id": "spotlight",
+    "url": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1400&q=80",
+    "alt": "A darkened room before a launch event"
+  },
+  {
+    "id": "author-reyes",
+    "url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1400&q=80",
+    "alt": "Portrait of Mara Reyes"
+  },
+  {
+    "id": "author-okafor",
+    "url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=1400&q=80",
+    "alt": "Portrait of Daniel Okafor"
+  },
+  {
+    "id": "author-lindqvist",
+    "url": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1400&q=80",
+    "alt": "Portrait of Sofia Lindqvist"
+  },
+  {
+    "id": "product-dock",
+    "url": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1400&q=80",
+    "alt": "The Field Kit Dock on a desk"
+  },
+  {
+    "id": "product-tee",
+    "url": "https://images.unsplash.com/photo-1591561954557-26941169b49e?w=1400&q=80",
+    "alt": "The Launch Notes studio tee"
+  },
+  {
+    "id": "product-stickers",
+    "url": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1400&q=80",
+    "alt": "The Launch Notes sticker pack"
+  },
+  {
+    "id": "product-hoodie",
+    "url": "https://images.unsplash.com/photo-1543286386-713bdd548da4?w=1400&q=80",
+    "alt": "The Launch Notes studio hoodie"
+  }
+]

@@ -44,9 +44,12 @@ import { emitBundle, type TemplateSiteSpec } from './template-sites/harness';
 import { writeTemplatePreview } from './template-sites/preview';
 import {
   addToCartForm,
+  pdpAttributes,
   pdpDescription,
   pdpImage,
+  pdpPolicyLinks,
   pdpPriceRow,
+  pdpStockBadge,
   pdpTitle,
   productPage,
 } from './template-sites/pdp';
@@ -385,6 +388,16 @@ interface Product {
   description: string;
   status: 'active';
   productType: string;
+  // The typed product type (docs/143) — every item here is `apparel`, so the PDP's
+  // `pdpAttributes` renders each product's OWN fabric/fit/care/materials/origin.
+  productTypeKey: 'apparel';
+  attributes: {
+    fabric: string;
+    fit: string;
+    care: string;
+    materials: { name: string; percent: string }[];
+    origin: string;
+  };
   vendor: string;
   tags: string[];
   categoryHandles: string[];
@@ -412,6 +425,15 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['best-sellers', 'kitchen'],
     seoTitle: 'Organic Cotton Dish Towels — set of three waffle-weave towels',
     seoDescription: 'A set of three GOTS-certified organic cotton waffle-weave dish towels that soften with every wash.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'Woven from GOTS-certified organic cotton in a waffle structure that traps water and actually dries a plate instead of pushing it around. Generously sized, hemmed flat, and finished with a sewn-in hanging loop.',
+      fit: 'A set of three, sized for real drying — big enough for a stack of plates, not a token square. They soften and grow more absorbent with every wash.',
+      care: 'Machine wash warm with like colours and tumble or line dry; skip fabric softener, which coats the cotton and stops it absorbing. Bleach-free, and compostable in shreds once a decade of use finishes them.',
+      materials: [{ name: 'Organic cotton', percent: '100%' }],
+      origin: 'Made in Portugal',
+    },
     options: [
       { name: 'Colour', displayType: 'swatch', values: [{ value: 'Natural' }, { value: 'Sage' }] },
     ],
@@ -434,6 +456,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['best-sellers', 'kitchen'],
     seoTitle: 'Beeswax Food Wraps — reusable plastic-free food wraps',
     seoDescription: 'Organic cotton beeswax wraps that mould to a bowl with the warmth of your hands and compost at the end.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'Organic cotton dipped in a blend of beeswax, tree resin and jojoba oil, so the warmth of your hands moulds it around a bowl, a lemon half or a loaf. The wax makes it cling; the cotton makes it last.',
+      fit: 'A mixed set of small, medium and large squares — enough to cover most bowls and to fold around a sandwich or a block of cheese. Re-waxable, so a tired wrap comes back rather than going in the bin.',
+      care: 'Wash in cool water with a little mild soap and air-dry flat — no heat, no dishwasher, and not around raw meat. Re-wax with a grated block in a warm oven when the cling fades; compost it at the very end.',
+      materials: [
+        { name: 'Organic cotton', percent: '62%' },
+        { name: 'Beeswax', percent: '28%' },
+        { name: 'Tree resin & jojoba oil', percent: '10%' },
+      ],
+      origin: 'Made in England',
+    },
     options: [
       { name: 'Size', displayType: 'dropdown', values: [{ value: 'Set of 3' }, { value: 'Set of 5' }] },
     ],
@@ -456,6 +491,15 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals', 'kitchen'],
     seoTitle: 'Bamboo Utensil Set — five-piece fast-growing bamboo kitchen tools',
     seoDescription: 'A five-piece bamboo utensil set, kind to non-stick pans and finished in food-safe oil.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'Carved from a single stand of fast-growing bamboo — which regrows quicker than any hardwood — and finished with a food-safe oil. Five tools: a spoon, a slotted spoon, a spatula, a turner and a salad fork.',
+      fit: 'A five-piece set sized for everyday cooking — warm and light in the hand, kind to a non-stick pan, and long enough to keep knuckles off a hot pan edge.',
+      care: 'Hand-wash in warm soapy water and dry upright — never the dishwasher, which splits wood over time. Refresh the finish in a minute with a food-safe oil when the grain starts to look dry.',
+      materials: [{ name: 'Bamboo', percent: '100%' }],
+      origin: 'Made in Vietnam',
+    },
     variants: [{ sku: 'FWD-BAMBOO-SET', priceCents: money(32), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'bamboo-utensil-set', isPrimary: true, alt: 'The Bamboo Utensil Set' }],
   },
@@ -472,6 +516,15 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals', 'kitchen'],
     seoTitle: 'Linen Tea Towels — pair of European flax linen towels',
     seoDescription: 'A pair of lint-free European flax linen tea towels that soften and absorb more with use.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'Woven from European flax linen — the fibre that grows on rain alone and gets softer and more absorbent the more you use it. Lint-free for a polished glass, with a plainly stitched edge and a hanging loop.',
+      fit: 'A pair, cut long for a proper grip on a hot pan and quick to dry so they never turn musty between washes. They break in over the first few washes and only improve from there.',
+      care: 'Machine wash warm and line or tumble dry; linen actually likes being used and washed. A press with a warm iron while slightly damp keeps them crisp, though creased is honest too.',
+      materials: [{ name: 'European flax linen', percent: '100%' }],
+      origin: 'Made in Lithuania',
+    },
     options: [
       { name: 'Colour', displayType: 'swatch', values: [{ value: 'Oat' }, { value: 'Clay' }] },
     ],
@@ -494,6 +547,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['best-sellers', 'cleaning'],
     seoTitle: 'Castile Soap Bars — set of three olive-oil soap bars',
     seoDescription: 'A trio of hard-milled olive and coconut castile soap bars, palm-oil-free and plastic-free.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'Hard-milled from olive and coconut oil and nothing you cannot pronounce — no palm oil, no synthetic fragrance, no plastic. A trio of long-lasting bars wrapped in paper you can compost or plant.',
+      fit: 'Three full-size bars; one does the sink, the shower and the hands and lasts for weeks. Sized to sit in a dish without going to mush between uses.',
+      care: 'Keep the bar on a draining dish so it dries between uses — a soaking bar is a bar you waste. Cool water or warm, it lathers either way, and the paper wrap composts.',
+      materials: [
+        { name: 'Saponified olive oil', percent: '70%' },
+        { name: 'Saponified coconut oil', percent: '28%' },
+        { name: 'Water & minerals', percent: '2%' },
+      ],
+      origin: 'Made in Spain',
+    },
     options: [
       { name: 'Scent', displayType: 'dropdown', values: [{ value: 'Unscented' }, { value: 'Lavender' }] },
     ],
@@ -516,6 +582,15 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['cleaning'],
     seoTitle: 'Wool Dryer Balls — set of six New Zealand wool dryer balls',
     seoDescription: 'Six New Zealand wool dryer balls that cut drying time and replace single-use dryer sheets.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'Six balls of dense, felted New Zealand wool and nothing else. They bounce between damp clothes in the dryer to lift and separate them, cutting drying time and softening without any coating or scent.',
+      fit: 'A set of six — the number it takes to make a real difference to a full load; add a few drops of essential oil if you like a scent. They last for a thousand loads and then compost.',
+      care: 'Just use them — they need no washing. If they pill, a quick run in a hot dryer re-felts the surface. Store them dry between loads so the wool never sits damp.',
+      materials: [{ name: 'New Zealand wool', percent: '100%' }],
+      origin: 'Made in Nepal',
+    },
     variants: [{ sku: 'FWD-DRYERBALL-6', priceCents: money(26), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'wool-dryer-balls', isPrimary: true, alt: 'The Wool Dryer Balls' }],
   },
@@ -532,6 +607,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['cleaning'],
     seoTitle: 'Coconut Scrub Brushes — pair of refillable dish brushes',
     seoDescription: 'A pair of beechwood dish brushes with compostable coconut-coir heads you refill, not replace.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'Beechwood handles and stiff coconut-coir bristles that scour a burnt pan without a scrap of plastic. The head clips off for the compost when it wears down; a fresh one clicks onto the same handle.',
+      fit: 'A pair, so there is a dry one while the other drains — sized to fit the hand and reach the bottom of a pan. A refillable design: you replace the head, not the whole brush.',
+      care: 'Rinse and stand it bristle-up to dry so the wood never sits in water. When the coir softens, unclip the head for the compost and click on a replacement.',
+      materials: [
+        { name: 'Beechwood', percent: '60%' },
+        { name: 'Coconut coir', percent: '38%' },
+        { name: 'Galvanised wire', percent: '2%' },
+      ],
+      origin: 'Made in Germany',
+    },
     variants: [{ sku: 'FWD-SCRUBBRUSH-2', priceCents: money(16), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'coconut-scrub-brushes', isPrimary: true, alt: 'The Coconut Scrub Brushes' }],
   },
@@ -548,6 +636,18 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['best-sellers', 'storage'],
     seoTitle: 'Seagrass Storage Baskets — hand-woven seagrass baskets',
     seoDescription: 'A hand-woven seagrass storage basket with sturdy handles that holds its shape under a load.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'Hand-woven from seagrass — a plant that regrows in the shallows and needs no farming — over a sturdy frame, with woven handles and a soft, structured shape that holds its form under a load.',
+      fit: 'Offered in two sizes for blankets, toys or firewood; every basket is woven by hand, so no two are exactly alike. Sized to sit on a shelf or on the floor beside a sofa.',
+      care: 'Dust it out or wipe with a barely-damp cloth; keep it out of standing water, as any natural fibre dislikes staying wet. Reshape it by hand if it takes a knock — seagrass is forgiving.',
+      materials: [
+        { name: 'Seagrass', percent: '94%' },
+        { name: 'Steel frame', percent: '6%' },
+      ],
+      origin: 'Made in Vietnam',
+    },
     options: [
       { name: 'Size', displayType: 'dropdown', values: [{ value: 'Small' }, { value: 'Large' }] },
     ],
@@ -570,6 +670,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals', 'storage'],
     seoTitle: 'Glass Storage Jars — recycled-glass pantry jars with bamboo lids',
     seoDescription: 'A set of airtight recycled-glass storage jars with bamboo lids and silicone seals for the pantry.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'Thick recycled glass with a bamboo lid and a silicone seal, so you can see what is inside and recycle the glass again and again with nothing lost. Airtight enough for flour, coffee or the good biscuits.',
+      fit: 'A set in two counts, sized for the pantry staples that used to live in plastic; the jars stack and line up cleanly on a shelf. The bamboo lid wipes clean and the seal lifts out to wash.',
+      care: 'The glass jar is dishwasher-safe forever; hand-wash the bamboo lid and let it dry rather than soaking it. Replace the silicone seal on its own if it ever perishes, not the whole jar.',
+      materials: [
+        { name: 'Recycled glass', percent: '88%' },
+        { name: 'Bamboo lid', percent: '9%' },
+        { name: 'Silicone seal', percent: '3%' },
+      ],
+      origin: 'Made in Poland',
+    },
     options: [
       { name: 'Size', displayType: 'dropdown', values: [{ value: 'Set of 3' }, { value: 'Set of 6' }] },
     ],
@@ -592,6 +705,18 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['best-sellers'],
     seoTitle: 'Stoneware Mug Set — set of four hand-glazed stoneware mugs',
     seoDescription: 'A set of four stoneware mugs in a soft matte glaze that breaks to bare clay at the rim.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'Thrown from local stoneware clay and glazed in a soft matte that breaks to bare clay at the rim. Fired hard so it holds heat, and heavy enough in the hand to feel like something.',
+      fit: 'A set of four, each holding a proper amount of coffee; because they are glazed by hand, the colour varies a little cup to cup. Sized for everyday use, not a display shelf.',
+      care: 'Dishwasher- and microwave-safe, though a quick hand-wash keeps the matte glaze at its best. Warm the cup with hot water first on a cold morning and it holds the heat longer.',
+      materials: [
+        { name: 'Stoneware clay', percent: '90%' },
+        { name: 'Mineral glaze', percent: '10%' },
+      ],
+      origin: 'Made in Stoke-on-Trent, England',
+    },
     options: [
       { name: 'Colour', displayType: 'swatch', values: [{ value: 'Oatmeal' }, { value: 'Clay' }] },
     ],
@@ -614,6 +739,18 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals'],
     seoTitle: 'Stoneware Serving Bowl — wide hand-thrown serving bowl',
     seoDescription: 'A wide, low hand-thrown stoneware serving bowl in a speckled oatmeal glaze.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A wide, low bowl thrown by hand from stoneware clay in a speckled oatmeal glaze that suits whatever you put in it. Substantial enough to sit out on the counter and handsome enough to leave there.',
+      fit: 'Big enough for a salad for the table or a bowl of fruit on the side; each one is hand-thrown, so the size and the speckle vary slightly. One generous bowl, not a nesting set.',
+      care: 'Dishwasher-safe and hard-wearing; a hand-wash keeps the glaze looking its best over years. Bring it up to room temperature before a hot oven if you serve straight from the heat.',
+      materials: [
+        { name: 'Stoneware clay', percent: '92%' },
+        { name: 'Mineral glaze', percent: '8%' },
+      ],
+      origin: 'Made in Stoke-on-Trent, England',
+    },
     variants: [{ sku: 'FWD-BOWL', priceCents: money(48), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'stoneware-serving-bowl', isPrimary: true, alt: 'The Stoneware Serving Bowl' }],
   },
@@ -630,6 +767,15 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals'],
     seoTitle: 'Organic Cotton Bath Towels — pair of long-staple cotton towels',
     seoDescription: 'A pair of long-staple organic cotton bath towels, thirsty from the first wash and free of softening coatings.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'Woven from long-staple organic cotton, thirsty from the first wash rather than the tenth and free of the softening coatings that stop cheaper towels absorbing. Undyed or coloured with low-impact dye, and hemmed to hold their shape.',
+      fit: 'A pair of full-size bath towels, dense enough to dry properly and to last years of daily use. They plump up over the first few washes and stay soft without any additives.',
+      care: 'Machine wash warm and tumble dry on low; skip the fabric softener, which is exactly what stops a towel absorbing. Wash new towels once before first use to set the pile.',
+      materials: [{ name: 'Organic cotton', percent: '100%' }],
+      origin: 'Made in Portugal',
+    },
     options: [
       { name: 'Colour', displayType: 'swatch', values: [{ value: 'Oat' }, { value: 'Slate' }] },
     ],
@@ -783,19 +929,6 @@ function ecoChip(label: string): Node {
   });
 }
 
-/** One labelled detail block in the buy box — an `<h2>` small-caps label over a paragraph
- *  of static brand copy. The Allbirds "why we love this / materials & sustainability / care"
- *  stack, stacked rather than tabbed so it reads without JavaScript and needs no behaviour
- *  marker (the reference's accordions, opened flat). */
-function pdpDetail(label: string, body: string): Node {
-  return el('div', 'flex flex-col gap-2 border-t border-base-300 pt-5', {
-    children: [
-      el('h2', 'text-sm font-semibold uppercase tracking-widest text-base-content', { text: label }),
-      el('p', 'text-base leading-relaxed text-base-content', { text: body }),
-    ],
-  });
-}
-
 /** The bespoke buy REGION — authored UNSCOPED; `productPage` wraps it in `repeat('product')`.
  *  Left: the calm product image. Right: the quiet oat buy column — label, title, price, the
  *  honest-material chips, description, the mono CTA, then the material-story detail stack. */
@@ -827,6 +960,13 @@ function pdpBuyRegion(): Node {
                     compareClass: 'text-lg text-base-content line-through',
                     rowClass: 'flex items-baseline gap-4',
                   }),
+                  // A real low-stock signal — a warm oat pill shown only when the routed product
+                  // is genuinely running low (never fabricated scarcity).
+                  pdpStockBadge({
+                    className:
+                      'inline-flex w-fit items-center gap-2 rounded-full bg-primary px-3 py-1 text-sm font-medium text-primary-content',
+                    label: 'Low stock',
+                  }),
                 ],
               }),
               // The honest-material credential chips — Allbirds' "made from the earth" signal,
@@ -841,26 +981,24 @@ function pdpBuyRegion(): Node {
               pdpDescription('text-lg leading-relaxed text-base-content'),
               // Qty + Add to cart — the warm near-black mono CTA (btn-primary in `sage-oat`).
               addToCartForm(),
-              // The material-story detail stack — the natural-clean PDP spine.
-              el('div', 'mt-2 flex flex-col gap-5', {
-                children: [
-                  pdpDetail(
-                    'The materials',
-                    'Made from things the earth makes more of — organic cotton, flax linen, bamboo, seagrass, beeswax, recycled glass or stoneware clay, depending on the piece. Every material is named on the product, and if the honest answer to “what is it made of?” is a chemical nobody can pronounce, it does not go in the shop.',
-                  ),
-                  pdpDetail(
-                    'How it is made',
-                    'Made in small runs by makers we know, and held to the same two tests as everything here: it has to work at least as well as the plastic thing it replaces, and it has to be made from something you can name. Plenty of samples never make it past the sink — the ones that do earn their place twice.',
-                  ),
-                  pdpDetail(
-                    'Caring for it',
-                    'Built to be kept, not replaced, and easy to keep going — wash it, oil it, or refill it, and it will outlast the shelf you bought it for. Each order ships with a short, plain-language care note, and we stock the refills and spares so a tired thing comes back to life instead of the bin.',
-                  ),
-                  pdpDetail(
-                    'Footprint & returns',
-                    'Sent in plastic-free packaging and, at the very end of a long life, made to compost, recycle or refill rather than sit a century in the ground. Free returns within thirty days on anything unused — these are things to live with, not to worry over.',
-                  ),
-                ],
+              // The product's OWN typed attributes (fabric / fit / care / materials / origin),
+              // repeated from `attributeSections` — real per-product copy, not a hardcoded stack.
+              pdpAttributes({
+                containerClass: 'mt-2 flex flex-col gap-5',
+                sectionClass: 'flex flex-col gap-2 border-t border-base-300 pt-5',
+                labelTag: 'h2',
+                labelClass: 'text-sm font-semibold uppercase tracking-widest text-base-content',
+                valueClass: 'text-base leading-relaxed text-base-content',
+                rowClass:
+                  'flex items-baseline justify-between gap-4 border-b border-base-200 pb-1',
+                rowLabelClass: 'text-base font-medium text-base-content',
+                rowValueClass: 'text-base text-base-content',
+              }),
+              // Footprint & returns — LINKS to the shop's real legal pages, never reprinted copy.
+              pdpPolicyLinks({
+                className:
+                  'flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-5 text-sm font-semibold uppercase tracking-widest text-base-content',
+                linkClass: 'underline underline-offset-4',
               }),
             ],
           }),

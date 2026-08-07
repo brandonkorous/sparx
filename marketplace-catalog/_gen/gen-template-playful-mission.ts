@@ -41,9 +41,12 @@ import { emitBundle, type TemplateSiteSpec } from './template-sites/harness';
 import { writeTemplatePreview } from './template-sites/preview';
 import {
   addToCartForm,
+  pdpAttributes,
   pdpDescription,
   pdpImage,
+  pdpPolicyLinks,
   pdpPriceRow,
+  pdpStockBadge,
   pdpTitle,
   productPage,
 } from './template-sites/pdp';
@@ -492,6 +495,16 @@ interface Product {
   description: string;
   status: 'active';
   productType: string;
+  // The typed product type (docs/143) — every item here is `apparel`, so the PDP's
+  // `pdpAttributes` renders each product's OWN fabric/fit/care/materials/origin.
+  productTypeKey: 'apparel';
+  attributes: {
+    fabric: string;
+    fit: string;
+    care: string;
+    materials: { name: string; percent: string }[];
+    origin: string;
+  };
   vendor: string;
   tags: string[];
   categoryHandles: string[];
@@ -519,6 +532,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals', 'best-sellers', 'beds-blankets', 'giveback'],
     seoTitle: 'Orthopedic Bolster Dog Bed — washable memory-foam dog bed',
     seoDescription: 'A supportive orthopedic foam dog bed with bolstered sides and a fully machine-washable cover.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A thick orthopedic foam base that takes the pressure off older hips and hard floors, walled by raised bolster sides for a chin-rester to lean into. The whole cover unzips from the foam and goes in the machine — because a bed you cannot clean is a bed you throw away.',
+      fit: 'Small, medium and large, sized for the dog who sprawls as much as the one who curls; measure nose to tail and size up between. Roomy enough to stretch out, walled enough to feel safe.',
+      care: 'Unzip the cover and machine-wash warm, tumble low; the foam wipes clean and should never go in the machine. Wash the cover monthly, or the week after a muddy season, whichever comes first.',
+      materials: [
+        { name: 'Recycled polyester cover', percent: '60%' },
+        { name: 'Orthopedic foam base', percent: '38%' },
+        { name: 'Zip & hardware', percent: '2%' },
+      ],
+      origin: 'Made in Vietnam',
+    },
     options: [
       { name: 'Size', displayType: 'dropdown', values: [{ value: 'Small' }, { value: 'Medium' }, { value: 'Large' }] },
       { name: 'Colour', displayType: 'swatch', values: [{ value: 'Oatmeal' }, { value: 'Slate' }, { value: 'Moss' }, { value: 'Clay' }] },
@@ -543,6 +569,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['best-sellers', 'beds-blankets', 'giveback'],
     seoTitle: 'Calming Donut Cat Bed — plush anti-anxiety pet bed',
     seoDescription: 'A deep, plush faux-fur donut bed that helps anxious cats and small dogs settle and sleep.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A deep, plush faux-fur ring a cat or small dog can burrow into and disappear. The high sides feel like a curled-up litter-mate, which is why anxious pets settle so fast; a non-slip base keeps it from skating across the floor.',
+      fit: 'One size, for cats and small dogs up to about ten kilos; the ring gives so a bigger sprawler can flatten it into a mat. Deep enough to sink into, low enough to climb into.',
+      care: 'Machine-wash the whole bed cold on a gentle cycle and tumble low to fluff the pile back up — a dryer ball helps. Brush out loose fur between washes to keep the plush lofty.',
+      materials: [
+        { name: 'Recycled faux-fur plush', percent: '70%' },
+        { name: 'Recycled poly fill', percent: '28%' },
+        { name: 'Non-slip base', percent: '2%' },
+      ],
+      origin: 'Made in China',
+    },
     options: [
       { name: 'Colour', displayType: 'swatch', values: [{ value: 'Cream' }, { value: 'Grey' }, { value: 'Blush' }] },
     ],
@@ -566,6 +605,15 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['beds-blankets'],
     seoTitle: 'Cozy Fleece Pet Blanket — double-sided sherpa pet blanket',
     seoDescription: 'A warm, washable double-sided sherpa fleece blanket for beds, crates and sofas.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A double-sided sherpa fleece that pets love to nest in and hair brushes straight off, sized to drape a bed, a crate or the good armchair they have already claimed. Warm, washable and quietly indestructible.',
+      fit: 'One generous size that folds down for a crate or opens out over a sofa; light enough to travel and warm enough for a cold floor. Big enough to share, small enough to pack.',
+      care: 'Machine-wash cold with like colours and tumble low or air-dry; skip fabric softener so the fleece keeps gripping the hair rather than the sofa. Shake it out and it looks new again.',
+      materials: [{ name: 'Recycled sherpa fleece', percent: '100%' }],
+      origin: 'Made in China',
+    },
     options: [
       { name: 'Colour', displayType: 'swatch', values: [{ value: 'Oat' }, { value: 'Charcoal' }, { value: 'Rust' }, { value: 'Sage' }] },
     ],
@@ -590,6 +638,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['collars-leads', 'giveback'],
     seoTitle: 'Everyday Webbing Collar 3-Pack — recycled dog collars',
     seoDescription: 'A three-pack of soft recycled-webbing dog collars with quick-release buckles and welded D-rings.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'Soft-edged recycled webbing that will not chafe, a quick-release buckle that actually holds, and a welded D-ring that has never once let go. A three-pack, so there is a clean one on while the muddy one dries.',
+      fit: 'Small, medium and large, each fully adjustable across a wide range; measure the neck and leave two fingers of room. Three collars in mixed colours per pack.',
+      care: 'Machine-wash in a laundry bag or scrub by hand and air-dry; the webbing shrugs off mud, rain and the occasional swim. Check the stitching and the D-ring now and then, as you would any collar.',
+      materials: [
+        { name: 'Recycled PET webbing', percent: '88%' },
+        { name: 'Metal hardware', percent: '10%' },
+        { name: 'Buckle', percent: '2%' },
+      ],
+      origin: 'Made in Vietnam',
+    },
     options: [
       { name: 'Size', displayType: 'dropdown', values: [{ value: 'Small' }, { value: 'Medium' }, { value: 'Large' }] },
     ],
@@ -613,6 +674,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals', 'best-sellers', 'collars-leads'],
     seoTitle: 'No-Pull Adjustable Harness — front-clip dog harness',
     seoDescription: 'A padded front-clip no-pull dog harness with five-point adjustment and reflective trim.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A front-clip design that gently turns a lunging dog back toward you instead of letting them haul, padded where it presses and breathable where it counts, with reflective trim for the dark mornings.',
+      fit: 'XS through XL with five points of adjustment, so it fits the deep-chested, the barrel-bodied and everything between; measure the chest at its widest. Snug enough not to twist, loose enough for two fingers.',
+      care: 'Machine-wash cold in a laundry bag and air-dry; do not tumble, which can warp the buckles over time. Rinse off salt and sand after a beach day so the hardware stays smooth.',
+      materials: [
+        { name: 'Recycled polyester', percent: '74%' },
+        { name: 'Foam padding', percent: '20%' },
+        { name: 'Reflective trim & hardware', percent: '6%' },
+      ],
+      origin: 'Made in Vietnam',
+    },
     options: [
       { name: 'Size', displayType: 'dropdown', values: [{ value: 'XS' }, { value: 'S' }, { value: 'M' }, { value: 'L' }, { value: 'XL' }] },
     ],
@@ -638,6 +712,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals', 'collars-leads'],
     seoTitle: 'Reflective City Lead — padded reflective dog leash',
     seoDescription: 'A fully reflective dog lead with a padded handle and a low traffic handle for busy streets.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A full reflective weave that lights up in headlights the whole length, a padded neoprene handle that saves your hand on the pullier days, and an extra traffic handle down low to pull a dog in close at a crossing. Rated well past the weight of the dog on the end of it.',
+      fit: 'A standard walking length with two handles — one at the end, one at the collar — for street control; the trigger clip suits any collar or harness ring. Long enough to relax, short enough to hold.',
+      care: 'Machine-wash in a bag or scrub by hand and hang to dry; the reflective weave keeps its shine through years of walks. Wipe the clip and check the stitching at the handle from time to time.',
+      materials: [
+        { name: 'Reflective nylon webbing', percent: '82%' },
+        { name: 'Neoprene handle', percent: '14%' },
+        { name: 'Metal clip', percent: '4%' },
+      ],
+      origin: 'Made in Vietnam',
+    },
     options: [
       { name: 'Colour', displayType: 'swatch', values: [{ value: 'Marigold' }, { value: 'Navy' }, { value: 'Sage' }, { value: 'Coral' }, { value: 'Charcoal' }] },
     ],
@@ -663,6 +750,15 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['giveback'],
     seoTitle: 'Stainless Slow-Feed Bowl — anti-gulp dog bowl',
     seoDescription: 'A one-piece stainless steel slow-feed bowl that turns a gulped meal into a ten-minute puzzle.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'One piece of food-grade stainless steel pressed into a maze of ridges that turns a gulped meal into a ten-minute puzzle — easier on the stomach and a lot easier on your carpet. No plastic to scratch and harbour, no coating to wear off.',
+      fit: 'A single bowl sized for a medium dog and a full meal; the ridges suit dry food best. Sits low and wide so it does not tip when an eager eater goes at it.',
+      care: 'Top-rack dishwasher-safe, or a quick scrub in hot soapy water; stainless will not stain, hold odour or leach. Dry it after washing to keep it spot-free — that is the only upkeep it asks.',
+      materials: [{ name: 'Food-grade stainless steel', percent: '100%' }],
+      origin: 'Made in China',
+    },
     variants: [{ sku: 'RLY-BWL-SLW', priceCents: money(24), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'stainless-slow-feed-bowl', isPrimary: true, alt: 'The Stainless Slow-Feed Bowl' }],
   },
@@ -679,6 +775,18 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['giveback'],
     seoTitle: 'Stoneware Bowl Set — hand-glazed ceramic pet bowls',
     seoDescription: 'A weighted, hand-glazed stoneware pet bowl set — one for food, one for water — dishwasher-safe.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A pair of hand-glazed stoneware dishes — one for food, one for water — heavy enough that a determined eater cannot skate them across the tiles, with a reactive glaze that means no two sets are quite the same.',
+      fit: 'Two matching bowls sized for everyday feeding of a small-to-medium pet; the weight is the point, so they stay put. Wide and shallow, kind to a flat-faced breed.',
+      care: 'Dishwasher-safe and built to outlast a few enthusiastic dinners a day; a hand-wash keeps the reactive glaze at its brightest. Check the rim for chips over the years, as with any ceramic.',
+      materials: [
+        { name: 'Stoneware clay', percent: '90%' },
+        { name: 'Reactive glaze', percent: '10%' },
+      ],
+      origin: 'Made in Portugal',
+    },
     options: [
       { name: 'Colour', displayType: 'swatch', values: [{ value: 'Marigold' }, { value: 'Sage' }, { value: 'Speckled Cream' }] },
     ],
@@ -702,6 +810,15 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['toys', 'giveback'],
     seoTitle: 'Rope Tug Toy 3-Pack — braided cotton dog rope toys',
     seoDescription: 'A three-pack of tough braided cotton rope tug toys that help floss teeth as dogs chew.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'Thick, tightly-braided cotton rope in three shapes for three moods — a straight tug, a knotted ball, a ring for two dogs to argue over — and the loose fibres actually help floss teeth as they chew. Washable, with two more in the pack when one gives up.',
+      fit: 'A three-pack sized for medium-to-large dogs and proper tug-of-war; supervise a heavy chewer, as no rope is truly indestructible. Long enough for two-handed tug, chunky enough to grip.',
+      care: 'Machine-wash the rope in a bag and air-dry, or wet it and freeze it for a teething puppy; trim any long frays before they get swallowed. Retire a toy once it is chewed down to a nub.',
+      materials: [{ name: 'Cotton rope', percent: '100%' }],
+      origin: 'Made in China',
+    },
     variants: [{ sku: 'RLY-TOY-ROP', priceCents: money(19), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'rope-tug-toy', isPrimary: true, alt: 'The Rope Tug Toy 3-Pack' }],
   },
@@ -718,6 +835,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals', 'toys'],
     seoTitle: 'Catnip Kicker Toy 2-Pack — cat kicker toys with catnip',
     seoDescription: 'A two-pack of double-stitched catnip kicker toys built for serious bunny-kicking cats.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A long, huggable kicker a cat can wrap all four legs around and bunny-kick with the back feet, stuffed with potent single-origin catnip that keeps its kick. Tough double-stitched seams for the serious wrestlers.',
+      fit: 'A two-pack, because one always ends up under the sofa; sized for a cat to grab, hug and kick. Long enough for the back legs to get to work, light enough to bat across a room.',
+      care: 'Spot-clean with a damp cloth and refresh the kick by scrunching the toy; the seams take a wash in a bag if it gets grubby. Store it away between play sessions so the catnip stays potent.',
+      materials: [
+        { name: 'Cotton canvas shell', percent: '62%' },
+        { name: 'Recycled poly fill', percent: '30%' },
+        { name: 'Dried catnip', percent: '8%' },
+      ],
+      origin: 'Made in Canada',
+    },
     variants: [{ sku: 'RLY-TOY-KIK', priceCents: money(16), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'catnip-kicker-toy', isPrimary: true, alt: 'The Catnip Kicker Toy 2-Pack' }],
   },
@@ -734,6 +864,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals', 'giveback'],
     seoTitle: 'Grain-Free Training Treats — soft low-calorie dog treats',
     seoDescription: 'Small, soft, grain-free training treats made from a short real-ingredient list, meat first.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'Small, soft, low-calorie morsels a dog will work hard for, made from a short list of real ingredients — a named meat first, no grain, no fillers you cannot pronounce. Sized for fast, repeatable rewards so a session stays a session.',
+      fit: 'Bite-sized and soft enough to tear smaller for a puppy; suits all life stages as a training reward rather than a meal. Feed as part of the daily ration, not on top of it.',
+      care: 'Reseal the bag after each session and store somewhere cool and dry; use within the date on the pack once opened. Keep out of a hot car, where any soft treat sweats and spoils.',
+      materials: [
+        { name: 'Named meat', percent: '72%' },
+        { name: 'Vegetables & pulses', percent: '22%' },
+        { name: 'Natural binders', percent: '6%' },
+      ],
+      origin: 'Made in the USA',
+    },
     options: [
       { name: 'Flavour', displayType: 'dropdown', values: [{ value: 'Chicken' }, { value: 'Salmon' }, { value: 'Beef' }] },
     ],
@@ -757,6 +900,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['giveback'],
     seoTitle: 'Peanut Butter Biscuit Bites — baked peanut butter dog biscuits',
     seoDescription: 'Small-batch oven-baked peanut butter and pumpkin dog biscuits, no xylitol, no fillers.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A proper baked biscuit for the big moments — oven-baked in small batches with real peanut butter and pumpkin, no xylitol, no mystery. Crunchy enough that a dog takes it seriously, and honestly good enough that you will want to read the label (it is on the bag).',
+      fit: 'A crunchy bite for a real reward rather than rapid-fire training; snappable in half for a small dog. An occasional treat, fed within the daily calorie budget.',
+      care: 'Keep the bag sealed in a cool, dry cupboard so the biscuits stay crisp — they soften if left open. Use within the best-before date, and toss any that lose their snap.',
+      materials: [
+        { name: 'Wholegrain oats & flour', percent: '60%' },
+        { name: 'Peanut butter', percent: '26%' },
+        { name: 'Pumpkin & egg', percent: '14%' },
+      ],
+      origin: 'Made in the USA',
+    },
     variants: [{ sku: 'RLY-TRT-BIS', priceCents: money(12), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'peanut-butter-biscuit-bites', isPrimary: true, alt: 'The Peanut Butter Biscuit Bites' }],
   },
@@ -909,19 +1065,6 @@ const CONTENT = [
 // carried by a SOLID marigold callout whose ink resolves from `text-primary-content` (dark
 // ink, AA-clear), never `text-primary` prose; every readable line stays on `text-base-content`.
 
-/** One friendly detail block in the buy column — a bold sentence-case `<h2>` over a
- *  paragraph of static brand copy. Stacked (not tabbed) so it reads with no JavaScript and
- *  needs no behaviour marker — playful-mission ships nothing interactive. Sentence-case bold
- *  rather than an uppercase-mono micro-cap, to match Rally's warm Syne/Nunito voice. */
-function pdpDetail(label: string, body: string): Node {
-  return el('div', 'flex flex-col gap-2 border-t border-base-300 pt-5', {
-    children: [
-      el('h2', 'text-lg font-bold tracking-tight text-base-content', { text: label }),
-      el('p', 'text-base leading-relaxed text-base-content', { text: body }),
-    ],
-  });
-}
-
 /** The signature giveback microline — Bombas' "N bought = N donated" beat, pinned under
  *  Add-to-Cart. A solid marigold callout so the pledge pops off the cream buy column; its
  *  ink resolves from `text-primary-content` (dark-on-gold, AA-clear), the readable-fill way
@@ -967,6 +1110,14 @@ function pdpBuyRegion(): Node {
                     compareClass: 'text-lg text-base-content line-through',
                     rowClass: 'flex items-baseline gap-4',
                   }),
+                  // A real low-stock signal on the navy secondary chip (kept distinct from the
+                  // marigold giveback callout below) — shown only when the routed product is
+                  // genuinely running low, never fabricated scarcity.
+                  pdpStockBadge({
+                    className:
+                      'inline-flex w-fit items-center gap-2 rounded-box bg-secondary px-3 py-1 text-sm font-bold tracking-tight text-secondary-content',
+                    label: 'Low stock',
+                  }),
                 ],
               }),
               pdpDescription('text-lg leading-relaxed text-base-content'),
@@ -974,26 +1125,25 @@ function pdpBuyRegion(): Node {
               addToCartForm(),
               // The Bombas giveback microline, pinned straight under the button.
               givebackMicroline(),
-              // The friendly detail stack.
-              el('div', 'mt-2 flex flex-col gap-5', {
-                children: [
-                  pdpDetail(
-                    'How the giveback works',
-                    'The pledge is not a campaign or a round-up — it is built into the price of everything Rally makes. Buy this, and the same day we set aside a matching one for a shelter or rescue partner, sent out on the freight runs that already pass their way. You shop for your pet; a shelter animal gets looked after too.'
-                  ),
-                  pdpDetail(
-                    'Made for real, muddy life',
-                    'Built to be used hard and washed often — durable materials, covers and parts that unzip and go straight in the machine, and honest construction we would put our own animals on. Nothing here is bought in and re-badged; if it cannot survive a proper life with a dog or a cat, we do not sell it.',
-                  ),
-                  pdpDetail(
-                    'Materials & care',
-                    'Machine-washable covers and wipe-clean surfaces wherever the design allows, with short, real material lists you can actually read. Wash covers cold and air-dry to keep the shape; a care card ships in the box, and we keep the same materials in stock so a replacement part matches the original.',
-                  ),
-                  pdpDetail(
-                    'Shipping & returns',
-                    'Free carbon-neutral shipping on orders over $50, dispatched within one to two business days. Not right for your pet? You have 60 days to send it back for a full refund — and the shelter animal keeps their matched half either way, because their good was never conditional on your order staying put.',
-                  ),
-                ],
+              // The product's OWN typed attributes (fabric / fit / care / materials / origin),
+              // repeated from `attributeSections` — real per-product copy, not a hardcoded stack.
+              // (The giveback is carried once, above, by the marigold microline.)
+              pdpAttributes({
+                containerClass: 'mt-2 flex flex-col gap-5',
+                sectionClass: 'flex flex-col gap-2 border-t border-base-300 pt-5',
+                labelTag: 'h2',
+                labelClass: 'text-lg font-bold tracking-tight text-base-content',
+                valueClass: 'text-base leading-relaxed text-base-content',
+                rowClass:
+                  'flex items-baseline justify-between gap-4 border-b border-base-200 pb-1',
+                rowLabelClass: 'text-base font-semibold text-base-content',
+                rowValueClass: 'text-base text-base-content',
+              }),
+              // Shipping & returns — LINKS to the shop's real legal pages, never reprinted copy.
+              pdpPolicyLinks({
+                className:
+                  'flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-5 text-base font-bold tracking-tight text-base-content',
+                linkClass: 'underline underline-offset-4',
               }),
             ],
           }),

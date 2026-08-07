@@ -1,0 +1,435 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "launch-notes-3-is-live",
+    "status": "published",
+    "authorSlug": "mara-reyes",
+    "categories": ["News"],
+    "tags": ["Aurora", "Nimbus"],
+    "body": {
+      "title": "Launch Notes 3.0 is live today",
+      "excerpt": "The biggest release we have ever shipped: a rebuilt workspace, real-time sync across every device, and a faster, quieter app underneath it all.",
+      "featuredImage": {
+        "$asset": "lead-release"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We started rebuilding Launch Notes eleven months ago, and today it is yours. 3.0 is not a coat of paint — it is a new foundation, and almost everything you touch is faster because of it."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "A workspace that gets out of the way"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The old app made you manage windows; the new one manages them for you. Your projects, your notes and your active session live in one place, and the thing you were doing five minutes ago is one keystroke away. We cut the number of clicks to start work by more than half, and you will feel it on the first morning."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Sync that is finally instant"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The single most requested thing, for years, was sync you could trust. The old engine is retired. The new one propagates a change to every device you own before you have finished typing the next word, and it does the right thing when two devices edit at once instead of asking you to pick a winner."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What is next"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "3.0 clears the runway for the things we have been holding back — a few of which you will see before the end of the quarter. As always, every one of them will get a post here first. Thank you for building with us; go make something."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "introducing-nimbus",
+    "status": "published",
+    "authorSlug": "daniel-okafor",
+    "categories": ["Products"],
+    "tags": ["Nimbus"],
+    "body": {
+      "title": "Introducing Nimbus — our focus timer, out now",
+      "excerpt": "A focus timer built the way we actually work: no gimmicks, no streaks to guilt you, just a quiet way to protect an hour and see where it went.",
+      "featuredImage": {
+        "$asset": "cover-nimbus"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Nimbus started as a tool we built for ourselves. Every focus app we tried treated your attention like a game to be won, with streaks and badges and a little animated tree that dies if you check your phone. We wanted the opposite: something that disappears while you work and tells you the truth afterwards."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Start a session, forget it exists"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "You pick a length, name what you are doing, and Nimbus fades into the corner. No ticking, no countdown looming over the screen. When the time is up it nudges you once, gently, and asks if you want to keep going. That is the whole interaction, and that is the point."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The part that surprised us"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The feature people love most is the one we almost cut: a plain weekly view of where your focused hours actually went. Not a score, not a leaderboard — just the honest shape of your week. It turns out that seeing the truth is far more motivating than any badge we could have designed."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Nimbus is free for everyone with a Launch Notes account, and it is built into the desktop app as of this week. Give it a session and tell us what you think."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "the-deck-first-look",
+    "status": "published",
+    "authorSlug": "sofia-lindqvist",
+    "categories": ["Hardware"],
+    "tags": ["Deck", "Field Kit"],
+    "body": {
+      "title": "The Launch Notes Deck — a first look",
+      "excerpt": "Our first piece of hardware. Two years, more prototypes than we will admit to, and a device built around one idea: your studio should fit in a bag.",
+      "featuredImage": {
+        "$asset": "cover-deck"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "For two years we have been quietly making hardware. Today we can finally show you the Deck — a portable workstation built around a simple frustration: the best tools were always tied to a desk, and the desk was never where the work happened."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Built by the people who use it"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Every decision on the Deck came from watching the team actually work. The ports are where your hand expects them. It wakes the instant you open it. The battery lasts a real working day, not a benchmark day. None of that is exciting on a spec sheet, and all of it is the difference between a tool you carry and one you leave at home."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Where it fits"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The Deck is the heart of the Field Kit — it docks at your desk, packs into your bag, and runs the same Launch Notes workspace you already know. Nothing to migrate, nothing to relearn. Your work is simply there, wherever you are."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "This is a first look, not a launch — we will open pre-orders once firmware 2.4 has had another few weeks in the field. Watch this space, and thank you for two years of patience."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "five-workflows-our-team-lives-in",
+    "status": "published",
+    "authorSlug": "daniel-okafor",
+    "categories": ["Guides"],
+    "tags": ["Aurora", "Nimbus"],
+    "body": {
+      "title": "Five workflows our team lives in",
+      "excerpt": "The small habits and shortcuts the studio actually uses every day — the ones that never make it into the docs because we forget they are not obvious.",
+      "featuredImage": {
+        "$asset": "cover-guides"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Every team builds its own shortcuts, and ours are so baked in that we forget they are not obvious to everyone. So here are five things the studio does every day that might save you an hour of yours."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Start the day in Nimbus, not the inbox"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The whole team blocks the first session of the morning in Nimbus before opening anything else. One hour on the hardest thing, while your attention is fresh, before the day fills up with everyone else priorities. It is the single highest-leverage habit any of us have."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Keep a shared library in Aurora"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We stopped copying components between files months ago. One shared Aurora library holds every mark, colour and pattern, and every file pulls from it live. Change it once and the whole studio updates. If you work with anyone else, this is the first thing to set up."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Name your work as you start it"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Sync only helps if you can find things later, and a folder full of Untitled-3 helps no one. We name a session the moment we start it, in plain language, as if a teammate will read it — because in our workspace, one will."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "None of these are features you have to buy. They are just habits, and the tools are built to reward them. Steal the ones that fit."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "aurora-hits-1-0",
+    "status": "published",
+    "authorSlug": "mara-reyes",
+    "categories": ["Products"],
+    "tags": ["Aurora"],
+    "body": {
+      "title": "Aurora hits 1.0",
+      "excerpt": "Our design tool leaves beta today. A stable file format, shared libraries, and a version history you can finally trust with real work.",
+      "featuredImage": {
+        "$asset": "cover-aurora"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Aurora has been in beta for a year, and in that time you have used it to ship real products — which is exactly why we took so long to call it 1.0. A design tool earns that number by being boring in all the right places, and Aurora finally is."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "A file format that will not change under you"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The single biggest promise of 1.0 is stability. The Aurora file you save today will open, unchanged, in every version from here on. No silent migrations, no corrupted files after an update. Your work is safe, and it stays safe."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "History you can trust"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Every change is now captured in a version history you can scrub through, name, and restore from with one click. The moment before you made that questionable decision at 2am is always there, waiting, exactly as you left it."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Aurora 1.0 is available today for everyone with a studio membership. If you have been waiting for it to leave beta before trusting it with real work — it has, and you can."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

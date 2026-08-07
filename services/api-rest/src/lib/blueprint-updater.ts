@@ -395,6 +395,9 @@ const pageHandler: KindHandler = {
       name: dto.name,
       kind: dto.kind,
       recordType: dto.recordType,
+      // Page identity (docs/143 Option B) — part of the natural key, never merge-written;
+      // carried so base == live-extract stays exact and no false change surfaces.
+      recordSubtype: dto.recordSubtype ?? null,
       slug: dto.slug,
       tree: root,
       seoTitle: dto.seoTitle ?? undefined,
@@ -434,6 +437,7 @@ const pageHandler: KindHandler = {
     const c = artifact.content;
     const kind = typeof c.kind === 'string' ? c.kind : 'singleton';
     const recordType = typeof c.recordType === 'string' ? c.recordType : null;
+    const recordSubtype = typeof c.recordSubtype === 'string' ? c.recordSubtype : null;
     if (!c.tree) return null;
     return siteService.addPage(env.propCtx, {
       name: typeof c.name === 'string' ? c.name : 'Page',
@@ -441,7 +445,9 @@ const pageHandler: KindHandler = {
       root: c.tree as SilicaNode,
       kind,
       recordType,
-      isDefault: kind === 'collection',
+      recordSubtype,
+      // A per-type product page (docs/143) is never THE default — it wins via subtype.
+      isDefault: kind === 'collection' && !recordSubtype,
       seoTitle: typeof c.seoTitle === 'string' ? c.seoTitle : null,
       seoDescription: typeof c.seoDescription === 'string' ? c.seoDescription : null,
       canonical: typeof c.canonical === 'string' ? c.canonical : null,
@@ -564,6 +570,8 @@ const productHandler: KindHandler = {
           description: true,
           status: true,
           productType: true,
+          productTypeKey: true,
+          attributes: true,
           vendor: true,
           tags: true,
           fulfillmentType: true,
@@ -586,6 +594,11 @@ const productHandler: KindHandler = {
       description: row.description ?? undefined,
       status: row.status,
       productType: row.productType ?? undefined,
+      productTypeKey: row.productTypeKey ?? undefined,
+      // Only carry a non-empty attribute bag into the merge surface, so an untyped
+      // product's `{}` doesn't read as a field the tenant "cleared".
+      attributes:
+        row.attributes && Object.keys(row.attributes).length > 0 ? row.attributes : undefined,
       vendor: row.vendor ?? undefined,
       tags: row.tags,
       fulfillmentType: row.fulfillmentType,
@@ -614,6 +627,8 @@ const productHandler: KindHandler = {
         description: merged.description,
         status: merged.status,
         productType: merged.productType,
+        productTypeKey: merged.productTypeKey,
+        attributes: merged.attributes,
         vendor: merged.vendor,
         tags: merged.tags,
         fulfillmentType: merged.fulfillmentType,
@@ -933,6 +948,7 @@ export async function applyUpdate(
         name: typeof content.name === 'string' ? content.name : 'Page',
         id: c.refId,
         recordType: typeof content.recordType === 'string' ? content.recordType : null,
+        recordSubtype: typeof content.recordSubtype === 'string' ? content.recordSubtype : null,
         slug: typeof content.slug === 'string' ? content.slug : null,
       });
       applied += 1;

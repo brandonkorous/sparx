@@ -1,0 +1,20 @@
+[
+  {
+    "slug": "jules-vega",
+    "displayName": "Jules Vega",
+    "bio": "Jules Vega covers music for Static — the bands, the rooms and the scenes, mostly from the floor. Fifteen years of gig tickets and a permanent ring in one ear to show for it.",
+    "avatarAssetId": "author-vega"
+  },
+  {
+    "slug": "theo-marsh",
+    "displayName": "Theo Marsh",
+    "bio": "Theo Marsh writes about screen and sound for Static — how films and TV use music, and how music becomes a picture. Formerly a film programmer, still a soundtrack obsessive.",
+    "avatarAssetId": "author-marsh"
+  },
+  {
+    "slug": "nia-okonkwo",
+    "displayName": "Nia Okonkwo",
+    "bio": "Nia Okonkwo reports on culture for Static — the internet, the discourse and the way a song becomes a moment. She has a low tolerance for manufactured virality and a high one for a good argument.",
+    "avatarAssetId": "author-okonkwo"
+  }
+]

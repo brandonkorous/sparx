@@ -12,7 +12,7 @@
 // wording rules, no scoring — those exist, they are already good, and a second
 // half-implementation of them here would eventually contradict the first.
 
-import { isRecordAddress } from '@sparx/silica-catalog';
+import { isRecordAddress, isUtilityPage } from '@sparx/silica-catalog';
 
 import type { RawFinding } from './finding';
 import type { LintablePage } from './types';
@@ -22,6 +22,16 @@ import type { LintablePage } from './types';
  *  the same underlying reason: its slug is a pattern, not a location. */
 function isRecordPage(page: LintablePage): boolean {
   return isRecordAddress(page.slug) || page.kind === 'collection';
+}
+
+/** A page that is not CONTENT: the starter's cart, search and account pages. Graded, a
+ *  new site reports six "write a search description" findings for pages the owner did
+ *  not write and would gain nothing by editing — and "Reset password" has no search
+ *  description worth writing. `noindex` says the same thing and is honoured everywhere,
+ *  but nothing ever sets it on the starter, so match the closed slug set instead; see
+ *  `utility-pages.ts`. An author's own `noindex` still suppresses findings as before. */
+function isUngraded(page: LintablePage): boolean {
+  return isRecordPage(page) || isUtilityPage(page.slug);
 }
 
 function clean(value: string | null | undefined): string {
@@ -71,9 +81,9 @@ function duplicatesOf(
 export function checkSeo(pages: readonly LintablePage[]): RawFinding[] {
   const findings: RawFinding[] = [];
   // Excluded from the duplicate tallies too, not just the loop: an untouched site has
-  // five record pages sharing an empty description, and counting them would invent
-  // duplicates out of pages that were never going to carry one.
-  const gradable = pages.filter((page) => !isRecordPage(page));
+  // five record pages and six utility pages sharing an empty description, and counting
+  // them would invent duplicates out of pages that were never going to carry one.
+  const gradable = pages.filter((page) => !isUngraded(page));
   const visible = gradable.filter((page) => !page.noindex);
   const titles = duplicatesOf(visible, (page) => clean(page.seoTitle));
   const descriptions = duplicatesOf(visible, (page) => clean(page.seoDescription));

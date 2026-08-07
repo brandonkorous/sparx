@@ -1,0 +1,20 @@
+[
+  {
+    "slug": "elena-marsh",
+    "displayName": "Elena Marsh",
+    "bio": "Elena Marsh is a science writer in the Northgate news office, covering research across the sciences and engineering. She has a background in environmental biology and has reported on the university’s labs for eight years.",
+    "avatarAssetId": "author-marsh"
+  },
+  {
+    "slug": "theo-park",
+    "displayName": "Theo Park",
+    "bio": "Theo Park covers campus and community for the Northgate Newsroom — student life, housing, the arts, and the relationship between the university and the city around it.",
+    "avatarAssetId": "author-park"
+  },
+  {
+    "slug": "nadia-okonkwo",
+    "displayName": "Nadia Okonkwo",
+    "bio": "Nadia Okonkwo is the Newsroom’s health and medicine editor, reporting from the medical school and the campus clinics. She previously edited a regional health desk.",
+    "avatarAssetId": "author-okonkwo"
+  }
+]

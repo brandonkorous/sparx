@@ -1,0 +1,67 @@
+[
+  {
+    "id": "lead-essay",
+    "url": "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1400&q=80",
+    "alt": "Open books stacked on a wooden reading table"
+  },
+  {
+    "id": "story-letterpress",
+    "url": "https://images.unsplash.com/photo-1516414447565-b14be0adf13e?w=1400&q=80",
+    "alt": "Metal type set in a letterpress tray"
+  },
+  {
+    "id": "story-fiction",
+    "url": "https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=1400&q=80",
+    "alt": "A wall of worn hardback books on a shelf"
+  },
+  {
+    "id": "story-criticism",
+    "url": "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=1400&q=80",
+    "alt": "A stack of well-read paperbacks"
+  },
+  {
+    "id": "story-notebook",
+    "url": "https://images.unsplash.com/photo-1517842645767-c639042777db?w=1400&q=80",
+    "alt": "A hand writing in an open notebook"
+  },
+  {
+    "id": "story-reading",
+    "url": "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=1400&q=80",
+    "alt": "An open book, pages fanned in soft light"
+  },
+  {
+    "id": "author-vance",
+    "url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1400&q=80",
+    "alt": "Portrait of Eleanor Vance"
+  },
+  {
+    "id": "author-mercer",
+    "url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=1400&q=80",
+    "alt": "Portrait of Julian Mercer"
+  },
+  {
+    "id": "author-adeyemi",
+    "url": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1400&q=80",
+    "alt": "Portrait of Sofia Adeyemi"
+  },
+  {
+    "id": "quarterly-cover",
+    "url": "https://images.unsplash.com/photo-1543286386-713bdd548da4?w=1400&q=80",
+    "alt": "The cover of a printed quarterly magazine"
+  },
+  {
+    "id": "anthology-cover",
+    "url": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1400&q=80",
+    "alt": "A hardback anthology on a desk"
+  },
+  {
+    "id": "reader-edition",
+    "url": "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=1400&q=80",
+    "alt": "A reader with the magazine and a coffee"
+  },
+  {
+    "id": "tote-bag",
+    "url": "https://images.unsplash.com/photo-1591561954557-26941169b49e?w=1400&q=80",
+    "alt": "A canvas tote bag"
+  }
+]

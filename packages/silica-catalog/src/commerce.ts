@@ -379,6 +379,105 @@ export function addToCartForm(): Node {
  *  description, and an Add-to-cart form. Self-scoping: its root repeats over the
  *  `product` object source (a collection-of-one), so dropping it on any page and
  *  pinning the product scopes every descendant to `item.*`. */
+/**
+ * The routed product's typed attribute sections (docs/143) — the auto-render FLOOR that
+ * makes the DEFAULT product page show a product's real detail blocks (fabric/care/specs/…)
+ * without any bespoke authoring. Repeats the in-scope product's `attributeSections`
+ * (ordered by its type's field order): a scalar attribute renders its `value`; a repeater
+ * attribute (materials, specs, nutrition) sub-repeats its `items` as label/value rows. The
+ * whole block is `visibleWhen('attributeSections')`, so an untyped product renders NOTHING —
+ * a clean empty state, never an empty heading. No field keys are named: every product shows
+ * whatever ITS type defines.
+ */
+export function productAttributes(): Node {
+  return visibleWhen(
+    el('div', 'mt-2 flex flex-col gap-5', {
+      children: [
+        repeat(
+          el('div', 'flex flex-col gap-2 border-t border-base-300 pt-4', {
+            children: [
+              bind(
+                el('h2', 'text-sm font-semibold uppercase tracking-wide text-base-content', {
+                  text: 'Section',
+                }),
+                'label'
+              ),
+              // Scalar value — dropped for a repeater section (its `value` is '').
+              visibleWhen(
+                bind(
+                  el('div', 'text-base leading-relaxed text-base-content', { text: '' }),
+                  'value'
+                ),
+                'value'
+              ),
+              // Repeater rows — an empty list for a scalar section, so this renders nothing there.
+              repeat(
+                el(
+                  'div',
+                  'flex items-baseline justify-between gap-4 border-b border-base-200 pb-1',
+                  {
+                    children: [
+                      bind(
+                        el('span', 'text-base font-medium text-base-content', { text: '' }),
+                        'label'
+                      ),
+                      bind(el('span', 'text-base text-base-content', { text: '' }), 'value'),
+                    ],
+                  }
+                ),
+                'items'
+              ),
+            ],
+          }),
+          'attributeSections'
+        ),
+      ],
+    }),
+    'attributeSections'
+  );
+}
+
+/** The shipping/returns trust line — LINKS the site's real legal pages instead of reprinting
+ *  a policy the default template can't know (docs/143). `/shipping-policy` + `/returns-policy`
+ *  are the canonical legal slugs. */
+export function productPolicyLinks(): Node {
+  const link = (href: string, text: string): Node =>
+    bindAttrHref(el('a', 'underline underline-offset-4', { text }), href);
+  return el(
+    'div',
+    'flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-4 text-sm text-base-content',
+    {
+      children: [
+        link('/shipping-policy', 'Shipping & delivery'),
+        link('/returns-policy', 'Returns & refunds'),
+      ],
+    }
+  );
+}
+
+// A static href on an anchor — the same shape `bindAttr` writes, but for a literal URL
+// (no binding). Kept local so the policy links stay a two-liner.
+function bindAttrHref(anchor: ElementNode, href: string): Node {
+  anchor.attrs = { ...(anchor.attrs ?? {}), href };
+  return anchor;
+}
+
+/** A real low-stock badge — bound to the routed product's inventory, shown ONLY when stock is
+ *  genuinely at/below its reorder point (`visibleWhen('lowStock')`). Honest scarcity, never
+ *  fabricated; renders nothing when stock is healthy. */
+export function productStockBadge(): Node {
+  return visibleWhen(
+    el(
+      'span',
+      'inline-flex w-fit items-center gap-2 rounded-field bg-warning px-3 py-1 text-xs font-semibold uppercase tracking-wide text-warning-content',
+      {
+        text: 'Low stock',
+      }
+    ),
+    'lowStock'
+  );
+}
+
 export function buyBox(): Node {
   return repeat(
     // A self-contained SECTION so the buy box stands alone — dropped as a bare block,
@@ -434,11 +533,19 @@ export function buyBox(): Node {
                     ),
                   ],
                 }),
+                // Honest low-stock signal (docs/143) — self-hides when stock is healthy.
+                productStockBadge(),
                 bind(
                   el('div', 'text-base-content', { text: 'Product description.' }),
                   'description'
                 ),
                 addToCartForm(),
+                // The product's OWN typed attributes (docs/143) — the auto-render floor, so a
+                // typed product shows real fabric/care/specs on the DEFAULT page with no
+                // bespoke authoring; an untyped product shows nothing.
+                productAttributes(),
+                // Shipping & returns — LINKS the site's real legal pages, never reprinted copy.
+                productPolicyLinks(),
               ],
             }),
           ],

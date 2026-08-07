@@ -13,6 +13,8 @@
 // a product fills them in, and flagging that would mean every collection template on
 // every site reporting as broken.
 
+import { HOST_KEYS, embedOutcome, frameEmbedProblem, mapEmbedProblem } from '@sparx/silica-catalog';
+
 import type { DocumentInventory, VisitedNode } from './walk';
 import {
   accessibleName,
@@ -293,7 +295,7 @@ function checkDeadControls(inventory: DocumentInventory): RawFinding[] {
 /* ── The page as a whole ────────────────────────────────────────────────────── */
 
 /** A node that puts something in front of a visitor by itself — a live region the
- *  storefront fills (a product grid, the cart) or a record-bound node. */
+ *  live site fills (a product grid, the cart) or a record-bound node. */
 function isLiveContent(node: VisitedNode['node']): boolean {
   return node.kind === 'host' || isBound(node);
 }
@@ -328,6 +330,184 @@ function checkPageEmpty(inventory: DocumentInventory): RawFinding[] {
   ];
 }
 
+/* ── Embeds ─────────────────────────────────────────────────────────────────── */
+
+/**
+ * The sentence for each way a video or embed block disappoints its author.
+ *
+ * SHORT, AND IT SHOULD STAY SHORT. On silicaui 0.47 this table had eight entries, because
+ * the engine could not play a Short, a livestream, a playlist or a Vimeo channel link,
+ * and it silently dropped start times and the private hash an unlisted video needs. 0.49
+ * fixed all of them, and the six sentences explaining those failures were deleted rather
+ * than kept "just in case" — advice for a problem that no longer exists is worse than no
+ * advice, because it sends an author to change a link that was already right.
+ *
+ * The rule the survivors obey: the FIX is in the sentence. "Invalid URL" is accurate and
+ * useless to the person who has to act on it.
+ */
+const EMBED_ADVICE: Record<string, { title: string; detail: string }> = {
+  empty: {
+    title: 'This block has no link in it yet',
+    detail:
+      'Nothing appears here at all — visitors just get a gap where the video or booking ' +
+      'calendar was meant to be, and nothing on the page says why. Open the block and paste ' +
+      'the address of the thing you want to show, or remove the block.',
+  },
+  link: {
+    title: 'This will show a link to click, not the thing itself',
+    detail:
+      'Videos can play on the page when they come from YouTube or Vimeo. Anything else — and ' +
+      'any link that points at a channel or a search rather than one video — becomes a link ' +
+      'visitors have to click. That still works, so leave it if you meant it; if you wanted it ' +
+      'to appear on the page, open the video itself and copy its address from your browser’s bar.',
+  },
+  'map-not-embeddable': {
+    title: 'A map link won’t show a map here',
+    detail:
+      'Google only lets one particular kind of map address appear inside another site, so this ' +
+      'one becomes a link instead. Use the Map block rather than this one and simply type your ' +
+      'address — it builds the right kind of map for you.',
+  },
+};
+
+/** The same job for the general Embed block, which is sparx's own frame rather than the
+ *  engine's — so its failures are different ones. */
+const FRAME_ADVICE: Record<string, { title: string; detail: string }> = {
+  empty: {
+    title: 'This embed has no link in it yet',
+    detail:
+      'Nothing appears here at all — visitors get a gap, and nothing on the page says why. ' +
+      'Open the block and paste the address of the thing you want to show, or remove the block.',
+  },
+  insecure: {
+    title: 'That link isn’t secure, so browsers will block it',
+    detail:
+      'Your site is served securely, and a browser refuses to show insecure content inside a ' +
+      'secure page. Try the same address with https:// at the front — and if that site has no ' +
+      'secure version, link to it in your words instead of showing it here.',
+  },
+  'not-a-link': {
+    title: 'That doesn’t look like a web address',
+    detail:
+      'Paste the full address of the page you want to show, the way it appears in your ' +
+      'browser’s bar, starting with https://',
+  },
+  'use-video-block': {
+    title: 'Use the Video block for this one',
+    detail:
+      'YouTube and Vimeo don’t allow their ordinary pages to be shown inside another site, so ' +
+      'this would come out blank. The Video block knows how to play them properly — put the ' +
+      'same link in there instead.',
+  },
+};
+
+const MAP_ADVICE: Record<string, { title: string; detail: string }> = {
+  empty: {
+    title: 'This map has no address in it yet',
+    detail:
+      'Nothing will appear here. Open the block and type your address — the same one on your ' +
+      'contact page is fine. A Google Maps link works too.',
+  },
+  'shortened-link': {
+    title: 'That is a shortened map link',
+    detail:
+      'A short link hides the actual place, so there is nothing here to put on a map. Open it, ' +
+      'then copy the long address from your browser’s bar — or just type the address itself.',
+  },
+  'no-location-in-link': {
+    title: 'We cannot find a place in that map link',
+    detail:
+      'The link has no address or coordinates in it. Search for your place on Google Maps, then ' +
+      'copy the address from your browser’s bar — or type the address here directly.',
+  },
+};
+
+/**
+ * A video, embed or map block that will not do what its author thinks.
+ *
+ * WHY THIS RULE HAS TO EXIST. Both blocks fail SILENTLY, and both fail in the author's
+ * blind spot. An `Embed` with nothing in it renders an empty element — no error, no
+ * placeholder, just a gap where the video was meant to be — and one pointing at a channel
+ * page, a search result or a Google Maps link renders a plain anchor, which reads as a
+ * styling problem rather than as the engine's answer. The `site.map` core is silent by
+ * choice, because an empty bordered box on a shop's contact page is worse than an
+ * absence; the cost of that choice is that nothing on the live site says why the map is
+ * missing.
+ *
+ * All of those look fine to the person who pasted the link. So this is where they find
+ * out, and each case gets its own sentence naming the actual fix.
+ *
+ * `warning`, never `error`: a block placed today and filled in tomorrow is a normal way
+ * to work, and the page around it is fine.
+ */
+function checkEmbeds(inventory: DocumentInventory): RawFinding[] {
+  const findings: RawFinding[] = [];
+
+  for (const visited of inventory.nodes) {
+    const { node } = visited;
+
+    // The engine's own embed component — a video or anything else framed from another
+    // site. `embedOutcome` models what silicaui will do with the link; its own test
+    // pins that model against the real renderer, so this cannot quietly go stale.
+    if (node.kind === 'component' && node.component === 'Embed') {
+      const url = prop(node, 'url');
+      const outcome = embedOutcome(url);
+      // A degradation is more specific than the kind, so it wins: a maps link IS a
+      // `link`, and "use the Map block" is a better sentence than "this shows as a link".
+      const key =
+        outcome.degraded ??
+        (outcome.kind === 'empty' || outcome.kind === 'link' ? outcome.kind : '');
+      const advice = EMBED_ADVICE[key];
+      if (advice) {
+        findings.push({
+          ...locate(visited),
+          rule: 'embed-no-source',
+          severity: 'warning',
+          ...advice,
+          // The author's own string back, so they recognise which block is meant on a
+          // page carrying several. Absent when the field is empty — there is nothing to
+          // show them, and a blank quote reads as a bug in the check.
+          ...(url ? { evidence: url } : {}),
+        });
+      }
+      continue;
+    }
+
+    if (node.kind === 'host' && node.component === HOST_KEYS.siteMap) {
+      const location = prop(node, 'location');
+      const problem = mapEmbedProblem(location, node.props?.zoom);
+      const advice = problem ? MAP_ADVICE[problem] : undefined;
+      if (advice) {
+        findings.push({
+          ...locate(visited),
+          rule: 'embed-no-source',
+          severity: 'warning',
+          ...advice,
+          ...(location ? { evidence: location } : {}),
+        });
+      }
+      continue;
+    }
+
+    if (node.kind === 'host' && node.component === HOST_KEYS.siteEmbed) {
+      const url = prop(node, 'url');
+      const problem = frameEmbedProblem(url);
+      const advice = problem ? FRAME_ADVICE[problem] : undefined;
+      if (advice) {
+        findings.push({
+          ...locate(visited),
+          rule: 'embed-no-source',
+          severity: 'warning',
+          ...advice,
+          ...(url ? { evidence: url } : {}),
+        });
+      }
+    }
+  }
+
+  return findings;
+}
+
 /** Every content finding for one page's composed document. */
 export function checkContent(inventory: DocumentInventory): RawFinding[] {
   return [
@@ -335,5 +515,6 @@ export function checkContent(inventory: DocumentInventory): RawFinding[] {
     ...checkImages(inventory),
     ...checkHeadings(inventory),
     ...checkDeadControls(inventory),
+    ...checkEmbeds(inventory),
   ];
 }

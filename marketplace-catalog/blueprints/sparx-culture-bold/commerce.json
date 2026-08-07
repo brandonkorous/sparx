@@ -1,0 +1,140 @@
+{
+  "categories": [
+    {
+      "handle": "vinyl",
+      "name": "Vinyl",
+      "description": "Records for the shelf.",
+      "featured": true
+    },
+    {
+      "handle": "merch",
+      "name": "Merch",
+      "description": "Wear it loud, carry it louder.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "featured",
+      "name": "Featured",
+      "description": "What the desk is pushing this week.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["static-vol-1-vinyl", "static-logo-tee", "static-tour-poster"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "static-vol-1-vinyl",
+      "title": "Static Vol. 1 — Vinyl LP",
+      "description": "Our first compilation, pressed on 180-gram black vinyl: twelve tracks from the bands the desk spent the year chasing across basement rooms and festival tents. Gatefold sleeve, liner notes, and a download code inside.",
+      "status": "active",
+      "productType": "Vinyl",
+      "vendor": "Static",
+      "tags": ["vinyl", "lp", "compilation"],
+      "categoryHandles": ["vinyl"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "Static Vol. 1 — Vinyl LP",
+      "seoDescription": "The Static Vol. 1 compilation on 180-gram vinyl, twelve tracks with liner notes.",
+      "variants": [
+        {
+          "sku": "STC-VNL-VOL1",
+          "priceCents": 3200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "vinyl-lp",
+          "isPrimary": true,
+          "alt": "Static Vol. 1 vinyl LP half out of its sleeve"
+        }
+      ]
+    },
+    {
+      "handle": "static-logo-tee",
+      "title": "Static Logo Tee",
+      "description": "The masthead, printed big on the back of a heavyweight black tee. Screen-printed, pre-shrunk, and built to survive the pit and the wash. Runs true to size.",
+      "status": "active",
+      "productType": "Apparel",
+      "vendor": "Static",
+      "tags": ["merch", "tee", "apparel"],
+      "categoryHandles": ["merch"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "Static Logo Tee — heavyweight black t-shirt",
+      "seoDescription": "A heavyweight black tee with the Static masthead screen-printed on the back.",
+      "variants": [
+        {
+          "sku": "STC-TEE-LOGO",
+          "priceCents": 2800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "tee",
+          "isPrimary": true,
+          "alt": "The Static logo tee, folded"
+        }
+      ]
+    },
+    {
+      "handle": "static-tour-poster",
+      "title": "Static Tour Poster",
+      "description": "An 18×24 screen print in hot crimson on uncoated black stock — the poster from our Vol. 1 launch run. Numbered edition, shipped flat in a rigid tube.",
+      "status": "active",
+      "productType": "Print",
+      "vendor": "Static",
+      "tags": ["merch", "poster", "print"],
+      "categoryHandles": ["merch"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "Static Tour Poster — 18×24 screen print",
+      "seoDescription": "A numbered 18×24 screen-printed Static tour poster on black stock.",
+      "variants": [
+        {
+          "sku": "STC-PST-TOUR",
+          "priceCents": 2200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "poster",
+          "isPrimary": true,
+          "alt": "The Static tour poster on a wall"
+        }
+      ]
+    },
+    {
+      "handle": "static-tote",
+      "title": "Static Tote",
+      "description": "A heavyweight canvas tote with the masthead printed small on the side. Carries a stack of records, a notebook, and roughly a festival weekend of essentials.",
+      "status": "active",
+      "productType": "Merch",
+      "vendor": "Static",
+      "tags": ["merch", "tote"],
+      "categoryHandles": ["merch"],
+      "collectionHandles": [],
+      "seoTitle": "Static Tote — heavyweight canvas tote",
+      "seoDescription": "A heavyweight canvas tote with the Static masthead, sized for a stack of records.",
+      "variants": [
+        {
+          "sku": "STC-TOTE",
+          "priceCents": 2400,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "tote",
+          "isPrimary": true,
+          "alt": "The Static canvas tote"
+        }
+      ]
+    }
+  ]
+}

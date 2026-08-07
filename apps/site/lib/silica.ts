@@ -291,12 +291,18 @@ export async function getPublishedSilicaCollection(
   tenantSlug: string,
   recordType: string,
   recordId?: string,
-  opts: { previewToken?: string } = {}
+  opts: { previewToken?: string; recordSubtype?: string } = {}
 ): Promise<PublishedSilicaPageDto | null> {
   try {
     const recordParam = recordId ? `&recordId=${encodeURIComponent(recordId)}` : '';
+    // The record's SUBTYPE (docs/143 Option B) — for a product, its product-type key.
+    // The endpoint picks a page whose `record_subtype` matches (most-specific-wins),
+    // else the default page for the record type.
+    const subtypeParam = opts.recordSubtype
+      ? `&recordSubtype=${encodeURIComponent(opts.recordSubtype)}`
+      : '';
     const res = await fetch(
-      `${BASE_URL}/v1/public/builder/silica/collection?tenant=${encodeURIComponent(tenantSlug)}&recordType=${encodeURIComponent(recordType)}${recordParam}${await propertyParam()}`,
+      `${BASE_URL}/v1/public/builder/silica/collection?tenant=${encodeURIComponent(tenantSlug)}&recordType=${encodeURIComponent(recordType)}${recordParam}${subtypeParam}${await propertyParam()}`,
       silicaFetchInit(tenantSlug, opts.previewToken)
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedSilicaPageDto> | ErrorEnvelope;

@@ -48,10 +48,18 @@ export interface ResolvedArtifact {
 }
 
 /** A page's stable correlation key across versions: a singleton by slug, a
- *  collection template by recordType, the home (slugless singleton) by `home`. */
-export function pageNaturalKey(slug: string | null, recordType: string | null): string {
+ *  collection template by recordType, the home (slugless singleton) by `home`.
+ *  A per-TYPE product page (docs/143 Option B) is keyed by recordType + subtype, so
+ *  the default product page and the Apparel product page — both `commerce.product`
+ *  with no slug — stay distinct artifacts instead of colliding on one key. */
+export function pageNaturalKey(
+  slug: string | null,
+  recordType: string | null,
+  recordSubtype: string | null = null
+): string {
   if (slug) return `slug:${slug}`;
-  if (recordType) return `type:${recordType}`;
+  if (recordType)
+    return recordSubtype ? `type:${recordType}:${recordSubtype}` : `type:${recordType}`;
   return 'home';
 }
 
@@ -140,9 +148,11 @@ export function resolveBlueprintArtifacts(
 
   // Pages.
   for (const pg of blueprint.site?.pages ?? []) {
-    const key = pageNaturalKey(pg.slug ?? null, pg.recordType ?? null);
+    const key = pageNaturalKey(pg.slug ?? null, pg.recordType ?? null, pg.recordSubtype ?? null);
     const refId =
-      result.pages.find((p) => pageNaturalKey(p.slug, p.recordType) === key)?.id ?? null;
+      result.pages.find(
+        (p) => pageNaturalKey(p.slug, p.recordType, p.recordSubtype ?? null) === key
+      )?.id ?? null;
     out.push({
       kind: 'page',
       naturalKey: key,
@@ -151,6 +161,7 @@ export function resolveBlueprintArtifacts(
         name: pg.name,
         kind: pg.kind,
         recordType: pg.recordType ?? null,
+        recordSubtype: pg.recordSubtype ?? null,
         slug: pg.slug ?? null,
         tree: tree(pg.root),
         seoTitle: pg.seoTitle,
@@ -224,6 +235,11 @@ export function resolveBlueprintArtifacts(
           description: p.description,
           status: p.status,
           productType: p.productType,
+          // Typed product type + attributes (docs/143) — field-merged like the other
+          // tenant-editable scalars, so a blueprint update can adjust a product's type
+          // or attribute values without stomping a tenant's own edits.
+          productTypeKey: p.productTypeKey,
+          attributes: p.attributes,
           vendor: p.vendor,
           tags: p.tags,
           fulfillmentType: p.fulfillmentType,

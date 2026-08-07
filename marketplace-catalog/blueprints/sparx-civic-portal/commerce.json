@@ -1,0 +1,112 @@
+{
+  "categories": [
+    {
+      "handle": "publications",
+      "name": "Publications",
+      "description": "Printed guides and reports from the city.",
+      "featured": true
+    },
+    {
+      "handle": "passes",
+      "name": "Passes",
+      "description": "Transit and parks passes for residents.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "featured",
+      "name": "Featured",
+      "description": "The passes and publications residents ask for most.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["rivermark-resident-guide", "monthly-transit-pass", "annual-parks-pass"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "rivermark-resident-guide",
+      "title": "Rivermark Resident Guide 2026",
+      "description": "The printed guide to living in Rivermark: every city service, the recycling and yard-waste calendar, park and facility hours, and who to call for what. 64 pages, mailed to your door.",
+      "status": "active",
+      "productType": "Publication",
+      "vendor": "City of Rivermark",
+      "tags": ["publication", "guide"],
+      "categoryHandles": ["publications"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "Rivermark Resident Guide 2026 — City of Rivermark",
+      "seoDescription": "The printed guide to city services, the waste calendar, and facility hours, mailed to your door.",
+      "variants": [
+        {
+          "sku": "RVM-PUB-GUIDE26",
+          "priceCents": 1200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "pub-city-guide",
+          "isPrimary": true,
+          "alt": "The Rivermark Resident Guide 2026"
+        }
+      ]
+    },
+    {
+      "handle": "monthly-transit-pass",
+      "title": "Monthly Transit Pass",
+      "description": "Unlimited rides on every Rivermark Transit bus route for one calendar month. Tap to board — no exact change needed. Reduced-fare pricing is available for seniors and students at any transit center.",
+      "status": "active",
+      "productType": "Pass",
+      "vendor": "City of Rivermark",
+      "tags": ["pass", "transit"],
+      "categoryHandles": ["passes"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "Monthly Transit Pass — Rivermark Transit",
+      "seoDescription": "Unlimited rides on every Rivermark Transit bus route for one calendar month.",
+      "variants": [
+        {
+          "sku": "RVM-PASS-TRANSIT",
+          "priceCents": 4500,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "pass-transit",
+          "isPrimary": true,
+          "alt": "A Rivermark Transit bus at a stop"
+        }
+      ]
+    },
+    {
+      "handle": "annual-parks-pass",
+      "title": "Annual Parks Pass",
+      "description": "A full year of parking and entry at every Rivermark park, trailhead, and boat launch, plus discounted shelter reservations. One pass covers a household and hangs from your mirror.",
+      "status": "active",
+      "productType": "Pass",
+      "vendor": "City of Rivermark",
+      "tags": ["pass", "parks"],
+      "categoryHandles": ["passes"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "Annual Parks Pass — City of Rivermark",
+      "seoDescription": "A year of parking and entry at every Rivermark park, trailhead, and boat launch for a household.",
+      "variants": [
+        {
+          "sku": "RVM-PASS-PARKS",
+          "priceCents": 3000,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "pass-parks",
+          "isPrimary": true,
+          "alt": "A wooded trail in a Rivermark park"
+        }
+      ]
+    }
+  ]
+}

@@ -57,7 +57,13 @@ export interface InstallResult {
   collections: Record<string, string>; // handle → id
   products: { handle: string; id: string }[];
   theme: { id: string; name: string } | null;
-  pages: { name: string; id: string; recordType: string | null; slug: string | null }[];
+  pages: {
+    name: string;
+    id: string;
+    recordType: string | null;
+    recordSubtype: string | null;
+    slug: string | null;
+  }[];
   emails: { name: string; id: string }[];
   sequences: { name: string; id: string }[];
   content: { typeKey: string; slug: string | null; id: string }[];
@@ -556,6 +562,109 @@ export async function installBlueprint(
     }
 
     // 5. Content entries (draft) — CMS module only; a non-CMS tenant gets none.
+
+    // 5a. Byline personas + taxonomy the entries reference (docs/131 §4). Seeded ONCE,
+    //     before the entries, so each entry can link its author + terms by the slug it
+    //     names. Scoped to the installed site (an Author / a term is per-publication) and
+    //     reconciled by natural key, so a reinstall reuses rather than duplicates. Only
+    //     runs when the CMS module is on AND something actually references a byline.
+    const slugify = (s: string): string =>
+      s
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    const authorIdBySlug = new Map<string, string>();
+    // termId keyed by `${taxonomyKey} ${termSlug}` — the two vocabularies share a
+    // slug space only within their own key, so the key is part of the map key.
+    const termIdByKey = new Map<string, string>();
+    const usesByline =
+      blueprint.authors.length > 0 ||
+      blueprint.content.some((e) => Boolean(e.categories?.length) || Boolean(e.tags?.length));
+    if (isOn('cms') && usesByline) {
+      await withTenant(ctx, async (tx) => {
+        // Authors — reconcile by (site, slug).
+        for (const a of blueprint.authors) {
+          const existing = await tx.author.findFirst({
+            where: { tenantId, propertyId, slug: a.slug },
+            select: { id: true },
+          });
+          const id =
+            existing?.id ??
+            (
+              await tx.author.create({
+                data: {
+                  tenantId,
+                  propertyId,
+                  slug: a.slug,
+                  displayName: a.displayName,
+                  bio: a.bio ?? null,
+                  avatarAssetId: asset(a.avatarAssetId) ?? null,
+                },
+                select: { id: true },
+              })
+            ).id;
+          authorIdBySlug.set(a.slug, id);
+        }
+
+        // Taxonomy — created lazily, only the standard two (categories → `blog_category`,
+        // tags → `blog_tag`), the keys the storefront byline projection splits on.
+        const taxonomyIdByKey = new Map<string, string>();
+        const ensureTaxonomy = async (
+          key: string,
+          name: string,
+          pluralName: string
+        ): Promise<string> => {
+          const cached = taxonomyIdByKey.get(key);
+          if (cached) return cached;
+          const existing = await tx.taxonomy.findFirst({
+            where: { tenantId, propertyId, key },
+            select: { id: true },
+          });
+          const id =
+            existing?.id ??
+            (
+              await tx.taxonomy.create({
+                data: { tenantId, propertyId, key, name, pluralName },
+                select: { id: true },
+              })
+            ).id;
+          taxonomyIdByKey.set(key, id);
+          return id;
+        };
+        const ensureTerm = async (
+          key: string,
+          taxName: string,
+          taxPlural: string,
+          name: string
+        ): Promise<void> => {
+          const slug = slugify(name);
+          if (!slug) return;
+          const cacheKey = `${key} ${slug}`;
+          if (termIdByKey.has(cacheKey)) return;
+          const taxonomyId = await ensureTaxonomy(key, taxName, taxPlural);
+          const existing = await tx.taxonomyTerm.findFirst({
+            where: { tenantId, propertyId, taxonomyId, slug },
+            select: { id: true },
+          });
+          const id =
+            existing?.id ??
+            (
+              await tx.taxonomyTerm.create({
+                data: { tenantId, propertyId, taxonomyId, slug, name },
+                select: { id: true },
+              })
+            ).id;
+          termIdByKey.set(cacheKey, id);
+        };
+        for (const e of blueprint.content) {
+          for (const c of e.categories ?? [])
+            await ensureTerm('blog_category', 'Category', 'Categories', c);
+          for (const t of e.tags ?? []) await ensureTerm('blog_tag', 'Tag', 'Tags', t);
+        }
+      });
+    }
+
     for (const entry of isOn('cms') ? blueprint.content : []) {
       await withTenant(ctx, async (tx) => {
         const type = await resolveType(tx, entry.typeKey);
@@ -577,18 +686,33 @@ export async function installBlueprint(
             status: entry.status,
             body: body as Prisma.InputJsonValue,
             seoJson: seo as Prisma.InputJsonValue,
-            // `author_id` FKs to the CMS `authors` table, NOT `users` — the
-            // installing staff user is not a content author, so a template's
-            // entries have no author (the manifest doesn't model one yet).
-            // (recordRevision's authorId is a plain audit field, not FK-bound,
-            // so the installing user is fine to record there.)
-            authorId: null,
+            // `author_id` FKs to the CMS `authors` table, NOT `users`. The blueprint now
+            // models a byline (`entry.authorSlug` → an `Author` seeded in 5a); an entry
+            // that names no author, or names one the blueprint didn't ship, stays null.
+            // (recordRevision's authorId below is a plain audit field, not FK-bound, so
+            // the installing user is fine to record there.)
+            authorId: entry.authorSlug ? (authorIdBySlug.get(entry.authorSlug) ?? null) : null,
           },
         });
         // Scope to the installed site so content doesn't bleed into other sites.
         await tx.contentEntryProperty.create({
           data: { entryId: row.id, propertyId },
         });
+        // Link the entry's categories + tags to the terms seeded in 5a. Idempotent — the
+        // link's PK is (entryId, termId), so a reinstall re-asserts rather than duplicates.
+        const entryTermKeys = [
+          ...(entry.categories ?? []).map((c) => `blog_category ${slugify(c)}`),
+          ...(entry.tags ?? []).map((t) => `blog_tag ${slugify(t)}`),
+        ];
+        for (const key of entryTermKeys) {
+          const termId = termIdByKey.get(key);
+          if (!termId) continue;
+          await tx.entryTaxonomyTerm.upsert({
+            where: { entryId_termId: { entryId: row.id, termId } },
+            create: { entryId: row.id, termId, tenantId },
+            update: {},
+          });
+        }
         await syncReferences(tx, tenantId, row.id, schema, body);
         await recordRevision(tx, {
           tenantId,
@@ -664,6 +788,40 @@ export async function installBlueprint(
         result.collections[c.handle] = id;
       }
 
+      // 6b′. Product types (docs/143) — upsert by (tenant, key) BEFORE products so a
+      //      product's `attributes` bag validates against its type. A blueprint usually
+      //      reuses a platform BUILT-IN key (apparel, cosmetics, …), which resolves via
+      //      RLS with no install; this step exists for a blueprint that ships its OWN
+      //      bespoke type. Tenant-owned (is_built_in=false) so it shadows nothing and is
+      //      the tenant's to edit. Idempotent — reinstall updates the schema in place.
+      for (const pt of blueprint.productTypes ?? []) {
+        // Its own tenant-scoped tx (like the content block above) — this section runs
+        // through commerce SERVICES with `ctx`, not a shared transaction client, so the
+        // raw `product_types` upsert must open its own `withTenant` for RLS.
+        await withTenant(ctx, async (tx) => {
+          await tx.productType.upsert({
+            where: { tenantId_key: { tenantId: ctx.tenantId, key: pt.key } },
+            create: {
+              tenantId: ctx.tenantId,
+              key: pt.key,
+              name: pt.name,
+              pluralName: pt.pluralName ?? null,
+              description: pt.description ?? null,
+              icon: pt.icon ?? null,
+              isBuiltIn: false,
+              attributeSchema: pt.attributeSchema,
+            },
+            update: {
+              name: pt.name,
+              pluralName: pt.pluralName ?? null,
+              description: pt.description ?? null,
+              icon: pt.icon ?? null,
+              attributeSchema: pt.attributeSchema,
+            },
+          });
+        });
+      }
+
       // Precompute each product's collections (union of its collectionHandles and
       // any collection whose productHandles names it).
       const collsForProduct = new Map<string, Set<string>>();
@@ -722,6 +880,11 @@ export async function installBlueprint(
           description: p.description,
           status: p.status,
           productType: p.productType,
+          // Typed product type + attributes (docs/143). The service validates the
+          // attribute bag against the resolved type (built-in or the blueprint's own,
+          // installed above) — a bad bag fails the install, exactly like a bad content body.
+          productTypeKey: p.productTypeKey,
+          attributes: p.attributes,
           vendor: p.vendor,
           tags: p.tags,
           fulfillmentType: p.fulfillmentType,
@@ -823,6 +986,8 @@ export async function installBlueprint(
           root: resolveBindingHandles(pg.root, result),
           kind: pg.kind,
           recordType: pg.recordType ?? null,
+          // The product-TYPE this page designs (docs/143 Option B) — null = default page.
+          recordSubtype: pg.recordSubtype ?? null,
           isDefault: pg.isDefault,
           seoTitle: pg.seoTitle ?? null,
           seoDescription: pg.seoDescription ?? null,
@@ -841,6 +1006,7 @@ export async function installBlueprint(
           name: pg.name,
           id: installed.pageIds[i]!,
           recordType: pg.recordType ?? null,
+          recordSubtype: pg.recordSubtype ?? null,
           slug: pg.slug ?? null,
         });
       });

@@ -23,7 +23,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { prisma, withTenant } from '@sparx/db';
-import { isRecordAddress } from '@sparx/silica-catalog';
+import { isRecordAddress, isUtilityPage } from '@sparx/silica-catalog';
 import { badRequest, notFound } from '@sparx/api-core/errors';
 import {
   resolvePublicPropertyId,
@@ -228,10 +228,18 @@ const sitemapRoutes: FastifyPluginAsync = (app) => {
       });
     }
 
-    // Published Builder singleton pages — skip any flagged noindex, and any that is a
-    // record page's ADDRESS rather than a location a visitor can reach.
+    // Published Builder singleton pages — skip any flagged noindex, any that is a
+    // record page's ADDRESS rather than a location a visitor can reach, and the
+    // starter's utility pages.
+    //
+    // The utility check is not redundant with `noindex`. That column is honoured here
+    // and always has been, but nothing SETS it on a seeded starter — `sync` writes it
+    // only when a caller passes one, and the code-authored starter has no field to pass
+    // — so every site built by sparx has been offering Google its cart, its search page
+    // and its four account pages. Matching the closed slug set fixes that for sites that
+    // already exist, which seeding the column cannot.
     for (const b of builderPages) {
-      if (b.noindex || !b.slug || isRecordAddress(b.slug)) continue;
+      if (b.noindex || !b.slug || isRecordAddress(b.slug) || isUtilityPage(b.slug)) continue;
       push({
         path: `/${b.slug}`,
         lastmod: b.publishedAt ?? b.updatedAt,

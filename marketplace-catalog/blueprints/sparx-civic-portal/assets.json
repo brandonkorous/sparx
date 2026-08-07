@@ -1,0 +1,62 @@
+[
+  {
+    "id": "hero-city-hall",
+    "url": "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=1400&q=80",
+    "alt": "The colonnade of the Rivermark city hall"
+  },
+  {
+    "id": "news-roads",
+    "url": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1400&q=80",
+    "alt": "A city bridge and roadway at dusk"
+  },
+  {
+    "id": "news-council",
+    "url": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1400&q=80",
+    "alt": "Residents seated in a public council chamber"
+  },
+  {
+    "id": "news-parks",
+    "url": "https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=1400&q=80",
+    "alt": "A green city park on a hillside"
+  },
+  {
+    "id": "news-water",
+    "url": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1400&q=80",
+    "alt": "A utility control room with monitoring screens"
+  },
+  {
+    "id": "news-library",
+    "url": "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=1400&q=80",
+    "alt": "The reading room of a public library"
+  },
+  {
+    "id": "office-comms",
+    "url": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1400&q=80",
+    "alt": "A communications officer at the city press desk"
+  },
+  {
+    "id": "official-mayor",
+    "url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1400&q=80",
+    "alt": "Portrait of Mayor Elena Ruiz"
+  },
+  {
+    "id": "official-clerk",
+    "url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=1400&q=80",
+    "alt": "Portrait of City Clerk David Okafor"
+  },
+  {
+    "id": "pub-city-guide",
+    "url": "https://images.unsplash.com/photo-1543286386-713bdd548da4?w=1400&q=80",
+    "alt": "The cover of the Rivermark resident guide"
+  },
+  {
+    "id": "pass-transit",
+    "url": "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=1400&q=80",
+    "alt": "A city transit bus at a stop"
+  },
+  {
+    "id": "pass-parks",
+    "url": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1400&q=80",
+    "alt": "A wooded trail in a city park"
+  }
+]

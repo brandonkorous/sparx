@@ -1,0 +1,423 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "in-praise-of-the-long-paragraph",
+    "status": "published",
+    "authorSlug": "eleanor-vance",
+    "categories": ["Essays"],
+    "tags": ["Reading", "Attention"],
+    "body": {
+      "title": "In praise of the long paragraph",
+      "excerpt": "We have trained ourselves to read in fragments, one glowing card at a time. What we lose is the single most useful thing prose can do: hold a thought long enough to change your mind about it.",
+      "featuredImage": {
+        "$asset": "lead-essay"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Somewhere in the last twenty years the paragraph got shorter, and then it got shorter again. Open almost anything written to be read on a phone and you will find sentences standing alone, each granted its own white margin of importance, none of them touching. It looks like clarity. It is closer to the opposite."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A paragraph is not a container for a sentence. It is an argument in miniature — a place where one idea is stated, complicated, resisted, and finally either earned or abandoned. That work needs length. It needs the second sentence that qualifies the first, and the third that admits the qualification went too far. Break those apart into standalone lines and you have not made the thinking clearer; you have removed the thinking and kept only the conclusions."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What we are actually optimising for"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The short paragraph is optimised for a particular kind of reading: the scan, the skim, the reader who is deciding in the first two seconds whether to stay. There is nothing wrong with wanting to be read. But a form that is built entirely to survive the first two seconds cannot do anything in the next two hundred. It has traded the whole game for the coin toss."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "What a long paragraph asks of you is patience, and patience is exactly the muscle the feed has spent a decade wasting. The reward for spending it is the only thing reading has ever really offered: the experience of following a mind that is more careful than your own, for long enough that some of the care rubs off."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "An argument with room to breathe"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "This is not nostalgia. Prose is not better because it is old, and a wall of text is not automatically wise. Plenty of long paragraphs are long because the writer would not stop, not because the thought required it. The discipline is to make the length load-bearing — to write the paragraph that could not be three tweets without losing the turn in the middle where the argument actually happens."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We started this magazine, in part, to keep a place where that turn can still happen. Give a good writer room and time and the assumption that you will stay to the end, and they will tell you something you did not already believe. That is the whole proposition. It has never scaled well, and it never needed to."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "the-last-letterpress-in-the-valley",
+    "status": "published",
+    "authorSlug": "julian-mercer",
+    "categories": ["Reporting"],
+    "tags": ["Craft", "Print"],
+    "body": {
+      "title": "The last letterpress in the valley",
+      "excerpt": "A workshop that still sets type by hand, one letter at a time, and the reason people drive two hours to stand and watch it happen.",
+      "featuredImage": {
+        "$asset": "story-letterpress"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The shop smells of oil and warm paper before you see anything, and the first thing you see is the drawers — hundreds of them, shallow and wide, each one a compartmented tray holding a single font in a single size. Margaret Okafor has been reaching into those drawers for forty-one years, and she does it now without looking, the way you find a light switch in your own house in the dark."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "She is setting a wedding invitation. Each letter is a small metal block she lifts from its compartment and stands in a handheld frame called a composing stick, backwards and upside down, reading it in a mirror in her head. A single line of text takes her a few minutes. A page takes an afternoon. When she is done she will ink it, lay a sheet on top, and pull a lever that presses the two together with a force you feel in your sternum from across the room."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Why anyone still does this"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "You can print the same invitation from a laptop in nine seconds, and it will be, by every measurable standard, identical. Okafor knows this better than anyone; she owns a laptop. What the machine cannot make is the bite — the faint valley the type presses into thick cotton paper, the thing your thumb finds before your eye does. People drive from two valleys over to order paper they will run their thumb across for the rest of their lives."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The economics should not work, and mostly they do not. She keeps the lights on with the wedding trade and the occasional gallery commission, and she keeps the drawers full because a foundry in Wisconsin still casts type for the handful of shops like hers. When that foundry closes, and it will, she has enough type to last her out. She has thought about this more than she lets on."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "An apprentice, maybe"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "There is a young man who comes in on Saturdays. He found the shop the way everyone under thirty finds anything, through a video, and he has stayed the way almost none of them do. Okafor does not call him an apprentice — she says the word would jinx it — but she has started letting him pull the lever, and last month she let him set a whole line alone. He got two letters backwards. She made him find them himself. He did, eventually, and she said nothing, which from Margaret Okafor is the highest thing there is."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "the-tenant",
+    "status": "published",
+    "authorSlug": "sofia-adeyemi",
+    "categories": ["Fiction"],
+    "tags": ["Short story"],
+    "body": {
+      "title": "The tenant",
+      "excerpt": "A short story about the man upstairs, the sound that would not resolve, and how long a person will go without knocking on a door.",
+      "featuredImage": {
+        "$asset": "story-fiction"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The sound began in October, or she noticed it in October, which she understood were not the same thing. It came from directly above her bed, a slow and deliberate dragging, as if the man upstairs were moving a single heavy object a few inches at a time across a floor that had all night to receive it. It stopped when she sat up. It resumed when she lay back down. For three weeks she told no one, because to say it aloud was to make it a thing that was happening."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "She had never met him. She knew he existed the way you know about weather in a country you will not visit: as a set of effects. A pair of brown shoes outside the door on the landing, always the same pair, never worn. The blue flicker of a television at hours when televisions should be off. Once, a smell of oranges so strong on the stairwell that she had stopped, one hand on the rail, and breathed it in like something owed to her."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The knock she did not make"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A reasonable person knocks. She rehearsed it — a light rap, a neighbourly face, a sentence about the sound that she softened and re-softened until it meant nothing. She got as far as the landing twice. Both times she stood in front of the brown shoes and could not raise her hand, because underneath the neighbourly sentence was a second sentence she could not unthink, which was: what if he answers, and it is fine, and I have to keep living beneath a person I have now decided to be afraid of."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "So she did not knock, and the not-knocking became its own tenancy, a thing she lived inside. She learned the sound the way Okafor down the road learned her drawers, without looking. Drag, and stop, and drag. Some nights she lay awake and moved with it, shifting an inch when he shifted, a slow duet through a ceiling, two people rearranging a weight that neither of them could name and neither would put down."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "In December the sound stopped. The shoes were gone from the landing one morning, and the smell of oranges with them, and the silence above her bed was the loudest thing she had ever not heard. She slept badly for a week. Then, one night, without deciding to, she got up, went to the empty landing, and knocked on the door of a flat she knew perfectly well was empty. She stood there a long time. She was, she realised, waiting for it to be fine."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "what-we-mean-when-we-call-a-book-difficult",
+    "status": "published",
+    "authorSlug": "eleanor-vance",
+    "categories": ["Criticism"],
+    "tags": ["Books", "Reading"],
+    "body": {
+      "title": "What we mean when we call a book difficult",
+      "excerpt": "Difficulty is not a flaw to be forgiven or a virtue to be admired. It is a promise a book makes, and the question is only whether it keeps it.",
+      "featuredImage": {
+        "$asset": "story-criticism"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "There is a certain kind of review that treats difficulty as a moral failing, and another that treats it as a badge, and both are lazy in the same way: they have decided what difficulty means before they have finished the book. Difficulty is not one thing. A sentence can be hard because the writer is confused, or because the reader is, or because the idea genuinely is — and these are not remotely the same problem, though they arrive wearing the same coat."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The confused sentence is the only real failure of the three. When a writer has not worked out what they think, the prose thickens to hide it, and no amount of rereading rewards you, because there is nothing underneath. We have all been fooled by this book. It flatters us into mistaking our own effort for depth, and the tell is that the effort never resolves — you work and work and arrive nowhere, and blame yourself."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The difficulty that keeps its promise"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The other kind is different in a way you can feel in your body. A genuinely hard idea, honestly rendered, is difficult the way a steep path is difficult: the effort is the point, and it goes somewhere. You reread the sentence not because it is hiding something but because it is holding something too large to take in on one pass. When you finally have it, the difficulty vanishes in retrospect — you cannot imagine why you struggled — and that disappearance is the sign that the difficulty was real and was kept."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A critic’s actual job, most of the time, is simply to tell those two apart. Not to forgive difficulty, not to celebrate it, but to report honestly whether the climb led anywhere. That requires finishing the book, and finishing it twice, and being willing to say of a famously hard writer that this time there was nothing at the top — and of an easy one that they had done the hardest thing of all, which is to make it look like no work."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Against the shortcut"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We live in a golden age of the shortcut: the summary, the thread, the ten-minute version that promises the payoff without the path. For most books this is a mercy, and I use it too. But a certain small number of books are difficult in the way that cannot be summarised, because the difficulty is the meaning — you cannot be told the view, you have to make the climb. Those are the books this magazine exists to point at. They are worth your evening precisely because they will not fit in your morning."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "notes-on-walking-a-city-at-night",
+    "status": "published",
+    "authorSlug": "julian-mercer",
+    "categories": ["Notebook"],
+    "tags": ["Cities", "Observation"],
+    "body": {
+      "title": "Notes on walking a city at night",
+      "excerpt": "The hours after midnight, when a place stops performing for anyone and finally, briefly, tells you the truth about itself.",
+      "featuredImage": {
+        "$asset": "story-notebook"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A city keeps its face on all day. It is a working face, a face for commerce and strangers, and it does not come off at dusk — dusk is only the day’s last and most flattering hour. It comes off around one in the morning, when the last of the going-out has gone out and the earliest of the coming-in has not yet begun, and for a while the place is not showing you anything because it does not know you are there."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "That is the hour to walk. Not for safety and not for danger, both of which are mostly a matter of which streets, but for honesty. The shop that looks prosperous by day shows you its taped window. The grand avenue admits how few people it is really for. A back street you would never choose turns out to be where the city actually lives — a lit kitchen, a delivery, two cooks on a step, the whole undercarriage of the daytime performance quietly doing the work that makes the performance possible."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What you can only see when no one is selling you anything"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "By day everything is addressed to you: the signs, the lights, the arranged windows, all of it a soft continuous sentence that ends in buy, or enter, or believe. At night that sentence stops, and what is left is the grammar underneath — the actual shape of the streets, the way the ground really slopes, which corners the wind has chosen. You see the city as an object rather than an argument, and it is almost unbearably beautiful in a way it never lets itself be while it is trying to convince you of something."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "I do not recommend it as a lifestyle. The night walker is a slightly ridiculous figure, and the truths you collect out there do not survive contact with a reasonable bedtime. But once in a while, in a city you think you know, go out at the wrong hour and simply look. You will find it has been keeping a second self from you the whole time, the way people do, and that the second self is the one worth writing down."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

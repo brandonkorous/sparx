@@ -32,9 +32,12 @@ import { emitBundle, type TemplateSiteSpec } from './template-sites/harness';
 import { writeTemplatePreview } from './template-sites/preview';
 import {
   addToCartForm,
+  pdpAttributes,
   pdpDescription,
   pdpImage,
+  pdpPolicyLinks,
   pdpPriceRow,
+  pdpStockBadge,
   pdpTitle,
   productPage,
 } from './template-sites/pdp';
@@ -162,26 +165,6 @@ function hero(): Node {
  *  ground; the discount figure rides a filled `badge badge-accent` chip — the sale-red
  *  fill carries its own AA `-content` ink, where bare `text-accent` on the near-black band
  *  fell short of the readable bar. */
-/** A STATIC countdown-style clock — Fashion Nova's live sale timer, authored as FIXED digits
- *  rather than the live `countdown` behavior. A live countdown takes one fixed target
- *  timestamp, which EXPIRES: a tenant installing weeks later would see 00:00:00, a clock that
- *  reads as broken on the shipped starter. Static boxes always show a plausible flash-sale
- *  time and never break; the tenant edits the figures (or wires a real timer) for their own
- *  sale. The boxes INVERT the band's own token pair (`bg-primary-content` / `text-primary`),
- *  so they contrast against the near-black band and stay AA on every theme, no hardcoded hex. */
-function saleCountdown(): Node {
-  const box = (n: string): Node =>
-    el(
-      'span',
-      'inline-flex min-w-9 items-center justify-center rounded-field bg-primary-content px-2 py-1 font-mono text-base font-bold text-primary',
-      { text: n }
-    );
-  const colon = (): Node => el('span', 'font-bold', { text: ':' });
-  return el('div', 'flex items-center gap-2', {
-    children: [box('05'), colon(), box('59'), colon(), box('59')],
-  });
-}
-
 function promoBand(): Node {
   return el('section', 'bg-primary text-primary-content @container px-6 py-4', {
     children: [
@@ -193,13 +176,12 @@ function promoBand(): Node {
             el('p', 'flex flex-wrap items-center justify-center gap-2 text-base font-semibold', {
               children: [
                 el('span', 'badge badge-accent', { text: 'Extra 30% off' }),
-                el('span', '', { text: 'everything in Sale — ends in' }),
+                el('span', '', { text: 'everything in the Sale — no code needed' }),
               ],
             }),
-            saleCountdown(),
             el('a', 'font-semibold underline underline-offset-4', {
               attrs: { href: '/collections' },
-              text: 'Shop now',
+              text: 'Shop the sale',
             }),
           ],
         }
@@ -409,6 +391,16 @@ interface Product {
   description: string;
   status: 'active';
   productType: string;
+  // The typed product type (docs/143) — every style here is `apparel`, so the PDP's
+  // `pdpAttributes` renders each product's OWN fabric/fit/care/materials/origin.
+  productTypeKey: 'apparel';
+  attributes: {
+    fabric: string;
+    fit: string;
+    care: string;
+    materials: { name: string; percent: string }[];
+    origin: string;
+  };
   vendor: string;
   tags: string[];
   categoryHandles: string[];
@@ -419,6 +411,15 @@ interface Product {
   variants: Variant[];
   images: { assetId: string; isPrimary: true; alt: string }[];
 }
+
+// Care copy shared where it is genuinely identical — the poly/knit garments wash one way,
+// denim another, swim another (per-product fabric/fit/materials/origin still differ).
+const KNIT_CARE =
+  'Machine wash cold on a gentle cycle, inside out, with like colours; hang or lay flat to dry, and a cool iron if it needs one. Skip the hot wash and the tumble dryer, which shrink a knit and crack a print.';
+const DENIM_CARE =
+  'Wash cold inside out with like colours and hang to dry — the less you wash denim, the longer the colour lasts. A cool iron on the reverse if you like it crisp; skip the tumble dryer, which sets the creases in.';
+const SWIM_CARE =
+  'Rinse in cold water straight after the pool or the sea to flush out chlorine and salt, then hang to dry in the shade. No machine, no wringing, and never leave it balled up wet — that is what kills the stretch.';
 
 const money = (dollars: number): number => Math.round(dollars * 100);
 
@@ -463,6 +464,18 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals', 'the-edit', 'sale'],
     seoTitle: 'Halston Cutout Mini Dress — stretch-crepe going-out mini',
     seoDescription: 'A stretch-crepe cutout mini dress with a sharp waist and hidden zip. Was $44.99, now $30.99.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A stretch-crepe that holds its shape through a night out, cut close to the body with a sharp waist cutout and a hidden back zip. Lined through the skirt so it never turns sheer under a phone light.',
+      fit: 'A body-skimming mini, true to size with a little stretch; between sizes and want room at dinner, size up. Hits mid-thigh on most.',
+      care: KNIT_CARE,
+      materials: [
+        { name: 'Polyester', percent: '92%' },
+        { name: 'Elastane', percent: '8%' },
+      ],
+      origin: 'Made in China',
+    },
     ...sized('VLT-HALSTON', 30.99, 44.99, APPAREL_SIZES),
     images: [{ assetId: 'halston-cutout-mini', isPrimary: true, alt: 'The Halston Cutout Mini Dress' }],
   },
@@ -479,6 +492,18 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['best-sellers', 'the-edit', 'sale'],
     seoTitle: 'Coastline Satin Maxi — slit satin maxi dress',
     seoDescription: 'A liquid-satin maxi dress with a thigh-high slit and cowl back. Was $59.99, now $38.99.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A liquid satin with enough weight to pour to the floor rather than cling, with a thigh-high slit and a cowl back. Bias-cut so it moves with you and skims rather than grips.',
+      fit: 'A long, fluid maxi, true to size; the slit and the bias cut do the shaping. Cut for a heel — check the length against your shoes before the big night.',
+      care: 'Cold hand-wash, or a delicate machine cycle in a bag, inside out; hang to dry and never tumble, which pills satin. A cool iron on the reverse takes out a travel crease.',
+      materials: [
+        { name: 'Polyester', percent: '95%' },
+        { name: 'Elastane', percent: '5%' },
+      ],
+      origin: 'Made in China',
+    },
     ...sized('VLT-COASTLINE', 38.99, 59.99, APPAREL_SIZES),
     images: [{ assetId: 'coastline-satin-maxi', isPrimary: true, alt: 'The Coastline Satin Maxi' }],
   },
@@ -495,6 +520,18 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['best-sellers', 'sale'],
     seoTitle: 'Bandage Bodycon Midi — sculpting bandage-knit midi dress',
     seoDescription: 'A sculpting high-neck bandage-knit midi dress. Was $39.99, now $27.99.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A dense bandage knit that sculpts and smooths, with a high neck and a banded hem that stays put. Enough stretch to sit through dinner and dance after.',
+      fit: 'A sculpting bandage-knit midi that pulls in and holds; runs snug by design, so size up if you want less compression. High neck, banded hem.',
+      care: KNIT_CARE,
+      materials: [
+        { name: 'Nylon', percent: '90%' },
+        { name: 'Elastane', percent: '10%' },
+      ],
+      origin: 'Made in China',
+    },
     ...sized('VLT-BANDAGE', 27.99, 39.99, APPAREL_SIZES),
     images: [{ assetId: 'bandage-bodycon-midi', isPrimary: true, alt: 'The Bandage Bodycon Midi' }],
   },
@@ -511,6 +548,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals', 'best-sellers', 'sale'],
     seoTitle: 'Rib-Knit Cami 3-Pack — stretch rib camisole set',
     seoDescription: 'Three stretch rib-knit cami tops in everyday neutrals. Was $28.99, now $19.99.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A stretch rib that hugs the body without gripping, in the neutral tones that go under everything. A slim adjustable strap and a clean neckline; three to a pack so the laundry never catches you out.',
+      fit: 'A close rib that hugs without gripping; true to size and stretches to fit. Three per pack in everyday neutrals.',
+      care: KNIT_CARE,
+      materials: [
+        { name: 'Viscose', percent: '62%' },
+        { name: 'Nylon', percent: '33%' },
+        { name: 'Elastane', percent: '5%' },
+      ],
+      origin: 'Made in China',
+    },
     ...sized('VLT-CAMI', 19.99, 28.99, APPAREL_SIZES),
     images: [{ assetId: 'rib-knit-cami-3-pack', isPrimary: true, alt: 'The Rib-Knit Cami 3-Pack' }],
   },
@@ -527,6 +577,15 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals', 'sale'],
     seoTitle: 'Oversized Graphic Tee — drop-shoulder cotton graphic tee',
     seoDescription: 'An oversized drop-shoulder cotton graphic tee with a soft-hand print. Was $24.99, now $16.99.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A drop-shoulder cotton jersey cut big on purpose, with a soft-hand print that survives the wash rather than cracking off it. Heavy enough not to go see-through.',
+      fit: 'Cut oversized on purpose with a dropped shoulder; size down for a closer fit, keep your size for the intended slouch. Long enough to knot or tuck.',
+      care: KNIT_CARE,
+      materials: [{ name: 'Cotton', percent: '100%' }],
+      origin: 'Made in Bangladesh',
+    },
     ...sized('VLT-GRAPHTEE', 16.99, 24.99, APPAREL_SIZES),
     images: [{ assetId: 'oversized-graphic-tee', isPrimary: true, alt: 'The Oversized Graphic Tee' }],
   },
@@ -543,6 +602,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['the-edit', 'sale'],
     seoTitle: 'Corset Bustier Top — boned hook-front bustier',
     seoDescription: 'A structured boned corset bustier top with a hook-and-eye front. Was $34.99, now $22.99.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A structured bodice with real boning and a hook-and-eye front that holds its line all night, in a firm woven with a touch of stretch. Fully lined, with a clean top edge.',
+      fit: 'A structured, boned bustier that holds its line; true to size but firm — size up for comfort over a long night. Best with the wide-leg jean, or under a blazer.',
+      care: 'Cold hand-wash and hang to dry to protect the boning; do not tumble, wring or hot-iron. Spot-clean between wears rather than washing every time.',
+      materials: [
+        { name: 'Polyester', percent: '88%' },
+        { name: 'Elastane', percent: '8%' },
+        { name: 'Boning', percent: '4%' },
+      ],
+      origin: 'Made in China',
+    },
     ...sized('VLT-CORSET', 22.99, 34.99, APPAREL_SIZES),
     images: [{ assetId: 'corset-bustier-top', isPrimary: true, alt: 'The Corset Bustier Top' }],
   },
@@ -559,6 +631,18 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals', 'best-sellers', 'denim-reset', 'sale'],
     seoTitle: 'High-Rise Wide-Leg Jean — high-waist wide-leg denim',
     seoDescription: 'A high-rise wide-leg jean in rigid-give denim that lengthens the leg. Was $49.99, now $34.99.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A rigid-with-a-little-give denim cut high on the waist and wide to the floor, so it lengthens the leg and forgives the lunch. Proper five-pocket construction with a button fly.',
+      fit: 'High on the waist and wide all the way down; true to size at the waist, long in the leg — hem it or wear a heel. Rigid with a little give, so it holds its shape.',
+      care: DENIM_CARE,
+      materials: [
+        { name: 'Cotton', percent: '99%' },
+        { name: 'Elastane', percent: '1%' },
+      ],
+      origin: 'Made in Bangladesh',
+    },
     ...sized('VLT-WIDEJEAN', 34.99, 49.99, APPAREL_SIZES),
     images: [{ assetId: 'high-rise-wide-leg-jean', isPrimary: true, alt: 'The High-Rise Wide-Leg Jean' }],
   },
@@ -575,6 +659,15 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['best-sellers', 'denim-reset', 'sale'],
     seoTitle: 'Cargo Parachute Pant — cinch-hem utility cargo',
     seoDescription: 'A lightweight cinch-hem parachute cargo pant with real pockets. Was $48.00, now $32.99.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A lightweight nylon parachute cargo with cinch-cord hems and pockets that actually hold a phone. Baggy where it counts, tapered where it should be.',
+      fit: 'Baggy through the leg with cinch-cord hems to tune the volume; true to size, sits high. Wear them puddled or cinched at the ankle.',
+      care: 'Machine wash cold on a gentle cycle and hang to dry; the nylon barely creases and dries fast. Skip the tumble dryer, which can shrink the cord channels.',
+      materials: [{ name: 'Nylon', percent: '100%' }],
+      origin: 'Made in Vietnam',
+    },
     ...sized('VLT-CARGO', 32.99, 48.0, APPAREL_SIZES),
     images: [{ assetId: 'cargo-parachute-pant', isPrimary: true, alt: 'The Cargo Parachute Pant' }],
   },
@@ -591,6 +684,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals', 'sale'],
     seoTitle: 'Faux-Leather Mini Skirt — matte stretch-panel mini',
     seoDescription: 'A matte faux-leather mini skirt with a hidden stretch panel. Was $32.99, now $21.99.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A matte faux-leather face over a hidden stretch panel, so it moves like fabric rather than armour. Lined, with a clean waistband and an invisible side zip.',
+      fit: 'A close mini with a hidden stretch panel so it moves with you; true to size, sits high on the waist. Tights in winter, bare in summer.',
+      care: 'Wipe the faux-leather clean with a damp cloth; do not machine-wash, tumble or iron the coated face. Hang it rather than folding, so it does not crease at the seat.',
+      materials: [
+        { name: 'Polyurethane', percent: '88%' },
+        { name: 'Polyester', percent: '10%' },
+        { name: 'Elastane', percent: '2%' },
+      ],
+      origin: 'Made in China',
+    },
     ...sized('VLT-MINISKIRT', 21.99, 32.99, APPAREL_SIZES),
     images: [{ assetId: 'faux-leather-mini-skirt', isPrimary: true, alt: 'The Faux-Leather Mini Skirt' }],
   },
@@ -607,6 +713,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals', 'best-sellers', 'sale'],
     seoTitle: 'Ribbed Lounge Set — matching rib-knit lounge set',
     seoDescription: 'A matching rib-knit lounge set: fitted long-sleeve and high-waist flare. Was $44.99, now $29.99.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A matching rib-knit set — a fitted long-sleeve and a high-waist flare — soft enough to travel in and sharp enough to arrive in. The rib holds its shape wash after wash.',
+      fit: 'A fitted long-sleeve and a high-waist flare, close through the body and relaxed through the leg; true to size. Buy it as a set, wear the halves apart.',
+      care: KNIT_CARE,
+      materials: [
+        { name: 'Cotton', percent: '65%' },
+        { name: 'Polyester', percent: '30%' },
+        { name: 'Elastane', percent: '5%' },
+      ],
+      origin: 'Made in China',
+    },
     ...sized('VLT-LOUNGE', 29.99, 44.99, APPAREL_SIZES),
     images: [{ assetId: 'ribbed-lounge-set', isPrimary: true, alt: 'The Ribbed Lounge Set' }],
   },
@@ -623,6 +742,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['the-edit', 'sale'],
     seoTitle: 'Blazer + Short Suit Set — tailored blazer and short two-piece',
     seoDescription: 'A tailored blazer and matching high-waist short suit set in crease-resistant suiting. Was $79.99, now $54.99.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A crease-resistant suiting that reads expensive and packs like nothing, tailored into a structured single-button blazer and a matching high-waist short. Fully lined, with working details.',
+      fit: 'A structured single-button blazer and a matching high-waist short; true to size, tailored close — size up the blazer if you layer under it. The whole look in one bag.',
+      care: 'Machine wash cold on a gentle cycle or dry-clean; hang to dry and steam rather than hot-iron to keep the tailoring sharp. Do not tumble, which puckers the lining.',
+      materials: [
+        { name: 'Polyester', percent: '63%' },
+        { name: 'Viscose', percent: '33%' },
+        { name: 'Elastane', percent: '4%' },
+      ],
+      origin: 'Made in Turkey',
+    },
     ...sized('VLT-SUIT', 54.99, 79.99, APPAREL_SIZES),
     images: [{ assetId: 'blazer-short-suit-set', isPrimary: true, alt: 'The Blazer + Short Suit Set' }],
   },
@@ -639,6 +771,18 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['the-edit', 'sale'],
     seoTitle: 'Strapless Wide-Leg Jumpsuit — grip-band wide-leg jumpsuit',
     seoDescription: 'A strapless wide-leg jumpsuit with a grippy inner band that stays put. Was $58.00, now $39.99.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A strapless wide-leg jumpsuit in a firm stretch crepe with a grippy silicone inner band that stays up, and a wide leg that reads like a gown from across the room.',
+      fit: 'True to size through the body, long in the leg for a heel; the inner band grips, so try it before a big night to trust it. Strapless, wide-leg.',
+      care: KNIT_CARE,
+      materials: [
+        { name: 'Polyester', percent: '90%' },
+        { name: 'Elastane', percent: '10%' },
+      ],
+      origin: 'Made in China',
+    },
     ...sized('VLT-JUMPSUIT', 39.99, 58.0, APPAREL_SIZES),
     images: [{ assetId: 'strapless-wide-leg-jumpsuit', isPrimary: true, alt: 'The Strapless Wide-Leg Jumpsuit' }],
   },
@@ -655,6 +799,18 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals', 'sale'],
     seoTitle: 'Ring-Detail String Bikini — adjustable ring-hardware bikini',
     seoDescription: 'A quick-dry string bikini with gold-tone ring hardware and adjustable ties. Was $36.99, now $24.99.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A quick-dry, fade-resistant swim fabric with gold-tone ring hardware and fully adjustable ties top and bottom. Lined, with secure stitching that holds up to real swimming.',
+      fit: 'Fully adjustable ties top and bottom, so one size range fits a lot of bodies; cut to sit where you set it. Quick-dry and fade-resistant.',
+      care: SWIM_CARE,
+      materials: [
+        { name: 'Nylon', percent: '82%' },
+        { name: 'Elastane', percent: '18%' },
+      ],
+      origin: 'Made in China',
+    },
     ...sized('VLT-BIKINI', 24.99, 36.99, SWIM_SIZES),
     images: [{ assetId: 'ring-detail-string-bikini', isPrimary: true, alt: 'The Ring-Detail String Bikini' }],
   },
@@ -671,6 +827,18 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['best-sellers', 'sale'],
     seoTitle: 'One-Shoulder One-Piece — sculpting one-shoulder swimsuit',
     seoDescription: 'A sculpting one-shoulder one-piece swimsuit with a hidden shelf and high-cut leg. Was $39.99, now $27.99.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A sculpting swim fabric with a hidden shelf bust and a high-cut leg, in a one-shoulder cut. Fully lined and firm enough to smooth, quick to dry.',
+      fit: 'A sculpting one-shoulder cut with a hidden shelf and a high-cut leg; true to size with firm support. Doubles as a bodysuit under a skirt.',
+      care: SWIM_CARE,
+      materials: [
+        { name: 'Polyamide', percent: '80%' },
+        { name: 'Elastane', percent: '20%' },
+      ],
+      origin: 'Made in China',
+    },
     ...sized('VLT-ONEPIECE', 27.99, 39.99, SWIM_SIZES),
     images: [{ assetId: 'one-shoulder-one-piece', isPrimary: true, alt: 'The One-Shoulder One-Piece' }],
   },
@@ -687,6 +855,18 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals', 'sale'],
     seoTitle: 'Oversized Shield Sunglasses — UV400 wraparound shield',
     seoDescription: 'Oversized UV400 shield sunglasses in a featherlight wraparound frame. Was $19.99, now $12.99.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A single-lens shield in a wraparound acetate frame that covers half the face and all the mystery. UV400, featherlight, with spring hinges that take a knock.',
+      fit: 'A one-size wraparound shield that covers half the face; featherlight, with spring hinges that suit most head shapes. UV400 on every lens.',
+      care: 'Wipe the lens with the pouch it comes in, not a shirt hem, which scratches the coating; store them in the case rather than face-down. Keep them off a hot dashboard, where the frame can warp.',
+      materials: [
+        { name: 'Polycarbonate lens', percent: '60%' },
+        { name: 'Acetate frame', percent: '40%' },
+      ],
+      origin: 'Made in China',
+    },
     ...sized('VLT-SHADES', 12.99, 19.99, ONE_SIZE),
     images: [{ assetId: 'oversized-shield-sunglasses', isPrimary: true, alt: 'The Oversized Shield Sunglasses' }],
   },
@@ -703,6 +883,19 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['best-sellers', 'sale'],
     seoTitle: 'Quilted Shoulder Bag — chain-strap quilted vegan-leather bag',
     seoDescription: 'A quilted vegan-leather shoulder bag with a doubling gold chain strap. Was $44.99, now $29.99.',
+    productTypeKey: 'apparel',
+    attributes: {
+      fabric:
+        'A quilted vegan-leather shoulder bag with a gold chain strap you can double up or wear long, on a magnetic-snap closure. Lined, with a slip pocket inside.',
+      fit: 'A compact shoulder bag with a chain you can double up or wear long; fits a phone, cards and a lipstick. One size, structured to hold its shape.',
+      care: 'Wipe the vegan leather with a soft damp cloth and let it air-dry; keep it out of prolonged sun and rain. Stuff it when it is not in use so it holds its shape, and store it in the dust bag.',
+      materials: [
+        { name: 'Polyurethane', percent: '82%' },
+        { name: 'Polyester lining', percent: '14%' },
+        { name: 'Metal hardware', percent: '4%' },
+      ],
+      origin: 'Made in China',
+    },
     ...sized('VLT-BAG', 29.99, 44.99, ONE_SIZE),
     images: [{ assetId: 'quilted-shoulder-bag', isPrimary: true, alt: 'The Quilted Shoulder Bag' }],
   },
@@ -872,13 +1065,15 @@ const CONTENT = [
 // Fashion Nova's PDP is a two-column conversion machine: a big image with a red "% OFF"
 // badge on the left; on the right a dense buy-box — breadcrumb, title, SALE PRICE + comp-
 // value strikethrough, pay-in-4, a red "prices as marked" line, a black full-width Add-to-
-// bag, a delivery-countdown urgency block, then Product Details / Material / Shipping
-// accordions (DESIGN §4/§5/§7). Ported to Voltage in the `voltage` theme: `btn-primary` is
-// the near-black chrome CTA the black "Add to Bag" calls for, the sale-red rides `badge
-// badge-accent` fills (their own AA `-content` ink) rather than bare red text, and the
-// urgency clock reuses this bundle's STATIC `saleCountdown()` (never a live timer that
-// expires to 00:00:00 on the shipped starter). Bound fields come from the shared PDP kit
-// (correct `repeat('product')` scope + `item.*` binds); the layout + brand copy are ours.
+// bag, then the product detail stack (DESIGN §4/§5/§7). Ported to Voltage in the `voltage`
+// theme: `btn-primary` is the near-black chrome CTA the black "Add to Bag" calls for, and the
+// sale-red rides `badge badge-accent` fills (their own AA `-content` ink) rather than bare red
+// text. The old FABRICATED urgency signals are GONE; the honest replacement is `pdpStockBadge`,
+// a real low-stock signal bound to the routed product's inventory. And the detail stack is no
+// longer hardcoded per template: it is the
+// product's OWN typed attributes (docs/143) via `pdpAttributes`, with `pdpPolicyLinks` pointing
+// at the store's real shipping/returns pages. Bound fields come from the shared PDP kit (correct
+// `repeat('product')` scope + `item.*` binds); the layout is ours.
 
 /** A row of small trust promises under the CTA — free shipping, easy returns, secure
  *  checkout. Ink text on a hairline-topped row; each item leads with a filled sale-red chip
@@ -896,40 +1091,6 @@ function pdpTrustRow(): Node {
       item('Free', 'shipping over $75'),
       item('30 days', 'easy returns'),
       item('Secure', 'checkout'),
-    ],
-  });
-}
-
-/** The delivery-urgency block — Fashion Nova's "Order within 6 hrs 7 mins" countdown, on
- *  Voltage's near-black chrome ground so the STATIC `saleCountdown()` boxes (which invert the
- *  primary pair) read correctly. A fixed, plausible flash-sale clock: never a live timer that
- *  would expire on a tenant installing weeks later. */
-function pdpDeliveryUrgency(): Node {
-  return el('div', 'flex flex-col gap-3 rounded-box bg-primary p-5 text-primary-content', {
-    children: [
-      el('div', 'flex flex-wrap items-center gap-3', {
-        children: [
-          el('span', 'badge badge-accent', { text: 'Selling fast' }),
-          el('p', 'text-sm font-semibold', { text: 'Order within' }),
-          saleCountdown(),
-          el('p', 'text-sm font-semibold', { text: 'for next-day dispatch' }),
-        ],
-      }),
-      el('p', 'text-sm leading-relaxed', {
-        text: 'Get it by tomorrow with 1-day shipping — most orders placed before the clock runs out ship the same day.',
-      }),
-    ],
-  });
-}
-
-/** One labelled detail block in the buy-box — an `<h2>` label over a paragraph of static
- *  brand copy. Fashion Nova's "Product Details / Material" accordions, stacked rather than
- *  toggled so the page reads without JavaScript and needs no behaviour marker. */
-function pdpDetail(label: string, body: string): Node {
-  return el('div', 'flex flex-col gap-2 border-t border-base-300 pt-5', {
-    children: [
-      el('h2', 'text-sm font-bold uppercase tracking-widest text-base-content', { text: label }),
-      el('p', 'text-base leading-relaxed text-base-content', { text: body }),
     ],
   });
 }
@@ -976,6 +1137,13 @@ function pdpBuyRegion(): Node {
                     compareClass: 'text-xl text-base-content line-through',
                     rowClass: 'flex flex-wrap items-baseline gap-3',
                   }),
+                  // A REAL low-stock signal on the sale-red accent — shown only when the routed
+                  // product is genuinely running low. This is the honest replacement for the
+                  // fabricated urgency signals this bundle used to ship.
+                  pdpStockBadge({
+                    className: 'w-fit badge badge-accent badge-lg font-bold uppercase',
+                    label: 'Low stock',
+                  }),
                   // The red sale grammar — a filled chip carries the "prices as marked" signal
                   // (AA `-content` ink), and a pay-in-4 line, provider-agnostic + no fake figure.
                   el('div', 'flex flex-wrap items-center gap-3', {
@@ -993,26 +1161,26 @@ function pdpBuyRegion(): Node {
               pdpDescription('text-lg leading-relaxed text-base-content'),
               // Qty + Add to bag — the near-black chrome CTA (btn-primary in `voltage`).
               addToCartForm(),
-              // The delivery-countdown urgency block.
-              pdpDeliveryUrgency(),
               // Trust promises.
               pdpTrustRow(),
-              // The detail stack.
-              el('div', 'flex flex-col gap-5', {
-                children: [
-                  pdpDetail(
-                    'Product details',
-                    'Cut close to the trend and made to move — the shape the street is actually wearing, dropped while it still matters. True to size with a little stretch; if you are between sizes and want it looser, size up. New colours and restocks land every week.',
-                  ),
-                  pdpDetail(
-                    'Fabric & care',
-                    'A soft, hard-wearing blend chosen to hold its shape wash after wash. Machine wash cold inside-out, hang or lay flat to dry, cool iron if needed. Full fibre content and a care symbol guide are on the sewn-in label.',
-                  ),
-                  pdpDetail(
-                    'Shipping & returns',
-                    'Free 1-day shipping on orders over $75, and most orders ship the same day. Not quite right? Send it back within 30 days for a refund or store credit — tags on, unworn. Prices are as marked, so what you see is the price you pay.',
-                  ),
-                ],
+              // The product's OWN typed attributes (fabric / fit / care / materials / origin),
+              // repeated from `attributeSections` — real per-product copy, not a hardcoded stack.
+              pdpAttributes({
+                containerClass: 'flex flex-col gap-5',
+                sectionClass: 'flex flex-col gap-2 border-t border-base-300 pt-5',
+                labelTag: 'h2',
+                labelClass: 'text-sm font-bold uppercase tracking-widest text-base-content',
+                valueClass: 'text-base leading-relaxed text-base-content',
+                rowClass:
+                  'flex items-baseline justify-between gap-4 border-b border-base-200 pb-1',
+                rowLabelClass: 'text-base font-semibold text-base-content',
+                rowValueClass: 'text-base text-base-content',
+              }),
+              // Shipping & returns — LINKS to the store's real legal pages, never reprinted copy.
+              pdpPolicyLinks({
+                className:
+                  'flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-5 text-sm font-bold uppercase tracking-widest text-base-content',
+                linkClass: 'underline underline-offset-4',
               }),
             ],
           }),

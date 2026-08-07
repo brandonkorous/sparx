@@ -19,6 +19,7 @@ export const BUILTIN_PATHS: readonly string[] = [
   '/',
   '/cart',
   '/checkout',
+  '/checkout/save-card',
   '/search',
   '/products',
   '/collections',

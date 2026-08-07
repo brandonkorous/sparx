@@ -72,6 +72,11 @@ export function productToBuilderRecord(
       available: v.available,
       optionValueIds: v.optionValueIds,
     })),
+    // Typed attributes (docs/143) — parity with the silica record so the legacy
+    // builder-render canvas resolves the same `attributes.<key>` / attributeSections
+    // refs a pinned/looped product page binds.
+    attributes: p.attributes ?? {},
+    attributeSections: p.attributeSections ?? [],
   };
 }
 

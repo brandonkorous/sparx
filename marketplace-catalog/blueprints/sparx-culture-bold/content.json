@@ -1,0 +1,402 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "underground-got-loud-again",
+    "status": "published",
+    "authorSlug": "jules-vega",
+    "categories": ["Music"],
+    "tags": ["Live", "Scenes"],
+    "body": {
+      "title": "The year the underground got loud again",
+      "excerpt": "Guitar bands were supposed to be finished. Instead they packed out every 200-cap room in the country. We spent a summer on the floor to find out what actually changed.",
+      "featuredImage": {
+        "$asset": "feature-lead"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "For the better part of a decade the story about guitar music was that it was over — displaced, streamed into irrelevance, a heritage act at best. Then, quietly and then all at once, the small rooms started selling out again. Not stadiums. The 200-cap basements, the back rooms of pubs, the all-ages spaces that keep dying and keep coming back."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The room is the format"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "What these bands worked out is that the show is the product, and the recording is the flyer for it. You cannot stream the feeling of a floor going up at once, so they built everything around the thing that only happens in the room. The songs are shorter, louder and made to be shouted back. The merch table is the label. The whole economy runs on a night you had to be there for."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Loud is a decision"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "None of this is nostalgia, whatever the takes say. The bands filling these rooms grew up online and use every tool the internet gives them — they just point all of it at getting bodies into a space. The volume is the point. In a culture optimised to be consumed quietly, on a screen, at half speed, a band that insists you show up and get loud is making an argument, not just a noise."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We went to eleven of these shows across the summer. Every one of them sold out. Every one of them ended with a merch queue longer than the bar. Something is happening down there, and the industry is, as usual, the last to hear it."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "prestige-musical-shoots-a-song",
+    "status": "published",
+    "authorSlug": "theo-marsh",
+    "categories": ["Screen"],
+    "tags": ["Film", "Soundtracks"],
+    "body": {
+      "title": "The prestige musical finally learned how to shoot a song",
+      "excerpt": "For years the big-budget musical filmed its numbers like dialogue scenes with extra choreography. A new wave of directors is treating the song as the camera’s job, not the actor’s.",
+      "featuredImage": {
+        "$asset": "story-musical"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The knock on the modern movie musical was always the cutting. A number would start, the energy would build, and then the edit would chop it into a hundred tiny pieces, terrified of holding a shot long enough to let a body actually move. You could feel the fear of boredom in every cut, and it drained the one thing a musical has that nothing else does."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Let the take breathe"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The films getting it right now share a single instinct: hold the shot. Give the performer the whole phrase. Let the camera move with the music instead of cutting against it. It sounds obvious, and it is the hardest thing to sell to a nervous studio, because it means committing to a take that either works or very visibly does not. When it works, the screen does something a stage never can — it puts you inside the number."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The song is the story"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The better new directors treat a song as plot, not pause. The number is where the character decides something, and the staging carries that decision — a slow push in as the resolve lands, a wide shot the moment they commit. The music stops being a break from the story and becomes the most efficient way to tell it."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "It is a small craft revolution and an expensive one, and it is producing the first musicals in years that people leave humming instead of politely applauding. Turns out the format was never tired. It was just being shot by people who were scared of it."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "leaked-demo-sound-of-summer",
+    "status": "published",
+    "authorSlug": "nia-okonkwo",
+    "categories": ["Culture"],
+    "tags": ["Internet", "Discourse"],
+    "body": {
+      "title": "How a leaked demo became the sound of the summer",
+      "excerpt": "It was never released, never finished, and never officially acknowledged. It also soundtracked three months of everyone’s life. A story about how a song escapes its maker.",
+      "featuredImage": {
+        "$asset": "story-demo"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The track that defined this summer does not exist, technically. There is no single, no streaming link that stays up for more than a day, no video. There is a two-minute phone recording of a rough mix that got out of a session, and there is what the internet did with it, which was everything."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The song stops belonging to you"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The old anxiety about a leak was money — a lost release, a blown rollout. The new anxiety is authorship. The moment the demo got out, thousands of people finished it: sped it up, slowed it down, put it under clips, wrote verses for it, decided what it was about. By the time the artist could respond, the song was no longer theirs to define. It had become a shared object, and the original was just one version among tens of thousands."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Virality is not the same as a hit"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "It is tempting to call this a triumph of the algorithm, but that gets it backwards. The platforms did not choose this song; they noticed people had already chosen it, and turned up the tap. The distinction matters. A manufactured trend feels like being sold something. This felt like a rumour spreading — messy, participatory, impossible to buy. That is exactly why it worked, and exactly why it cannot be repeated on demand."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The artist has said almost nothing, which is probably the only sane move. Some songs you release. This one released itself, and the best you can do is get out of its way."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "reissue-machine-old-tapes-new-hits",
+    "status": "published",
+    "authorSlug": "jules-vega",
+    "categories": ["Music"],
+    "tags": ["Reissues", "Archives"],
+    "body": {
+      "title": "Inside the reissue machine turning old tapes into new hits",
+      "excerpt": "A generation of listeners is discovering records older than they are and treating them as brand new. Behind the scenes, a small industry is racing to feed the appetite.",
+      "featuredImage": {
+        "$asset": "story-reissue"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A song recorded before most of its current audience was born spent this year at the top of the charts. It is not the first, and it will not be the last. The catalogue — the deep, dusty back half of recorded music — has become the most reliable growth market in the business, and there is now a whole trade dedicated to mining it."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The archive is a warehouse"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Reissue labels operate like archaeologists with lawyers. They track down the masters, clear the rights, restore the tape, and time the release for the moment a placement or a clip sends a forgotten track back into the conversation. When it works, a record that earned nothing for thirty years becomes a catalogue asset worth pursuing all over again."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "New ears, no context"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "What makes this era different is that the listeners do not experience these songs as old. Stripped of the context that once dated them, a track from decades ago arrives with no baggage — just the sound. Younger audiences are not being nostalgic; they genuinely encountered it for the first time last week, next to a song released last week, and judged them on the same terms."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "There is something bracing in that. The canon is not a museum the young are being marched through. It is a pile of records they are digging through themselves, and keeping whatever still hits. The tape does not care how old it is. Neither, it turns out, do they."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "50-greatest-debut-albums-ranked",
+    "status": "published",
+    "authorSlug": "nia-okonkwo",
+    "categories": ["Lists"],
+    "tags": ["Ranked", "Albums"],
+    "body": {
+      "title": "The 50 greatest debut albums, ranked",
+      "excerpt": "The first record is the only one an artist makes before anyone is watching. We argued for a month about what makes a debut great, then ranked fifty of them.",
+      "featuredImage": {
+        "$asset": "story-list"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A debut album is a strange, singular thing: the only record an artist ever makes with no expectations, no audience, and nothing to lose. Everything after it is a response to being heard. The first one is made in private, and that shows — in the nerve, the mess, and the occasional flash of a fully-formed voice arriving from nowhere."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "How we ranked them"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We were not looking for the most influential records or the best careers. We were looking for the best first statements — albums that walked in the door already knowing exactly who they were, or albums so alive with the sound of a band figuring it out in real time that the uncertainty became the point. Longevity counted. So did nerve. A safe, competent debut lost every argument in the room to a flawed, fearless one."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What the great ones share"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The debuts near the top of this list have almost nothing in common on the surface — different decades, genres, budgets, ambitions. What they share is a refusal to hedge. None of them sound like an audition for a bigger record later. Each one sounds like the whole point, made by people who did not yet know they were allowed to hold anything back. That is the quality no second album can fake, and it is why the first one so often stays the best."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The full ranking runs below, counted down from fifty. We expect you to disagree with roughly half of it. That is the job — a list is not a verdict, it is the start of the argument. Tell us what we got wrong."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

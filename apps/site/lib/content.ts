@@ -10,6 +10,24 @@ import { resolveActivePropertySlug } from './site-context';
 
 const BASE_URL = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 
+/** A post's byline persona — present when the read `include`d the author relation
+ *  (the public storefront reads do). `avatar_asset_id` is a media id the storefront
+ *  resolves to a URL, like `featuredImage`. */
+export interface ApiEntryAuthor {
+  display_name: string;
+  slug: string;
+  bio: string | null;
+  avatar_asset_id: string | null;
+}
+
+/** One taxonomy term the entry is filed under. `taxonomy_key` (`blog_category` /
+ *  `blog_tag` by convention) lets a consumer split the flat list into a rubric + tags. */
+export interface ApiEntryTerm {
+  taxonomy_key: string;
+  name: string;
+  slug: string;
+}
+
 export interface ApiEntry<TBody = Record<string, unknown>> {
   id: string;
   type_key: string;
@@ -19,6 +37,10 @@ export interface ApiEntry<TBody = Record<string, unknown>> {
   seo: Record<string, unknown>;
   published_at: string | null;
   updated_at: string;
+  // Editorial relations — present on the public reads (absent on writes). Optional so
+  // a caller that predates them is unaffected.
+  author?: ApiEntryAuthor | null;
+  terms?: ApiEntryTerm[];
 }
 
 interface SuccessEnvelope<T> {

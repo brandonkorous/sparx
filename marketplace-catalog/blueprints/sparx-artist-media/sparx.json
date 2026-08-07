@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-artist-media",
+  "name": "sparx — Artist Media",
+  "version": "1.1.0",
+  "tagline": "A stage-dark artist-site template for a band that releases, tours and sells.",
+  "description": "A media-forward, stage-dark site for a recording artist or band — a poster-scale artist hero, a latest-release feature with streaming links, a tour-dates run, a live journal, and a bespoke article page, in a near-black theme with a vivid magenta accent. Modelled on the recording-artist archetype; shipped as Vela. Ships a light music + merch store (vinyl, a tee, a hoodie, a digital album) to demonstrate content + commerce together.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "content",
+    "industry": "Recording artist & band"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "commerce", "cms", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Artist Media icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Artist Media — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#f438a6",
+  "sortWeight": 100
+}

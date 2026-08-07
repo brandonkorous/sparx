@@ -28,7 +28,8 @@ import { notFound } from '@sparx/api-core/errors';
 import { prisma, withTenant } from '@sparx/db';
 import { isModuleEnabled } from '@sparx/auth';
 import { computeAvailability } from '@sparx/inventory';
-import { pricingService } from '@sparx/commerce';
+import { pricingService, productTypeService, projectProductAttributes } from '@sparx/commerce';
+import type { ProductTypeSchema as ProductTypeSchemaT } from '@sparx/commerce-schemas';
 import { searchProducts } from '@sparx/search';
 import {
   resolvePublicPropertyId,
@@ -799,7 +800,13 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
       ),
       isModuleEnabled(tenantId, 'inventory'),
     ]);
-    let list = rows.map((r) => mapFullProduct(r, inventoryActive));
+    // Batch-resolve every distinct product type in one query so each looped/pinned
+    // product projects its typed attributes (docs/143) without N round-trips.
+    const schemasByKey = await productTypeService.resolveSchemasByKey(
+      tenantId,
+      rows.map((r) => r.productTypeKey).filter((k): k is string => !!k)
+    );
+    let list = rows.map((r) => mapFullProduct(r, inventoryActive, undefined, schemasByKey));
     // Preserve the requested id order (Prisma's `in` does not guarantee it).
     if (ids) {
       const byId = new Map(list.map((p) => [p.id, p]));
@@ -873,7 +880,13 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
           .filter(([, cents], i) => cents !== result.variants[i]!.priceCents)
       );
     }
-    return ok(mapFullProduct(result, inventoryActive, yourPrices));
+    // Resolve the product's type schema (docs/143) so mapFullProduct can project
+    // its attribute bag into the labeled sections the PDP renders.
+    const schemasByKey = await productTypeService.resolveSchemasByKey(
+      tenantId,
+      result.productTypeKey ? [result.productTypeKey] : []
+    );
+    return ok(mapFullProduct(result, inventoryActive, yourPrices, schemasByKey));
   });
 
   // ─── Categories ────────────────────────────────────────────────────
@@ -1175,10 +1188,18 @@ function fullProductSelect(propertyId: string) {
     description: true,
     vendor: true,
     productType: true,
+    // Typed product type + attribute bag (docs/143) — resolved into `attributes`
+    // (keyed) + `attributeSections` (ordered) below, so the PDP binds real
+    // per-product detail sections instead of hardcoded copy.
+    productTypeKey: true,
+    attributes: true,
     tags: true,
     priceMinCents: true,
     priceMaxCents: true,
     inStock: true,
+    // Real low-stock signal (docs/143 §6.6) — powers the honest inventory badge
+    // that replaced the fabricated "Selling fast" scarcity block.
+    lowStock: true,
     averageRating: true,
     reviewCount: true,
     seoTitle: true,
@@ -1256,10 +1277,25 @@ type FullProductRow = Prisma.ProductGetPayload<{
 function mapFullProduct(
   result: FullProductRow,
   inventoryActive: boolean,
-  yourPrices?: Map<string, number>
+  yourPrices?: Map<string, number>,
+  schemasByKey?: Map<string, ProductTypeSchemaT>
 ) {
+  // Typed attributes (docs/143): resolve the product's type schema (batched by the
+  // caller) and project its stored bag into BOTH shapes the PDP binds — the keyed
+  // `attributes` for individual field binds and the ordered `attributeSections`
+  // for the auto-render repeat. No type / no schema → empty, and the PDP renders
+  // no attribute block (fully backward compatible).
+  const schema = result.productTypeKey ? schemasByKey?.get(result.productTypeKey) : undefined;
+  const projection = schema
+    ? projectProductAttributes(schema, (result.attributes ?? {}) as Record<string, unknown>)
+    : { attributes: {}, attributeSections: [] };
+
   return {
     ...publicProduct(result),
+    productTypeKey: result.productTypeKey,
+    attributes: projection.attributes,
+    attributeSections: projection.attributeSections,
+    lowStock: result.lowStock,
     fulfillmentType: result.fulfillmentType,
     weightGrams: result.weightGrams,
     dimensions:

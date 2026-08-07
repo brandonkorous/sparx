@@ -1,0 +1,72 @@
+[
+  {
+    "id": "hero",
+    "url": "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1400&q=80",
+    "alt": "A singer silhouetted against deep red stage light"
+  },
+  {
+    "id": "release-cover",
+    "url": "https://images.unsplash.com/photo-1483412033650-1015ddeb83d1?w=1400&q=80",
+    "alt": "A run of vinyl records fanned across a table"
+  },
+  {
+    "id": "post-studio",
+    "url": "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=1400&q=80",
+    "alt": "A studio mixing desk lit low"
+  },
+  {
+    "id": "post-single",
+    "url": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=1400&q=80",
+    "alt": "A crowd lit from the stage"
+  },
+  {
+    "id": "post-tour",
+    "url": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1400&q=80",
+    "alt": "A festival crowd at dusk"
+  },
+  {
+    "id": "post-behind",
+    "url": "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=1400&q=80",
+    "alt": "A band mid-performance on a dark stage"
+  },
+  {
+    "id": "post-collab",
+    "url": "https://images.unsplash.com/photo-1471478331149-c72f17e33c73?w=1400&q=80",
+    "alt": "A microphone under a single stage light"
+  },
+  {
+    "id": "author-vela",
+    "url": "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=1400&q=80",
+    "alt": "The band Vela, portrait"
+  },
+  {
+    "id": "author-mara",
+    "url": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=1400&q=80",
+    "alt": "Portrait of Mara Lindqvist"
+  },
+  {
+    "id": "author-theo",
+    "url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=1400&q=80",
+    "alt": "Portrait of Theo Vance"
+  },
+  {
+    "id": "prod-vinyl",
+    "url": "https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=1400&q=80",
+    "alt": "The Small Hours vinyl LP on a turntable"
+  },
+  {
+    "id": "prod-tee",
+    "url": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=1400&q=80",
+    "alt": "The Nightshift tour tee, folded"
+  },
+  {
+    "id": "prod-hoodie",
+    "url": "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=1400&q=80",
+    "alt": "The Vela logo hoodie"
+  },
+  {
+    "id": "prod-digital",
+    "url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1400&q=80",
+    "alt": "Neon-lit key art for the digital album"
+  }
+]

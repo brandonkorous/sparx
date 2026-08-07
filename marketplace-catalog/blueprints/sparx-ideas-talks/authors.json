@@ -1,0 +1,20 @@
+[
+  {
+    "slug": "ada-okonkwo",
+    "displayName": "Ada Okonkwo",
+    "bio": "Ada Okonkwo is a behavioural scientist who studies how people make decisions when there is more information than attention. She has spent fifteen years asking why doing less is so much harder than doing more.",
+    "avatarAssetId": "speaker-okonkwo"
+  },
+  {
+    "slug": "ren-castellano",
+    "displayName": "Ren Castellano",
+    "bio": "Ren Castellano is a naturalist and writer who works at the edges of cities, where the built world meets the living one. He is happiest explaining a river, a street or a season to anyone who will slow down long enough to hear it.",
+    "avatarAssetId": "speaker-castellano"
+  },
+  {
+    "slug": "mira-halvorsen",
+    "displayName": "Mira Halvorsen",
+    "bio": "Mira Halvorsen is a designer who builds things meant to outlast their makers — buildings, tools and institutions. She teaches that the first question of any design is who gets to use it in a hundred years.",
+    "avatarAssetId": "speaker-halvorsen"
+  }
+]

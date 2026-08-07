@@ -1,0 +1,20 @@
+[
+  {
+    "slug": "lena-ross",
+    "displayName": "Lena Ross",
+    "bio": "Lena Ross is a landscape and travel photographer who works in long light and cold air. She has spent the last decade photographing deserts and high passes across four continents, most often alone and on foot.",
+    "avatarAssetId": "author-ross"
+  },
+  {
+    "slug": "caleb-mora",
+    "displayName": "Caleb Mora",
+    "bio": "Caleb Mora is a wildlife and documentary photographer drawn to the edges — glaciers, tidelines, the last of a thing. He photographs slowly and returns to the same places for years to see what has changed.",
+    "avatarAssetId": "author-mora"
+  },
+  {
+    "slug": "sofia-nadeau",
+    "displayName": "Sofia Nadeau",
+    "bio": "Sofia Nadeau is a science writer and night-sky photographer. She reports on climate, ice and dark skies, and is happiest explaining a hard idea beside a picture that makes you want to understand it.",
+    "avatarAssetId": "author-nadeau"
+  }
+]

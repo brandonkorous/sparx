@@ -1,0 +1,67 @@
+[
+  {
+    "id": "feature-lead",
+    "url": "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1400&q=80",
+    "alt": "A festival crowd lit hot red under the stage lights"
+  },
+  {
+    "id": "story-basement",
+    "url": "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1400&q=80",
+    "alt": "A packed small-venue crowd close to the stage"
+  },
+  {
+    "id": "story-musical",
+    "url": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1400&q=80",
+    "alt": "An empty cinema auditorium lit in the dark"
+  },
+  {
+    "id": "story-demo",
+    "url": "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=1400&q=80",
+    "alt": "Hands riding faders on a studio mixing desk"
+  },
+  {
+    "id": "story-reissue",
+    "url": "https://images.unsplash.com/photo-1483412033650-1015ddeb83d1?w=1400&q=80",
+    "alt": "A stack of vinyl records fanned across a table"
+  },
+  {
+    "id": "story-list",
+    "url": "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=1400&q=80",
+    "alt": "An electric guitar leaning against a black wall"
+  },
+  {
+    "id": "author-vega",
+    "url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1400&q=80",
+    "alt": "Portrait of Jules Vega"
+  },
+  {
+    "id": "author-marsh",
+    "url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=1400&q=80",
+    "alt": "Portrait of Theo Marsh"
+  },
+  {
+    "id": "author-okonkwo",
+    "url": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1400&q=80",
+    "alt": "Portrait of Nia Okonkwo"
+  },
+  {
+    "id": "vinyl-lp",
+    "url": "https://images.unsplash.com/photo-1539375665275-f9de415ef9ac?w=1400&q=80",
+    "alt": "A vinyl LP half out of its sleeve"
+  },
+  {
+    "id": "tee",
+    "url": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=1400&q=80",
+    "alt": "A folded black cotton t-shirt"
+  },
+  {
+    "id": "poster",
+    "url": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1400&q=80",
+    "alt": "A printed gig poster on a wall"
+  },
+  {
+    "id": "tote",
+    "url": "https://images.unsplash.com/photo-1591561954557-26941169b49e?w=1400&q=80",
+    "alt": "A heavyweight canvas tote bag"
+  }
+]

@@ -59,6 +59,12 @@ export const GROUP_FACET: Record<string, string> = {
   sparx_convert: 'Get in touch',
   sparx_content: 'Writing',
   sparx_offer: 'Selling',
+  sparx_media: 'Video & maps',
+  // Added to unblock the suite: another in-flight change introduced the
+  // `sparx_publishing` group and this table is what fails when a group has no facet.
+  // Taken verbatim from that group's own label (17 chars, inside the 20-char cap) —
+  // if its author wants different browse wording, this is the line to change.
+  sparx_publishing: 'News and listings',
 };
 
 /** Section key → marketplace slug (`product_card` → `product-card`). */

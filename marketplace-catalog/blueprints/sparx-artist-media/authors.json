@@ -1,0 +1,20 @@
+[
+  {
+    "slug": "vela",
+    "displayName": "Vela",
+    "bio": "Vela is a four-piece who write songs for the small hours. Three records deep, self-produced and self-booked, still touring in a van they own.",
+    "avatarAssetId": "author-vela"
+  },
+  {
+    "slug": "mara-lindqvist",
+    "displayName": "Mara Lindqvist",
+    "bio": "Mara sings and writes for Vela. When she is not on stage she is usually the one behind the desk in the studio, or answering the fan mail at two in the morning.",
+    "avatarAssetId": "author-mara"
+  },
+  {
+    "slug": "theo-vance",
+    "displayName": "Theo Vance",
+    "bio": "Theo manages the band, routes the tours and keeps the van running. He writes the announcements so the band can keep writing the songs.",
+    "avatarAssetId": "author-theo"
+  }
+]

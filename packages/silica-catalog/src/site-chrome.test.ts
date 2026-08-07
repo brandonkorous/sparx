@@ -110,6 +110,14 @@ describe('hostCore — pinning is opt-out, and only the brand opts out', () => {
         HOST_KEYS.siteThemeToggle,
         HOST_KEYS.sitePagination,
         HOST_KEYS.siteLegalLinks,
+        // The two media cores are the clearest case the list has: a map and an embed are
+        // the TENANT'S OWN CONTENT, put there by them, and deleting one costs nothing but
+        // the thing they chose to add. They are host cores only because the engine's
+        // `Embed` frames three providers and nothing else, never to protect anything — so
+        // pinning one would leave an undeletable empty band on a page whose owner changed
+        // their mind.
+        HOST_KEYS.siteMap,
+        HOST_KEYS.siteEmbed,
       ].sort()
     );
   });

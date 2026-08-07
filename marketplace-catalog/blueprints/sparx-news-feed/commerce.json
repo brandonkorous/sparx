@@ -1,0 +1,152 @@
+{
+  "categories": [
+    {
+      "handle": "reports",
+      "name": "Reports",
+      "description": "Deep, sourced research.",
+      "featured": true
+    },
+    {
+      "handle": "books",
+      "name": "Books",
+      "description": "From the Frequency desk.",
+      "featured": true
+    },
+    {
+      "handle": "membership",
+      "name": "Membership",
+      "description": "Support the reporting.",
+      "featured": true
+    },
+    {
+      "handle": "merch",
+      "name": "Merch",
+      "description": "Carry the masthead.",
+      "featured": false
+    }
+  ],
+  "collections": [
+    {
+      "handle": "featured",
+      "name": "Featured",
+      "description": "What the desk is pointing at this week.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["ai-infrastructure-report", "the-signal-book", "frequency-membership"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "ai-infrastructure-report",
+      "title": "The State of AI Infrastructure 2026",
+      "description": "Our flagship annual report: who is building the data centres, what they cost, and where the power is coming from. 120 pages, fully sourced, with the underlying dataset.",
+      "status": "active",
+      "productType": "Report",
+      "vendor": "Frequency",
+      "tags": ["report", "ai", "infrastructure"],
+      "categoryHandles": ["reports"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "The State of AI Infrastructure 2026 — Frequency report",
+      "seoDescription": "A fully-sourced annual report on AI data centres, cost and power, with the dataset.",
+      "variants": [
+        {
+          "sku": "FRQ-REP-AI26",
+          "priceCents": 14900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "report-cover",
+          "isPrimary": true,
+          "alt": "The State of AI Infrastructure 2026 report"
+        }
+      ]
+    },
+    {
+      "handle": "the-signal-book",
+      "title": "The Signal — a field guide to hype",
+      "description": "A short, sharp book from the Frequency desk on how to tell a real technology shift from a funding-round press release. The reporting behind five years of the newsletter.",
+      "status": "active",
+      "productType": "Book",
+      "vendor": "Frequency",
+      "tags": ["book"],
+      "categoryHandles": ["books"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "The Signal — a field guide to hype | Frequency",
+      "seoDescription": "A short book on telling a real technology shift from a press release.",
+      "variants": [
+        {
+          "sku": "FRQ-BOOK-SIGNAL",
+          "priceCents": 2400,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "book-cover",
+          "isPrimary": true,
+          "alt": "The Signal, a hardback book"
+        }
+      ]
+    },
+    {
+      "handle": "frequency-membership",
+      "title": "Frequency Membership — annual",
+      "description": "The whole archive, every report, the members-only briefings, and the Saturday long read. The subscription that pays for the reporting and keeps it free of the companies we cover.",
+      "status": "active",
+      "productType": "Membership",
+      "vendor": "Frequency",
+      "tags": ["membership", "subscription"],
+      "categoryHandles": ["membership"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "Frequency Membership — annual subscription",
+      "seoDescription": "Annual membership: the full archive, every report, members-only briefings.",
+      "variants": [
+        {
+          "sku": "FRQ-MEM-ANNUAL",
+          "priceCents": 12000,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "membership",
+          "isPrimary": true,
+          "alt": "A reader at a laptop"
+        }
+      ]
+    },
+    {
+      "handle": "frequency-tote",
+      "title": "Frequency Tote",
+      "description": "A heavyweight canvas tote with the masthead printed small on the side. Carries a laptop, a notebook, and roughly a week of unread reports.",
+      "status": "active",
+      "productType": "Merch",
+      "vendor": "Frequency",
+      "tags": ["merch", "tote"],
+      "categoryHandles": ["merch"],
+      "collectionHandles": [],
+      "seoTitle": "Frequency Tote — heavyweight canvas tote",
+      "seoDescription": "A heavyweight canvas tote with the Frequency masthead.",
+      "variants": [
+        {
+          "sku": "FRQ-TOTE",
+          "priceCents": 2800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "tote-bag",
+          "isPrimary": true,
+          "alt": "The Frequency canvas tote"
+        }
+      ]
+    }
+  ]
+}

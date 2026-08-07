@@ -29,7 +29,15 @@ import { PLACEHOLDER_IMAGE } from './placeholder';
 /** The record fields the storefront projects for a post (`postToBuilderRecord`):
  *  `title`, `excerpt`, `date`, `featuredImage:{url,alt}`, and `body` — which is a
  *  rich-text DOCUMENT, not a string, and therefore renders through the pinned
- *  `cms.article-body` core rather than a binding. */
+ *  `cms.article-body` core rather than a binding.
+ *
+ *  Also projected (from the author + taxonomy relations the public reads now
+ *  `include`): the BYLINE — `authorName`, `authorAvatar:{url,alt}`, `authorBio`,
+ *  `category`, `categorySlug`, and `tags:string[]` — the rubric/byline/tags a
+ *  WordPress-style publisher template binds. Empty for a post with no author or
+ *  terms, so a bound byline degrades to nothing rather than erroring. The default
+ *  templates below don't bind them yet (an empty bind would blank an authored line);
+ *  a template that wants a byline gates it with `visibleWhen('authorName')`. */
 
 /** The post's masthead — the back-link, date, headline, and the excerpt as a lede.
  *

@@ -27,6 +27,12 @@ import {
   defaultSilicaFormat,
 } from '../../../packages/builder-schemas/src/silica-resolve';
 import { buildSilicaThemeCssFromTheme } from '../../../packages/site-themes/src/v2/silica-css';
+// Typed attributes (docs/143): derive the SAME `attributeSections` the live PDP renders,
+// so the preview + screenshot show a product's real detail blocks — not the DB, but the
+// exact projection. Both imports are runtime-safe (their only internal imports are
+// type-only), so the no-node_modules preview harness resolves them from source.
+import { BUILT_IN_PRODUCT_TYPES } from '../../../packages/commerce-schemas/src/product-types/builtins/index';
+import { projectProductAttributes } from '../../../packages/commerce/src/services/attribute-projection';
 
 import { composeTemplateSite, faces, type TemplateSiteSpec } from './harness';
 
@@ -59,9 +65,15 @@ interface PvProduct {
   title: string;
   description: string;
   categoryHandles?: string[];
+  productTypeKey?: string;
+  attributes?: Record<string, unknown>;
   variants: PvVariant[];
   images: PvImage[];
 }
+
+// Resolve a product type's attribute schema from the built-in set (the templates use
+// built-in keys). A custom key the preview doesn't know simply projects to no sections.
+const SCHEMA_BY_KEY = new Map(BUILT_IN_PRODUCT_TYPES.map((t) => [t.key, t.attributeSchema]));
 interface PvCollection {
   handle: string;
   featured?: boolean;
@@ -108,6 +120,13 @@ function buildSampleHost(spec: TemplateSiteSpec) {
   const productOf = (p: PvProduct) => {
     const def = p.variants.find((v) => v.isDefault) ?? p.variants[0]!;
     const primary = p.images.find((i) => i.isPrimary) ?? p.images[0]!;
+    // Project the product's typed attribute bag into the two shapes the PDP binds —
+    // exactly as api-rest's mapFullProduct does live — so the preview shows real
+    // fabric/care/spec sections instead of an empty attribute block.
+    const schema = p.productTypeKey ? SCHEMA_BY_KEY.get(p.productTypeKey) : undefined;
+    const projection = schema
+      ? projectProductAttributes(schema, (p.attributes ?? {}) as Record<string, unknown>)
+      : { attributes: {}, attributeSections: [] };
     return {
       id: p.handle,
       handle: p.handle,
@@ -118,6 +137,11 @@ function buildSampleHost(spec: TemplateSiteSpec) {
       image: { url: assetUrl(primary.assetId), alt: primary.title ?? p.title },
       variantId: def.sku,
       url: `/products/${p.handle}`,
+      attributes: projection.attributes,
+      attributeSections: projection.attributeSections,
+      // Show the low-stock badge on the first sample product so the preview exercises it.
+      inStock: true,
+      lowStock: p.handle === commerce.products[0]?.handle,
     };
   };
 
@@ -205,24 +229,18 @@ function runTailwind(
 }
 
 /** Compile the Tailwind + silicaui CSS the rendered home markup needs, self-contained.
- *  Runs the workspace's own Tailwind v4 CLI over a temp input that scans the rendered HTML
- *  + the catalog sources. All temp paths are keyed by `slug` so parallel generators can't
- *  collide. */
+ *  Runs the workspace's own Tailwind v4 compiler over a temp input that scans the rendered
+ *  HTML + the catalog sources. All temp paths are keyed by `slug` so parallel generators
+ *  can't collide.
+ *
+ *  The compile runs in `tailwind-compile.mjs` (a child process, so this stays synchronous)
+ *  rather than `@tailwindcss/cli` — that package left the workspace with `packages/site-ui`
+ *  and took every template's preview step with it. See that file's header. */
 function compilePreviewCss(slug: string, bodyHtml: string, scratchDir: string): string {
   const bodyPath = join(scratchDir, `preview-${slug}.body.html`);
   const inputPath = join(repoRoot, 'apps', 'site', `_preview-${slug}.css`);
   const outPath = join(scratchDir, `preview-${slug}.util.css`);
-  const cli = join(
-    repoRoot,
-    'node_modules',
-    '.pnpm',
-    '@tailwindcss+cli@4.3.0',
-    'node_modules',
-    '@tailwindcss',
-    'cli',
-    'dist',
-    'index.mjs'
-  );
+  const cli = join(here, 'tailwind-compile.mjs');
   const input = `@import 'tailwindcss';
 @plugin '@wizeworks/silicaui' {
   colors: primary, secondary, accent, neutral, info, success, warning, error, danger, highlight;

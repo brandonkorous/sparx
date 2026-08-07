@@ -1,0 +1,20 @@
+[
+  {
+    "slug": "mara-reyes",
+    "displayName": "Mara Reyes",
+    "bio": "Mara Reyes founded Launch Notes and still writes most of the big release posts herself. She cares about shipping small, shipping often, and telling you the truth about what is and is not ready.",
+    "avatarAssetId": "author-reyes"
+  },
+  {
+    "slug": "daniel-okafor",
+    "displayName": "Daniel Okafor",
+    "bio": "Daniel Okafor leads product design at the studio. He writes the dev diaries and the guides, usually the week after he has finally figured the thing out himself.",
+    "avatarAssetId": "author-okafor"
+  },
+  {
+    "slug": "sofia-lindqvist",
+    "displayName": "Sofia Lindqvist",
+    "bio": "Sofia Lindqvist runs hardware at Launch Notes — the Deck, the Dock, and everything with a battery in it. She writes the firmware notes and the unboxing posts.",
+    "avatarAssetId": "author-lindqvist"
+  }
+]

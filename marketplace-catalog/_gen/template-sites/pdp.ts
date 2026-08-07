@@ -109,6 +109,110 @@ export function pdpBoundLine(className: string, key = 'description'): Node {
   return bind(el('p', className, { text: '' }), key);
 }
 
+// ── Typed attributes (docs/143) ─────────────────────────────────────────────────
+//
+// THE FIX for the hardcoded PDP. Every template used to bake per-product copy — a cap's
+// "Fabric & construction", a jacket's "Care" — as STATIC strings, byte-identical on every
+// product. There was no per-product field to bind to. Now a product carries a typed
+// `attributeSections` list (its product type's fields, filled per product), and this kit
+// repeats over it: one labeled section per attribute, resolved from the routed product.
+// No field keys are named here — a template renders whatever its products' TYPE defines,
+// which is the whole point (a cap's care ≠ a jacket's care ≠ coffee's origin).
+
+/**
+ * The product's typed attribute sections — the labeled detail blocks that replaced the
+ * hardcoded `pdpDetail(label, body)` stack. Repeats over the routed product's
+ * `attributeSections` (ordered by the type's field order):
+ *
+ *   - a SCALAR attribute (fabric, care, origin, size…) renders its `value` text.
+ *   - a REPEATER attribute (materials, specs, nutrition…) renders a sub-repeat of
+ *     `items` — one `label / value` row each — since its section `value` is empty.
+ *
+ * `visibleWhen('value')` hides the scalar block for a repeater section, and the whole
+ * block is `visibleWhen('attributeSections')` so an untyped product (no sections) renders
+ * NOTHING — a clean empty state, never an empty heading. Classes are the whole visual
+ * decision; the binds stay correct.
+ */
+export function pdpAttributes(opts: {
+  containerClass?: string;
+  sectionClass?: string;
+  labelTag?: 'h2' | 'h3' | 'h4';
+  labelClass: string;
+  valueClass: string;
+  rowsClass?: string;
+  rowClass?: string;
+  rowLabelClass?: string;
+  rowValueClass?: string;
+}): Node {
+  const section = el('div', opts.sectionClass ?? 'flex flex-col gap-2', {
+    children: [
+      bind(el(opts.labelTag ?? 'h3', opts.labelClass, { text: 'Section' }), 'label'),
+      // Scalar value — dropped for a repeater section (its `value` is '').
+      visibleWhen(bind(el('div', opts.valueClass, { text: '' }), 'value'), 'value'),
+      // Repeater rows — an empty list for a scalar section, so this renders nothing there.
+      repeat(
+        el('div', opts.rowClass ?? 'flex items-baseline justify-between gap-4', {
+          children: [
+            bind(el('span', opts.rowLabelClass ?? '', { text: '' }), 'label'),
+            bind(el('span', opts.rowValueClass ?? '', { text: '' }), 'value'),
+          ],
+        }),
+        'items'
+      ),
+    ],
+  });
+  return visibleWhen(
+    el('div', opts.containerClass ?? 'flex flex-col gap-6', {
+      children: [repeat(section, 'attributeSections')],
+    }),
+    'attributeSections'
+  );
+}
+
+/**
+ * The shipping/returns trust line — LINKS to the site's real legal pages instead of
+ * reprinting a policy the template can't possibly know. `/shipping-policy` and
+ * `/returns-policy` are the canonical legal slugs (@sparx/legal-templates `LegalKind`
+ * shipping / returns). No fabricated copy: a policy is authored once, in the legal page,
+ * and every PDP points at it.
+ */
+export function pdpPolicyLinks(opts: {
+  className?: string;
+  linkClass?: string;
+  shippingLabel?: string;
+  returnsLabel?: string;
+}): Node {
+  return el('div', opts.className ?? 'flex flex-wrap items-center gap-x-6 gap-y-2 text-sm', {
+    children: [
+      el('a', opts.linkClass ?? 'underline underline-offset-4', {
+        text: opts.shippingLabel ?? 'Shipping & delivery',
+        attrs: { href: '/shipping-policy' },
+      }),
+      el('a', opts.linkClass ?? 'underline underline-offset-4', {
+        text: opts.returnsLabel ?? 'Returns & refunds',
+        attrs: { href: '/returns-policy' },
+      }),
+    ],
+  });
+}
+
+/**
+ * A real low-stock badge — bound to the product's inventory, shown ONLY when stock is
+ * genuinely at/below its reorder point (`visibleWhen('lowStock')`). This replaced the
+ * fabricated "Selling fast" block + fake countdown that some templates invented: scarcity
+ * that isn't real is a lie to the shopper. When stock is healthy it renders nothing.
+ * The label is static ("Low stock") — an honest signal, not a bound number, so it never
+ * leaks exact inventory. Classes carry the whole look (a Badge atom or a styled span).
+ */
+export function pdpStockBadge(opts: { className?: string; label?: string }): Node {
+  return visibleWhen(
+    el('span', opts.className ?? 'inline-flex items-center gap-2 text-sm font-medium', {
+      text: opts.label ?? 'Low stock',
+    }),
+    'lowStock'
+  );
+}
+
 // ── Page assembly ─────────────────────────────────────────────────────────────
 
 /**

@@ -1,0 +1,150 @@
+{
+  "categories": [
+    {
+      "handle": "subscriptions",
+      "name": "Membership",
+      "description": "Fund the magazine.",
+      "featured": true
+    },
+    {
+      "handle": "books",
+      "name": "Books",
+      "description": "Anthologies and collections.",
+      "featured": true
+    },
+    {
+      "handle": "merch",
+      "name": "Merch",
+      "description": "Carry the masthead.",
+      "featured": false
+    }
+  ],
+  "collections": [
+    {
+      "handle": "featured",
+      "name": "Featured",
+      "description": "What the editors are pointing at this season.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "meridian-quarterly-membership",
+        "the-long-view-anthology",
+        "the-fiction-issue"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "handle": "meridian-quarterly-membership",
+      "title": "The Meridian Quarterly — annual membership",
+      "description": "Four printed issues a year, delivered, plus everything on the site and the full archive. The membership that pays a writer to spend a month on an essay and lets us hold it until it is ready. This is how the magazine is funded — there is no advertiser behind it.",
+      "status": "active",
+      "productType": "Membership",
+      "vendor": "The Meridian",
+      "tags": ["membership", "subscription", "print"],
+      "categoryHandles": ["subscriptions"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "The Meridian Quarterly — annual print membership",
+      "seoDescription": "Four printed issues a year plus the full archive online. Reader-funded essays, reporting, fiction and criticism.",
+      "variants": [
+        {
+          "sku": "MER-MEM-ANNUAL",
+          "priceCents": 9600,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "quarterly-cover",
+          "isPrimary": true,
+          "alt": "The Meridian Quarterly, printed issue"
+        }
+      ]
+    },
+    {
+      "handle": "the-long-view-anthology",
+      "title": "The Long View — ten years of The Meridian",
+      "description": "A hardback anthology: thirty of the essays, stories and pieces of reporting that defined the magazine’s first decade, chosen by the editors and introduced by the people who wrote them. 464 pages, sewn binding, made to be kept.",
+      "status": "active",
+      "productType": "Book",
+      "vendor": "The Meridian",
+      "tags": ["book", "anthology"],
+      "categoryHandles": ["books"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "The Long View — a ten-year Meridian anthology",
+      "seoDescription": "A hardback anthology of thirty essays, stories and reports from the magazine’s first decade.",
+      "variants": [
+        {
+          "sku": "MER-BOOK-LONGVIEW",
+          "priceCents": 3800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "anthology-cover",
+          "isPrimary": true,
+          "alt": "The Long View, a hardback anthology"
+        }
+      ]
+    },
+    {
+      "handle": "the-fiction-issue",
+      "title": "The Fiction Issue — collected",
+      "description": "A slim paperback gathering the best short stories we have published, including three that were never online. A single evening of new fiction, on paper, the way it reads best.",
+      "status": "active",
+      "productType": "Book",
+      "vendor": "The Meridian",
+      "tags": ["book", "fiction"],
+      "categoryHandles": ["books"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "The Fiction Issue — collected short stories | The Meridian",
+      "seoDescription": "A paperback of the best short fiction from The Meridian, three of them never published online.",
+      "variants": [
+        {
+          "sku": "MER-BOOK-FICTION",
+          "priceCents": 1900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "reader-edition",
+          "isPrimary": true,
+          "alt": "The Fiction Issue, a paperback collection"
+        }
+      ]
+    },
+    {
+      "handle": "meridian-tote",
+      "title": "The Meridian Tote",
+      "description": "A heavyweight natural-canvas tote with the masthead printed small on the side. Sized for a hardback, a notebook, and the two issues you keep meaning to finish.",
+      "status": "active",
+      "productType": "Merch",
+      "vendor": "The Meridian",
+      "tags": ["merch", "tote"],
+      "categoryHandles": ["merch"],
+      "collectionHandles": [],
+      "seoTitle": "The Meridian Tote — heavyweight canvas tote",
+      "seoDescription": "A heavyweight natural-canvas tote with the Meridian masthead.",
+      "variants": [
+        {
+          "sku": "MER-TOTE",
+          "priceCents": 2600,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "tote-bag",
+          "isPrimary": true,
+          "alt": "The Meridian canvas tote"
+        }
+      ]
+    }
+  ]
+}

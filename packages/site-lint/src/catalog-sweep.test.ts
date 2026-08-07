@@ -24,18 +24,23 @@
 
 import { describe, expect, it } from 'vitest';
 import type { Node as SilicaNode, Theme } from '@wizeworks/silicaui-html';
-import { SPARX_CATALOG, SPARX_THEMES, TEMPLATE_THEMES } from '@sparx/silica-catalog';
+import {
+  SPARX_CATALOG,
+  SPARX_THEMES,
+  TEMPLATE_THEMES,
+  CONTENT_THEMES,
+} from '@sparx/silica-catalog';
 
 import { lintSite } from './lint';
 import type { LintablePage, SiteLintReport } from './types';
 
 // Every theme a stamped section can end up living under: the general trade shelf a
-// business picks from (`SPARX_THEMES`) AND the ten bespoke looks the reference-driven
-// templates ship with (`TEMPLATE_THEMES`). The overlay sections in particular are
-// authored FOR the templates, so a contrast pair that is fine on the shelves and breaks
-// under `roastery`'s terracotta or `flux`'s dark page would ship the exact bug this
-// sweep exists to catch. One list, swept identically.
-const ALL_THEMES: Theme[] = [...SPARX_THEMES, ...TEMPLATE_THEMES];
+// business picks from (`SPARX_THEMES`), the ten bespoke commerce looks (`TEMPLATE_THEMES`)
+// AND the ten bespoke content looks (`CONTENT_THEMES`). The overlay sections in particular
+// are authored FOR the templates, so a contrast pair that is fine on the shelves and breaks
+// under `roastery`'s terracotta, `flux`'s dark page, or `amplitude`'s / `amp`'s dark neon
+// grounds would ship the exact bug this sweep exists to catch. One list, swept identically.
+const ALL_THEMES: Theme[] = [...SPARX_THEMES, ...TEMPLATE_THEMES, ...CONTENT_THEMES];
 
 /** Every palette item in the platform library, flattened once. */
 const ITEMS = SPARX_CATALOG.flatMap((group) =>

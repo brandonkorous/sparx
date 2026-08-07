@@ -1,0 +1,82 @@
+[
+  {
+    "id": "hero-atacama",
+    "url": "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1600&q=80",
+    "alt": "A desert mountain range glowing at first light"
+  },
+  {
+    "id": "essay-road",
+    "url": "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=1600&q=80",
+    "alt": "A switchback road climbing a green mountainside"
+  },
+  {
+    "id": "essay-falls",
+    "url": "https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=1600&q=80",
+    "alt": "A waterfall in long exposure over dark rock"
+  },
+  {
+    "id": "essay-forest",
+    "url": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1600&q=80",
+    "alt": "Fog drifting through a valley of pines"
+  },
+  {
+    "id": "post-atacama",
+    "url": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1600&q=80",
+    "alt": "A still lake mirroring a snow-capped range"
+  },
+  {
+    "id": "post-glacier",
+    "url": "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=1600&q=80",
+    "alt": "A cabin beside an alpine lake below snow peaks"
+  },
+  {
+    "id": "post-ice-cores",
+    "url": "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=1600&q=80",
+    "alt": "A lone figure beneath a green aurora"
+  },
+  {
+    "id": "post-milky-way",
+    "url": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600&q=80",
+    "alt": "The Milky Way arcing over a dark sky"
+  },
+  {
+    "id": "post-kyushu",
+    "url": "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=1600&q=80",
+    "alt": "Terraced green hills under soft cloud"
+  },
+  {
+    "id": "author-ross",
+    "url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1600&q=80",
+    "alt": "Portrait of Lena Ross"
+  },
+  {
+    "id": "author-mora",
+    "url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=1600&q=80",
+    "alt": "Portrait of Caleb Mora"
+  },
+  {
+    "id": "author-nadeau",
+    "url": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1600&q=80",
+    "alt": "Portrait of Sofia Nadeau"
+  },
+  {
+    "id": "print-atacama",
+    "url": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=80",
+    "alt": "A fine-art print of a mountain lake at dawn"
+  },
+  {
+    "id": "print-glacier",
+    "url": "https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=1600&q=80",
+    "alt": "A fine-art print of a green glacial valley"
+  },
+  {
+    "id": "gear-bag",
+    "url": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1600&q=80",
+    "alt": "A weatherproof camera field bag"
+  },
+  {
+    "id": "book-latitudes",
+    "url": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1600&q=80",
+    "alt": "A hardback photobook on a table"
+  }
+]

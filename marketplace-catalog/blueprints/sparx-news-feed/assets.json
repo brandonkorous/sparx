@@ -1,0 +1,82 @@
+[
+  {
+    "id": "lead-story",
+    "url": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1400&q=80",
+    "alt": "A dense server room lit blue"
+  },
+  {
+    "id": "story-chips",
+    "url": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1400&q=80",
+    "alt": "A close-up of a silicon wafer"
+  },
+  {
+    "id": "story-grid",
+    "url": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1400&q=80",
+    "alt": "A national power grid at night"
+  },
+  {
+    "id": "story-code",
+    "url": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1400&q=80",
+    "alt": "Source code on a dark screen"
+  },
+  {
+    "id": "story-office",
+    "url": "https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=1400&q=80",
+    "alt": "A startup team at work"
+  },
+  {
+    "id": "story-climate",
+    "url": "https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=1400&q=80",
+    "alt": "A wind farm on a green hillside"
+  },
+  {
+    "id": "story-policy",
+    "url": "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=1400&q=80",
+    "alt": "A government building colonnade"
+  },
+  {
+    "id": "story-robot",
+    "url": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1400&q=80",
+    "alt": "A robotic arm on a factory line"
+  },
+  {
+    "id": "events-hall",
+    "url": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1400&q=80",
+    "alt": "A conference audience in a dim hall"
+  },
+  {
+    "id": "author-ruiz",
+    "url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1400&q=80",
+    "alt": "Portrait of Dana Ruiz"
+  },
+  {
+    "id": "author-bell",
+    "url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=1400&q=80",
+    "alt": "Portrait of Marcus Bell"
+  },
+  {
+    "id": "author-anand",
+    "url": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1400&q=80",
+    "alt": "Portrait of Priya Anand"
+  },
+  {
+    "id": "report-cover",
+    "url": "https://images.unsplash.com/photo-1543286386-713bdd548da4?w=1400&q=80",
+    "alt": "The cover of a research report"
+  },
+  {
+    "id": "book-cover",
+    "url": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1400&q=80",
+    "alt": "A hardback book on a desk"
+  },
+  {
+    "id": "membership",
+    "url": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1400&q=80",
+    "alt": "A reader at a laptop"
+  },
+  {
+    "id": "tote-bag",
+    "url": "https://images.unsplash.com/photo-1591561954557-26941169b49e?w=1400&q=80",
+    "alt": "A canvas tote bag"
+  }
+]

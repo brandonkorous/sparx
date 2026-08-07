@@ -127,6 +127,8 @@ export type LintRuleId =
   // Images
   | 'image-no-source'
   | 'image-no-description'
+  // Embeds (video / map / anything else framed from another site)
+  | 'embed-no-source'
   // Headings
   | 'heading-missing'
   | 'heading-multiple-top'

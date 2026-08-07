@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "061044a7-0ee9-4dd0-87f6-6fd167274b23",
+                  "id": "8bb4920a-6d29-4d52-b97b-eefcde530721",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "3de1bdfa-0b07-4e5d-889d-e7681324f083",
+                      "id": "d22b940d-1099-4c2a-9cc5-83d5db5c6c1a",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "ebede154-d22c-464c-b4aa-81286d2de36e",
+                      "id": "8256d3ad-9b7d-460f-8a09-22a2c08ecc82",
                       "ord": "a1"
                     },
                     {
@@ -75,7 +75,7 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "d5fcd930-6831-4fef-b86a-4fdfb360e485",
+                      "id": "de83c4b4-d22e-4135-879d-ac80c9693ed8",
                       "ord": "a2"
                     },
                     {
@@ -91,11 +91,11 @@
                         "type": "link",
                         "label": "Company"
                       },
-                      "id": "8a322fcb-4f3c-4b4e-911b-f50bad526e1f",
+                      "id": "967f875c-6c3c-442d-9b6a-e2d2269edd99",
                       "ord": "a3"
                     }
                   ],
-                  "id": "32ae20c8-300c-4c4d-9b15-2060b81b2e99",
+                  "id": "30c6c62c-184a-40e7-b275-91637ca7952a",
                   "ord": "a1"
                 },
                 {
@@ -116,14 +116,14 @@
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "425c651d-5994-4827-b62d-a20f793a3955",
+                      "id": "e10eb12d-419a-4e1f-bdb6-120d5d1305b0",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "88eb9181-5730-4089-bb23-9663dd29ea33",
+                      "id": "672d7c31-6705-4100-9e82-0f7dd474906e",
                       "ord": "a1"
                     },
                     {
@@ -141,20 +141,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "82c12597-5275-4a43-8312-3f9c58c685c2",
+                          "id": "f53a3d1a-2a3e-49cc-acc6-650be4abd52a",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "8aeebc9d-a2bf-4202-b41f-dfac43a9586a",
+                      "id": "ed84f55e-dab4-4675-8b49-50959c12233b",
                       "ord": "a2"
                     }
                   ],
-                  "id": "b8efb4db-cf09-47ba-96dd-b061416a9f6e",
+                  "id": "37f35950-d676-465d-b80b-e1d4ad3289e3",
                   "ord": "a2"
                 }
               ],
-              "id": "2da7cbdc-bb43-4579-adba-48e4be1e0a56",
+              "id": "a7dbd317-cac1-4d41-82b3-01599c145405",
               "ord": "a0"
             },
             {
@@ -178,7 +178,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "e8c8ab7e-2eb8-49a4-b531-5c6a21df75d9",
+                  "id": "d46bd89b-b657-4f3e-81cd-29c202654918",
                   "ord": "a0"
                 },
                 {
@@ -194,7 +194,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "5d6228b5-6aec-4e4e-a09b-1003adf0cbd5",
+                  "id": "b09d36b7-9f82-4f52-a8aa-a8d114828ab2",
                   "ord": "a1"
                 },
                 {
@@ -210,7 +210,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "7593436f-ffcb-47d7-b336-c0fcfc5c3f85",
+                  "id": "09ec4837-cfd8-4a04-adcb-757d85c052c4",
                   "ord": "a2"
                 },
                 {
@@ -226,7 +226,7 @@
                     "type": "link",
                     "label": "Company"
                   },
-                  "id": "cd0017ef-c149-4e76-810b-83da970c5942",
+                  "id": "ce24967e-be56-44b3-b68d-a959d6fbe642",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +242,19 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "3e31032f-b099-4e22-86b8-dd0d0ba1a332",
+                  "id": "04937417-e37e-4bb1-87e7-7d1988337c71",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "97fdf7c6-0d7d-4bfd-92d4-27ce02c7e4f3",
+              "id": "03e80bf7-f12f-44cb-900c-0b4fd6db7b02",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "11f53387-713a-42d4-bc33-9e59758700b7",
+          "id": "75354095-3c7f-45f6-aa2e-d8ec71617560",
           "ord": "a0"
         },
         {
@@ -270,7 +270,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "8c553e6a-1980-4152-890e-6117d03e3ebf",
+          "id": "098d2323-132c-49a6-8306-44135d2c55e6",
           "ord": "a1"
         },
         {
@@ -300,7 +300,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "14764ba3-8a9c-4545-8e50-56ac66e4720e",
+                          "id": "3f1e01da-1a7f-45ad-8826-291211b963b0",
                           "ord": "a0"
                         },
                         {
@@ -318,7 +318,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "9cc6b9a7-79fb-488f-bab0-e016a0042b6c",
+                          "id": "4b06e703-cc53-42e9-82c8-c302c888ec84",
                           "ord": "a1"
                         },
                         {
@@ -339,7 +339,7 @@
                                 "placeholder": "you@example.com",
                                 "required": true
                               },
-                              "id": "c19f76bb-6c2c-4dee-99a3-8270224aaa4f",
+                              "id": "24b11a95-09e9-4372-a4a5-ad802b845f12",
                               "ord": "a0"
                             },
                             {
@@ -355,11 +355,11 @@
                                 "type": "text",
                                 "label": "Button label"
                               },
-                              "id": "48fd9fb8-61db-49dd-923f-f6cbea1cb73a",
+                              "id": "58546344-3e6a-4323-9b36-9cfb8045c90c",
                               "ord": "a1"
                             }
                           ],
-                          "id": "ce63a975-15ba-4c32-8f9d-a16ff3de81d7",
+                          "id": "e767a176-71ac-46db-8b68-fa4a24e4c628",
                           "ord": "a2"
                         },
                         {
@@ -372,11 +372,11 @@
                             "type": "text",
                             "label": "Reassurance line"
                           },
-                          "id": "beac3a0d-0c1c-4a83-86e7-1264e3924433",
+                          "id": "a3c0cdfd-abf4-451e-805c-c1f0ded43359",
                           "ord": "a3"
                         }
                       ],
-                      "id": "ed5a183b-7397-4c80-bb42-3ee751d4e28f",
+                      "id": "5fc52677-5e38-4c93-b3b4-758fb59788dd",
                       "ord": "a0"
                     },
                     {
@@ -402,7 +402,7 @@
                               "attrs": {
                                 "href": "/"
                               },
-                              "id": "7f17856a-bc3e-404e-b06c-4de08bb5e346",
+                              "id": "ca63bd29-e08f-4045-836d-bb24aeef3084",
                               "ord": "a0"
                             },
                             {
@@ -427,11 +427,11 @@
                                         "type": "link",
                                         "label": "Features"
                                       },
-                                      "id": "8530173e-763a-434b-996d-97f5a946d1ed",
+                                      "id": "1fb2a2b2-1325-44f7-bc00-e89d8ae28309",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "cf186b45-1fb5-4d19-ad33-1f0c5789f85c",
+                                  "id": "37a435dc-e44e-45a1-ae19-dbc1a5afdaee",
                                   "ord": "a0"
                                 },
                                 {
@@ -451,11 +451,11 @@
                                         "type": "link",
                                         "label": "Pricing"
                                       },
-                                      "id": "5511aa15-4655-47ff-8397-c05f72ccfd85",
+                                      "id": "79b220fe-1253-426e-b16c-96760e6ad417",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "dd0f7ac6-fbfb-4e44-8eb3-31cc57c2e5e4",
+                                  "id": "3ab95e84-0128-4681-bd03-0b129b3f0fe5",
                                   "ord": "a1"
                                 },
                                 {
@@ -475,11 +475,11 @@
                                         "type": "link",
                                         "label": "Changelog"
                                       },
-                                      "id": "b0f67486-fa91-47b6-9f59-fe9165d7fa9f",
+                                      "id": "da91dc49-e72a-46cf-88fd-0c2ce41b7f31",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "3877c9dc-b388-40cc-99de-12b64fb19552",
+                                  "id": "eb3ec31c-18b4-4878-b151-c2202479e88e",
                                   "ord": "a2"
                                 },
                                 {
@@ -499,11 +499,11 @@
                                         "type": "link",
                                         "label": "Roadmap"
                                       },
-                                      "id": "ab0cac57-e0cc-4adb-b72d-a7a1a892ac78",
+                                      "id": "278e9af0-493a-4bf6-92fc-74d161e76fce",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "a760b9e0-a1f5-4cf4-b62b-990e79773c5d",
+                                  "id": "e4fab82d-511d-441c-9bc3-00d9177d614c",
                                   "ord": "a3"
                                 },
                                 {
@@ -518,19 +518,19 @@
                                         "href": "/search"
                                       },
                                       "children": ["Search"],
-                                      "id": "b37d41f1-375f-465b-8ba1-a329320e9d20",
+                                      "id": "cb26e458-b4a3-4d60-ab77-508ac48b2188",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "8402e6ce-2a98-45f2-baa2-bf0a69c98e01",
+                                  "id": "b2b29ed6-8f6d-4cc6-94f3-e2bf0f08b9c7",
                                   "ord": "a4"
                                 }
                               ],
-                              "id": "fe111c73-2fcb-4780-92c8-2d7a88f74850",
+                              "id": "7ee0a049-81b2-4749-b657-7295af045b87",
                               "ord": "a1"
                             }
                           ],
-                          "id": "e5c243ac-e1f2-4f1a-aa8b-91d083102b54",
+                          "id": "6ff38502-5e2c-4a5f-b233-2f784299892b",
                           "ord": "a0"
                         },
                         {
@@ -551,7 +551,7 @@
                               "attrs": {
                                 "href": "/account"
                               },
-                              "id": "b95fc3ef-1196-4422-9bda-11bf9d14ecad",
+                              "id": "8822074c-db13-4a9e-8458-527ac3367529",
                               "ord": "a0"
                             },
                             {
@@ -576,11 +576,11 @@
                                         "type": "link",
                                         "label": "About"
                                       },
-                                      "id": "737d8f35-ee99-4b78-87c6-71bbd0f53735",
+                                      "id": "bfd826e1-2b51-46e2-b3f4-bd0ccce7000b",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "150cba0a-63ec-4348-89e9-9eb6c1646d9a",
+                                  "id": "c3883fe9-e49d-4c55-b438-746250474217",
                                   "ord": "a0"
                                 },
                                 {
@@ -600,11 +600,11 @@
                                         "type": "link",
                                         "label": "Careers"
                                       },
-                                      "id": "0eee9d83-636d-48d0-af02-0c9af905d0a4",
+                                      "id": "7f1117db-fe95-4317-9a35-d95c10657912",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "6d57ebb4-60b7-48d0-82dc-bcb3f60daecb",
+                                  "id": "3f7aa51b-4ac8-4955-83d1-7baf5d2e116e",
                                   "ord": "a1"
                                 },
                                 {
@@ -624,27 +624,27 @@
                                         "type": "link",
                                         "label": "Press"
                                       },
-                                      "id": "f5283c89-4416-4573-8246-1dbb024ba758",
+                                      "id": "3d52c590-01af-490d-90b0-2427daceaf57",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "38363588-caf3-4f87-8e17-dc5eb655d2ab",
+                                  "id": "560d6b96-99cf-4ec9-9beb-58a7262056d0",
                                   "ord": "a2"
                                 }
                               ],
-                              "id": "e329f755-6c4b-4bb8-ba91-994fd861740a",
+                              "id": "ab8751b2-820b-4f5b-ad0b-457bea8bdd31",
                               "ord": "a1"
                             }
                           ],
-                          "id": "fb5d0b8f-021d-4c1d-8500-9ef5e122750b",
+                          "id": "bab5ba68-9943-4cdf-a4a1-88a6f158eca3",
                           "ord": "a1"
                         }
                       ],
-                      "id": "8db95d04-78e8-4f63-95de-1217ca48ac4f",
+                      "id": "cddbcc95-6987-4a1d-95b3-3fdc1f822c77",
                       "ord": "a1"
                     }
                   ],
-                  "id": "e625610e-b923-418a-b0a0-9b7470f0ac91",
+                  "id": "98eb011b-fe6f-4297-ab57-07d6f9e15b98",
                   "ord": "a0"
                 },
                 {
@@ -667,11 +667,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "ab0b7453-3f6d-4f20-b509-c7e09df94693",
+                          "id": "de829793-23c6-4766-a456-3efc22b92079",
                           "ord": "a0"
                         }
                       ],
-                      "id": "60364bb1-2d60-45bc-a1f2-5106d0711eaa",
+                      "id": "bf12e798-799e-4917-8ec5-9300565f9586",
                       "ord": "a0"
                     },
                     {
@@ -679,23 +679,23 @@
                       "tag": "ul",
                       "class": "flex items-center gap-5",
                       "children": [],
-                      "id": "d0728da3-5704-4a2e-b2f1-a22a2d7c615b",
+                      "id": "9fa8f6ae-909b-4cc0-9743-c8b7e6a4b227",
                       "ord": "a1"
                     }
                   ],
-                  "id": "25879a45-6c06-44d5-b8ea-19a9b9a1d98b",
+                  "id": "ffafa5b8-44a4-481c-829c-40b5e1597899",
                   "ord": "a1"
                 }
               ],
-              "id": "2695be68-d03c-4f52-93b1-08eb83421749",
+              "id": "8e239cf0-5b4f-4029-8708-6e268b31dd63",
               "ord": "a0"
             }
           ],
-          "id": "6e95d0a2-fcb1-498a-8676-9e168debe8ac",
+          "id": "91758670-2bf3-4b21-8171-b3f4eff24af1",
           "ord": "a2"
         }
       ],
-      "id": "1758f8fa-5685-4cdc-b7f9-0a91acfadcf1"
+      "id": "4ebf6802-8f05-4f51-95ec-8a4d8900272c"
     }
   },
   "pages": [
@@ -709,7 +709,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "eee0f029-7fe4-47d6-9346-319d5332d95c",
+        "id": "b99c0b59-a462-49ed-b50d-04a66b7cb060",
         "children": [
           {
             "kind": "element",
@@ -730,7 +730,7 @@
                   "preload": "metadata",
                   "aria-label": "Hands smoothing a few drops of serum, wrapped in soft linen"
                 },
-                "id": "e5cdad34-e76b-4e2f-aea3-cf7f3bb4e44c",
+                "id": "bdf736e8-3b6e-48e5-8963-4c60acb3b35b",
                 "ord": "a0"
               },
               {
@@ -748,7 +748,7 @@
                         "tag": "h1",
                         "class": "text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl",
                         "children": ["Solutions for every skin"],
-                        "id": "2fb6bafd-e3c2-4858-86b2-99a7ba656d4c",
+                        "id": "10b9a1dd-cb0b-4ca5-bd60-1f04370a37b9",
                         "ord": "a0"
                       },
                       {
@@ -758,7 +758,7 @@
                         "children": [
                           "A short range of skincare essentials — a cleanser, a serum, a cream, an SPF — made for every skin, and nothing it does not need."
                         ],
-                        "id": "1e60a452-415d-43ee-afc7-9bcd3a35ef32",
+                        "id": "df3e0d73-d552-4ba6-ad04-cd95d5167390",
                         "ord": "a1"
                       },
                       {
@@ -769,19 +769,19 @@
                           "href": "/shop"
                         },
                         "children": ["Shop the ritual"],
-                        "id": "02b2a18e-8aa0-40ee-90f9-e7baedd188ee",
+                        "id": "7cbdb187-a96b-4cbe-92ce-5e40fe3b6bda",
                         "ord": "a2"
                       }
                     ],
-                    "id": "fad0344e-74ff-4e74-a2b8-9538efd53c95",
+                    "id": "b0c5f709-17bc-4707-8c4b-bfeaafd05f2e",
                     "ord": "a0"
                   }
                 ],
-                "id": "b44ce723-f960-4b99-af80-269d02e58383",
+                "id": "a0fe6e2c-d8ed-49a1-b2b9-8cc28d73bb27",
                 "ord": "a1"
               }
             ],
-            "id": "47d90f94-5721-484b-a18a-6502c59f386b",
+            "id": "7d821905-7533-4350-87e7-d62c848fb211",
             "ord": "a0"
           },
           {
@@ -816,7 +816,7 @@
                               "alt": "A soft cleansing foam texture",
                               "loading": "lazy"
                             },
-                            "id": "f932cf4b-a96c-43e6-b0ed-cf5346f2e8d7",
+                            "id": "9441a42e-f465-467d-b90b-b90b6044c756",
                             "ord": "a0"
                           },
                           {
@@ -824,11 +824,11 @@
                             "tag": "span",
                             "class": "text-center text-sm font-semibold uppercase tracking-wide text-base-content",
                             "children": ["Cleanse"],
-                            "id": "3c22ef9b-1673-4b11-b73b-b6d3ae38954f",
+                            "id": "eeae8c60-b5f9-4f92-83c2-9c2d85031bba",
                             "ord": "a1"
                           }
                         ],
-                        "id": "cb8a9552-794f-4a06-95ed-063f28dda64c",
+                        "id": "139419b9-c9d1-4ac6-aabb-bd4105ae2bf3",
                         "ord": "a0"
                       },
                       {
@@ -848,7 +848,7 @@
                               "alt": "A woman pressing a treatment essence into her skin",
                               "loading": "lazy"
                             },
-                            "id": "4f2d1bac-bd33-4a7c-bd7e-1f169f418272",
+                            "id": "15e7f6a7-52a2-461c-8cf2-229a759b4a35",
                             "ord": "a0"
                           },
                           {
@@ -856,11 +856,11 @@
                             "tag": "span",
                             "class": "text-center text-sm font-semibold uppercase tracking-wide text-base-content",
                             "children": ["Treat"],
-                            "id": "b9ff8cf0-468c-466c-b39f-3ed1faeb49b4",
+                            "id": "427b111b-272b-43f4-a648-4cd96f9b7631",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d169ee28-22d6-4544-8624-5efd6f28b82d",
+                        "id": "5a514efb-b4a4-4106-a4c7-7a3c24d605a4",
                         "ord": "a1"
                       },
                       {
@@ -880,7 +880,7 @@
                               "alt": "A swatch of moisturizing cream on a warm ground",
                               "loading": "lazy"
                             },
-                            "id": "71fc562a-2f55-4263-b361-baccbb997064",
+                            "id": "030b700e-d489-45f8-bbbd-7fb1c773ecaa",
                             "ord": "a0"
                           },
                           {
@@ -888,11 +888,11 @@
                             "tag": "span",
                             "class": "text-center text-sm font-semibold uppercase tracking-wide text-base-content",
                             "children": ["Moisturize"],
-                            "id": "31d3b29a-78d9-4225-8a87-69d1b180e932",
+                            "id": "9f584b6b-e1c6-44c4-8b62-8c3ef05dab8c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "961557b5-971d-4841-b0df-c9b86d6966d2",
+                        "id": "3389963b-7555-4a07-ac78-7113028807bf",
                         "ord": "a2"
                       },
                       {
@@ -912,7 +912,7 @@
                               "alt": "A calm face at rest, skin clear and even",
                               "loading": "lazy"
                             },
-                            "id": "dd7c180a-bd0c-4850-a2b5-083c0a9d2d97",
+                            "id": "48ac9492-291c-4f81-be6b-0aa1bb8bd8fd",
                             "ord": "a0"
                           },
                           {
@@ -920,23 +920,23 @@
                             "tag": "span",
                             "class": "text-center text-sm font-semibold uppercase tracking-wide text-base-content",
                             "children": ["Protect"],
-                            "id": "57be42ae-4d24-4d3e-9577-90459e07670f",
+                            "id": "b149dcdc-4728-4800-b7ee-a262af2d890f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "0b1b9ae6-5e6b-45c6-84d4-960784058f68",
+                        "id": "92cfe34c-110b-441b-b50b-0818253818db",
                         "ord": "a3"
                       }
                     ],
-                    "id": "fe81c83a-57f5-4cb2-b701-d65baa72078b",
+                    "id": "b26638c9-4635-4720-a56e-e157fefb5854",
                     "ord": "a0"
                   }
                 ],
-                "id": "69991f25-fe09-40b0-a741-1576bd309cdb",
+                "id": "68447afe-ffe3-48d8-bcba-905bc520f4fe",
                 "ord": "a0"
               }
             ],
-            "id": "cfa1ce1c-8626-4037-a35c-cfe7b8b2c3e9",
+            "id": "91a40aa5-0c39-4660-bd05-23dd6ab255b4",
             "ord": "a1"
           },
           {
@@ -954,7 +954,7 @@
                     "tag": "h2",
                     "class": "text-2xl font-semibold text-base-content",
                     "children": ["Best sellers"],
-                    "id": "a6951e6b-cc70-4be5-a8dd-382b97d8ae80",
+                    "id": "63579f4e-e827-43b6-ac76-d486babb9c0f",
                     "ord": "a0"
                   },
                   {
@@ -978,12 +978,12 @@
                             "props": {
                               "name": "arrow-left"
                             },
-                            "id": "f2398f51-8b94-46bd-8d1a-f0b192050143",
+                            "id": "913e43e8-9ccd-4978-96be-644aad63b344",
                             "ord": "a0"
                           }
                         ],
                         "part": "prev",
-                        "id": "d54998b2-12ae-47ec-94ad-dca51ba655eb",
+                        "id": "dfd7094e-6b5a-45c3-9831-191a937282ce",
                         "ord": "a0"
                       },
                       {
@@ -1002,20 +1002,20 @@
                             "props": {
                               "name": "arrow-right"
                             },
-                            "id": "cfcff776-5186-4c81-bda4-80e7a579137a",
+                            "id": "3775cbaf-9915-4c53-a8dd-405da1a7e591",
                             "ord": "a0"
                           }
                         ],
                         "part": "next",
-                        "id": "0cdee406-a839-4024-bd34-8a6f41af6817",
+                        "id": "05f949ea-247a-4293-b3d8-237ca37a7888",
                         "ord": "a1"
                       }
                     ],
-                    "id": "247ffef9-52a4-4f33-82c2-b34b6fa2b99b",
+                    "id": "25ee1cd1-e67c-4cff-96ee-3de7ce55c715",
                     "ord": "a1"
                   }
                 ],
-                "id": "5235cef4-88c4-4bfe-aeae-96a505ffed4a",
+                "id": "79ec8e66-e840-4146-accc-0198b1a7a221",
                 "ord": "a0"
               },
               {
@@ -1040,7 +1040,7 @@
                           "kind": "value",
                           "ref": "image"
                         },
-                        "id": "3ee5a4e9-674e-437b-969b-9a3bc7b4a10b",
+                        "id": "56c62780-b849-45bd-94d5-8040aa2fa7c6",
                         "ord": "a0"
                       },
                       {
@@ -1057,7 +1057,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "da2d44dc-8043-4363-867f-e728d2f7bfc5",
+                            "id": "d2bb80b3-e44b-41d7-bffd-0faa6b79dc17",
                             "ord": "a0"
                           },
                           {
@@ -1069,11 +1069,11 @@
                               "kind": "value",
                               "ref": "price"
                             },
-                            "id": "08e39fad-4c73-4f3e-8d61-accaea0cbdcc",
+                            "id": "76078062-247c-4bc5-9e31-fd88a77c459f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b809704e-d62f-4aa5-87e5-3af328864a33",
+                        "id": "8ce71488-5115-45cb-bbd0-9e25ec39e6d0",
                         "ord": "a1"
                       }
                     ],
@@ -1083,7 +1083,7 @@
                       "attr": "href"
                     },
                     "part": "slide",
-                    "id": "6bf50e89-2809-48d7-a0d8-6da0bc90dc6e",
+                    "id": "7ef232e3-0def-4f32-82cf-284c1ecbe8af",
                     "ord": "a0"
                   }
                 ],
@@ -1092,14 +1092,14 @@
                   "kind": "collection",
                   "ref": "commerce.featured"
                 },
-                "id": "abd1c18b-dbe8-4e87-8f24-d79b9c8efb6c",
+                "id": "32697f68-4ebf-4219-b9c7-c7caaf5651ed",
                 "ord": "a1"
               }
             ],
             "behavior": {
               "type": "carousel"
             },
-            "id": "ba5204dc-7444-4cb2-bb35-2e5f2bf1a6da",
+            "id": "b6bc13fe-8a40-4eaf-8fba-1157c3dc0d95",
             "ord": "a2"
           },
           {
@@ -1116,7 +1116,7 @@
                   "alt": "Essence poured from a frosted bottle onto the back of a hand",
                   "loading": "lazy"
                 },
-                "id": "eddfdd13-a479-41d7-a034-def16fda0551",
+                "id": "a21b7c90-2bb5-4d26-a3c4-d88975677197",
                 "ord": "a0"
               },
               {
@@ -1134,7 +1134,7 @@
                         "tag": "h2",
                         "class": "text-4xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["The morning ritual"],
-                        "id": "45021da2-0c6a-45f4-afa2-a906e411b210",
+                        "id": "6b0233da-72cb-4a98-9c0e-062539567162",
                         "ord": "a0"
                       },
                       {
@@ -1144,7 +1144,7 @@
                         "children": [
                           "Four steps, five minutes: cleanse, treat, moisturize, protect. The order is the whole method — each step earns its place, and there is nothing to add."
                         ],
-                        "id": "4da45ad4-7312-4ab4-9bbc-f7770ed4171d",
+                        "id": "b2331dba-f890-4cf2-a7b7-60906dc17593",
                         "ord": "a1"
                       },
                       {
@@ -1155,19 +1155,19 @@
                           "href": "/shop"
                         },
                         "children": ["See the routine"],
-                        "id": "616a3fbc-b8bc-4460-8374-a4af9c95887e",
+                        "id": "b0636e65-3b82-4aad-ae29-8db722bb2393",
                         "ord": "a2"
                       }
                     ],
-                    "id": "340f8778-358b-4579-b699-949b12754e0d",
+                    "id": "4ce0b579-9fa0-46a7-85aa-230a3873e14b",
                     "ord": "a0"
                   }
                 ],
-                "id": "eba60560-f13c-4b9d-8bb5-266ce41fb11a",
+                "id": "279742f0-5b5c-4662-b2d9-97bddccfdb0c",
                 "ord": "a1"
               }
             ],
-            "id": "1f9cae82-adfd-4999-9bc0-57f6f3052237",
+            "id": "0dd41c90-a104-4859-b2d4-0cd84065e51c",
             "ord": "a3"
           },
           {
@@ -1185,7 +1185,7 @@
                     "tag": "h2",
                     "class": "text-2xl font-semibold text-base-content",
                     "children": ["Treat"],
-                    "id": "c59bed57-6d60-4bbb-b457-e679d389f516",
+                    "id": "cdfec9a9-ea0a-4281-8555-8acf7da2dd1b",
                     "ord": "a0"
                   },
                   {
@@ -1209,12 +1209,12 @@
                             "props": {
                               "name": "arrow-left"
                             },
-                            "id": "e7d8723f-453e-4641-98e0-11a55ef98269",
+                            "id": "3fab196e-3766-461c-82a1-92bac6f05965",
                             "ord": "a0"
                           }
                         ],
                         "part": "prev",
-                        "id": "9bbb8b68-b5c8-4413-9c43-c4c853c5962e",
+                        "id": "c92c51fb-35c5-44da-afb0-a2fb82a6e0bf",
                         "ord": "a0"
                       },
                       {
@@ -1233,20 +1233,20 @@
                             "props": {
                               "name": "arrow-right"
                             },
-                            "id": "d2716386-29d8-4b27-bfb4-96455a2c8d5b",
+                            "id": "961032fb-ab8f-49a8-acc1-f87e53d2702b",
                             "ord": "a0"
                           }
                         ],
                         "part": "next",
-                        "id": "58b564a8-9813-4aa4-a7d8-bfcda25a145c",
+                        "id": "7d5fbb38-60b7-4723-9f0b-e4b68e80c95b",
                         "ord": "a1"
                       }
                     ],
-                    "id": "df45387b-5225-4e77-a2fd-35daedba87ba",
+                    "id": "1f5479d0-9069-4a0e-9de3-baae71af9897",
                     "ord": "a1"
                   }
                 ],
-                "id": "0d2d926b-142a-4005-a29d-12fc66c95a54",
+                "id": "b43c43af-506f-47f8-9353-fd3d53f1f0a8",
                 "ord": "a0"
               },
               {
@@ -1271,7 +1271,7 @@
                           "kind": "value",
                           "ref": "image"
                         },
-                        "id": "6fef9820-04ee-4ff5-b5cc-5b31ad49caee",
+                        "id": "b99adfbb-aaaf-40b5-a9c9-016758b78889",
                         "ord": "a0"
                       },
                       {
@@ -1288,7 +1288,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "9d990515-3228-4db6-9221-2e18ed13a072",
+                            "id": "aa1fb7a6-8063-4bb1-a1db-ce34482f5aa5",
                             "ord": "a0"
                           },
                           {
@@ -1300,11 +1300,11 @@
                               "kind": "value",
                               "ref": "price"
                             },
-                            "id": "f3e09311-f10b-4413-b910-879737aca9a0",
+                            "id": "7619fd97-8a7e-4ea2-9c7f-3f885034eb58",
                             "ord": "a1"
                           }
                         ],
-                        "id": "4c69391e-fbaf-4945-b4f1-fe812f82ee45",
+                        "id": "79dd5d39-0b82-4934-906c-15aa44cb4ff2",
                         "ord": "a1"
                       }
                     ],
@@ -1314,7 +1314,7 @@
                       "attr": "href"
                     },
                     "part": "slide",
-                    "id": "355813bd-2a23-4984-b3e7-b2f290840597",
+                    "id": "7b82135f-7586-44c7-955e-8eef1adc8c9b",
                     "ord": "a0"
                   }
                 ],
@@ -1323,14 +1323,14 @@
                   "kind": "collection",
                   "ref": "commerce.category.treat"
                 },
-                "id": "f6c77f8a-653e-4183-ad3e-10fe897ef1e9",
+                "id": "30ca0cfb-e798-49c7-869d-1f9f72ede303",
                 "ord": "a1"
               }
             ],
             "behavior": {
               "type": "carousel"
             },
-            "id": "6e427a1d-b315-4aa8-8d2f-e1c3c808d3dd",
+            "id": "f87ed638-dfee-4ff1-9581-0aaa957e94d6",
             "ord": "a4"
           },
           {
@@ -1347,7 +1347,7 @@
                   "alt": "A close portrait of bare skin with two dabs of cream",
                   "loading": "lazy"
                 },
-                "id": "1d2cd03a-4aaa-4ef4-a88d-d7024a32ae71",
+                "id": "4fd401ae-69ce-4388-a04a-dd4e6569f9d0",
                 "ord": "a0"
               },
               {
@@ -1365,7 +1365,7 @@
                         "tag": "h2",
                         "class": "text-4xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["Made for every skin"],
-                        "id": "91951598-03e4-47de-a7d8-8f70fb0ef394",
+                        "id": "b90c1118-9dd4-4491-b1ab-ddf8c31df31c",
                         "ord": "a0"
                       },
                       {
@@ -1375,7 +1375,7 @@
                         "children": [
                           "No line for oily, no line for dry, no ten-step maze. One considered range that works across skin types, ages and seasons — because most skin wants less, done well."
                         ],
-                        "id": "45fa4e76-0e61-41d4-a3d0-7ad000ac626d",
+                        "id": "467b65bd-937d-4f97-b26e-e6cdb0fc0e10",
                         "ord": "a1"
                       },
                       {
@@ -1386,19 +1386,19 @@
                           "href": "/about"
                         },
                         "children": ["Read our approach"],
-                        "id": "ccb3ff2b-a4a8-480f-a605-b3d12394bb81",
+                        "id": "8947e229-ba55-4de5-af1a-773da09cf799",
                         "ord": "a2"
                       }
                     ],
-                    "id": "b1d02916-22bd-4fde-8c70-0230563e7363",
+                    "id": "cdd7a8c7-3730-4736-a3b5-9d26713e09d0",
                     "ord": "a0"
                   }
                 ],
-                "id": "e3139416-1b6b-464f-8bfc-f6b0779e9c46",
+                "id": "4c504a75-2dfa-4a05-91e2-52baf97b2626",
                 "ord": "a1"
               }
             ],
-            "id": "1d156319-368e-492f-84a9-ccb712352bea",
+            "id": "d1bb394a-3ee3-489e-b1bb-627ecbb9ed58",
             "ord": "a5"
           },
           {
@@ -1418,15 +1418,15 @@
                     "children": [
                       "Nue is a skincare studio building a calmer, simpler routine — a short range of essentials, made for every skin, and nothing you do not need."
                     ],
-                    "id": "4cea5481-4837-4beb-8623-9d23115e5d45",
+                    "id": "66d225e4-98e5-4910-b434-671076b9e28e",
                     "ord": "a0"
                   }
                 ],
-                "id": "693d97ef-3645-4b1b-a975-7c54987ac9f0",
+                "id": "7e3581b2-d74c-4c4b-803a-472678fdecc9",
                 "ord": "a0"
               }
             ],
-            "id": "8a8de2e7-144c-4231-a3e2-855e19db33a7",
+            "id": "233a80a0-3521-469d-9568-75c53e833aea",
             "ord": "a6"
           }
         ]
@@ -1443,7 +1443,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "da79a1f2-d320-4d68-b515-3b96df0ee6c9",
+        "id": "c2cbc256-ad4c-4f73-bd92-64dd711a0d2c",
         "children": [
           {
             "kind": "element",
@@ -1460,7 +1460,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["Shop the range"],
-                    "id": "1801480c-a0d4-4dc4-bc9a-1645852a12d8",
+                    "id": "9c3ebf07-8dad-434b-938c-8d704ecc5139",
                     "ord": "a0"
                   },
                   {
@@ -1470,15 +1470,15 @@
                     "children": [
                       "The whole of Nue in one place — cleanse, treat, moisturize, protect, and the few considered extras around them. Filter by step or sort however you like; every product here is made for every skin, and nothing it does not need."
                     ],
-                    "id": "c7ac593b-9304-4159-9371-5b479e9e3fd3",
+                    "id": "5c61e2ea-53ff-45fe-966d-88ee74bb67e2",
                     "ord": "a1"
                   }
                 ],
-                "id": "9d8185c9-6eb5-4a2f-91fb-239e3ac4d4a1",
+                "id": "3ace0ac1-363c-4bf2-9301-7b29125196b3",
                 "ord": "a0"
               }
             ],
-            "id": "08d54c79-e20a-487c-8789-9f4d4c94506d",
+            "id": "254be1e2-c74d-4d5a-b38a-3039a48bb5b5",
             "ord": "a0"
           },
           {
@@ -1486,7 +1486,7 @@
             "component": "commerce.plp",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "1a4c04e6-fd95-4df2-8dd6-4541a118bfeb",
+            "id": "48404017-b445-4c89-85f9-883cdf9eb984",
             "ord": "a1"
           }
         ]
@@ -1503,7 +1503,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "7c6e436e-d1dc-4e1b-af4b-f82f25dc1240",
+        "id": "439339ca-c498-434d-aeea-0d784514af1f",
         "children": [
           {
             "kind": "element",
@@ -1520,7 +1520,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["The range"],
-                    "id": "32536d72-6b11-4aad-8963-78112595a3fd",
+                    "id": "a583575d-77aa-49bc-8dc1-9cc30603b377",
                     "ord": "a0"
                   },
                   {
@@ -1530,15 +1530,15 @@
                     "children": [
                       "Cleanse, treat, moisturize, protect — and the few considered extras around them, grouped the way a routine is actually built. Start where your skin needs the most help; every product here is made for every skin, and nothing it does not need."
                     ],
-                    "id": "4f54ccad-1b88-45bd-872a-9b7aa117ae72",
+                    "id": "5bb04efa-5716-44e3-b2c0-13c7cd3e08e5",
                     "ord": "a1"
                   }
                 ],
-                "id": "e9fb8710-63d1-46eb-a132-ec1ec70eddf8",
+                "id": "a5484f8b-b0bb-4b2a-ac78-f1e5b93fdefa",
                 "ord": "a0"
               }
             ],
-            "id": "79e7c86d-b232-4b75-939b-5825f2832924",
+            "id": "d79f6a79-08ab-44ae-834a-fe73b97e9b86",
             "ord": "a0"
           },
           {
@@ -1546,7 +1546,7 @@
             "component": "commerce.collections",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "7298483d-5197-4be6-8ad1-e77e58391d08",
+            "id": "f9a05291-651a-4892-b97d-45eac05a9c3a",
             "ord": "a1"
           }
         ]
@@ -1563,7 +1563,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "f775f03a-66da-4d57-bc0c-fa586470aa7d",
+        "id": "727d1aa4-e147-46d0-9a92-56c354d3af86",
         "children": [
           {
             "kind": "element",
@@ -1580,7 +1580,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["Your cart"],
-                    "id": "022d9967-0d0b-4849-8259-698df0f770ca",
+                    "id": "34519e40-6263-449f-a3b7-3c0c87a0e81d",
                     "ord": "a0"
                   },
                   {
@@ -1590,15 +1590,15 @@
                     "children": [
                       "Complimentary carbon-neutral shipping on every order, a few samples tucked in to try something new, and 30 days to return anything — opened or not — for a full refund. Skincare is personal; take your time deciding."
                     ],
-                    "id": "29e6fd0b-3c38-49ee-8ae2-bcdadf6669c1",
+                    "id": "bdc9f53a-5840-466c-b855-7c30cbb6992e",
                     "ord": "a1"
                   }
                 ],
-                "id": "7e8c39e1-88dd-4f1c-8394-7963321b5d73",
+                "id": "6e617a1e-545d-4ec0-a8bb-f3a88c8413ec",
                 "ord": "a0"
               }
             ],
-            "id": "6f883c43-1358-4106-a471-971384ef2958",
+            "id": "2b28944f-d08b-49ac-89cf-45128f6314ab",
             "ord": "a0"
           },
           {
@@ -1606,7 +1606,7 @@
             "component": "commerce.cart",
             "class": "mx-auto w-full max-w-4xl px-6 py-10",
             "locked": "host",
-            "id": "f10b5d22-0783-417a-8e3d-02495592d71b",
+            "id": "3aeb7a00-5c7b-4c92-b572-9240be58367d",
             "ord": "a1"
           }
         ]
@@ -1623,7 +1623,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "1b030110-d811-4d2f-936f-a38fcfe428e0",
+        "id": "8e14d7d9-10a6-45fd-b7e3-4a8073dd96c7",
         "children": [
           {
             "kind": "element",
@@ -1640,7 +1640,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["Search Nue"],
-                    "id": "7e07c156-9cc3-4260-a2a1-c475666668d4",
+                    "id": "bae55c47-d8e0-4997-981b-1b1529698efa",
                     "ord": "a0"
                   },
                   {
@@ -1650,15 +1650,15 @@
                     "children": [
                       "Looking for a step, an ingredient, or something you read once? Search the whole range and the Journal below — a barrier serum, an SPF that leaves no cast, or just where to start."
                     ],
-                    "id": "0029b23b-1683-41e0-ad59-8abb45a09998",
+                    "id": "f7ddd3c8-f1fb-4cec-b666-e3fd3777df67",
                     "ord": "a1"
                   }
                 ],
-                "id": "fffbeaa4-61fa-459e-b487-af71462d3432",
+                "id": "459e9138-fe3c-42f1-9fce-b98ba3e95eb2",
                 "ord": "a0"
               }
             ],
-            "id": "b19a9804-b1af-4c85-a9ca-ba47bca2d8c1",
+            "id": "80f2e8cf-8129-49cf-a0ef-18208883b43d",
             "ord": "a0"
           },
           {
@@ -1666,7 +1666,7 @@
             "component": "commerce.search",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "eedc1570-6a47-4046-aed6-f4b48c219b86",
+            "id": "68c598d5-5178-4153-8fab-63e2081b9c4e",
             "ord": "a1"
           }
         ]
@@ -1683,7 +1683,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "eed0c873-8f2d-4d0f-a9f1-e2d29fad76fe",
+        "id": "6c7336ff-4d08-431b-82a9-510b918a4a57",
         "children": [
           {
             "kind": "element",
@@ -1700,7 +1700,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["The Nue Journal"],
-                    "id": "0317c83c-ecb3-4134-bc33-ccf111d8d4dd",
+                    "id": "c9699535-b70b-4426-bd6e-1e28028b035f",
                     "ord": "a0"
                   },
                   {
@@ -1710,15 +1710,15 @@
                     "children": [
                       "Plain notes on skin — what a routine actually needs, what each step is for, and why less, done well, beats a shelf of things you will not keep up. No trends, no jargon, just what works."
                     ],
-                    "id": "41bd7c5d-a09b-431c-9cef-3c552401eb4e",
+                    "id": "1b49bdf3-7f59-4b9d-8e76-aaec08ae26e3",
                     "ord": "a1"
                   }
                 ],
-                "id": "139416d9-b5d2-4705-a219-02dfd933df2a",
+                "id": "493f0f22-f475-4adb-954e-176783fd974a",
                 "ord": "a0"
               }
             ],
-            "id": "c0438be2-efa6-4d8f-99f9-82d28f43ecac",
+            "id": "31baf627-aa6f-45bb-9d26-3338bae2a1ed",
             "ord": "a0"
           },
           {
@@ -1756,7 +1756,7 @@
                               "kind": "value",
                               "ref": "featuredImage"
                             },
-                            "id": "087e1e69-79ae-4920-8f02-c2d73c9bee9e",
+                            "id": "fb929abe-7875-49bc-b22b-a059d670346e",
                             "ord": "a0"
                           },
                           {
@@ -1768,7 +1768,7 @@
                               "kind": "value",
                               "ref": "date"
                             },
-                            "id": "e9bbacbb-e4d2-44a8-82d1-9bd6c23c02f6",
+                            "id": "07ac37c9-38a4-4856-9df1-930e0a25fc06",
                             "ord": "a1"
                           },
                           {
@@ -1780,7 +1780,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "12017542-fb83-4afa-b2bd-b95592b64f12",
+                            "id": "e563c079-508d-4a4c-990b-22bfaffd6ebb",
                             "ord": "a2"
                           },
                           {
@@ -1792,7 +1792,7 @@
                               "kind": "value",
                               "ref": "excerpt"
                             },
-                            "id": "badec8ff-f2a5-41e2-8254-99c23baacd48",
+                            "id": "bb398adb-c566-4e0a-ba97-39b855e6c6f8",
                             "ord": "a3"
                           }
                         ],
@@ -1801,7 +1801,7 @@
                           "ref": "url",
                           "attr": "href"
                         },
-                        "id": "2cdcec91-a09b-4ae6-8cae-1a8b94b44723",
+                        "id": "d1c57ab4-7f21-4767-b1b0-1f31e2e100e6",
                         "ord": "a0"
                       }
                     ],
@@ -1809,15 +1809,15 @@
                       "kind": "collection",
                       "ref": "cms.blog_post"
                     },
-                    "id": "9e7e9d18-f90c-4a02-ab14-d2c10a86fd3c",
+                    "id": "b75e638b-bb05-4807-98e3-d741b2a15ff5",
                     "ord": "a0"
                   }
                 ],
-                "id": "d380ef8f-be71-48bb-a01c-517760adf3ee",
+                "id": "61ef7733-3426-4c8e-9bde-0f7dd8f0f27f",
                 "ord": "a0"
               }
             ],
-            "id": "783cad3a-0b4a-4aca-b08c-dc75a1f81d21",
+            "id": "afb3ab00-ffa9-406e-8935-5022d7739e47",
             "ord": "a1"
           }
         ]
@@ -1834,7 +1834,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "d1db18c7-83eb-446c-9b71-980e2025307c",
+        "id": "bb86b6a5-c625-4281-9948-a3b01858f077",
         "children": [
           {
             "kind": "element",
@@ -1851,7 +1851,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold uppercase tracking-tight text-base-content @2xl:text-6xl",
                     "children": ["About Nue"],
-                    "id": "1ce890ea-ae6a-46bb-910c-1117ffc6a6ed",
+                    "id": "8383f807-00de-407f-966f-151751fda691",
                     "ord": "a0"
                   },
                   {
@@ -1861,7 +1861,7 @@
                     "children": [
                       "Nue is a skincare studio with a short memory for trends and a long one for what actually works. We make a small range of essentials — a cleanser, a serum, a moisturizer, an SPF, and a handful of things around them — formulated to be gentle enough for daily use and honest about what each one does."
                     ],
-                    "id": "f31a6d08-fd16-4712-bd47-a1aa3ed3f753",
+                    "id": "34a31d04-327a-4f07-90a8-a272a073bfde",
                     "ord": "a1"
                   },
                   {
@@ -1871,15 +1871,15 @@
                     "children": [
                       "There is no line for oily skin and no line for dry, no ten-step maze, and nothing you do not need. Just a considered routine that works across skin types, ages and seasons — packaged plainly, priced fairly, and made for every skin. That is the whole idea: solutions for every skin."
                     ],
-                    "id": "f24d0d5b-ae8e-4b5d-8d35-f131f57dc4e8",
+                    "id": "688650cd-495c-4e05-91f8-9551992468d3",
                     "ord": "a2"
                   }
                 ],
-                "id": "0aeceadf-2296-4a8d-9381-1025e2025b71",
+                "id": "89579fb1-d315-47ee-bfb2-f89176a3dd31",
                 "ord": "a0"
               }
             ],
-            "id": "6082d6fd-b3da-4c48-8cfa-d8273b7c6b42",
+            "id": "31a3cc13-2681-4b62-aa63-2e07e4e1564e",
             "ord": "a0"
           }
         ]
@@ -1896,7 +1896,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "505f6c53-54e5-4b74-ad01-8252cc69593c",
+        "id": "136917ed-5381-4d2a-b972-25bbd7b4c5f6",
         "children": [
           {
             "kind": "element",
@@ -1913,7 +1913,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold uppercase tracking-tight text-base-content @2xl:text-6xl",
                     "children": ["Talk to us"],
-                    "id": "314100ac-a41a-46ba-8dce-bf8127cdfa76",
+                    "id": "d984e13e-e98b-46fb-8e31-1198ec2b2432",
                     "ord": "a0"
                   },
                   {
@@ -1923,7 +1923,7 @@
                     "children": [
                       "Not sure where to start, or which of two to choose? Tell us about your skin and what you are hoping to change, and a real person — not a script — will point you to the shortest routine that will do it."
                     ],
-                    "id": "36695b7b-f6d2-4c62-8eb0-3ac9e4d95bf5",
+                    "id": "a95143f3-4a35-4a4b-afd4-b753d475428f",
                     "ord": "a1"
                   },
                   {
@@ -1934,15 +1934,15 @@
                       "href": "mailto:hello@nueskincare.example"
                     },
                     "children": ["Email the studio"],
-                    "id": "7417f4e2-d312-464a-9641-33aa9cff7459",
+                    "id": "dfec1b07-a62a-4c0d-ac98-f9cc029e04b0",
                     "ord": "a2"
                   }
                 ],
-                "id": "1425e525-3eb7-4953-b44c-65bd39a37f7d",
+                "id": "fe0cfdac-ebc5-4ad2-9fbc-05433920336e",
                 "ord": "a0"
               }
             ],
-            "id": "d1c909db-cbe9-4537-ba01-3f7894ee34cd",
+            "id": "e5c12434-ffe5-4309-b7e0-8586d4a8088e",
             "ord": "a0"
           }
         ]
@@ -1982,7 +1982,7 @@
                       "kind": "value",
                       "ref": "image"
                     },
-                    "id": "d787a87d-6db5-4ac4-b922-e43847891326",
+                    "id": "91b474a9-7664-430b-a583-a08aa40accd2",
                     "ord": "a0"
                   },
                   {
@@ -2000,7 +2000,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-widest text-base-content",
                             "children": ["Nue Skincare"],
-                            "id": "025f0ccb-4e67-481f-bc45-9e1e882665ee",
+                            "id": "1432c8d9-1e12-4e00-b0fd-2dbc04153c9c",
                             "ord": "a0"
                           },
                           {
@@ -2012,7 +2012,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "d653a322-20a4-43eb-b03f-1cfccec68637",
+                            "id": "8b6e8f00-8a03-4877-9f46-f9cd37a4a389",
                             "ord": "a1"
                           },
                           {
@@ -2029,7 +2029,7 @@
                                   "kind": "value",
                                   "ref": "price"
                                 },
-                                "id": "50ca68e8-8b39-4330-8cca-536cf04b7c7f",
+                                "id": "339cf905-b910-4774-a56c-c8280f0e22a3",
                                 "ord": "a0"
                               },
                               {
@@ -2045,7 +2045,7 @@
                                       "kind": "value",
                                       "ref": "compareAtPrice"
                                     },
-                                    "id": "3cbe08d1-d059-4672-9ad4-16e9142458cb",
+                                    "id": "50bb4bf1-b532-443b-96e1-f72c16635a86",
                                     "ord": "a0"
                                   }
                                 ],
@@ -2053,15 +2053,27 @@
                                   "kind": "visible",
                                   "ref": "compareAtPrice"
                                 },
-                                "id": "43fbce81-9a22-4f72-a8dd-70793689d281",
+                                "id": "d49d6232-98a4-498d-b2f5-7ff6e3d35462",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "2d929e54-d6ef-4984-92cb-716046587add",
+                            "id": "1640f150-6f31-4159-916e-aa0999b92402",
                             "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "inline-flex w-fit items-center gap-2 border border-base-300 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-base-content",
+                            "children": ["Low stock"],
+                            "data": {
+                              "kind": "visible",
+                              "ref": "lowStock"
+                            },
+                            "id": "88c6263b-595c-4c91-86c0-5f2d92a74a10",
+                            "ord": "a3"
                           }
                         ],
-                        "id": "6bd4b79b-2482-4b9b-9232-6b6357103a65",
+                        "id": "76edf9b7-5ee2-422a-8d2d-f938b27e37d8",
                         "ord": "a0"
                       },
                       {
@@ -2073,7 +2085,7 @@
                           "kind": "value",
                           "ref": "description"
                         },
-                        "id": "8d9ad180-e10c-46b3-b7fd-844614ae35c1",
+                        "id": "0795fa4a-afc9-444a-b4b6-913f780f65ae",
                         "ord": "a1"
                       },
                       {
@@ -2092,7 +2104,7 @@
                               "kind": "value",
                               "ref": "variantId"
                             },
-                            "id": "3fc5236d-c054-4551-a4a3-e29aec53d2cc",
+                            "id": "f2aad7ea-ee9b-4cb7-83e9-6ff839bdb690",
                             "ord": "a0"
                           },
                           {
@@ -2105,7 +2117,7 @@
                                 "tag": "span",
                                 "class": "font-medium",
                                 "children": ["Quantity"],
-                                "id": "0ca4b886-ece6-4d04-91d8-33ad150d6817",
+                                "id": "4de5316f-71da-4832-ab98-970438c644c9",
                                 "ord": "a0"
                               },
                               {
@@ -2119,11 +2131,11 @@
                                   "min": "1",
                                   "step": "1"
                                 },
-                                "id": "624eced2-e518-44d2-8c6c-ef33a6217f1a",
+                                "id": "b6b2b60a-3481-4ada-a5a4-951a5569978a",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "a7e9d667-cc9b-4f59-a23e-d151ef4becaf",
+                            "id": "52e0f069-6de7-4ade-a71e-8c559fff2c78",
                             "ord": "a1"
                           },
                           {
@@ -2134,7 +2146,7 @@
                               "type": "submit"
                             },
                             "children": ["Add to cart"],
-                            "id": "6664a572-f505-403a-9bca-16f9e3966372",
+                            "id": "05834ca4-18c9-42b4-99d9-f8e43428f0ce",
                             "ord": "a2"
                           }
                         ],
@@ -2145,7 +2157,7 @@
                           "kind": "action",
                           "ref": "add-to-cart"
                         },
-                        "id": "cb031bc2-3906-47fc-845b-6b509ac047dd",
+                        "id": "aa6de193-a92f-4fd8-aff0-45e5fe8f46eb",
                         "ord": "a2"
                       },
                       {
@@ -2162,88 +2174,116 @@
                                 "kind": "element",
                                 "tag": "h2",
                                 "class": "text-sm font-semibold uppercase tracking-widest text-base-content",
-                                "children": ["Ingredients"],
-                                "id": "1bc9b659-81da-4370-af66-4b52cab349d2",
+                                "children": ["Section"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "label"
+                                },
+                                "id": "a94c5c51-f2d5-4563-bb5e-88850b856640",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
-                                "tag": "p",
+                                "tag": "div",
                                 "class": "text-base leading-relaxed text-base-content",
-                                "children": [
-                                  "Every Nue formula is fragrance-free, non-comedogenic and built from a short list of ingredients that earn their place — humectants, ceramides and gentle actives at levels skin can actually use. No essential oils, no drying alcohols, no colour, and nothing added to make a jar look busy on a shelf."
-                                ],
-                                "id": "7c5ea4a8-e4f1-4b9e-a367-5b281a473bfa",
+                                "children": [""],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "value"
+                                },
+                                "id": "2d7a1a79-72d4-4a44-b2e4-a0b4c8e3e59d",
                                 "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex items-baseline justify-between gap-4 border-b border-base-200 pb-1",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-base font-medium text-base-content",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "label"
+                                    },
+                                    "id": "422a5164-e242-4e12-8b32-4a6ffbfe2818",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-base text-base-content",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "value"
+                                    },
+                                    "id": "0580b742-6494-4fe3-931c-c62593c0f50e",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "data": {
+                                  "kind": "collection",
+                                  "ref": "items"
+                                },
+                                "id": "b0764c30-0f3c-49c5-9ed8-5bbc5e21e6f7",
+                                "ord": "a2"
                               }
                             ],
-                            "id": "6c409eb8-fdf1-4b54-8b9b-268b25e2bc8a",
+                            "data": {
+                              "kind": "collection",
+                              "ref": "attributeSections"
+                            },
+                            "id": "78490e04-124f-44f0-995c-5678077ad736",
+                            "ord": "a0"
+                          }
+                        ],
+                        "data": {
+                          "kind": "visible",
+                          "ref": "attributeSections"
+                        },
+                        "id": "979589e1-6795-4703-a72c-34178073fc24",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-5 text-sm font-semibold uppercase tracking-widest text-base-content",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shipping-policy"
+                            },
+                            "children": ["Shipping & delivery"],
+                            "id": "a58cbf9f-41f8-4463-a9ff-c073968fd72a",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
-                            "tag": "div",
-                            "class": "flex flex-col gap-2 border-t border-base-300 pt-5",
-                            "children": [
-                              {
-                                "kind": "element",
-                                "tag": "h2",
-                                "class": "text-sm font-semibold uppercase tracking-widest text-base-content",
-                                "children": ["How to use"],
-                                "id": "5ec66259-6fed-41bc-88fd-0f6b9ef6862c",
-                                "ord": "a0"
-                              },
-                              {
-                                "kind": "element",
-                                "tag": "p",
-                                "class": "text-base leading-relaxed text-base-content",
-                                "children": [
-                                  "Work into clean skin in the order of the ritual — cleanse, treat, moisturize, then protect in the morning — a little at a time, morning and night as the step calls for. Introduce one new product at a time and give it a fortnight: skin changes slowly, and the results that last are the ones that arrive quietly."
-                                ],
-                                "id": "294bfb0a-a9c9-4ce9-9bd6-c8cbc98d590e",
-                                "ord": "a1"
-                              }
-                            ],
-                            "id": "8b580e78-937d-4b2c-a0c3-490f13ba6441",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/returns-policy"
+                            },
+                            "children": ["Returns & refunds"],
+                            "id": "51485515-d7a5-41e3-bce0-baf6c2c478da",
                             "ord": "a1"
-                          },
-                          {
-                            "kind": "element",
-                            "tag": "div",
-                            "class": "flex flex-col gap-2 border-t border-base-300 pt-5",
-                            "children": [
-                              {
-                                "kind": "element",
-                                "tag": "h2",
-                                "class": "text-sm font-semibold uppercase tracking-widest text-base-content",
-                                "children": ["Shipping & returns"],
-                                "id": "9bba2263-6082-4e6c-bc32-021d69c0c789",
-                                "ord": "a0"
-                              },
-                              {
-                                "kind": "element",
-                                "tag": "p",
-                                "class": "text-base leading-relaxed text-base-content",
-                                "children": [
-                                  "Complimentary carbon-neutral shipping on orders over $50, dispatched within two business days and tracked to your door. If something is not right for your skin, return it within 30 days — opened or not — for a full refund. Skincare is personal, and finding your routine should feel that way."
-                                ],
-                                "id": "e6975308-5248-447b-81c2-f96583d78276",
-                                "ord": "a1"
-                              }
-                            ],
-                            "id": "f04360c1-2fdf-44ad-af11-1b5898e4145a",
-                            "ord": "a2"
                           }
                         ],
-                        "id": "7800f14f-d26e-4acd-b9d5-c194879318e7",
-                        "ord": "a3"
+                        "id": "744387c4-ebe3-4f32-8286-5b721f0183b7",
+                        "ord": "a4"
                       }
                     ],
-                    "id": "9fbd07d4-f822-4f48-b9ad-b9ba17c12baf",
+                    "id": "ba158b31-7d6d-45d0-92aa-cdf88668a507",
                     "ord": "a1"
                   }
                 ],
-                "id": "55bb229a-df6e-4bcc-8657-5aef6c48d935",
+                "id": "97c0ee63-198f-48b1-b549-e23f785fb0cf",
                 "ord": "a0"
               }
             ],
@@ -2251,7 +2291,7 @@
               "kind": "collection",
               "ref": "product"
             },
-            "id": "0b8be5cb-0339-480c-9e74-ceb04b4d8d67",
+            "id": "b3c69896-9a98-453d-acd2-979c7b09c3eb",
             "ord": "a0"
           },
           {
@@ -2269,7 +2309,7 @@
                     "tag": "h2",
                     "class": "text-2xl font-semibold text-base-content",
                     "children": ["You may also like"],
-                    "id": "ad8d4d10-051f-44e9-9609-b75ca0e8a279",
+                    "id": "0a049708-0153-4898-8dd0-3fe0ca42b8c6",
                     "ord": "a0"
                   },
                   {
@@ -2293,12 +2333,12 @@
                             "props": {
                               "name": "arrow-left"
                             },
-                            "id": "54c25364-fb3a-48f4-95cd-a1e73eeb3af4",
+                            "id": "daf7536d-fdf4-4a24-9fd2-7d3576140cef",
                             "ord": "a0"
                           }
                         ],
                         "part": "prev",
-                        "id": "ce56fd85-2585-4b93-9119-d79d835cef01",
+                        "id": "b37e79a9-e43a-4b7e-87a9-f3eef1e86b8b",
                         "ord": "a0"
                       },
                       {
@@ -2317,20 +2357,20 @@
                             "props": {
                               "name": "arrow-right"
                             },
-                            "id": "cb5fb82b-cb76-4673-9195-332c68b4accc",
+                            "id": "02229fd9-9e78-4cc7-9bd8-23a90708e545",
                             "ord": "a0"
                           }
                         ],
                         "part": "next",
-                        "id": "0df92bd1-fbfc-45d3-b499-9e398b00f857",
+                        "id": "77217512-a0eb-4113-8b53-83b656d56fcb",
                         "ord": "a1"
                       }
                     ],
-                    "id": "4ee5f25e-e600-4df5-a6d1-b5cf19c68597",
+                    "id": "3d648b28-f8ce-4e99-aa08-87030b38dc11",
                     "ord": "a1"
                   }
                 ],
-                "id": "bf7e3858-ac9e-4a1d-a549-2d9a3ae7b6a0",
+                "id": "7a40c2c7-97ac-4df3-813a-3dae982b2606",
                 "ord": "a0"
               },
               {
@@ -2355,7 +2395,7 @@
                           "kind": "value",
                           "ref": "image"
                         },
-                        "id": "2722b4c5-e409-4bb1-86ca-40a71b70c421",
+                        "id": "97f4ad59-665e-48dc-b9d8-6319e5c15740",
                         "ord": "a0"
                       },
                       {
@@ -2372,7 +2412,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "5f0fa0b9-aade-4b37-bbe5-9902d618834b",
+                            "id": "62f551ed-8776-42f7-b94d-4f4da916d03e",
                             "ord": "a0"
                           },
                           {
@@ -2384,11 +2424,11 @@
                               "kind": "value",
                               "ref": "price"
                             },
-                            "id": "0faa630b-bcf6-4752-bdab-0b3a1267fd1d",
+                            "id": "dbe9af43-7761-4e55-ba70-8028107a76f3",
                             "ord": "a1"
                           }
                         ],
-                        "id": "5342dd9e-fb48-4b67-8a9a-ef9ae61d4d4e",
+                        "id": "9cf623ef-fa85-4bf3-8f2d-e5c599730126",
                         "ord": "a1"
                       }
                     ],
@@ -2398,7 +2438,7 @@
                       "attr": "href"
                     },
                     "part": "slide",
-                    "id": "72016055-f4e4-4b51-ae16-25901c31431d",
+                    "id": "c05a9a11-93d5-4ef3-8a76-44c693108bfa",
                     "ord": "a0"
                   }
                 ],
@@ -2407,18 +2447,18 @@
                   "kind": "collection",
                   "ref": "commerce.related"
                 },
-                "id": "45e58cd5-1c2c-4e61-9af1-cf72722fcd3b",
+                "id": "5b0ff525-26d5-4d77-ad29-d3bffdd8be39",
                 "ord": "a1"
               }
             ],
             "behavior": {
               "type": "carousel"
             },
-            "id": "1928bf6e-239e-457d-a61d-4e9cf1e8b28e",
+            "id": "f8859175-189c-4024-a74b-b40060ae3bc9",
             "ord": "a1"
           }
         ],
-        "id": "e66a3399-5581-4b9d-bb4e-30a2823e51df"
+        "id": "49da69b9-8932-4151-a0b9-87eb0f890e9f"
       }
     }
   ],

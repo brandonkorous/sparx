@@ -1,0 +1,112 @@
+{
+  "categories": [
+    {
+      "handle": "membership",
+      "name": "Membership",
+      "description": "Keep the stage free.",
+      "featured": true
+    },
+    {
+      "handle": "books",
+      "name": "Books & goods",
+      "description": "Take a little of the stage home.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "featured",
+      "name": "Support the Commons",
+      "description": "The three things that keep the talks free and the lights on.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["commons-membership", "ideas-worth-the-room", "commons-notebook"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "commons-membership",
+      "title": "The Commons Membership — annual",
+      "description": "The membership that keeps the stage free. Members fund the recordings and the archive, get the members-only salons, and hear about new talks first. The single most useful thing you can do to keep ideas in the open.",
+      "status": "active",
+      "productType": "Membership",
+      "vendor": "The Commons",
+      "tags": ["membership", "subscription", "support"],
+      "categoryHandles": ["membership"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "The Commons Membership — annual support",
+      "seoDescription": "Annual membership that keeps every talk free: the archive, the salons, and early access.",
+      "variants": [
+        {
+          "sku": "CMN-MEM-ANNUAL",
+          "priceCents": 9000,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "membership",
+          "isPrimary": true,
+          "alt": "An audience seated in a warm-lit hall"
+        }
+      ]
+    },
+    {
+      "handle": "ideas-worth-the-room",
+      "title": "Ideas Worth the Room — the anthology",
+      "description": "Twenty of the talks that defined our first years, transcribed and set in print with the speakers’ own notes in the margins. A hardback you can read in an afternoon and argue with for a year.",
+      "status": "active",
+      "productType": "Book",
+      "vendor": "The Commons",
+      "tags": ["book", "anthology"],
+      "categoryHandles": ["books"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "Ideas Worth the Room — the anthology | The Commons",
+      "seoDescription": "A hardback anthology of twenty defining talks, transcribed with the speakers’ own notes.",
+      "variants": [
+        {
+          "sku": "CMN-BOOK-ANTH",
+          "priceCents": 3200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "anthology",
+          "isPrimary": true,
+          "alt": "The Ideas Worth the Room anthology"
+        }
+      ]
+    },
+    {
+      "handle": "commons-notebook",
+      "title": "The Commons Notebook",
+      "description": "A cloth-bound notebook for the ideas you have in the dark on the walk home. A hundred and sixty numbered pages, a ribbon, and the smallest possible masthead on the cover.",
+      "status": "active",
+      "productType": "Book",
+      "vendor": "The Commons",
+      "tags": ["notebook", "stationery"],
+      "categoryHandles": ["books"],
+      "collectionHandles": ["featured"],
+      "seoTitle": "The Commons Notebook — cloth-bound, 160 pages",
+      "seoDescription": "A cloth-bound notebook with 160 numbered pages, a ribbon, and a small masthead.",
+      "variants": [
+        {
+          "sku": "CMN-NOTEBOOK",
+          "priceCents": 1800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "notebook",
+          "isPrimary": true,
+          "alt": "The Commons cloth-bound notebook"
+        }
+      ]
+    }
+  ]
+}

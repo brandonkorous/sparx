@@ -17,15 +17,19 @@
 //      resolved to nothing. A product with no URL must degrade to a plain card,
 //      not to an anchor that silently reloads the page; see `attr-binding.ts`.
 //   5. responsiveImages — offer the browser the width ladder for every sparx-hosted
-//      image. Must run LAST, after resolution: a product card's image source comes
+//      image. Must run after resolution: a product card's image source comes
 //      from the record, so before step 3 there is no URL to build a `srcset` from.
-//   6. toHtml        — the framework-free HTML projection; `data-sui-*` markers on
+//   6. fillMissingImageSrc — an image with no src left after all of the above gets
+//      the placeholder, so an empty catalog draws grey art rather than the broken-
+//      image glyph. After step 5 on purpose: it must see the final src, and a data:
+//      URI is not something to build a `srcset` from.
+//   7. toHtml        — the framework-free HTML projection; `data-sui-*` markers on
 //      behavior/action nodes are lowered for the client behavior runtime to wire.
 //
 // Pure + framework-free (silicaui-html only), so it runs on the server (RSC /
 // publish) with no React dependency and stays the single source of render truth.
 
-import { dropEmptyUrlAttrs } from './attr-binding';
+import { dropEmptyUrlAttrs, fillMissingImageSrc } from './attr-binding';
 import { isRecordAddress } from './record-templates';
 import { responsiveImages } from './responsive-images';
 import {
@@ -53,6 +57,24 @@ export interface RenderSilicaPageOptions {
   html?: ToHtmlOptions;
 }
 
+/**
+ * The post-resolution stages, in the one order that is correct — steps 4-6 above.
+ *
+ * Exported and named because this pipeline is composed in more than one place: the HTML
+ * projection below, and `apps/site`'s React chrome, which renders the frame and the body
+ * through `walk` instead of `toHtml` but must finish the tree identically. Hand-copying
+ * the call has now gone wrong TWICE — `responsiveImages` was missing from the React path
+ * (every header logo shipped as one full-width file on every page of every site), and
+ * `fillMissingImageSrc` was added to the HTML path alone, leaving the broken-image glyph
+ * it exists to kill on the live site that actually renders it.
+ *
+ * So there is one function, and a new stage is added HERE. A caller that resolves a tree
+ * and then reaches for the individual passes is the bug both times over.
+ */
+export function finalizeTree(resolved: Node): Node {
+  return fillMissingImageSrc(responsiveImages(dropEmptyUrlAttrs(resolved)));
+}
+
 /** Compose (frame ⊕ body), flatten symbols, resolve bindings, and project one
  *  tree to an HTML string — the shared render step behind both a single page and
  *  a whole-site export. */
@@ -65,7 +87,7 @@ function renderComposedTree(
   const body = flattenSymbols(pageRoot, symbols);
   const composed = frameRoot ? composeFrame(flattenSymbols(frameRoot, symbols), body) : body;
   const resolved = opts.host ? resolveTree(composed, opts.host, opts.scope) : composed;
-  return toHtml(responsiveImages(dropEmptyUrlAttrs(resolved)), opts.html);
+  return toHtml(finalizeTree(resolved), opts.html);
 }
 
 /** Render ONE page of a site to the full production HTML a visitor to its route

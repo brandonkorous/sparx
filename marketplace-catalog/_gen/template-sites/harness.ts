@@ -39,7 +39,17 @@ import { blogIndexPage, blogPostGrid } from '../../../packages/silica-catalog/sr
 import { HOST_KEYS, functionalShell, hostCore } from '../../../packages/silica-catalog/src/host-nodes';
 import { resolveSparxTheme } from '../../../packages/silica-catalog/src/resolve-sparx-theme';
 import { TEMPLATE_THEME_BY_SLUG } from '../../../packages/silica-catalog/src/template-themes';
+import { CONTENT_THEME_BY_SLUG } from '../../../packages/silica-catalog/src/content-themes';
 import { colorToHex } from '../../../packages/site-themes/src/v2/color';
+
+/** The bespoke theme for a template slug, from EITHER shelf — the ten commerce looks
+ *  (`TEMPLATE_THEME_BY_SLUG`, keyed by the `docs/templates/*` slug) OR the ten content
+ *  looks (`CONTENT_THEME_BY_SLUG`, keyed by the `docs/templates/content/*` slug). One
+ *  lookup so a commerce and a content generator run through the identical harness; the two
+ *  slug namespaces are disjoint, so a slug resolves to exactly one theme. */
+function rawThemeForSlug(slug: string): Theme | undefined {
+  return TEMPLATE_THEME_BY_SLUG[slug] ?? CONTENT_THEME_BY_SLUG[slug];
+}
 
 const here = dirname(fileURLToPath(import.meta.url));
 const blueprintsDir = join(here, '..', '..', 'blueprints');
@@ -69,7 +79,8 @@ export type PageKey =
   | 'journal'
   | 'about'
   | 'contact'
-  | 'product';
+  | 'product'
+  | 'article';
 
 /** One template's authored spec. The home/about/contact bodies are the DISTINCT part;
  *  everything else follows the shared shape so the ten bundles stay uniform. */
@@ -112,6 +123,15 @@ export interface TemplateSiteSpec {
    *  box. Omit and the template keeps the generic PDP. This is the point of the full-site
    *  pass — a store lives on its product page. */
   pdp?: Node;
+  /** The BESPOKE article-detail body — the CONTENT analog of `pdp`, built self-scoped over a
+   *  `blog_post` record (bind fields scope-relative, article body through the pinned
+   *  `cms.article-body` core). When present the harness ships it as a `cms.blog_post`
+   *  collection template (`isDefault`), so the storefront renders THIS design at `/blog/:slug`
+   *  instead of the code-native `blogPostPage()`. Omit and the template keeps the generic
+   *  article page. This is the point of a content template — a publisher lives on its article
+   *  page the way a shop lives on its PDP. Author it with the shared `template-sites/article.ts`
+   *  kit. */
+  article?: Node;
   /** BESPOKE shop-page sections shown ABOVE the faceted PLP core. When present they replace
    *  the generic `shopHeader()` (a themed hero/intro band the brand authors); the harness
    *  ALWAYS appends the pinned `commerce.plp` core beneath them, so the shop stays genuinely
@@ -137,6 +157,10 @@ export interface TemplateSiteSpec {
   contact?: Node[];
   /** CommerceDecl — categories + collections + products (the carousels bind to these). */
   commerce: unknown;
+  /** AuthorDecl[] — the byline personas the posts reference by `authorSlug`. Empty/omitted
+   *  for a template whose posts carry no byline; a content template ships its masthead here
+   *  so the storefront byline projection has real authors to resolve. */
+  authors?: unknown[];
   /** ContentEntryDecl[] — the journal posts. */
   content: unknown[];
   /** AssetDecl[] — every image URL the bundle references, each with alt. */
@@ -236,6 +260,12 @@ function standardSeo(
       title: `Product — ${bn}`,
       description: `Product details at ${bn} — ${ind.toLowerCase()}, with options and pricing.`,
     },
+    // The article template is likewise a record template — per-POST title/description at
+    // runtime. This page-level pair is only the studio fallback for the template itself.
+    article: {
+      title: `Article — ${bn}`,
+      description: `A story from ${bn} — the writing, the reporting and the notes behind it.`,
+    },
   };
   // The template's own real copy wins per page; the composed default fills the rest.
   const out = { ...composed };
@@ -275,7 +305,7 @@ function defaultContact(): Node[] {
  *  the projection the golden bundle's site.json is in). The bespoke theme comes from
  *  `TEMPLATE_THEME_BY_SLUG[slug]`, resolved to the flat ship-ready token bag. */
 export function composeTemplateSite(spec: TemplateSiteSpec): Record<string, unknown> {
-  const rawTheme = TEMPLATE_THEME_BY_SLUG[spec.slug];
+  const rawTheme = rawThemeForSlug(spec.slug);
   if (!rawTheme) throw new Error(`harness: no template theme for slug "${spec.slug}"`);
   const theme = resolveSparxTheme(rawTheme);
 
@@ -326,6 +356,10 @@ export function composeTemplateSite(spec: TemplateSiteSpec): Record<string, unkn
     // at `/products/:handle` — published, it wins over the starter buy box, so every product
     // wears the template's own PDP. Appended last so the ordinary pages keep their positions.
     ...(spec.pdp ? [collectionPage('Product', 'commerce.product', spec.pdp, seo.product)] : []),
+    // The BESPOKE article-detail template — the content analog. A `cms.blog_post` collection
+    // page (`isDefault`) the installer lands at `/blog/:slug` (RECORD_ADDRESSES), so every
+    // post wears the template's own article design instead of the generic `blogPostPage()`.
+    ...(spec.article ? [collectionPage('Article', 'cms.blog_post', spec.article, seo.article)] : []),
   ];
 
   return { frame, pages, theme };
@@ -386,6 +420,7 @@ function blueprintTs(opts: {
 // workspace resolution, so it imports ONLY sibling JSON, never \`@sparx/*\`.
 import site from './site.json' with { type: 'json' };
 import content from './content.json' with { type: 'json' };
+import authors from './authors.json' with { type: 'json' };
 import commerce from './commerce.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
 
@@ -409,6 +444,7 @@ const blueprint = {
 
   assets,
   contentTypes: [],
+  authors,
   content,
   commerce,
 
@@ -469,7 +505,7 @@ function manifestJson(opts: {
  *  `blueprints/<key>/`. Returns the resolved theme (light tokens) so a caller can
  *  render a preview against the exact same look the bundle ships. */
 export async function emitBundle(spec: TemplateSiteSpec): Promise<{ dir: string; theme: Theme }> {
-  const rawTheme = TEMPLATE_THEME_BY_SLUG[spec.slug];
+  const rawTheme = rawThemeForSlug(spec.slug);
   if (!rawTheme) throw new Error(`harness: no template theme for slug "${spec.slug}"`);
   const resolved = resolveSparxTheme(rawTheme);
   const light = resolved.tokens ?? {};
@@ -512,6 +548,7 @@ export async function emitBundle(spec: TemplateSiteSpec): Promise<{ dir: string;
 
   await fs.writeFile(join(dir, 'site.json'), json(site));
   await fs.writeFile(join(dir, 'commerce.json'), json(spec.commerce));
+  await fs.writeFile(join(dir, 'authors.json'), json(spec.authors ?? []));
   await fs.writeFile(join(dir, 'content.json'), json(spec.content));
   await fs.writeFile(join(dir, 'assets.json'), json(spec.assets));
   await fs.writeFile(

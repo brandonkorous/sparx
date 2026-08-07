@@ -97,6 +97,13 @@
       "collectionHandles": ["new-arrivals", "seating"],
       "seoTitle": "Nord Oak Lounge Chair — solid white-oak lounge chair",
       "seoDescription": "A hand-shaped solid white-oak lounge chair with a slung, re-upholsterable seat.",
+      "productTypeKey": "home_goods",
+      "attributes": {
+        "materials": "A solid white-oak frame, hand-shaped and finished in hard wax oil, over a webbed seat suspension. The slung seat and back come in natural linen or charcoal wool, tacked so they can be re-tensioned or replaced rather than bonded shut.",
+        "dimensions": "W 68 × D 82 × H 74 cm; seat H 38 cm",
+        "care": "Dust the frame and refresh the hard wax oil with a cloth once a year — a knock sands out of solid oak rather than chipping through. Vacuum the upholstery gently, treat spills promptly, and the covers can be re-tensioned or remade when they eventually tire.",
+        "origin": "Made in our Oslo workshop"
+      },
       "options": [
         {
           "name": "Upholstery",
@@ -150,6 +157,13 @@
       "collectionHandles": ["seating"],
       "seoTitle": "Walnut Turned Stool — solid walnut stool",
       "seoDescription": "A stool turned from a single billet of solid walnut, finished in hard wax oil.",
+      "productTypeKey": "home_goods",
+      "attributes": {
+        "materials": "Turned from a single billet of solid walnut — seat, legs and stretcher all one timber, with no joins to work loose — in a natural or smoked finish sealed with hard wax oil.",
+        "dimensions": "Ø 32 × H 45 cm",
+        "care": "Wipe with a dry or barely damp cloth and re-apply hard wax oil once or twice a year to feed the grain. Keep it clear of a radiator’s direct heat so the timber does not dry out and check, and it will serve as a seat, a side table or a step for decades.",
+        "origin": "Made in our Oslo workshop"
+      },
       "options": [
         {
           "name": "Finish",
@@ -203,6 +217,13 @@
       "collectionHandles": ["new-arrivals"],
       "seoTitle": "Travertine Side Table — solid stone side table",
       "seoDescription": "A round side table cut from a single piece of unfilled honed travertine.",
+      "productTypeKey": "home_goods",
+      "attributes": {
+        "materials": "Cut from a single piece of unfilled Italian travertine, the top honed smooth and the edges left soft. Solid stone through and through — no core, no veneer, no filler in the natural pitting.",
+        "dimensions": "Ø 40 × H 45 cm",
+        "care": "Seal it with a penetrating stone sealer when new and again every year or two; sealed, it shrugs off water rings and the odd spill — you wipe it and move on. The faint marks a life leaves in the stone are the reason to own the real thing.",
+        "origin": "Made in Italy"
+      },
       "variants": [
         {
           "sku": "ATN-SIDETABLE",
@@ -231,6 +252,13 @@
       "collectionHandles": ["new-arrivals", "lighting"],
       "seoTitle": "Linen-Shade Floor Lamp — dimmable brass floor lamp",
       "seoDescription": "A slim brass floor lamp with a hand-sewn linen drum shade, dimmable at the base.",
+      "productTypeKey": "home_goods",
+      "attributes": {
+        "materials": "A slim solid-brass stem on a weighted brass base, carrying a hand-sewn linen drum shade. The brass is left unlacquered to take a patina, and there is an in-line dimmer at the foot.",
+        "dimensions": "Ø 35 × H 150 cm",
+        "care": "Dust the shade with a soft brush and wipe the brass with a dry cloth; a metal polish brings the shine back whenever you want it, or leave it to darken. Use a dimmable LED bulb (E27, 10 W max) to keep the linen cool over the years.",
+        "origin": "Made in our Oslo workshop"
+      },
       "variants": [
         {
           "sku": "ATN-FLOORLAMP",
@@ -259,6 +287,13 @@
       "collectionHandles": ["lighting"],
       "seoTitle": "Paper-Shade Pendant — folded paper pendant light",
       "seoDescription": "A folded paper pendant lamp with braided cord and a brass ceiling cup.",
+      "productTypeKey": "home_goods",
+      "attributes": {
+        "materials": "A folded paper shade that glows like a lantern and packs flat, hung on three metres of braided fabric cord with a solid-brass ceiling cup in the same brass as our lamps.",
+        "dimensions": "Ø 45 × H 40 cm; 3 m cord",
+        "care": "Dust with a dry, soft brush only — paper does not take a damp cloth. Fit a cool-running LED bulb (E27, 8 W max), and the shade folds flat again if you ever move house.",
+        "origin": "Made in Denmark"
+      },
       "variants": [
         {
           "sku": "ATN-PENDANT",
@@ -287,6 +322,13 @@
       "collectionHandles": ["tabletop"],
       "seoTitle": "Hand-Thrown Ceramic Carafe — one-litre matte carafe",
       "seoDescription": "A one-litre hand-thrown ceramic carafe in a soft matte white glaze.",
+      "productTypeKey": "home_goods",
+      "attributes": {
+        "materials": "Thrown on the wheel from stoneware clay and glazed in a soft matte white that breaks to bare clay at the rim. One litre, watertight, and balanced to pour clean without a drip.",
+        "dimensions": "Ø 11 × H 22 cm; 1 L",
+        "care": "Dishwasher-safe, though hand washing keeps the matte glaze even over the years. The unglazed rim may darken a little with use — that is the clay showing through, not a fault, and it wipes back.",
+        "origin": "Made in Portugal"
+      },
       "variants": [
         {
           "sku": "ATN-CARAFE",
@@ -315,6 +357,13 @@
       "collectionHandles": ["new-arrivals", "tabletop"],
       "seoTitle": "Stoneware Vase Set — pair of speckled stoneware vases",
       "seoDescription": "A pair of speckled-oatmeal stoneware vases, one tall and one low.",
+      "productTypeKey": "home_goods",
+      "attributes": {
+        "materials": "A pair of wheel-thrown stoneware vases — one tall and narrow, one low and wide — in a speckled oatmeal glaze. Sold together, both watertight, and made to sit apart.",
+        "dimensions": "Tall Ø 12 × H 26 cm; low Ø 18 × H 14 cm",
+        "care": "Both hold water for fresh stems — rinse and dry after each use. Dishwasher-safe, but a gentle hand wash keeps the speckled glaze looking its best; empty them before a hard frost if they live on a sill.",
+        "origin": "Made in Portugal"
+      },
       "variants": [
         {
           "sku": "ATN-VASESET",
@@ -343,6 +392,13 @@
       "collectionHandles": ["textiles"],
       "seoTitle": "Lambswool Throw — brushed British lambswool throw",
       "seoDescription": "A generously sized brushed British-lambswool throw with a fringed edge.",
+      "productTypeKey": "home_goods",
+      "attributes": {
+        "materials": "100% British lambswool, woven with a soft brushed face and finished with a hand-knotted fringe, in oat or slate. Warm without weight, and naturally springy so it does not crush flat.",
+        "dimensions": "130 × 180 cm",
+        "care": "Air it rather than wash it where you can; when it needs it, dry-clean or hand wash cool on the wool cycle and dry flat. No tumble dryer — heat felts the wool — and comb the fringe straight with your fingers.",
+        "origin": "Made in the United Kingdom"
+      },
       "options": [
         {
           "name": "Colour",
@@ -396,6 +452,13 @@
       "collectionHandles": ["new-arrivals", "textiles"],
       "seoTitle": "Mohair Cushion — plush mohair cushion with down pad",
       "seoDescription": "A deep plush mohair cushion with a feather-down pad and a hidden zip.",
+      "productTypeKey": "home_goods",
+      "attributes": {
+        "materials": "A deep, plush mohair face backed in brushed cotton, over a feather-down inner pad, closed with a hidden zip. In rust or sand.",
+        "dimensions": "50 × 50 cm",
+        "care": "Unzip and dry-clean the cover; plump and rotate the down pad to keep its loft. Shake it out rather than beating it, and keep it clear of long direct sun so the colour holds.",
+        "origin": "Made in the United Kingdom"
+      },
       "options": [
         {
           "name": "Colour",
@@ -449,6 +512,13 @@
       "collectionHandles": [],
       "seoTitle": "Leather Magazine Sling — saddle-leather magazine holder",
       "seoDescription": "A hand-riveted vegetable-tanned saddle-leather magazine sling.",
+      "productTypeKey": "home_goods",
+      "attributes": {
+        "materials": "Cut from vegetable-tanned saddle leather and riveted by hand with solid-brass hardware. Undyed, so it darkens and softens the more it is used.",
+        "dimensions": "Panel 40 × 30 cm; hangs to 55 cm",
+        "care": "Wipe with a dry cloth and feed it with a neutral leather balm once or twice a year. It will patina and darken with use — that is the leather living, not wearing out — so just keep it out of standing water.",
+        "origin": "Made in Italy"
+      },
       "variants": [
         {
           "sku": "ATN-SLING",
@@ -477,6 +547,13 @@
       "collectionHandles": ["tabletop"],
       "seoTitle": "Cork Serving Tray — cork tray with oak lip",
       "seoDescription": "A light cork serving tray pressed from a single slab with a solid oak lip.",
+      "productTypeKey": "home_goods",
+      "attributes": {
+        "materials": "Pressed from a single slab of natural cork with a solid-oak lip — light, warm to the hand, quiet to set down and kind to glassware. It even floats.",
+        "dimensions": "W 45 × D 30 × H 4 cm",
+        "care": "Wipe with a damp cloth and dry flat; cork does not like a long soak or a dishwasher. A little food-safe oil on the oak lip once a year keeps it from drying and lightening.",
+        "origin": "Made in Portugal"
+      },
       "variants": [
         {
           "sku": "ATN-TRAY",
@@ -505,6 +582,13 @@
       "collectionHandles": ["tabletop"],
       "seoTitle": "Brass Candleholder — turned solid-brass candleholder",
       "seoDescription": "A turned solid-brass candleholder with a weighted base and wide drip dish.",
+      "productTypeKey": "home_goods",
+      "attributes": {
+        "materials": "Turned from solid brass with a weighted base and a wide drip dish, sized for a standard dinner candle. Left unlacquered so it takes on a living patina.",
+        "dimensions": "Ø 12 × H 9 cm",
+        "care": "Peel cooled wax away by hand and wipe it clean; polish the brass to bring the shine back, or leave it to darken — both are right. Unlacquered brass patinas over time, exactly as it should.",
+        "origin": "Made in our Oslo workshop"
+      },
       "variants": [
         {
           "sku": "ATN-CANDLE",

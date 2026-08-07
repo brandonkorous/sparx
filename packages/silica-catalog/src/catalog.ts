@@ -12,6 +12,7 @@
 import type { CatalogGroup } from './types';
 import { buyBox, collectionHeader, productCard, productsBlock } from './commerce';
 import { SECTION_CATALOG } from './sections';
+import { MEDIA_CATALOG } from './sections/media';
 
 /** sparx's `host.catalog().extend` — the commerce composites silica doesn't ship.
  *  Icons are silica `IconName`s (the dashboard adapter narrows the `string` type). */
@@ -95,4 +96,8 @@ export const SITE_CATALOG: CatalogGroup[] = [];
  * `COMMERCE_CATALOG` would silently ship a builder missing every section, which is
  * exactly the state this slice existed to end.
  */
-export const SPARX_CATALOG: CatalogGroup[] = [...COMMERCE_CATALOG, ...SECTION_CATALOG];
+export const SPARX_CATALOG: CatalogGroup[] = [
+  ...COMMERCE_CATALOG,
+  ...SECTION_CATALOG,
+  ...MEDIA_CATALOG,
+];

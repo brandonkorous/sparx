@@ -48,9 +48,12 @@ import { writeTemplatePreview } from './template-sites/preview';
 import { videoBackdrop } from './template-sites/behaviors';
 import {
   addToCartForm,
+  pdpAttributes,
   pdpDescription,
   pdpImage,
+  pdpPolicyLinks,
   pdpPriceRow,
+  pdpStockBadge,
   pdpTitle,
   productPage,
 } from './template-sites/pdp';
@@ -412,6 +415,16 @@ interface Product {
   description: string;
   status: 'active';
   productType: string;
+  // The typed product type (docs/143) — every piece here is `electronics`, so the PDP's
+  // `pdpAttributes` renders each product's OWN specs/connectivity/box-contents/warranty
+  // (real per-product copy, not a hardcoded spec table).
+  productTypeKey: 'electronics';
+  attributes: {
+    specs: { label: string; value: string }[];
+    connectivity: string;
+    inTheBox: string;
+    warranty: string;
+  };
   vendor: string;
   tags: string[];
   categoryHandles: string[];
@@ -439,6 +452,23 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals', 'headphones'],
     seoTitle: 'Aphelion One — open-back planar-magnetic headphones',
     seoDescription: 'Flagship open-back over-ear headphones with a hand-matched planar-magnetic driver and replaceable parts.',
+    productTypeKey: 'electronics',
+    attributes: {
+      specs: [
+        { label: 'Driver', value: 'Hand-matched planar-magnetic, 100 mm' },
+        { label: 'Design', value: 'Open-back, over-ear' },
+        { label: 'Impedance', value: '32 Ω' },
+        { label: 'Sensitivity', value: '100 dB / mW' },
+        { label: 'Frequency range', value: '8 Hz – 50 kHz' },
+        { label: 'Weight', value: '385 g' },
+      ],
+      connectivity:
+        'Wired only, on a detachable 1.5 m cable terminated in 3.5 mm, with a 6.35 mm screw-on adapter in the box and an optional balanced cable for a blacker background. Open-backs are made to sit still and be driven properly — there is no battery to age and no wireless to compress the signal.',
+      inTheBox:
+        'The Aphelion One, a detachable 1.5 m single-ended cable, a 6.35 mm adapter, a spare set of protein-leather earpads and a hard storage case.',
+      warranty:
+        'Three years, with a sixty-day home audition. Every wear part — earpads, cable, headband — is a stocked replaceable spare, so a tired pair is repaired, never retired.',
+    },
     options: [
       { name: 'Finish', displayType: 'swatch', values: [{ value: 'Onyx' }, { value: 'Titanium' }] },
     ],
@@ -461,6 +491,23 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['headphones'],
     seoTitle: 'Aphelion One Wireless — adaptive-ANC over-ear headphones',
     seoDescription: 'Wireless over-ear headphones with adaptive noise cancelling, 38-hour battery, and the reference One tuning.',
+    productTypeKey: 'electronics',
+    attributes: {
+      specs: [
+        { label: 'Driver', value: 'Planar-magnetic, 100 mm' },
+        { label: 'Design', value: 'Closed-back, over-ear' },
+        { label: 'Noise cancelling', value: 'Adaptive hybrid, −42 dB' },
+        { label: 'Battery', value: '38 h with cancelling on' },
+        { label: 'Fast charge', value: '10 min for a full day' },
+        { label: 'Weight', value: '330 g' },
+      ],
+      connectivity:
+        'Bluetooth 5.3 with high-resolution LDAC and multipoint to two devices, plus the supplied analogue cable for wired listening with zero latency. USB-C both charges it and passes audio, so it works while it tops up.',
+      inTheBox:
+        'The Aphelion One Wireless, a 1.2 m USB-C charging cable, a 1.5 m analogue listening cable, a 6.35 mm adapter and a hard travel case.',
+      warranty:
+        'Three years, with a sixty-day home audition. The battery is a serviceable part we replace rather than write the headphone off when it eventually tires.',
+    },
     options: [
       { name: 'Finish', displayType: 'swatch', values: [{ value: 'Onyx' }, { value: 'Graphite' }] },
     ],
@@ -483,6 +530,23 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals', 'earbuds'],
     seoTitle: 'Aphelion Buds Pro — ANC true-wireless earbuds with LDAC',
     seoDescription: 'True-wireless earbuds with high-resolution LDAC, deep active noise cancelling, and a sealed four-size fit.',
+    productTypeKey: 'electronics',
+    attributes: {
+      specs: [
+        { label: 'Driver', value: '11 mm dynamic' },
+        { label: 'Noise cancelling', value: 'Hybrid, up to −40 dB' },
+        { label: 'Battery', value: '8 h buds, 30 h with case' },
+        { label: 'Water resistance', value: 'IPX4 (buds)' },
+        { label: 'Codecs', value: 'LDAC, AAC, SBC' },
+        { label: 'Fit', value: 'Sealed, four tip sizes' },
+      ],
+      connectivity:
+        'Bluetooth 5.3 with high-resolution LDAC, AAC and multipoint to two devices. The case charges over USB-C or any Qi wireless pad, and either bud runs solo for calls while the other rests.',
+      inTheBox:
+        'The Aphelion Buds Pro, a USB-C charging case, four sizes of silicone tips (XS–L) and a short USB-C cable.',
+      warranty:
+        'Two years, with a sixty-day home audition. Tips are replaceable and the case is stocked as a spare part if it is ever lost.',
+    },
     options: [
       { name: 'Finish', displayType: 'swatch', values: [{ value: 'Onyx' }, { value: 'Titanium' }] },
     ],
@@ -505,6 +569,23 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['earbuds'],
     seoTitle: 'Aphelion Buds Air — everyday true-wireless earbuds',
     seoDescription: 'Light, comfortable true-wireless earbuds with the Aphelion signature, long battery, and clear call pickup.',
+    productTypeKey: 'electronics',
+    attributes: {
+      specs: [
+        { label: 'Driver', value: '10 mm dynamic' },
+        { label: 'Noise cancelling', value: 'None — light open fit' },
+        { label: 'Battery', value: '7 h buds, 28 h with case' },
+        { label: 'Water resistance', value: 'IPX4 (buds)' },
+        { label: 'Codecs', value: 'AAC, SBC' },
+        { label: 'Microphones', value: 'Dual, wind-reduced' },
+      ],
+      connectivity:
+        'Bluetooth 5.3 with AAC and multipoint to two devices. USB-C charging, fast-pair the first time you open the case, and clear dual-mic voice pickup that hears you over the wind.',
+      inTheBox:
+        'The Aphelion Buds Air, a USB-C charging case, two extra tip sizes and a short USB-C cable.',
+      warranty:
+        'Two years, with a sixty-day home audition. A light everyday earbud, built to be replaced part by part rather than as a whole.',
+    },
     options: [
       { name: 'Finish', displayType: 'swatch', values: [{ value: 'Onyx' }, { value: 'Graphite' }] },
     ],
@@ -527,6 +608,23 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals', 'speakers'],
     seoTitle: 'Aphelion Monolith — reference active bookshelf speakers (pair)',
     seoDescription: 'A matched pair of reference active bookshelf speakers with the amplifier built in and tuned to the driver.',
+    productTypeKey: 'electronics',
+    attributes: {
+      specs: [
+        { label: 'Type', value: 'Active two-way bookshelf' },
+        { label: 'Amplifier', value: '80 W per channel, built in' },
+        { label: 'Drivers', value: '25 mm tweeter, 130 mm mid-bass' },
+        { label: 'Frequency range', value: '42 Hz – 30 kHz' },
+        { label: 'Room correction', value: 'On-board, self-measuring' },
+        { label: 'Weight', value: '6.2 kg each' },
+      ],
+      connectivity:
+        'Balanced XLR and RCA analogue in, plus optical, coaxial and USB digital in — the amplifier and DAC live inside, tuned to the exact driver, so you plug a source straight in with no separate box and no mismatch. The two speakers link over a single supplied cable.',
+      inTheBox:
+        'A matched pair of Aphelion Monolith speakers, the inter-speaker link cable, a power lead for each, magnetic grilles and two sets of isolation feet.',
+      warranty:
+        'Five years on the drivers and cabinet, two on the electronics, with a sixty-day home audition. Room-correction firmware updates over USB for the life of the pair.',
+    },
     options: [
       { name: 'Finish', displayType: 'swatch', values: [{ value: 'Onyx' }, { value: 'Walnut' }] },
     ],
@@ -549,6 +647,23 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['speakers'],
     seoTitle: 'Aphelion Field — IP67 portable Bluetooth speaker',
     seoDescription: 'A rugged IP67 portable Bluetooth speaker with an all-afternoon battery and an honest, un-boomy tuning.',
+    productTypeKey: 'electronics',
+    attributes: {
+      specs: [
+        { label: 'Type', value: 'Portable, sealed enclosure' },
+        { label: 'Drivers', value: 'Dual 45 mm + passive radiator' },
+        { label: 'Battery', value: 'Up to 18 h' },
+        { label: 'Water & dust', value: 'IP67 rated' },
+        { label: 'Pairing', value: 'Stereo-pair two units' },
+        { label: 'Weight', value: '680 g' },
+      ],
+      connectivity:
+        'Bluetooth 5.3 with AAC, a 3.5 mm aux in for anything wired, and USB-C charging that will also top up a phone in a pinch. Pair two Fields for a true left-and-right stereo image.',
+      inTheBox:
+        'The Aphelion Field, a USB-C charging cable, a woven carry strap and a quick-start card.',
+      warranty:
+        'Two years, with a sixty-day home audition. Sealed to IP67 against dust and water, so a beach or a spilled drink is a wipe-down, not a repair.',
+    },
     options: [
       { name: 'Finish', displayType: 'swatch', values: [{ value: 'Onyx' }, { value: 'Sand' }] },
     ],
@@ -571,6 +686,23 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['new-arrivals'],
     seoTitle: 'Aphelion Pulse — portable USB-C DAC and headphone amplifier',
     seoDescription: 'A pocket USB-C DAC and headphone amplifier that drives demanding headphones from a laptop or phone.',
+    productTypeKey: 'electronics',
+    attributes: {
+      specs: [
+        { label: 'Type', value: 'USB-C DAC & headphone amp' },
+        { label: 'Output', value: '2 Vrms, drives up to 300 Ω' },
+        { label: 'DAC resolution', value: 'Up to 32-bit / 384 kHz' },
+        { label: 'Formats', value: 'PCM and native DSD' },
+        { label: 'Control', value: 'Machined analogue volume dial' },
+        { label: 'Weight', value: '95 g' },
+      ],
+      connectivity:
+        'One USB-C in from a laptop or phone, one 3.5 mm and one 4.4 mm balanced headphone out. Bus-powered, so there is no battery and no wall wart — one cable in, your headphones out, everything louder and cleaner.',
+      inTheBox:
+        'The Aphelion Pulse, a USB-C to USB-C cable, a USB-C to USB-A adapter and a silicone band for stacking it to a phone.',
+      warranty:
+        'Three years, with a sixty-day home audition. Firmware updates over the same USB-C port keep it current with new formats.',
+    },
     variants: [{ sku: 'APH-PULSE', priceCents: money(229), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'aphelion-pulse', isPrimary: true, alt: 'The Aphelion Pulse DAC and amplifier' }],
   },
@@ -587,6 +719,23 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['speakers'],
     seoTitle: 'Aphelion Ridgeline — self-calibrating soundbar',
     seoDescription: 'A slim soundbar with clear dialogue and real weight that measures your room and tunes itself to it.',
+    productTypeKey: 'electronics',
+    attributes: {
+      specs: [
+        { label: 'Type', value: 'Self-calibrating soundbar' },
+        { label: 'Channels', value: '3.1.2, room-corrected' },
+        { label: 'Drivers', value: 'Six drivers + up-firing pair' },
+        { label: 'Tuning', value: 'Automatic room measurement' },
+        { label: 'Placement', value: 'Shelf or wall mount' },
+        { label: 'Width', value: '98 cm' },
+      ],
+      connectivity:
+        'HDMI eARC to the television, plus optical in and Bluetooth for music. It measures your room on setup and tunes itself — no rack of boxes, no calibration mic to fuss with.',
+      inTheBox:
+        'The Aphelion Ridgeline, an HDMI eARC cable, a wall-mount template and bracket, and a power lead.',
+      warranty:
+        'Three years, with a sixty-day home audition. Room tuning and format support update over HDMI for the life of the bar.',
+    },
     variants: [{ sku: 'APH-RIDGE', priceCents: money(599), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'aphelion-ridgeline', isPrimary: true, alt: 'The Aphelion Ridgeline soundbar' }],
   },
@@ -603,6 +752,22 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['accessories'],
     seoTitle: 'Aphelion Balanced Cable — braided replacement headphone cable',
     seoDescription: 'A braided balanced replacement cable in oxygen-free copper for the Aphelion One headphones.',
+    productTypeKey: 'electronics',
+    attributes: {
+      specs: [
+        { label: 'Type', value: 'Balanced replacement cable' },
+        { label: 'Conductor', value: 'Oxygen-free copper' },
+        { label: 'Amp connector', value: '4.4 mm balanced' },
+        { label: 'Fits', value: 'Aphelion One / One Wireless' },
+        { label: 'Lengths', value: '1.5 m or 3 m' },
+        { label: 'Sleeve', value: 'Braided, low-microphonic' },
+      ],
+      connectivity:
+        'A passive analogue cable — a balanced 4.4 mm at the amplifier end and dual locking connectors at the earcups, keeping the left and right channels fully apart for a cleaner, blacker background.',
+      inTheBox: 'The Aphelion Balanced Cable in your chosen length, and a reusable cable tie.',
+      warranty:
+        'Two years. A replaceable wear part by design, so a worn cable is a small part to swap, never a reason to retire the headphones.',
+    },
     options: [
       { name: 'Length', displayType: 'dropdown', values: [{ value: '1.5 m' }, { value: '3 m' }] },
     ],
@@ -625,6 +790,23 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['accessories'],
     seoTitle: 'Aphelion Stand — machined aluminium headphone stand',
     seoDescription: 'A weighted machined-aluminium headphone stand with a soft yoke and a cable channel.',
+    productTypeKey: 'electronics',
+    attributes: {
+      specs: [
+        { label: 'Material', value: 'Machined aluminium' },
+        { label: 'Base', value: 'Wide and weighted' },
+        { label: 'Yoke', value: 'Soft-touch, headband-safe' },
+        { label: 'Cable', value: 'Rear routing channel' },
+        { label: 'Finish', value: 'Anodised' },
+        { label: 'Weight', value: '640 g' },
+      ],
+      connectivity:
+        'None — a passive desk stand. The channel down the back keeps the cable off your keyboard rather than routing any signal.',
+      inTheBox:
+        'The Aphelion Stand, assembled, with felt base pads and a hex key for the yoke.',
+      warranty:
+        'Two years against any manufacturing fault in the machining or the anodised finish.',
+    },
     variants: [{ sku: 'APH-STAND', priceCents: money(79), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'aphelion-stand', isPrimary: true, alt: 'The Aphelion Stand' }],
   },
@@ -641,6 +823,23 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['accessories'],
     seoTitle: 'Aphelion Travel Case — hard case for earbuds and the Pulse',
     seoDescription: 'A crush-proof hard travel case with a moulded tray for the Aphelion Buds Pro and Pulse.',
+    productTypeKey: 'electronics',
+    attributes: {
+      specs: [
+        { label: 'Type', value: 'Hard travel case' },
+        { label: 'Shell', value: 'Crush-proof moulded EVA' },
+        { label: 'Interior', value: 'Moulded holding tray' },
+        { label: 'Fits', value: 'Buds Pro and the Pulse' },
+        { label: 'Zip', value: 'Tested to 50,000 cycles' },
+        { label: 'Weight', value: '140 g' },
+      ],
+      connectivity:
+        'None — protection, not electronics. The moulded tray holds each piece and its tips in place so nothing rattles loose in a bag.',
+      inTheBox:
+        'The Aphelion Travel Case with its moulded tray, and a clip-in mesh pocket for cables and tips.',
+      warranty:
+        'Two years, covering the zip and the shell against failure in normal use.',
+    },
     variants: [{ sku: 'APH-CASE', priceCents: money(69), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'aphelion-case', isPrimary: true, alt: 'The Aphelion Travel Case' }],
   },
@@ -657,6 +856,22 @@ const PRODUCTS: Product[] = [
     collectionHandles: ['accessories'],
     seoTitle: 'Aphelion Earpads — replacement earpads for the One',
     seoDescription: 'Factory-grade replacement earpads in protein leather and memory foam for the Aphelion One.',
+    productTypeKey: 'electronics',
+    attributes: {
+      specs: [
+        { label: 'Type', value: 'Replacement earpads' },
+        { label: 'Material', value: 'Protein leather, memory foam' },
+        { label: 'Fits', value: 'Aphelion One / One Wireless' },
+        { label: 'Fitting', value: 'Twist-lock, tool-free' },
+        { label: 'Sold as', value: 'A matched pair' },
+        { label: 'Swap time', value: 'About five minutes' },
+      ],
+      connectivity:
+        'None — a factory-grade wear part. Swapping the pads restores the seal, the comfort and the bass a tired pair slowly loses.',
+      inTheBox: 'A matched pair of Aphelion Earpads, and a quick-fit card.',
+      warranty:
+        'One year. Pads are the part that wears, so we price them to be replaced every couple of years without a second thought.',
+    },
     variants: [{ sku: 'APH-PADS', priceCents: money(39), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'aphelion-pads', isPrimary: true, alt: 'The Aphelion Earpads' }],
   },
@@ -792,39 +1007,14 @@ const CONTENT = [
 // lifestyle (DESIGN §4 PDP-anatomy / §6). Ported to Aphelion in the `flux` true-dark
 // theme: a two-column dark split — a large product render left on the near-black
 // `base-100` ground, a spec-heavy buy column right (breadcrumb → title → price →
-// description → real Add-to-cart → a labelled spec table → measured/shipping notes). The
+// description → real Add-to-cart → the typed attribute table → shipping/returns links). The
 // one electric-blue signal stays on the chrome + primary action; every readable line is
 // ink (`text-base-content`) so contrast holds on the dark ground. Bound fields come from
-// the shared PDP kit (correct `repeat('product')` scope + `item.*` binds); the layout and
-// the brand copy are ours.
-
-/** One labelled spec line in the buy-box table — an uppercase caption label and its value
- *  on one hairline-ruled row (the DJI "icon + value + grey label" spec highlight, flattened
- *  to a legible key/value line). Brand-wide facts that hold across the whole reference line,
- *  so the same block reads true on any product the storefront routes here. */
-function specRow(label: string, value: string): Node {
-  return el('div', 'flex items-baseline justify-between gap-6 border-t border-base-300 py-3', {
-    children: [
-      el('span', 'text-sm font-medium uppercase tracking-widest text-base-content', {
-        text: label,
-      }),
-      el('span', 'text-right text-base font-medium text-base-content', { text: value }),
-    ],
-  });
-}
-
-/** One prose detail block below the spec table — an `<h2>` small-caps label over a
- *  paragraph of static brand copy (the DJI "measured, then published" / support beats).
- *  Stacked rather than tabbed so it reads with no JavaScript and carries no behaviour
- *  marker. */
-function pdpNote(label: string, bodyText: string): Node {
-  return el('div', 'flex flex-col gap-2', {
-    children: [
-      el('h2', 'text-sm font-semibold uppercase tracking-widest text-base-content', { text: label }),
-      el('p', 'text-base leading-relaxed text-base-content', { text: bodyText }),
-    ],
-  });
-}
+// the shared PDP kit (correct `repeat('product')` scope + `item.*` binds). The spec table is
+// no longer hardcoded per template (a soundbar's specs ≠ an earpad's): `pdpAttributes`
+// repeats the routed piece's OWN typed `electronics` attributes (docs/143) — specifications,
+// connectivity, in-the-box and warranty — and `pdpPolicyLinks` points at the real
+// shipping/returns pages. The layout is ours.
 
 /** The bespoke buy REGION — authored UNSCOPED; `productPage` wraps it in `repeat('product')`.
  *  Left: the big cinematic product render. Right: the spec-forward buy column. */
@@ -857,40 +1047,38 @@ function pdpBuyRegion(): Node {
                     compareClass: 'text-lg text-base-content line-through',
                     rowClass: 'flex items-baseline gap-4',
                   }),
+                  // A real low-stock signal in the electric-blue primary — shown only when the
+                  // routed piece is genuinely running low (never fabricated scarcity).
+                  pdpStockBadge({
+                    className:
+                      'inline-flex w-fit items-center gap-2 rounded-field bg-primary px-3 py-1 text-xs font-semibold uppercase tracking-widest text-primary-content',
+                    label: 'Low stock',
+                  }),
                 ],
               }),
               pdpDescription('text-lg leading-relaxed text-base-content'),
               // Qty + Add to cart — the real cart form (electric-blue btn-primary in `flux`).
               addToCartForm(),
-              // The spec table — the DJI spec highlights, flattened to legible key/value lines.
-              el('div', 'mt-2 flex flex-col gap-3', {
-                children: [
-                  el('h2', 'text-sm font-semibold uppercase tracking-widest text-base-content', {
-                    text: 'The reference standard',
-                  }),
-                  el('div', 'flex flex-col', {
-                    children: [
-                      specRow('Tuning', 'Reference-flat, voiced in our own room'),
-                      specRow('Signal', 'Full 20 Hz – 40 kHz range, nothing rounded off'),
-                      specRow('Build', 'Machined aluminium, replaceable parts'),
-                      specRow('Connection', 'High-resolution wired & wireless'),
-                      specRow('Warranty', '3 years, plus a 60-day home audition'),
-                    ],
-                  }),
-                ],
+              // The product's OWN typed attributes — the DJI spec table, now per-product:
+              // `specs` repeats as key/value rows, and connectivity / in-the-box / warranty
+              // read as prose, all from `attributeSections` (docs/143). Real per-product copy,
+              // not a hardcoded, byte-identical spec block.
+              pdpAttributes({
+                containerClass: 'mt-2 flex flex-col gap-6',
+                sectionClass: 'flex flex-col gap-2 border-t border-base-300 pt-5',
+                labelTag: 'h2',
+                labelClass: 'text-sm font-semibold uppercase tracking-widest text-base-content',
+                valueClass: 'text-base leading-relaxed text-base-content',
+                rowClass:
+                  'flex items-baseline justify-between gap-6 border-t border-base-300 py-3',
+                rowLabelClass: 'text-sm font-medium uppercase tracking-widest text-base-content',
+                rowValueClass: 'text-right text-base font-medium text-base-content',
               }),
-              // The measured/shipping detail stack.
-              el('div', 'mt-2 flex flex-col gap-6', {
-                children: [
-                  pdpNote(
-                    'Measured, then published',
-                    'Every number we quote is one we test for — on our own gear, in our own room, the same way you will hear it. Nothing here is a lab-best figure we could force once and never meet again; it is the sound that turns up at your door.'
-                  ),
-                  pdpNote(
-                    'Shipping, returns & the home audition',
-                    'Free insured shipping, dispatched within two business days and tracked to your door. Every Aphelion piece ships with a sixty-day home audition — listen on your own music, in your own room, and send it back for a full refund if it does not earn its place.'
-                  ),
-                ],
+              // Shipping & returns — LINKS to the store's real legal pages, never reprinted copy.
+              pdpPolicyLinks({
+                className:
+                  'flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-5 text-sm font-semibold uppercase tracking-widest text-base-content',
+                linkClass: 'underline underline-offset-4',
               }),
             ],
           }),
