@@ -41,11 +41,28 @@ param(
     [Parameter(Mandatory = $true, ParameterSetName = 'Load')]
     [string]$FromEnvFile,
 
+    # Seed from the RUNNING cluster's Secret instead of a file.
+    #
+    # This is the honest migration path, and usually the only one: the repo blob
+    # cannot be read back, and a hand-kept copy of it drifts. The live Secret is
+    # by definition what production is actually using — 77 keys here against the
+    # ~30 the template documents, which is the same drift the old GCP script's
+    # drop-guard existed to catch.
+    [Parameter(Mandatory = $true, ParameterSetName = 'Cluster')]
+    [switch]$FromClusterSecret,
+
+    [Parameter(ParameterSetName = 'Cluster')]
+    [string]$Namespace = 'sparx-prod',
+
+    [Parameter(ParameterSetName = 'Cluster')]
+    [string]$SecretName = 'sparx-app-secrets',
+
     [Parameter(Mandatory = $true, ParameterSetName = 'List')]
     [switch]$List,
 
     # Show what would be written without writing it.
     [Parameter(ParameterSetName = 'Load')]
+    [Parameter(ParameterSetName = 'Cluster')]
     [switch]$WhatIfOnly
 )
 
@@ -78,6 +95,67 @@ if ($List) {
     }
     return
 }
+
+# ── Values the vault must NOT hold ───────────────────────────────────────────
+# All three are DERIVED by the release, not supplied, and vaulting them turns a
+# derivation into a stale copy:
+#
+#   AZURE_STORAGE_* — read from Terraform output each run. A key rotation that
+#     the vault did not hear about means both media backends fall through to the
+#     LOCAL DISK path, silently. That has already cost months of production media
+#     living on one ReadWriteOnce disk.
+#   OPERATOR_DATABASE_URL — derived from DATABASE_URL as the wize_operator role.
+#     Supplying it would pin the password at migration time and lock apps/admin
+#     out the next time the app password rotates.
+$DerivedKeys = @('AZURE_STORAGE_ACCOUNT', 'AZURE_STORAGE_KEY', 'OPERATOR_DATABASE_URL')
+
+# ── How a value is stored ────────────────────────────────────────────────────
+# Most go in literally. A value with LEADING OR TRAILING WHITESPACE, or an
+# embedded newline, goes in base64 under a `-b64` name instead — because the
+# release rebuilds a dotenv file, and `--from-env-file` reads LINES: a trailing
+# carriage return is indistinguishable from a line ending to any text parser, and
+# trimming it is the reasonable thing for a text format to do.
+#
+# That is not hypothetical. OPERATOR_AUTH_SECRET really does end with a \r, Better
+# Auth uses the secret's exact bytes as key material for encrypted TOTP secrets and
+# backup codes, and dropping it stops every operator's authenticator AND their
+# backup codes from verifying. The release already grafts `_B64` keys straight into
+# the Secret's `data` field where no text tool touches them; this DETECTS which
+# values need that rather than relying on someone remembering.
+function Get-VaultEntry([string]$EnvName, [string]$Value) {
+    # A dotenv source already carries the convention — leave it alone.
+    if ($EnvName.EndsWith('_B64')) {
+        return @{ Name = (ConvertTo-VaultName $EnvName); Value = $Value; Encoded = $true }
+    }
+    $needsBase64 = ($Value -ne $Value.Trim()) -or ($Value -match "[`r`n]")
+    if ($needsBase64) {
+        $b64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($Value))
+        return @{ Name = (ConvertTo-VaultName "${EnvName}_B64"); Value = $b64; Encoded = $true }
+    }
+    return @{ Name = (ConvertTo-VaultName $EnvName); Value = $Value; Encoded = $false }
+}
+
+if ($FromClusterSecret) {
+    Write-Host "Reading $SecretName from namespace $Namespace..." -ForegroundColor Cyan
+    $json = kubectl get secret $SecretName -n $Namespace -o json 2>&1 | Out-String
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not read secret/$SecretName in $Namespace. Is the kube context pointed at the right cluster?"
+    }
+    $data = ($json | ConvertFrom-Json).data
+    $pairs = [ordered]@{}
+    foreach ($prop in ($data.PSObject.Properties | Sort-Object Name)) {
+        if ($DerivedKeys -contains $prop.Name) {
+            Write-Host "  skipping $($prop.Name) (derived by the release)" -ForegroundColor DarkYellow
+            continue
+        }
+        # `data` is base64 of the exact bytes the kubelet serves, so this is a
+        # byte-faithful read — including whitespace a text export would eat.
+        $pairs[$prop.Name] = [System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($prop.Value))
+    }
+    if ($pairs.Count -eq 0) { throw "No usable keys in secret/$SecretName." }
+    Write-Host "Read $($pairs.Count) value(s) from the cluster." -ForegroundColor Cyan
+}
+else {
 
 if (-not (Test-Path $FromEnvFile)) {
     throw "No such file: $FromEnvFile"
@@ -131,10 +209,14 @@ if ($pairs.Count -eq 0) {
 
 Write-Host "Parsed $($pairs.Count) value(s) from $FromEnvFile." -ForegroundColor Cyan
 
+} # end dotenv branch
+
 if ($WhatIfOnly) {
     Write-Host "`n-WhatIfOnly: nothing will be written.`n" -ForegroundColor Yellow
     foreach ($name in $pairs.Keys) {
-        "{0,-40} -> {1}" -f $name, (ConvertTo-VaultName $name)
+        $entry = Get-VaultEntry $name $pairs[$name]
+        $note = if ($entry.Encoded) { '  (base64 — value has whitespace/newlines)' } else { '' }
+        "{0,-40} -> {1}{2}" -f $name, $entry.Name, $note
     }
     return
 }
@@ -152,17 +234,18 @@ $failed = @()
 $tmp = [System.IO.Path]::GetTempFileName()
 try {
     foreach ($name in $pairs.Keys) {
-        $vaultName = ConvertTo-VaultName $name
+        $entry = Get-VaultEntry $name $pairs[$name]
         # No BOM, no added newline — WriteAllText with a UTF8Encoding($false).
-        [System.IO.File]::WriteAllText($tmp, $pairs[$name], (New-Object System.Text.UTF8Encoding($false)))
-        az keyvault secret set --vault-name $VaultName --name $vaultName `
+        [System.IO.File]::WriteAllText($tmp, $entry.Value, (New-Object System.Text.UTF8Encoding($false)))
+        az keyvault secret set --vault-name $VaultName --name $entry.Name `
             --file $tmp --output none 2>&1 | Out-Null
         if ($LASTEXITCODE -ne 0) {
-            Write-Warning "FAILED: $name -> $vaultName"
+            Write-Warning "FAILED: $name -> $($entry.Name)"
             $failed += $name
             continue
         }
-        Write-Host "  set $vaultName" -ForegroundColor DarkGray
+        $suffix = if ($entry.Encoded -and -not $name.EndsWith('_B64')) { ' (base64)' } else { '' }
+        Write-Host "  set $($entry.Name)$suffix" -ForegroundColor DarkGray
         $written++
     }
 }
@@ -185,21 +268,25 @@ if ($failed.Count -gt 0) {
 Write-Host "`nVerifying round-trip..." -ForegroundColor Cyan
 $mismatched = @()
 foreach ($name in $pairs.Keys) {
-    $vaultName = ConvertTo-VaultName $name
-    $readBack = az keyvault secret show --vault-name $VaultName --name $vaultName `
+    $entry = Get-VaultEntry $name $pairs[$name]
+    $readBack = az keyvault secret show --vault-name $VaultName --name $entry.Name `
         --query value -o tsv 2>$null
-    # -o tsv strips the trailing newline the CLI adds, but it also strips a
-    # trailing newline that is part of the VALUE. Compare on TrimEnd("`n") both
-    # sides so the check does not fail on an artefact of its own reading.
     if ($null -eq $readBack) { $mismatched += $name; continue }
-    if ($readBack.TrimEnd("`r", "`n") -ne $pairs[$name].TrimEnd("`r", "`n")) {
+
+    # `-o tsv` appends its own newline, so compare against what was WRITTEN with
+    # one trailing newline allowed. Everything stored base64 compares exactly —
+    # base64 never contains whitespace, which is precisely why the whitespace
+    # bearing values are stored that way rather than trusted to a text pipe.
+    $expected = $entry.Value
+    if ($readBack -ne $expected -and $readBack.TrimEnd("`r", "`n") -ne $expected) {
         $mismatched += $name
     }
 }
 
 if ($mismatched.Count -gt 0) {
-    Write-Warning "These did not read back identically (ignoring trailing newline): $($mismatched -join ', ')"
-    Write-Warning "Check them by hand before setting AZURE_KEY_VAULT_NAME. Values with leading/trailing whitespace belong in the vault base64-encoded under a '-b64' name."
+    Write-Warning "These did not read back identically: $($mismatched -join ', ')"
+    Write-Warning "Check them by hand BEFORE setting AZURE_KEY_VAULT_NAME."
+    exit 1
 }
 else {
     Write-Host "All $($pairs.Count) value(s) read back identically." -ForegroundColor Green
