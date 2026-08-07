@@ -634,7 +634,13 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
     name: 'Win-back',
     type: 'marketing',
     category: 'win-back',
-    subject: 'We miss you, {{customer.firstName ?? "friend"}}',
+    // No name in the subject, deliberately. It read `{{customer.firstName ?? "friend"}}`,
+    // and "friend" was the right word for THIS sentence — `customer.greeting` says
+    // "there", which reads wrong here ("We miss you, there"). But a `??` token is the one
+    // shape the builder canvas cannot render, so an author opening this email watched raw
+    // braces sit in the subject field. A subject that needs no name is the honest fix;
+    // the personalization belongs in the body, where the greeting tag already handles it.
+    subject: 'We miss you',
     preheader: 'Come back and see what’s new.',
     sources: ['customer', 'tenant'],
     refs: ['customerId'],
@@ -1047,7 +1053,10 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
     type: 'transactional',
     category: 'scheduling',
     subject: '{{booking.newHeadline}}: {{booking.service}}',
-    preheader: '{{customer.fullName ?? "A customer"}} — {{booking.when}}.',
+    // `displayName` is the never-blank form of `fullName` and says the same thing when
+    // absent ("A customer"), so this loses nothing and gains a preheader the editor can
+    // actually display while an author edits it.
+    preheader: '{{customer.displayName}} — {{booking.when}}.',
     sources: ['customer', 'booking', 'tenant'],
     refs: ['customerId', 'bookingId'],
     tree: bookingNotificationInternal(),

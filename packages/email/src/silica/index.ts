@@ -26,6 +26,9 @@ export {
 // injects; `darkModeRules` is the same rules UNGATED, for the studio's dark preview (an
 // iframe can't be forced into a dark OS preference, so the toggle applies them directly).
 export { buildDarkModeCss, darkModeRules } from './dark-mode';
+// Removes `<img src="">` from a projected body — an empty src makes a mail client fetch
+// the email itself and draw its broken-image icon. See `empty-images.ts`.
+export { dropEmptyEmailImages } from './empty-images';
 // The role→hex map shape silica's `resolveEmailColorDefaults` produces; re-exported so
 // the studio types its canvas colour map without a direct silicaui-builder dep.
 export type { EmailColorDefaults } from '@wizeworks/silicaui-builder/email';

@@ -133,9 +133,14 @@ describe('sendTemplate', () => {
     expect(rendered.templateId).toBe('billing-trial-ending');
   });
 
-  it('wraps every coded template in the shared frame — tiered footer legal line', async () => {
+  it('carries the shared frame — tiered footer legal line', async () => {
     // The frame is defined once in _layout.tsx; assert it cascades by checking a
     // template unrelated to billing carries the new tiered footer legal line.
+    //
+    // This was called "wraps EVERY coded template in the shared frame" while rendering
+    // exactly one, which read as coverage nobody then wrote: thirteen of the twenty
+    // templates had never been rendered by a test at all. `every-template.test.ts` now
+    // actually does all of them; this stays as the depth check on the frame's content.
     const rendered = await _renderTemplateForTest({
       template: 'welcome-merchant',
       to: 'owner@example.test',

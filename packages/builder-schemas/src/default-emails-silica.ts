@@ -16,12 +16,28 @@
 // Merge tokens stay `{{source.field}}`, unchanged — silica interpolates them natively
 // in copy and button labels, and the send covers links. No author relearns anything.
 //
-// The `{{customer.firstName ?? "there"}}` fallback syntax keeps working, via a happy
-// interaction rather than an accident of luck: silica's native token regex only matches
-// bare `[a-zA-Z0-9_.]` paths, so a token carrying a `??` fallback doesn't match, passes
-// through projection verbatim, and is then interpolated by sparx's own
-// `interpolateEmailTokens` pass over the projected HTML — which does understand
-// fallbacks. Without it a customer with no first name would read "Hi  — thanks".
+// ── Why no default uses `?? "fallback"` any more ────────────────────────────
+// It used to. `Hi {{customer.firstName ?? "there"}}` appeared 29 times, and the note
+// here explained that it survived "via a happy interaction": silica's own token regex
+// matches bare `[a-zA-Z0-9_.]` paths, so a token carrying `??` doesn't match, passes
+// through projection verbatim, and is interpolated afterwards by sparx's
+// `interpolateEmailTokens` pass over the projected HTML, which does understand it.
+//
+// That reasoning only ever considered the SEND. On the builder CANVAS nothing runs that
+// second pass — silica renders the copy directly — so every one of those tokens sat in
+// the editor as literal braces while an author worked on the email. The interaction was
+// not happy; it was invisible until someone opened the thing.
+//
+// So the greeting is a merge tag that cannot come out blank: `customer.greeting` and
+// `customer.displayName`, derived at send time by `deriveCustomerNames`. Bare paths,
+// which silica matches, so canvas and inbox now agree — and an owner picking a tag from
+// the reference list never meets `??` syntax in a product built for people who do not
+// write software. Without either, a customer with no first name reads "Hi  — thanks".
+//
+// `??` remains fully supported for anyone who wants a per-sentence fallback (see
+// `email/src/silica/__tests__/merge-token-fallbacks.test.ts`) — it is simply not
+// something sparx's own templates need, and `email-canvas-tokens.test.ts` keeps them
+// that way.
 
 import type { SectionNode } from '@wizeworks/silicaui-builder/email';
 
@@ -57,7 +73,7 @@ const welcomeCustomer = (): SectionNode[] => [
   copyBlock([
     heading('Welcome to {{site.name}}'),
     para(
-      'Hi {{customer.firstName ?? "there"}}, thanks for creating an account — we’re glad you’re here. Here’s what your account can do:'
+      'Hi {{customer.greeting}}, thanks for creating an account — we’re glad you’re here. Here’s what your account can do:'
     ),
   ]),
   moduleFeature(
@@ -100,7 +116,7 @@ const winBack = (): SectionNode[] => [
   copyBlock([
     heading('It’s been a while'),
     para(
-      'We haven’t seen you at {{site.name}} in a bit, {{customer.firstName ?? "there"}}. There’s plenty new since your last visit — come take a look.'
+      'We haven’t seen you at {{site.name}} in a bit, {{customer.greeting}}. There’s plenty new since your last visit — come take a look.'
     ),
     button('See what’s new', '{{site.url}}', 'center'),
   ]),
@@ -125,7 +141,7 @@ const postPurchaseReview = (): SectionNode[] => [
   copyBlock([
     heading('How was your order?'),
     para(
-      'Thanks for shopping with {{site.name}}, {{customer.firstName ?? "there"}}. We’d love to hear what you thought of order {{order.number}}:'
+      'Thanks for shopping with {{site.name}}, {{customer.greeting}}. We’d love to hear what you thought of order {{order.number}}:'
     ),
   ]),
   ...itemsTable('order.items'),
@@ -143,7 +159,7 @@ const chatSatisfaction = (): SectionNode[] => [
   copyBlock([
     heading('How did we do?'),
     para(
-      'Thanks for chatting with {{site.name}}, {{customer.firstName ?? "there"}}. We’d love a quick word on how the conversation went.'
+      'Thanks for chatting with {{site.name}}, {{customer.greeting}}. We’d love a quick word on how the conversation went.'
     ),
     button('Rate your chat', '{{site.url}}', 'center'),
   ]),
@@ -319,7 +335,7 @@ const orderConfirmation = (): SectionNode[] => [
   copyBlock([
     heading('Your order is confirmed'),
     para(
-      'Thanks for your order, {{customer.firstName ?? "there"}} — we’re getting it ready. Here’s a summary of order {{order.number}}:'
+      'Thanks for your order, {{customer.greeting}} — we’re getting it ready. Here’s a summary of order {{order.number}}:'
     ),
   ]),
   detailPanel(
@@ -347,7 +363,7 @@ const orderConfirmation = (): SectionNode[] => [
 const shippingConfirmation = (): SectionNode[] => [
   copyBlock([
     heading('Your order is on its way'),
-    para('Good news, {{customer.firstName ?? "there"}} — order {{order.number}} has shipped.'),
+    para('Good news, {{customer.greeting}} — order {{order.number}} has shipped.'),
   ]),
   detailPanel(
     [
@@ -379,7 +395,7 @@ const orderDelivered = (): SectionNode[] => [
   copyBlock([
     heading('Your order was delivered'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — your order {{order.number}} has been delivered. We hope it’s everything you expected.'
+      'Hi {{customer.greeting}} — your order {{order.number}} has been delivered. We hope it’s everything you expected.'
     ),
   ]),
   detailPanel(
@@ -406,7 +422,7 @@ const orderCancelled = (): SectionNode[] => [
   copyBlock([
     heading('Your order was cancelled'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — order {{order.number}} has been cancelled. Here’s a summary of what was cancelled:'
+      'Hi {{customer.greeting}} — order {{order.number}} has been cancelled. Here’s a summary of what was cancelled:'
     ),
   ]),
   detailPanel(
@@ -428,9 +444,7 @@ const orderCancelled = (): SectionNode[] => [
 const orderRefunded = (): SectionNode[] => [
   copyBlock([
     heading('Your refund is on the way'),
-    para(
-      'Hi {{customer.firstName ?? "there"}} — we’ve processed a refund for order {{order.number}}.'
-    ),
+    para('Hi {{customer.greeting}} — we’ve processed a refund for order {{order.number}}.'),
   ]),
   detailPanel(
     [
@@ -453,7 +467,7 @@ const paymentFailed = (): SectionNode[] => [
   copyBlock([
     heading('There was a problem with your payment'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — we couldn’t process the payment for order {{order.number}}, so it’s on hold for now.'
+      'Hi {{customer.greeting}} — we couldn’t process the payment for order {{order.number}}, so it’s on hold for now.'
     ),
   ]),
   detailPanel(
@@ -478,7 +492,7 @@ const subscriptionConfirmed = (): SectionNode[] => [
   copyBlock([
     heading('Your subscription is active'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — you’re all set. We’ll take care of the rest and send each order automatically.'
+      'Hi {{customer.greeting}} — you’re all set. We’ll take care of the rest and send each order automatically.'
     ),
   ]),
   detailPanel(
@@ -499,7 +513,7 @@ const subscriptionRenewed = (): SectionNode[] => [
   copyBlock([
     heading('Your subscription renewed'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — your latest order is on its way. Here’s a summary for your records:'
+      'Hi {{customer.greeting}} — your latest order is on its way. Here’s a summary for your records:'
     ),
   ]),
   detailPanel(
@@ -521,7 +535,7 @@ const subscriptionPaymentFailed = (): SectionNode[] => [
   copyBlock([
     heading('There was a problem with your subscription payment'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — we couldn’t process the payment for your latest order, so it’s paused for now.'
+      'Hi {{customer.greeting}} — we couldn’t process the payment for your latest order, so it’s paused for now.'
     ),
   ]),
   detailPanel(
@@ -541,7 +555,7 @@ const subscriptionPaused = (): SectionNode[] => [
   copyBlock([
     heading('Your subscription is paused'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — your subscription is on hold. You won’t be charged and no orders will ship until it resumes.'
+      'Hi {{customer.greeting}} — your subscription is on hold. You won’t be charged and no orders will ship until it resumes.'
     ),
   ]),
   detailPanel(
@@ -566,7 +580,7 @@ const subscriptionResumed = (): SectionNode[] => [
   copyBlock([
     heading('Your subscription is active again'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — welcome back. Your subscription has resumed and your next order is scheduled.'
+      'Hi {{customer.greeting}} — welcome back. Your subscription has resumed and your next order is scheduled.'
     ),
   ]),
   detailPanel(
@@ -584,7 +598,7 @@ const subscriptionCancelled = (): SectionNode[] => [
   copyBlock([
     heading('Your subscription was cancelled'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — your subscription has been cancelled and no further orders will ship.'
+      'Hi {{customer.greeting}} — your subscription has been cancelled and no further orders will ship.'
     ),
   ]),
   detailPanel(
@@ -612,7 +626,7 @@ const subscriptionAuthenticationRequired = (): SectionNode[] => [
   copyBlock([
     heading('Your bank needs you to confirm this payment'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — your card is fine, but your bank asked us to check it’s really you before your next order goes through. It only takes a moment.'
+      'Hi {{customer.greeting}} — your card is fine, but your bank asked us to check it’s really you before your next order goes through. It only takes a moment.'
     ),
   ]),
   detailPanel(
@@ -635,7 +649,7 @@ const subscriptionInvoice = (): SectionNode[] => [
   copyBlock([
     heading('Your repeat order is ready'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — here’s the bill for your latest order. Once it’s paid we’ll get it on its way.'
+      'Hi {{customer.greeting}} — here’s the bill for your latest order. Once it’s paid we’ll get it on its way.'
     ),
   ]),
   detailPanel(
@@ -661,7 +675,7 @@ const returnApproved = (): SectionNode[] => [
   copyBlock([
     heading('Your return is approved'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — we’ve approved your return for order {{order.number}}. Here’s what happens next.'
+      'Hi {{customer.greeting}} — we’ve approved your return for order {{order.number}}. Here’s what happens next.'
     ),
   ]),
   detailPanel(
@@ -681,7 +695,7 @@ const returnReceived = (): SectionNode[] => [
   copyBlock([
     heading('We’ve received your return'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — your return for order {{order.number}} is back with us. Thanks for sending it in.'
+      'Hi {{customer.greeting}} — your return for order {{order.number}} is back with us. Thanks for sending it in.'
     ),
   ]),
   detailPanel(
@@ -700,9 +714,7 @@ const returnReceived = (): SectionNode[] => [
 const returnRefunded = (): SectionNode[] => [
   copyBlock([
     heading('Your refund is complete'),
-    para(
-      'Hi {{customer.firstName ?? "there"}} — we’ve refunded your return for order {{order.number}}.'
-    ),
+    para('Hi {{customer.greeting}} — we’ve refunded your return for order {{order.number}}.'),
   ]),
   detailPanel(
     [
@@ -726,7 +738,7 @@ const b2bOrderApproved = (): SectionNode[] => [
   copyBlock([
     heading('Your order is approved'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — order {{order.number}} has been approved and is now being processed.'
+      'Hi {{customer.greeting}} — order {{order.number}} has been approved and is now being processed.'
     ),
   ]),
   detailPanel(
@@ -743,7 +755,7 @@ const b2bOrderRejected = (): SectionNode[] => [
   copyBlock([
     heading('Your order wasn’t approved'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — order {{order.number}} wasn’t approved, so it hasn’t been placed.'
+      'Hi {{customer.greeting}} — order {{order.number}} wasn’t approved, so it hasn’t been placed.'
     ),
   ]),
   detailPanel(
@@ -799,7 +811,7 @@ const bookingBody = (
 const bookingConfirmation = (): SectionNode[] =>
   bookingBody(
     'Your booking is confirmed',
-    'Hi {{customer.firstName ?? "there"}} — you’re all set. Here are the details:',
+    'Hi {{customer.greeting}} — you’re all set. Here are the details:',
     'Manage booking',
     'Need to reschedule or cancel? You can manage this booking any time with the button above.',
     { label: '✓ Confirmed', role: 'success' }
@@ -808,7 +820,7 @@ const bookingConfirmation = (): SectionNode[] =>
 const bookingReminder = (): SectionNode[] =>
   bookingBody(
     'A reminder about your upcoming booking',
-    'Hi {{customer.firstName ?? "there"}} — a friendly reminder about your upcoming booking:',
+    'Hi {{customer.greeting}} — a friendly reminder about your upcoming booking:',
     'Manage booking',
     'Need to reschedule or cancel? You can manage this booking any time with the button above.',
     { label: 'Upcoming', role: 'info' }
@@ -817,7 +829,7 @@ const bookingReminder = (): SectionNode[] =>
 const bookingRescheduled = (): SectionNode[] =>
   bookingBody(
     'Your booking has been rescheduled',
-    'Hi {{customer.firstName ?? "there"}} — your booking has moved. Here are the new details:',
+    'Hi {{customer.greeting}} — your booking has moved. Here are the new details:',
     'Manage booking',
     'Need to make another change? You can manage this booking any time with the button above.',
     { label: 'Rescheduled', role: 'warning' }
@@ -826,9 +838,7 @@ const bookingRescheduled = (): SectionNode[] =>
 const bookingCancelled = (): SectionNode[] => [
   copyBlock([
     heading('Your booking was cancelled'),
-    para(
-      'Hi {{customer.firstName ?? "there"}} — your booking has been cancelled. Here’s what was cancelled:'
-    ),
+    para('Hi {{customer.greeting}} — your booking has been cancelled. Here’s what was cancelled:'),
   ]),
   detailPanel(
     [
@@ -856,7 +866,7 @@ const bookingCancelled = (): SectionNode[] => [
 const bookingNotificationInternal = (): SectionNode[] => [
   copyBlock([
     heading('{{booking.newHeadline}}'),
-    para('{{customer.fullName ?? "A customer"}} booked {{booking.service}}.'),
+    para('{{customer.displayName}} booked {{booking.service}}.'),
   ]),
   when('booking.pendingApproval', [
     para(
@@ -877,7 +887,11 @@ const bookingNotificationInternal = (): SectionNode[] => [
   ),
   // A second card for the customer's contact details, so a callback is one glance away.
   detailPanel([
-    { label: 'Customer', value: '{{customer.fullName ?? "—"}}' },
+    // `displayName`, not `fullName ?? "—"`: this row carries no `ref`, so unlike its
+    // siblings it cannot hide itself when the value is missing and needed a literal
+    // fallback to avoid an empty cell. A never-blank name removes the need, and reads
+    // the same as the sentence one card above ("A customer booked …").
+    { label: 'Customer', value: '{{customer.displayName}}' },
     { label: 'Email', value: '{{customer.email}}' },
     { label: 'Company', value: '{{customer.company}}', ref: 'customer.company' },
   ]),
@@ -890,7 +904,7 @@ const waitlistOffer = (): SectionNode[] => [
   copyBlock([
     heading('A spot just opened up'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — good news: a spot opened for {{waitlist.service}} in your requested window. Book now to claim it.'
+      'Hi {{customer.greeting}} — good news: a spot opened for {{waitlist.service}} in your requested window. Book now to claim it.'
     ),
   ]),
   detailPanel(

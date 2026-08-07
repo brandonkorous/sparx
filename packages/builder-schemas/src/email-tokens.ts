@@ -82,6 +82,39 @@ export function interpolateEmailTokens(input: string, resolve: (path: string) =>
   });
 }
 
+/**
+ * ONE token's body — everything between the braces — resolved the same way
+ * `interpolateEmailTokens` resolves it in a send.
+ *
+ * WHY THIS EXISTS SEPARATELY. silicaui 0.49 added `resolveExpression` to the email
+ * host: the engine owns exactly one production, a bare dotted path, and hands any
+ * OTHER `{{…}}` body to the host verbatim. That closed a gap the builder had carried
+ * since the beginning — `{{customer.firstName ?? "there"}}` never matched silica's own
+ * token regex, so the CANVAS showed an author raw braces while the send resolved the
+ * token correctly. The canvas was wrong about the one kind of token most worth using.
+ *
+ * The important property is that this is the SAME evaluator, not a second one. Both
+ * paths go through `parseBody`, so the canvas and the inbox cannot disagree about what
+ * a fallback means — which is the failure that would replace the one being fixed.
+ *
+ * Returns `undefined` for a body this grammar does not understand, which is silica's
+ * "leave the literal alone and fire a diagnostic" signal. A body it DOES understand
+ * always resolves to a string, empty included: `{{a ?? ""}}` deliberately renders
+ * nothing rather than reverting to braces.
+ */
+export function resolveEmailExpression(
+  body: string,
+  resolve: (path: string) => unknown
+): { value: string } | undefined {
+  const { path, fallback } = parseBody(body);
+  // No path means the body was only a literal (or nothing at all) — not this grammar.
+  // Handing back the fallback would make `{{ }}` render as empty rather than staying
+  // visible as the mistake it is.
+  if (!path) return undefined;
+  const text = asText(resolve(path));
+  return { value: text !== '' ? text : (fallback ?? '') };
+}
+
 // ── Editor sample data (docs/93) ──────────────────────────────────────────────
 //
 // The Email Builder CANVAS shows authored copy with its merge tokens still raw
@@ -117,6 +150,11 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     fullName: 'Alex Rivera',
     email: 'alex@example.com',
     company: 'Rivera & Co.',
+    // Present here so the CANVAS resolves them exactly as a send does — these are the
+    // two never-blank names (`deriveCustomerNames`), and a sample that omitted them
+    // would show an author raw braces for a tag that works perfectly in the inbox.
+    greeting: 'Alex',
+    displayName: 'Alex Rivera',
   },
   recipient: { firstName: 'Alex', lastName: 'Rivera', email: 'alex@example.com' },
   order: {
@@ -272,4 +310,34 @@ export function collectEmailPaths(tree: BuilderNode, extra: string[] = []): stri
  *  exactly the set `resolveEmailData` must load. */
 export function collectEmailSourceKeys(tree: BuilderNode, extra: string[] = []): Set<string> {
   return new Set(collectEmailPaths(tree, extra).map(bindingSourceKey).filter(Boolean));
+}
+
+/**
+ * Fill the two never-blank customer names, so a greeting cannot come out as "Hi ".
+ *
+ * `customer.greeting` and `customer.displayName` are DERIVED, not stored: a record has a
+ * first name or it doesn't, and every email that greets someone needs an answer either
+ * way. Deriving them once here is what lets the shipped templates say
+ * `Hi {{customer.greeting}}` instead of `Hi {{customer.firstName ?? "there"}}` — the
+ * second is developer syntax in a product for business owners, and it is the one token
+ * shape the builder canvas cannot render, so an author writing it correctly still sees
+ * raw braces while they work.
+ *
+ * A caller-supplied value always wins: if a send already computed a greeting (a nickname,
+ * a localized one), this leaves it alone. Only absent or blank is filled.
+ *
+ * Pure, and returns the SAME object when there is nothing to add, so a send with no
+ * customer scope pays nothing.
+ */
+export function deriveCustomerNames<T extends Record<string, unknown>>(data: T): T {
+  const customer = data.customer;
+  if (!customer || typeof customer !== 'object' || Array.isArray(customer)) return data;
+
+  const c = customer as Record<string, unknown>;
+  const str = (v: unknown): string => (typeof v === 'string' ? v.trim() : '');
+  const greeting = str(c.greeting) || str(c.firstName) || 'there';
+  const displayName = str(c.displayName) || str(c.fullName) || 'A customer';
+  if (str(c.greeting) === greeting && str(c.displayName) === displayName) return data;
+
+  return { ...data, customer: { ...c, greeting, displayName } };
 }

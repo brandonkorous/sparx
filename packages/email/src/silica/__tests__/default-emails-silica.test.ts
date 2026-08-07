@@ -9,6 +9,7 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_EMAIL_TEMPLATES, getDefaultEmailTemplate } from '@sparx/builder-schemas';
 
+import { lintEmailRender } from '../lint';
 import { renderSilicaEmail } from '../render-silica-email';
 
 const brand = {
@@ -298,5 +299,51 @@ describe('the provisioned default emails, on silica', () => {
       { brand }
     );
     expect(transactional.html).not.toContain('Unsubscribe');
+  });
+});
+
+// The defaults, put through the SAME lint the builder shows a tenant.
+//
+// `lint.test.ts` exercises `lintEmailRender` against docs written to trip each check,
+// which proves the checks work but says nothing about what sparx actually ships. The
+// defaults were rendered here and never linted — so a default could carry an `error` (no
+// preheader, an image with no alt, a bare "click here" link, a merge tag pointing at a
+// path that does not exist) while the editor showed the tenant that same failure on an
+// email they did not write and cannot be expected to debug.
+//
+// This is the email analogue of `catalog-sweep.test.ts` for site sections: hold the
+// shipped library to the standard the product enforces on everyone else.
+describe('the provisioned defaults pass sparx own email lint', () => {
+  // `EmailCheckLevel` is `pass | warning | error`. The first cut of this filtered on
+  // `'fail'`, which is not one of them — so it matched nothing and the test passed
+  // without ever looking at a check. A sweep that cannot go red is worse than no sweep,
+  // because it reads like coverage.
+  const lintOf = (t: (typeof DEFAULT_EMAIL_TEMPLATES)[number]) => {
+    const out = renderSilicaEmail({ doc: t.doc, to: 'a@b.test', data: orderData }, { brand });
+    const doc = t.doc as { preheader?: string | null };
+    return lintEmailRender({
+      doc: t.doc,
+      html: out.html,
+      subject: out.subject,
+      preheader: doc.preheader ?? null,
+    });
+  };
+
+  it('ships no default with an ERROR-level check', () => {
+    const offenders = DEFAULT_EMAIL_TEMPLATES.flatMap((t) =>
+      lintOf(t)
+        .filter((c) => c.level === 'error')
+        .map((c) => `${t.key} · ${c.id} — ${c.title}: ${c.detail}`)
+    );
+    expect(offenders).toEqual([]);
+  });
+
+  it('actually evaluates checks — guards against a vacuous sweep', () => {
+    // If the lint ever stops returning checks for these docs (a shape change, an early
+    // return), the assertion above would go green for the wrong reason. Pin that it saw
+    // real checks, including passing ones.
+    const all = DEFAULT_EMAIL_TEMPLATES.flatMap(lintOf);
+    expect(all.length).toBeGreaterThanOrEqual(DEFAULT_EMAIL_TEMPLATES.length);
+    expect(all.some((c) => c.level === 'pass')).toBe(true);
   });
 });

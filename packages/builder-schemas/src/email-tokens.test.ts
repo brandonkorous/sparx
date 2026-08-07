@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   collectEmailPaths,
   collectEmailSourceKeys,
+  deriveCustomerNames,
   interpolateEmailTokens,
   parseEmailTokens,
 } from './email-tokens';
@@ -103,5 +104,42 @@ describe('collectEmailPaths / collectEmailSourceKeys', () => {
     expect(collectEmailSourceKeys(tree, ['Subject {{tenant.name}}'])).toEqual(
       new Set(['invoice', 'b2bAccount', 'tenant'])
     );
+  });
+});
+
+// The two never-blank names. These exist so a shipped template can say
+// `Hi {{customer.greeting}}` instead of `Hi {{customer.firstName ?? "there"}}` — the
+// second reads as developer syntax to a business owner AND is the one token shape the
+// builder canvas cannot render.
+describe('deriveCustomerNames', () => {
+  it('fills a greeting and display name from the record', () => {
+    const out = deriveCustomerNames({ customer: { firstName: 'Rosa', fullName: 'Rosa Iyer' } });
+    expect(out.customer).toMatchObject({ greeting: 'Rosa', displayName: 'Rosa Iyer' });
+  });
+
+  it('falls back when the name is absent, empty, or only whitespace', () => {
+    for (const customer of [{}, { firstName: '', fullName: '' }, { firstName: '   ' }]) {
+      const out = deriveCustomerNames({ customer });
+      expect(out.customer, JSON.stringify(customer)).toMatchObject({
+        greeting: 'there',
+        displayName: 'A customer',
+      });
+    }
+  });
+
+  it('never overwrites a value the caller already computed', () => {
+    // A send that localized the greeting, or used a nickname, keeps it.
+    const out = deriveCustomerNames({
+      customer: { firstName: 'Rosa', greeting: 'Ro', displayName: 'Ro from Harbour' },
+    });
+    expect(out.customer).toMatchObject({ greeting: 'Ro', displayName: 'Ro from Harbour' });
+  });
+
+  it('leaves data with no customer scope untouched, by reference', () => {
+    // Pure and allocation-free on the path that has nothing to do.
+    const data = { order: { number: '1042' } };
+    expect(deriveCustomerNames(data)).toBe(data);
+    const weird = { customer: 'not an object' };
+    expect(deriveCustomerNames(weird)).toBe(weird);
   });
 });

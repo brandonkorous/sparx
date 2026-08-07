@@ -34,6 +34,7 @@ import { emailBrandFontHref } from '@sparx/site-themes';
 import {
   createSilicaResolver,
   defaultSilicaFormat,
+  deriveCustomerNames,
   interpolateEmailTokens,
   resolvePath,
   type DataSources,
@@ -47,6 +48,7 @@ import {
   emailBrandDarkColorDefaults,
 } from './brand-colors';
 import { buildDarkModeCss } from './dark-mode';
+import { dropEmptyEmailImages } from './empty-images';
 import { composeSendDocument, type EmailCompliance, type FooterLink } from './frame';
 import { emailDocumentToText } from './to-text';
 import { tagEmailHtmlLinks, tagEmailTextLinks, type EmailLinkTracking } from './link-tracking';
@@ -106,7 +108,11 @@ export function renderSilicaEmail(
   opts: RenderSilicaEmailOptions = {}
 ): SendableEmail {
   const brand: BrandTokens = { ...defaultBrand, ...opts.brand };
-  const data: DataSources = input.data ?? {};
+  // `deriveCustomerNames` FIRST, so both the silica resolver and the token pass below
+  // see the same never-blank `customer.greeting` / `customer.displayName`. Without it a
+  // template greeting an anonymous checkout renders "Hi " — which is why the defaults
+  // used to carry `?? "there"` fallbacks the canvas could not display.
+  const data: DataSources = deriveCustomerNames((input.data ?? {}) as Record<string, unknown>);
 
   // The resolver is the SAME one the storefront + site editor use — sparx's
   // binding spine behind silica's two `ResolveHost` primitives (D4). Its shape is
@@ -167,9 +173,12 @@ export function renderSilicaEmail(
     fontRaw || darkCss
       ? { ...(fontRaw ? { raw: fontRaw } : {}), ...(darkCss ? { css: darkCss } : {}) }
       : undefined;
-  const html = interpolateEmailTokens(
-    toEmailHtml(resolvedDoc, head ? { head } : undefined),
-    resolveToken
+  // `dropEmptyEmailImages` AFTER interpolation, not before: a line item's picture is
+  // authored as `src="{{item.image}}"` and only becomes empty once the token resolves
+  // against a record that has none. Left in, `src=""` makes the client fetch the email
+  // itself and draw its broken-image icon — see `empty-images.ts`.
+  const html = dropEmptyEmailImages(
+    interpolateEmailTokens(toEmailHtml(resolvedDoc, head ? { head } : undefined), resolveToken)
   );
 
   // 4. Plain text from the resolved tree, tokens interpolated the same way.
