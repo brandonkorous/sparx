@@ -13,6 +13,8 @@
 // The allowlist mirrors what `cmsEditorExtensions()` registers. Adding a
 // node/mark requires landing both the extension and a renderer here.
 
+import { resolveEmbed } from '@wizeworks/silicaui-html';
+
 import {
   detectProvider,
   isAllowedEmbedProvider,
@@ -160,7 +162,14 @@ interface EmbedRenderResult {
   src: string;
   title: string;
   allow: string;
+  /** An audio/podcast player, not a video. It has a fixed design height (a Spotify track
+   *  is 152px tall at any width, a podcast player ~232px) rather than a 16:9 aspect, so the
+   *  emitter frames it full-width at a compact height instead of a tall video box. */
+  audio?: boolean;
 }
+
+/** The permission policy an audio/podcast player needs, and the only one it needs. */
+const AUDIO_ALLOW = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
 
 function embedToIframe(provider: EmbedAttrs['provider'], url: string): EmbedRenderResult | null {
   if (!isAllowedEmbedProvider(provider)) return null;
@@ -204,13 +213,32 @@ function embedToIframe(provider: EmbedAttrs['provider'], url: string): EmbedRend
         };
       }
       case 'spotify': {
-        // open.spotify.com/{type}/{id} → embed.spotify.com/embed/{type}/{id}
+        // open.spotify.com/{type}/{id} → open.spotify.com/embed/{type}/{id}
         if (!/^\/(track|album|playlist|episode|show)\//.test(parsed.pathname)) return null;
         return {
           src: `https://open.spotify.com/embed${parsed.pathname}`,
           title: 'Spotify',
-          allow: 'encrypted-media',
+          allow: AUDIO_ALLOW,
+          audio: true,
         };
+      }
+      // SoundCloud and Apple's two catalogues: the player URL is minted by silicaui's own
+      // `resolveEmbed`, the SAME resolver the site builder's `Embed` uses — so a link that
+      // frames in a builder page frames identically in an article body, and neither drifts
+      // from the engine. `resolveEmbed` returns `undefined` for a link it will not frame
+      // (a profile page, a bare host), which falls through to the anchor fallback below.
+      case 'soundcloud':
+      case 'applemusic':
+      case 'applepodcasts': {
+        const resolved = resolveEmbed(url);
+        if (!resolved) return null;
+        const title =
+          provider === 'soundcloud'
+            ? 'SoundCloud'
+            : provider === 'applemusic'
+              ? 'Apple Music'
+              : 'Apple Podcasts';
+        return { src: resolved.url, title, allow: AUDIO_ALLOW, audio: true };
       }
       case 'twitter': {
         // No first-party embed without script — fall back to a sanitized
@@ -308,10 +336,15 @@ function renderNode(node: Node, ctx: SerializeContext): string {
         if (!href) return '';
         return `<p class="sparx-embed-fallback"><a href="${escapeHtml(href)}" rel="noopener noreferrer">${escapeHtml(href)}</a></p>`;
       }
+      // Audio/podcast players are chrome with a fixed height, not a 16:9 picture, so they
+      // are framed full-width at a compact height (there is no `.sparx-embed` stylesheet to
+      // lean on — the inline size is what makes the player usable). Video keeps its default.
+      const audioClass = rendered.audio ? ' sparx-embed--audio' : '';
+      const audioStyle = rendered.audio ? ' style="width:100%;height:232px;border:0"' : '';
       return (
-        `<figure class="sparx-embed sparx-embed--${provider}">` +
+        `<figure class="sparx-embed sparx-embed--${provider}${audioClass}">` +
         `<iframe src="${escapeHtml(rendered.src)}" title="${escapeHtml(rendered.title)}" ` +
-        `loading="lazy" referrerpolicy="strict-origin-when-cross-origin" ` +
+        `loading="lazy" referrerpolicy="strict-origin-when-cross-origin"${audioStyle} ` +
         `allow="${escapeHtml(rendered.allow)}" allowfullscreen frameborder="0"></iframe>` +
         `</figure>`
       );

@@ -69,7 +69,7 @@ export const SILICA_STYLE_GUIDE = {
       "card template). Children render once per item with the item's own fields in scope.",
     action:
       'action(node, ref, href?) — marks a node (usually a <form> or a button/link) as a host-action trigger (e.g. ' +
-      '"add-to-cart", "contact", "email-signup"). Inert until the storefront\'s behavior runtime wires it — never ' +
+      '"add-to-cart", "contact", "email-signup"). Inert until the live site\'s behavior runtime wires it — never ' +
       'invent a new action ref; reuse one a block already ships (see `forms` below).',
     behave:
       'behave(node, marker) — marks a node as the ROOT of an interactive behavior (carousel, tabs, accordion, ' +
@@ -180,7 +180,7 @@ export const SILICA_STYLE_GUIDE = {
         "grid or a rail. Source options (change the repeat's ref): `commerce.product` (whole catalog / shop-all grid), " +
         '`commerce.featured` (merchant-tagged, bounded), `commerce.new` (newest, bounded), `commerce.related` (same ' +
         'collection as the viewed product, bounded), `commerce.category.<collectionHandle>` (one category). The bounded ' +
-        'sources are capped by the storefront and exclude the in-scope PDP product — NOT the whole catalog.',
+        'sources are capped by the live site and exclude the in-scope PDP product — NOT the whole catalog.',
       'productCard — one product tile (image, title, price); the reusable card `products` repeats, also usable ' +
         'standalone (pin it to one product). "Save as component" to fork a custom card.',
       'buyBox — the PDP add-to-cart form (variant picker + quantity + submit); pre-wired to the cart end to end.',
@@ -193,13 +193,13 @@ export const SILICA_STYLE_GUIDE = {
     ],
     forms:
       "There is NO sparx-authored form composite — use silica's native `contact_section` block as-is for a contact " +
-      'page. It is pre-wired end to end (the "contact" action ref is already handled by the storefront\'s behavior ' +
+      'page. It is pre-wired end to end (the "contact" action ref is already handled by the live site\'s behavior ' +
       'runtime + the CMS-backed form-submission pipeline); do not build a new form from raw elements.',
   },
 
   media: {
     description:
-      'Images, video, audio, icons, and inline SVG all render (silica >= 0.21). The storefront projects a page body to ' +
+      'Images, video, audio, icons, and inline SVG all render (silica >= 0.21). The site projects a page body to ' +
       "HTML through silica's `toHtml`, whose sanitizer allows a fixed set of media tags/components and coerces " +
       'everything else to <div> (content lost). Author with the allowed tags/components below — do not reach for a ' +
       'raw <iframe>/<embed>/<object> (those still floor to <div>).',
@@ -226,14 +226,15 @@ export const SILICA_STYLE_GUIDE = {
       'and ALWAYS set a `poster` still (first paint + no-autoplay fallback). <audio> renders the same way ' +
       '(src/controls/autoplay/loop/muted/preload/crossorigin).',
     embed:
-      'A third-party player/map (YouTube, Vimeo, Google Maps) uses the Embed COMPONENT — ' +
+      'A third-party player/map (YouTube, Vimeo video; Spotify, SoundCloud, Apple Music and Apple Podcasts audio; ' +
+      'Google Maps) uses the Embed COMPONENT — ' +
       '{ kind:"component", component:"Embed", class, props:{ url, title, ratio } }. It is the ONLY sanctioned <iframe>: ' +
       'silica normalizes `url` to the provider embed URL and emits a sandboxed, lazy iframe; an unrecognized host ' +
       'falls back to a plain link (never a raw iframe). A hand-authored <iframe> element still floors to <div> — use ' +
       'Embed instead.',
     icons:
       'The Icon COMPONENT — { kind:"component", component:"Icon", props:{ name:"<icon-name>" } } — resolves to an ' +
-      'inline SVG in `toHtml` (no client runtime needed; visible on the static storefront as of 0.21). CRITICAL: the ' +
+      'inline SVG in `toHtml` (no client runtime needed; visible on the static site as of 0.21). CRITICAL: the ' +
       "name must be one of silicaui's CURATED lucide set (~117 glyphs, NOT full lucide) — a name outside it renders " +
       'as an EMPTY span (silently invisible, the same failure mode the whole feature just fixed). Verified-present ' +
       'names include: sparkles, box, image, gallery, star, pencil, map-pin, calendar, clock, mail, phone, globe, ' +
@@ -254,7 +255,7 @@ export const SILICA_STYLE_GUIDE = {
 
   binding: {
     description:
-      "A node's `data` marker (set by `bind`/`repeat`/`action`) carries an opaque `ref` the storefront host resolves " +
+      "A node's `data` marker (set by `bind`/`repeat`/`action`) carries an opaque `ref` the site host resolves " +
       'against live data. Cardinality: a COLLECTION ref on a container (`repeat`) renders once per item, with the ' +
       "item's own fields in scope; a VALUE ref (`bind`) fills one node's content.",
     refsAreRootedPaths:
@@ -282,7 +283,7 @@ export const SILICA_STYLE_GUIDE = {
         'host; never tree-derived.',
     ],
     unfetchedSources:
-      'The storefront only fetches sources it RECOGNIZES by walking the tree for refs (`collectSilicaSourceNeeds`): ' +
+      'The site only fetches sources it RECOGNIZES by walking the tree for refs (`collectSilicaSourceNeeds`): ' +
       'the `commerce.*`, `cms.*` roots above. `site.*` is always supplied. A ref outside that set is never loaded, so ' +
       'it can never resolve — invent no new source roots.',
     pagination:
@@ -324,7 +325,7 @@ export const SILICA_STYLE_GUIDE = {
       'whole theme object; pass every token you want to keep, not just the ones changing.',
     savedThemes:
       "Optionally maintain a small library of alternate themes via set_silica_theme's `savedThemes` (an array of full " +
-      'Theme objects) — authoring convenience only, never rendered on the live storefront (only the active `theme` is).',
+      'Theme objects) — authoring convenience only, never rendered on the live site (only the active `theme` is).',
   },
 
   frame: {

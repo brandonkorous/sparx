@@ -38,7 +38,7 @@ const SERVER_INSTRUCTIONS = [
   'Builder pages author the page BODY (create_builder_page / update_builder_page). The header/footer/nav is the ' +
     'SILICA FRAME, a different system with a different node contract: read `describe_silica_authoring`, then ' +
     'get_silica_frame → set_silica_frame → publish_silica_site. There is no `update_builder_layout` — it was removed ' +
-    'because it wrote columns the storefront does not render. Set page SEO inline via the page document’s ' +
+    'because it wrote columns the live site does not render. Set page SEO inline via the page document’s ' +
     'seoTitle/seoDescription. Give a site its own look with a saved theme (create_saved_theme → apply_saved_theme) ' +
     'rather than editing a shared preset. Changes are DRAFTs until published.',
 ].join('\n\n');

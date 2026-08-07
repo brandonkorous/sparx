@@ -69,6 +69,9 @@ export interface BuilderPageSummaryDto {
   slug: string | null;
   kind: BuilderPageKind;
   recordType: string | null;
+  /** A `commerce.product` page's product-TYPE target (docs/143 Option B) — the type key
+   *  this page designs (`apparel`, …); null = the default product page. */
+  recordSubtype: string | null;
   published: boolean;
   publishedAt: string | null;
   position: number;
@@ -132,6 +135,8 @@ export const CreatePageInput = z.object({
   name: z.string().min(1).max(255),
   kind: BuilderPageKind.default('singleton'),
   recordType: z.string().max(63).nullish(),
+  /** A `commerce.product` page's product-TYPE target (docs/143 Option B). */
+  recordSubtype: z.string().max(63).nullish(),
   slug: PageSlugInput,
   tree: BuilderNodeSchema.optional(),
   ...PageSeoShape,
@@ -145,6 +150,9 @@ export const UpdatePageInput = z
     name: z.string().min(1).max(255).optional(),
     tree: BuilderNodeSchema.optional(),
     recordType: z.string().max(63).nullish(),
+    /** Retarget a `commerce.product` page to a product TYPE (docs/143 Option B); `null`
+     *  clears it back to the default product page. */
+    recordSubtype: z.string().max(63).nullish(),
     slug: PageSlugInput,
     /**
      * Which chrome wraps this page (docs/silicaui/01 §5). Three values, and the two that look

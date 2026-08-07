@@ -116,7 +116,7 @@ export const readTools: AnyMcpTool[] = [
   {
     name: 'get_published_site',
     description:
-      'Get the currently-published storefront snapshot: theme, appearance policy, compiled tokens, sections, and layout.',
+      'Get the currently-published site snapshot: theme, appearance policy, compiled tokens, sections, and layout.',
     scope: 'read:builder',
     input: PropertyArg,
     confirmation: false,

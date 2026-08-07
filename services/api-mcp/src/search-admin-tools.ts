@@ -15,7 +15,7 @@
 // actually diverged — first population of a catalog that predates the index, a
 // collection-schema bump, and recovery after the indexer was down or misconfigured.
 // Without it the only remedy was the platform-operator endpoint, which a tenant (or
-// their agent) cannot reach: "my products are in the dashboard but the storefront
+// their agent) cannot reach: "my products are in the dashboard but the live site
 // search finds nothing" was unfixable from inside the tenant.
 
 import { z } from 'zod';
@@ -46,14 +46,14 @@ const RebuildSearchIndexInput = z.object({
   /** Delete this tenant's existing documents before reloading. Use it when the
    *  index holds records that no longer exist in the database (a restore, a bad
    *  import); leave it off otherwise, because it opens a brief window where the
-   *  collection is empty and the storefront finds nothing. */
+   *  collection is empty and the live site finds nothing. */
   dropStale: z.boolean().default(false),
 });
 
 const rebuildSearchIndexTool = {
   name: 'rebuild_search_index',
   description:
-    "Rebuild this tenant's search index from the database. Fixes a search index that has drifted out of sync — products that exist in the catalog but return no results in storefront search, the site's search page, or search_products. Rebuilds products, customers, orders, and the cross-type index unless you narrow it with `collections`. Runs in the background: the call returns immediately with a runId and a large catalog can take a few minutes to finish. Safe to run more than once. Only set `dropStale` when the index contains records that are gone from the database — it empties the index first, so search returns nothing until the rebuild completes.",
+    "Rebuild this tenant's search index from the database. Fixes a search index that has drifted out of sync — products that exist in the catalog but return no results in site search, the site's search page, or search_products. Rebuilds products, customers, orders, and the cross-type index unless you narrow it with `collections`. Runs in the background: the call returns immediately with a runId and a large catalog can take a few minutes to finish. Safe to run more than once. Only set `dropStale` when the index contains records that are gone from the database — it empties the index first, so search returns nothing until the rebuild completes.",
   scope: 'write:search' as const,
   confirmation: true,
   input: RebuildSearchIndexInput,

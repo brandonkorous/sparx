@@ -174,6 +174,78 @@ export function mapCmsContentType(ct: CmsContentTypeLike): DataSource[] {
   return [collection, record];
 }
 
+// ── Product type → sources (docs/143 §6.10) ─────────────────────────────────────
+//
+// The commerce mirror of mapCmsContentType. A product page can be SCOPED to a product
+// type (`builder_pages.record_subtype`), exactly like a CMS template is scoped to a
+// content type. When it is, the picker must offer that type's attributes as bindable
+// fields — `commerce.product.attributes.fabric`, `.care`, … — so a tenant places THIS
+// product's Fabric here and its Care there on their own layout.
+//
+// The asymmetry this resolves: CMS sources are dynamic (each type → its own `cms.<key>`
+// source), but the product source is one static `commerce.product` shared across every
+// type. mapProductType makes it dynamic PER PAGE: for a page scoped to `apparel`, the
+// binding service swaps the generic product source for this one, whose `attributes` group
+// carries the apparel fields. The record (`productToSilicaRecord`) already carries the
+// flat `attributes.<key>` bag, so picker → engine → site share one vocabulary.
+
+// A product type's attribute schema is a @sparx/field-schema FieldSchema — structurally
+// the same as a CMS FieldDef list, so it reuses CmsFieldLike + mapField.
+export interface ProductTypeLike {
+  key: string;
+  name: string;
+  pluralName?: string | null;
+  attributeSchema: { fields: CmsFieldLike[] };
+}
+
+/** The `attributes` GROUP a type-scoped product source exposes — its nested fields are
+ *  the type's attribute schema, so the picker offers `attributes.<key>` per field. */
+function attributesGroup(pt: ProductTypeLike): FieldSchema {
+  return {
+    key: 'attributes',
+    label: 'Attributes',
+    kind: 'group',
+    cardinality: 'object',
+    fields: (pt.attributeSchema.fields ?? []).map(mapField),
+  };
+}
+
+/** The product fields for a page scoped to a product type: the base product fields
+ *  (incl. `attributeSections` for the auto-render repeat) PLUS the type's `attributes`
+ *  group for individual field binding. */
+export function productTypeFields(pt: ProductTypeLike): FieldSchema[] {
+  return [...PRODUCT_FIELDS, attributesGroup(pt)];
+}
+
+/** A product type → its binding sources: the `commerce.product` array (grids) and the
+ *  `product` object (a PDP scoped to this type), both carrying the type's attribute
+ *  fields. Mirrors mapCmsContentType — a product page scoped to a type sees that type's
+ *  attributes in the picker, exactly like a `cms.<type>` template sees its fields. The
+ *  binding service merges these over the generic COMMERCE product sources for a page
+ *  whose `record_subtype` names this type. */
+export function mapProductType(pt: ProductTypeLike): DataSource[] {
+  const fields = productTypeFields(pt);
+  return [
+    {
+      key: 'commerce.product',
+      label: pt.pluralName ?? pt.name,
+      module: 'commerce',
+      cardinality: 'array',
+      recordType: 'product',
+      fields,
+      maxItems: COLLECTION_PAGE_ITEMS,
+    },
+    {
+      key: 'product',
+      label: pt.name,
+      module: 'commerce',
+      cardinality: 'object',
+      recordType: 'product',
+      fields,
+    },
+  ];
+}
+
 // ── Code-defined domain sources (Commerce owns its schema; CRM likewise) ──────
 
 const PRODUCT_FIELDS: FieldSchema[] = [
@@ -198,11 +270,37 @@ const PRODUCT_FIELDS: FieldSchema[] = [
   // `fillValue` writes a bound value into an `<input>`'s `value` attribute
   // (silicaui ≥ 0.12). Empty string when the product has no live variant.
   { key: 'variantId', label: 'Default variant ID', kind: 'text', cardinality: 'scalar' },
-  // The product's storefront URL (`/products/<handle>`). A product card binds it
-  // into its `<a href>` via `bindAttr` — without it a product grid renders a wall
-  // of cards that navigate nowhere. Derived, not stored: the data loaders build it
-  // from `handle` so the route shape lives in one place.
+  // The product's site URL (`/products/<handle>`). A product card binds it into its
+  // `<a href>` via `bindAttr` — without it a product grid renders a wall of cards that
+  // navigate nowhere. Derived, not stored: the data loaders build it from `handle` so
+  // the route shape lives in one place.
   { key: 'url', label: 'Product URL', kind: 'text', cardinality: 'scalar' },
+  // The typed attribute sections (docs/143), ordered by the product type's field order.
+  // A product page repeats over this to AUTO-RENDER labeled detail blocks (fabric/care/
+  // specs/…) — no field keys hardcoded, so ANY product of ANY type renders its own.
+  // Each section carries a scalar `value` (scalars) OR a nested `items` list (repeaters,
+  // rendered by a sub-repeat). Present on every product source; the per-type sources add
+  // the flat `attributes.<key>` group on top for individual binding (see mapProductType).
+  {
+    key: 'attributeSections',
+    label: 'Attribute sections',
+    kind: 'list',
+    cardinality: 'array',
+    fields: [
+      { key: 'label', label: 'Label', kind: 'text', cardinality: 'scalar' },
+      { key: 'value', label: 'Value', kind: 'text', cardinality: 'scalar' },
+      {
+        key: 'items',
+        label: 'Rows',
+        kind: 'list',
+        cardinality: 'array',
+        fields: [
+          { key: 'label', label: 'Label', kind: 'text', cardinality: 'scalar' },
+          { key: 'value', label: 'Value', kind: 'text', cardinality: 'scalar' },
+        ],
+      },
+    ],
+  },
 ];
 
 // A collection's own fields PLUS its `products` — a `list` (repeater) whose items
@@ -507,6 +605,20 @@ const CUSTOMER_FIELDS: FieldSchema[] = [
   text('fullName', 'Full name'),
   text('email', 'Email'),
   text('company', 'Company'),
+  // ── The two SAFE-TO-GREET-WITH fields ────────────────────────────────────
+  // Both are DERIVED at send time (see `deriveCustomerNames`) and never blank, which
+  // is the whole point of them existing beside the raw fields above.
+  //
+  // Writing `Hi {{customer.firstName}}` is a trap: most of the time it reads perfectly
+  // and then one anonymous checkout produces "Hi  — thanks for your order." The escape
+  // has been `{{customer.firstName ?? "there"}}`, which works on a send but is
+  // developer syntax in a product whose users are business owners, not programmers —
+  // and it is the one token shape the builder CANVAS cannot render, so an author
+  // writing it correctly watches raw braces sit in their email while they edit.
+  //
+  // A merge tag that already reads right needs no fallback and no `??`.
+  text('greeting', 'First name, or “there”'),
+  text('displayName', 'Full name, or “A customer”'),
 ];
 
 // Email products are DISPLAY-ready (price already a currency string, an image

@@ -25,7 +25,7 @@ describe('BUILDER_STYLE_GUIDE', () => {
 
   // The guide used to ship a `siteLayout` section with a full example chrome tree, and
   // this test proved the tree PARSED — which it did, right up until it was published to
-  // columns the storefront does not read. Validity was never the question. What the
+  // columns the live site does not read. Validity was never the question. What the
   // guide has to get right is WHICH SYSTEM owns the chrome, so that is what is pinned.
   it('sends chrome authoring to the silica frame, not the removed layout tools', () => {
     const chrome = BUILDER_STYLE_GUIDE.siteChrome;
@@ -100,7 +100,7 @@ describe('builderMcpTools', () => {
 
   // These tools are GONE, and their absence is the fix — so it is asserted rather than
   // left to whoever notices. They read and wrote `builder_layouts.draft_tree` /
-  // `.published_tree`, the legacy `.bx-*` columns; the storefront's only chrome tier
+  // `.published_tree`, the legacy `.bx-*` columns; the site's only chrome tier
   // reads `.silica_published_tree`. Every one of them therefore reported success and
   // changed nothing a visitor could see. Re-adding a `*_builder_layout` tool without
   // first giving it a render path puts that failure straight back.

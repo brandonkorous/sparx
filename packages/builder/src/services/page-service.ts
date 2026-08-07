@@ -42,6 +42,7 @@ const PAGE_SUMMARY_SELECT = {
   slug: true,
   kind: true,
   recordType: true,
+  recordSubtype: true,
   publishedAt: true,
   position: true,
   isDefault: true,
@@ -65,6 +66,7 @@ function toSummaryDto(row: PageSummaryRow): BuilderPageSummaryDto {
     slug: row.slug,
     kind: row.kind as BuilderPageKind,
     recordType: row.recordType,
+    recordSubtype: row.recordSubtype,
     // A page is published iff it has been published — `publishedAt` answers that
     // without reading the tree it would otherwise be tested against.
     published: row.publishedAt != null,
@@ -89,6 +91,7 @@ function toDto(row: BuilderPage): BuilderPageDto {
     slug: row.slug,
     kind: row.kind as BuilderPageKind,
     recordType: row.recordType,
+    recordSubtype: row.recordSubtype,
     // Stored validated on write; the editor depends on a well-formed tree.
     tree: row.draftTree as unknown as BuilderNode,
     published: row.publishedTree != null,
@@ -279,6 +282,7 @@ export async function create(ctx: PropertyContext, rawInput: unknown): Promise<B
         name: input.name,
         kind: input.kind,
         recordType: input.recordType ?? null,
+        recordSubtype: input.recordSubtype ?? null,
         slug: input.slug ?? null,
         draftTree: asJson(input.tree ?? blankPageTree()),
         position,
@@ -332,6 +336,9 @@ export async function update(
       // singleton — makes it a real product/entry template with no separate control.
       data.kind = input.recordType ? 'collection' : 'singleton';
     }
+    // Retarget a product page to a product TYPE (docs/143 Option B). `null` clears it to
+    // the default product page; a value makes it the per-type page (resolved by subtype).
+    if (input.recordSubtype !== undefined) data.recordSubtype = input.recordSubtype;
     if (input.slug !== undefined) data.slug = input.slug;
     // SEO — empty strings clear the column (store null), so the storefront falls
     // back to the page name rather than rendering an empty <title>.

@@ -4,6 +4,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { renderDocToHtml } from './serialize';
+import { detectProvider } from './nodes';
 
 function doc(content: unknown[]): unknown {
   return { type: 'doc', content };
@@ -87,6 +88,50 @@ describe('renderDocToHtml', () => {
     expect(html).toContain('youtube-nocookie.com/embed/dQw4w9WgXcQ');
     expect(html).toContain('player.vimeo.com/video/123456789');
     expect(html).not.toContain('malicious.example');
+  });
+
+  it('detects the audio & podcast hosts a show-notes writer pastes', () => {
+    expect(detectProvider('https://soundcloud.com/artist/track-name')).toBe('soundcloud');
+    expect(detectProvider('https://music.apple.com/us/album/name/1441164426')).toBe('applemusic');
+    expect(detectProvider('https://podcasts.apple.com/us/podcast/name/id1200361736')).toBe(
+      'applepodcasts'
+    );
+  });
+
+  it('frames audio & podcast embeds as compact players (Spotify, SoundCloud, Apple)', () => {
+    // The point of the feature: a post about an episode can embed the episode. The
+    // player URLs for the engine-resolved providers come from silicaui's `resolveEmbed`,
+    // the same resolver the site builder uses, so the CMS body never drifts from it.
+    const html = renderDocToHtml(
+      doc([
+        {
+          type: 'embed',
+          attrs: {
+            provider: 'spotify',
+            url: 'https://open.spotify.com/episode/512ojhOuo1ktJprKbVcKyQ',
+          },
+        },
+        {
+          type: 'embed',
+          attrs: { provider: 'soundcloud', url: 'https://soundcloud.com/artist/track-name' },
+        },
+        {
+          type: 'embed',
+          attrs: {
+            provider: 'applepodcasts',
+            url: 'https://podcasts.apple.com/us/podcast/name/id1200361736',
+          },
+        },
+      ])
+    );
+    // Spotify's embed URL is stable and asserted exactly; the others are engine-minted, so
+    // the provider marker is the stable thing to pin.
+    expect(html).toContain('open.spotify.com/embed/episode/512ojhOuo1ktJprKbVcKyQ');
+    expect(html).toContain('sparx-embed--soundcloud');
+    expect(html).toContain('sparx-embed--applepodcasts');
+    // All three are tagged as audio players and framed (never dropped to a bare link).
+    expect((html.match(/sparx-embed--audio/g) ?? []).length).toBe(3);
+    expect(html).not.toContain('sparx-embed-fallback');
   });
 
   it('renders code block only when language is on the allowlist', () => {

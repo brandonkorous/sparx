@@ -25,7 +25,7 @@ export { readRelay, withRelay, type BuilderRelaySideChannel } from './relay';
 // publish/set_active/delete_builder_layout` used to sit between the page and silica
 // sets, and every one of them was a write nothing could render: they read and wrote
 // `builder_layouts.draft_tree` / `.published_tree` (the legacy `.bx-*` columns) while
-// the storefront's ONLY chrome tier reads `.silica_published_tree` (apps/site/app/
+// the site's ONLY chrome tier reads `.silica_published_tree` (apps/site/app/
 // layout.tsx — the sparx-Builder header/footer renderer was deleted with it). An agent
 // following their docs authored a whole header, published it, got `published: true`,
 // and the site kept serving the starter frame. Chrome is `set_silica_frame` +

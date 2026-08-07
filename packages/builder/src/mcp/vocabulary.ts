@@ -29,7 +29,7 @@ export const BUILDER_STYLE_GUIDE = {
       'Pass create_builder_page / update_builder_page a "document" — either this envelope or a bare node tree. ' +
       'Missing node ids are auto-filled, so you only need to emit { type, class?, props?, children? }. The envelope also ' +
       'accepts optional SEO — seoTitle, seoDescription, canonical, ogImage, noindex — which set the page metadata the ' +
-      'storefront renders (omit them on an update to leave existing SEO untouched). To change ONLY the SEO of an ' +
+      'site renders (omit them on an update to leave existing SEO untouched). To change ONLY the SEO of an ' +
       'existing page, use set_page_seo (pageId + the fields) — it patches the metadata without resending the tree.',
     format: 'sparx.builder/v1',
     kinds: {
@@ -263,7 +263,7 @@ export const BUILDER_STYLE_GUIDE = {
     wrongPath:
       'There used to be a parallel "site layout" document here (list_builder_layouts, get_builder_layout, ' +
       'update_builder_layout, publish_builder_layout, set_active_layout). Those tools are REMOVED. They wrote the legacy ' +
-      '`builder_layouts.draft_tree`/`.published_tree` columns, and the storefront’s only chrome tier reads the silica ' +
+      '`builder_layouts.draft_tree`/`.published_tree` columns, and the site’s only chrome tier reads the silica ' +
       'frame — so a header authored that way returned `published: true` and never appeared. If you are working from an ' +
       'older transcript or doc that names them, that instruction is stale.',
     workflow:

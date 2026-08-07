@@ -10,7 +10,8 @@
 //
 // Block coverage matches `extensions.ts`: paragraph, headings, lists,
 // blockquote, code-with-language, table, image (with focal-point + caption),
-// callout (info/success/warning/danger), embed (YouTube/Vimeo/Loom/Spotify),
+// callout (info/success/warning/danger), embed (video: YouTube/Vimeo/Loom;
+// audio/podcast: Spotify/SoundCloud/Apple Music/Apple Podcasts),
 // and @-reference autocomplete. Insertion happens via the inline toolbar
 // for the common cases and the "More blocks" overflow for the rest.
 
@@ -38,6 +39,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@sparx/ui';
 import { cmsEditorExtensions, emptyDoc } from './extensions';
+import { detectProvider } from './nodes';
 import type { ReferenceSearchFn } from './nodes';
 import type { CalloutVariant } from './nodes';
 import { ALLOWED_CODE_LANGUAGES } from './serialize';
@@ -264,25 +266,18 @@ export function ContentBlockEditor({
 
   const insertEmbed = () => {
     const url = window.prompt(
-      'Embed URL (YouTube, Vimeo, Loom, Spotify) — pasted as-is, the storefront re-validates before rendering'
+      'Embed URL — a video (YouTube, Vimeo, Loom) or a track, album or podcast (Spotify, ' +
+        'SoundCloud, Apple Music, Apple Podcasts). Pasted as-is; the storefront re-validates ' +
+        'before rendering.'
     );
     if (!url) return;
-    // detectProvider is in extensions but we re-derive here to avoid an
-    // import cycle. Keeps the editor self-contained.
-    const lc = url.toLowerCase();
-    const provider =
-      lc.includes('youtube.com') || lc.includes('youtu.be')
-        ? 'youtube'
-        : lc.includes('vimeo.com')
-          ? 'vimeo'
-          : lc.includes('loom.com')
-            ? 'loom'
-            : lc.includes('spotify.com')
-              ? 'spotify'
-              : lc.includes('twitter.com') || lc.includes('x.com')
-                ? 'twitter'
-                : 'unknown';
-    editor.chain().focus().setEmbed({ provider, url }).run();
+    // The SAME provider detection the serializer and the storefront use, so the editor
+    // never accepts a link the render path would drop (nor rejects one it would frame).
+    editor
+      .chain()
+      .focus()
+      .setEmbed({ provider: detectProvider(url), url })
+      .run();
   };
 
   const insertCallout = (variant: CalloutVariant) => {

@@ -589,6 +589,9 @@ const PAGE_META_SELECT = {
   slug: true,
   kind: true,
   recordType: true,
+  // The product-type target (docs/143 Option B) — a scalar, so it rides free on the
+  // read that already refuses to drag trees it will discard. Drives per-type page routing.
+  recordSubtype: true,
   isDefault: true,
   // Which chrome wraps this page (docs/silicaui/01 §5). A scalar, so it costs nothing on the
   // read that already refuses to drag trees it will discard.
@@ -932,7 +935,8 @@ export function getPublishedByRecordType(
   ctx: PropertyContext,
   recordType: string,
   recordId?: string,
-  stage: SiteStage = 'published'
+  stage: SiteStage = 'published',
+  recordSubtype?: string
 ): Promise<PublishedSilicaPageDto | null> {
   const address = recordAddressFor(recordType);
   return withTenant(ctx, async (tx) => {
@@ -968,9 +972,24 @@ export function getPublishedByRecordType(
     }
 
     const override = overrideId ? rows.find((r) => r.id === overrideId) : undefined;
+
+    // Per-TYPE page (docs/143 Option B): when the record carries a subtype (a product's
+    // product-type key), a page whose `record_subtype` matches wins over the default —
+    // most-specific-wins, mirroring how a per-record override beats the type default. A
+    // type-specific page is never `isDefault` (the partial unique keeps one default per
+    // record type), so it can only be reached here, on purpose.
+    const subtypeMatch = recordSubtype
+      ? rows.find((r) => r.recordSubtype === recordSubtype && hasStagedTree(r, stage))
+      : undefined;
+
     const chosen =
       (override && hasStagedTree(override, stage) ? override : undefined) ??
+      subtypeMatch ??
+      // The default / lowest-position fallback prefers a subtype-LESS page so a product of
+      // one type never lands on another type's bespoke layout; the final `any` keeps the
+      // legacy behavior for a tenant whose pages predate subtypes (all null).
       rows.find((r) => r.isDefault && hasStagedTree(r, stage)) ??
+      rows.find((r) => r.recordSubtype == null && hasStagedTree(r, stage)) ??
       rows.find((r) => hasStagedTree(r, stage));
 
     if (!chosen) return null;
@@ -1957,12 +1976,33 @@ export interface InstallPageInput {
   root: SilicaNode;
   kind?: string;
   recordType?: string | null;
+  /** A `commerce.product` page's product-TYPE target (docs/143 Option B). null = the
+   *  DEFAULT product page (takes the `/products/:handle` address); a value makes it a
+   *  per-type page, resolved by subtype rather than by URL. */
+  recordSubtype?: string | null;
   isDefault?: boolean;
   seoTitle?: string | null;
   seoDescription?: string | null;
   canonical?: string | null;
   ogImage?: string | null;
   noindex?: boolean;
+}
+
+/** The stored slug for a collection page. The DEFAULT product page takes the derived
+ *  record address (`/products/:handle`); a per-TYPE page (docs/143) can't share that slug
+ *  — `(tenant, property, slug)` is unique — so it gets a synthetic, non-routable variant
+ *  (`…::<subtype>`). A per-type page is never served by URL: the resolver picks it by
+ *  `record_subtype`, and `recordAddressAt` won't parse the `::` variant as the address, so
+ *  it never masquerades as the default. */
+function slugForCollectionPage(page: {
+  kind?: string;
+  slug: string;
+  recordType?: string | null;
+  recordSubtype?: string | null;
+}): string {
+  if (page.kind !== 'collection' || !page.recordType) return page.slug;
+  const address = recordAddressFor(page.recordType)?.slug ?? page.slug;
+  return page.recordSubtype ? `${address}::${page.recordSubtype}` : address;
 }
 
 export interface InstallSiteInput {
@@ -2009,10 +2049,7 @@ export async function installSite(
   // `theme` + `assets` and then died with `pages: []`. Deriving the address here — the same
   // `recordAddressFor` the read path and the record-page ensure use — gives the product page
   // `/products/:handle` before `sync` ever sees it, so it lands at its own address.
-  const slugForPage = (p: (typeof pages)[number]): string =>
-    p.kind === 'collection' && p.recordType
-      ? (recordAddressFor(p.recordType)?.slug ?? p.slug)
-      : p.slug;
+  const slugForPage = (p: (typeof pages)[number]): string => slugForCollectionPage(p);
 
   await sync(
     ctx,
@@ -2033,6 +2070,7 @@ export async function installSite(
         data: {
           ...(p.kind ? { kind: p.kind } : {}),
           recordType: p.recordType ?? null,
+          recordSubtype: p.recordSubtype ?? null,
           ...(p.seoTitle !== undefined ? { seoTitle: p.seoTitle } : {}),
           ...(p.seoDescription !== undefined ? { seoDescription: p.seoDescription } : {}),
           ...(p.canonical !== undefined ? { canonical: p.canonical } : {}),
@@ -2042,8 +2080,9 @@ export async function installSite(
       });
       // A recordType default is exclusive per (property, recordType) — clear any
       // incumbent before promoting this one, or two templates both claim the type
-      // and which one renders becomes row-order luck.
-      if (isCollection && p.isDefault && p.recordType) {
+      // and which one renders becomes row-order luck. Only a subtype-LESS page can be
+      // the default (docs/143): a per-type page wins via `record_subtype`, never as THE default.
+      if (isCollection && p.isDefault && p.recordType && !p.recordSubtype) {
         await tx.builderPage.updateMany({
           where: { propertyId: ctx.propertyId, recordType: p.recordType, id: { not: p.id } },
           data: { isDefault: false },
@@ -2073,10 +2112,7 @@ export async function installSite(
 export async function addPage(ctx: PropertyContext, page: InstallPageInput): Promise<string> {
   const current = (await load(ctx)) ?? emptySite();
   const id = defaultMakeId();
-  const slug =
-    page.kind === 'collection' && page.recordType
-      ? (recordAddressFor(page.recordType)?.slug ?? page.slug)
-      : page.slug;
+  const slug = slugForCollectionPage(page);
 
   await sync(
     ctx,
@@ -2093,6 +2129,7 @@ export async function addPage(ctx: PropertyContext, page: InstallPageInput): Pro
       data: {
         ...(page.kind ? { kind: page.kind } : {}),
         recordType: page.recordType ?? null,
+        recordSubtype: page.recordSubtype ?? null,
         ...(page.seoTitle !== undefined ? { seoTitle: page.seoTitle } : {}),
         ...(page.seoDescription !== undefined ? { seoDescription: page.seoDescription } : {}),
         ...(page.canonical !== undefined ? { canonical: page.canonical } : {}),
@@ -2100,7 +2137,8 @@ export async function addPage(ctx: PropertyContext, page: InstallPageInput): Pro
         ...(page.noindex !== undefined ? { noindex: page.noindex } : {}),
       },
     });
-    if (page.kind === 'collection' && page.isDefault && page.recordType) {
+    // Only a subtype-LESS page can be THE default for its record type (docs/143).
+    if (page.kind === 'collection' && page.isDefault && page.recordType && !page.recordSubtype) {
       await tx.builderPage.updateMany({
         where: { propertyId: ctx.propertyId, recordType: page.recordType, id: { not: id } },
         data: { isDefault: false },

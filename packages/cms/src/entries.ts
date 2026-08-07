@@ -12,6 +12,24 @@ import { rebuildReferences } from './references.js';
 
 type Json = Prisma.InputJsonValue;
 
+/** A post's byline persona, when the read `include`d the `author` relation. */
+export interface WireEntryAuthor {
+  display_name: string;
+  slug: string;
+  bio: string | null;
+  /** Media-asset id — the storefront resolves it to a URL, like `featuredImage`. */
+  avatar_asset_id: string | null;
+}
+
+/** One taxonomy term an entry is filed under (a category or a tag), when the read
+ *  `include`d the `terms` relation. `taxonomy_key` is the vocabulary it belongs to
+ *  (`blog_category` / `blog_tag` by convention) so a consumer can split the flat list. */
+export interface WireEntryTerm {
+  taxonomy_key: string;
+  name: string;
+  slug: string;
+}
+
 export interface WireEntry {
   id: string;
   type_key: string;
@@ -27,10 +45,39 @@ export interface WireEntry {
   parent_entry_id: string | null;
   created_at: string;
   updated_at: string;
+  // Editorial relations — present ONLY when the read `include`d them (the public
+  // storefront reads do; the authoring reads don't). Absent, not null, when not
+  // loaded, so an existing consumer that never asked for them is byte-unchanged.
+  author?: WireEntryAuthor | null;
+  terms?: WireEntryTerm[];
 }
 
-export function serializeEntry(row: ContentEntry): WireEntry {
-  return {
+/** The shape `serializeEntry` reads its optional editorial relations off — a plain
+ *  `ContentEntry` (no relations loaded) is assignable, so every existing caller keeps
+ *  working; a public read that `include`s `PUBLIC_ENTRY_BYLINE_INCLUDE` supplies them. */
+export type EntryWithByline = ContentEntry & {
+  author?: {
+    displayName: string;
+    slug: string;
+    bio: string | null;
+    avatarAssetId: string | null;
+  } | null;
+  terms?: { term: { name: string; slug: string; taxonomy: { key: string } } }[];
+};
+
+/** The Prisma `include` a public read passes to load an entry's byline + taxonomy in
+ *  one query, shaped to match {@link EntryWithByline}. One const so the three storefront
+ *  reads (list / by-slug / by-ids) stay identical and a serialized byline is never a
+ *  drift risk between them. */
+export const PUBLIC_ENTRY_BYLINE_INCLUDE = {
+  author: { select: { displayName: true, slug: true, bio: true, avatarAssetId: true } },
+  terms: {
+    select: { term: { select: { name: true, slug: true, taxonomy: { select: { key: true } } } } },
+  },
+} as const;
+
+export function serializeEntry(row: EntryWithByline): WireEntry {
+  const wire: WireEntry = {
     id: row.id,
     type_key: row.typeKey,
     slug: row.slug,
@@ -46,6 +93,26 @@ export function serializeEntry(row: ContentEntry): WireEntry {
     created_at: row.createdAt.toISOString(),
     updated_at: row.updatedAt.toISOString(),
   };
+  // Only emit the editorial fields when the read actually loaded them — `undefined`
+  // (not requested) stays absent; a loaded-but-empty author is an explicit null.
+  if (row.author !== undefined) {
+    wire.author = row.author
+      ? {
+          display_name: row.author.displayName,
+          slug: row.author.slug,
+          bio: row.author.bio,
+          avatar_asset_id: row.author.avatarAssetId,
+        }
+      : null;
+  }
+  if (row.terms !== undefined) {
+    wire.terms = row.terms.map((t) => ({
+      taxonomy_key: t.term.taxonomy.key,
+      name: t.term.name,
+      slug: t.term.slug,
+    }));
+  }
+  return wire;
 }
 
 export interface WireRevision {

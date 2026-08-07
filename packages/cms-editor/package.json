@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "@sparx/ui": "workspace:*",
+    "@wizeworks/silicaui-html": "catalog:",
     "@tiptap/core": "^3.23.6",
     "@tiptap/extension-code-block-lowlight": "^3.23.6",
     "@tiptap/extension-image": "^3.23.6",

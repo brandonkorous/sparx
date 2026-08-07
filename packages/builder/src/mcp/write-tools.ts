@@ -23,7 +23,7 @@ const documentArg = z
     'A Builder page document — { format:"sparx.builder/v1", type:"page", name, kind, slug?, recordType?, ' +
       'seoTitle?, seoDescription?, canonical?, ogImage?, noindex?, tree } — OR a bare node tree. JSON string or inline ' +
       'object. Missing node ids are auto-filled. Include the optional SEO fields to set the page title/description the ' +
-      'storefront renders (omit them on an update to leave existing SEO untouched). See describe_builder_styling. ' +
+      'site renders (omit them on an update to leave existing SEO untouched). See describe_builder_styling. ' +
       'The tree MUST be responsive (mobile-first; layout adapts to width) — see the guide’s `responsive` section.'
   );
 
@@ -123,7 +123,7 @@ export const setPageSeo: McpToolDefinition = {
   description:
     'Set a page’s SEO metadata — seoTitle / seoDescription / canonical / ogImage / noindex — WITHOUT resending its ' +
     'content tree. The shortcut for fixing a title or description: pass pageId plus the fields to change (no need to ' +
-    'round-trip the whole page). Omit a field to leave it unchanged; pass an empty string to CLEAR it (the storefront ' +
+    'round-trip the whole page). Omit a field to leave it unchanged; pass an empty string to CLEAR it (the live site ' +
     'then falls back to the page name). Saves to DRAFT — call publish_builder_page to take it live.',
   scope: 'write:builder',
   confirmation: false,

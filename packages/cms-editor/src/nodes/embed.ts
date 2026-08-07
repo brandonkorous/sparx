@@ -1,7 +1,14 @@
 // Embed — an iframe-ish block backed by an allowlist of providers. The doc
 // stores `{ provider, url, html? }`. At render time the serializer either
-// emits a sanitized provider-specific iframe (YouTube, Vimeo, Loom, Spotify)
-// or skips silently — never trusting raw `html` from input.
+// emits a sanitized provider-specific iframe (video: YouTube, Vimeo, Loom;
+// audio/podcast: Spotify, SoundCloud, Apple Music, Apple Podcasts) or skips
+// silently — never trusting raw `html` from input.
+//
+// The AUDIO/PODCAST providers matter as much as video here: a show's notes
+// page wants to embed the episode it is writing about, so the CMS body editor
+// frames them exactly as the site builder's `Embed` does. The new providers'
+// player URLs are minted by silicaui's own `resolveEmbed` (the serializer),
+// so the CMS and the builder never drift on what a given link resolves to.
 //
 // `html` is only populated when the dashboard editor preflights an
 // oEmbed/iframely lookup and the response matches the allowlist. The
@@ -10,7 +17,16 @@
 
 import { Node, mergeAttributes } from '@tiptap/core';
 
-export type EmbedProvider = 'youtube' | 'vimeo' | 'loom' | 'spotify' | 'twitter' | 'unknown';
+export type EmbedProvider =
+  | 'youtube'
+  | 'vimeo'
+  | 'loom'
+  | 'spotify'
+  | 'soundcloud'
+  | 'applemusic'
+  | 'applepodcasts'
+  | 'twitter'
+  | 'unknown';
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -32,6 +48,9 @@ const ALLOWED_PROVIDERS: ReadonlySet<EmbedProvider> = new Set([
   'vimeo',
   'loom',
   'spotify',
+  'soundcloud',
+  'applemusic',
+  'applepodcasts',
   'twitter',
 ]);
 
@@ -42,6 +61,12 @@ export function detectProvider(url: string): EmbedProvider {
     if (host.includes('vimeo.com')) return 'vimeo';
     if (host.includes('loom.com')) return 'loom';
     if (host.includes('spotify.com')) return 'spotify';
+    if (host.includes('soundcloud.com')) return 'soundcloud';
+    // Apple splits its two catalogues across two hosts; check podcasts first so a
+    // `podcasts.apple.com` link is never mistaken for a music one.
+    if (host === 'podcasts.apple.com' || host.endsWith('.podcasts.apple.com'))
+      return 'applepodcasts';
+    if (host === 'music.apple.com' || host.endsWith('.music.apple.com')) return 'applemusic';
     if (host.includes('twitter.com') || host === 'x.com' || host.endsWith('.x.com'))
       return 'twitter';
     return 'unknown';

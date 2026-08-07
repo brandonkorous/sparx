@@ -18,6 +18,7 @@ import {
   SCHEDULING_SOURCES,
   commerceCategorySource,
   mapCmsContentType,
+  mapProductType,
   type BindingCatalog,
   type CmsFieldLike,
   type DataSource,
@@ -68,18 +69,59 @@ async function loadCommerceCategorySources(tx: Prisma.TransactionClient): Promis
   return rows.map((r) => commerceCategorySource(r.handle, r.name));
 }
 
+/** A product type → its type-scoped product sources (docs/143 §6.10), or null when the
+ *  key resolves to nothing. Mirrors `loadCmsSources` — the builder reads the tenant's
+ *  real product type so a page scoped to it can bind that type's attributes. Tenant fork
+ *  wins over built-in (isBuiltIn ASC). */
+async function loadProductTypeSources(
+  tx: Prisma.TransactionClient,
+  productTypeKey: string
+): Promise<DataSource[] | null> {
+  const row = await tx.productType.findFirst({
+    where: { key: productTypeKey },
+    orderBy: [{ isBuiltIn: 'asc' }, { updatedAt: 'desc' }],
+    select: { key: true, name: true, pluralName: true, attributeSchema: true },
+  });
+  if (!row) return null;
+  const fields = (row.attributeSchema as { fields?: CmsFieldLike[] } | null)?.fields ?? [];
+  return mapProductType({
+    key: row.key,
+    name: row.name,
+    pluralName: row.pluralName,
+    attributeSchema: { fields },
+  });
+}
+
 /** The PAGE binding catalog — CMS content types + Commerce/CRM domain sources, plus
- *  one `commerce.category.<handle>` source per tenant product collection. */
-export function getSchema(ctx: ServiceContext): Promise<BindingCatalog> {
+ *  one `commerce.category.<handle>` source per tenant product collection.
+ *
+ *  `productTypeKey` (docs/143 Option B) scopes the catalog to a product page's target
+ *  TYPE: the generic `commerce.product` / `product` sources are swapped for the type's,
+ *  so the picker offers `commerce.product.attributes.<key>` for that type's fields —
+ *  exactly like a CMS `cms.<type>` template's picker shows its content type's fields. */
+export function getSchema(
+  ctx: ServiceContext,
+  opts: { productTypeKey?: string } = {}
+): Promise<BindingCatalog> {
   return withTenant(ctx, async (tx) => {
-    // Sequential (not Promise.all): both reads share one interactive tx, which
+    // Sequential (not Promise.all): the reads share one interactive tx, which
     // serializes queries — concurrent use on the same client is unsupported.
     const cmsSources = await loadCmsSources(tx);
     const categorySources = await loadCommerceCategorySources(tx);
+    let commerce: DataSource[] = COMMERCE_SOURCES;
+    if (opts.productTypeKey) {
+      const typeSources = await loadProductTypeSources(tx, opts.productTypeKey);
+      if (typeSources) {
+        // Replace the generic product/commerce.product sources with the type-scoped ones
+        // (same keys), keeping the rest of COMMERCE_SOURCES (collections, categories, rails).
+        const swapped = new Set(typeSources.map((s) => s.key));
+        commerce = [...typeSources, ...COMMERCE_SOURCES.filter((s) => !swapped.has(s.key))];
+      }
+    }
     return {
       sources: [
         ...cmsSources,
-        ...COMMERCE_SOURCES,
+        ...commerce,
         ...categorySources,
         ...CRM_SOURCES,
         ...SCHEDULING_SOURCES,

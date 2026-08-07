@@ -138,7 +138,7 @@ export const writeTools: AnyMcpTool[] = [
   {
     name: 'publish_site',
     description:
-      'Publish the current draft live to the storefront. Targets the tenant’s primary site unless `propertyId` is given.',
+      'Publish the current draft live to the live site. Targets the tenant’s primary site unless `propertyId` is given.',
     scope: 'write:builder',
     input: PublishInput.extend({ propertyId: propertyIdArg }),
     confirmation: true,
