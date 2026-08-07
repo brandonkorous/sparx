@@ -1,5 +1,5 @@
 // Merchandising MCP tools — the customer-facing content around products and
-// the storefront's own configuration: product reviews + Q&A moderation and
+// the site's own configuration: product reviews + Q&A moderation and
 // responses, and the commerce site's settings + theme. Thin wrappers over the
 // service layer (locked decision #7). moderate_review (single) lives in
 // ./write-tools.ts; this adds responses, bulk moderation, Q&A, and site config.
@@ -104,12 +104,12 @@ const moderateQuestions: McpToolDefinition = {
 //
 // Both are per-SITE (a tenant can own several). Pass the target site's
 // propertyId — get it from list_sites. There is no implicit "primary" here so
-// an edit can never silently land on the wrong storefront.
+// an edit can never silently land on the wrong site.
 
 const updateCommerceSiteSettings: McpToolDefinition = {
   name: 'update_commerce_site_settings',
   description:
-    'Update a storefront’s commerce settings (currency, checkout, catalog display, and related options) for one site. Pass the site’s propertyId (from list_sites) and only the fields to change.',
+    'Update a site’s commerce settings (currency, checkout, catalog display, and related options) for one site. Pass the site’s propertyId (from list_sites) and only the fields to change.',
   scope: 'write:commerce',
   confirmation: true,
   input: UpdateCommerceSiteSettingsInput.extend({ propertyId: uuid() }),
@@ -122,7 +122,7 @@ const updateCommerceSiteSettings: McpToolDefinition = {
 const updateCommerceTheme: McpToolDefinition = {
   name: 'update_commerce_theme',
   description:
-    'Update a storefront’s commerce theme settings for one site. Pass the site’s propertyId (from list_sites) and only the fields to change.',
+    'Update a site’s commerce theme settings for one site. Pass the site’s propertyId (from list_sites) and only the fields to change.',
   scope: 'write:commerce',
   confirmation: true,
   input: UpdateCommerceSiteThemeInput.extend({ propertyId: uuid() }),

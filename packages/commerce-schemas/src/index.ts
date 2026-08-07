@@ -16,6 +16,10 @@ export * from './common';
 // Phase 1 — catalog (products, variants, options, categories, collections,
 // fitment).
 export * from './products';
+
+// Typed product types + attributes (docs/143) — the commerce mirror of CMS
+// content types, backed by the shared @sparx/field-schema engine.
+export * from './product-types';
 export * from './categories';
 export * from './fitment';
 export * from './fitment-dictionaries';

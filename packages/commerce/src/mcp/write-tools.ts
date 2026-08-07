@@ -40,7 +40,7 @@ import type { AnyMcpTool, McpToolDefinition } from './registry';
  *
  *  `productService.create` deliberately mints no variant — options/variants belong to
  *  `variantService` — but a product with no variant has no price, a null
- *  `defaultVariantId`, and a storefront add-to-cart that refuses to fire. Exposing the
+ *  `defaultVariantId`, and a site add-to-cart that refuses to fire. Exposing the
  *  bare create over MCP would hand agents a tool that reliably produces unsellable
  *  products, so this input carries the default variant's price and the tool composes both
  *  services. Multi-variant lattices (sizes, colours) stay with the dedicated variant
@@ -70,7 +70,7 @@ const CreateProductWithPriceInput = z.object({
 const createProduct: McpToolDefinition = {
   name: 'create_product',
   description:
-    'Create a product AND its default (priced) variant in one call — the sellable listing an agent means by "add a product". Requires `title` and `priceCents`; `sku` is derived from the handle when omitted. Defaults to status `draft` — pass `active`, or call publish_product after, to put it on the storefront. Multi-variant products (sizes/colours) are set up through the variant surface after this call.',
+    'Create a product AND its default (priced) variant in one call — the sellable listing an agent means by "add a product". Requires `title` and `priceCents`; `sku` is derived from the handle when omitted. Defaults to status `draft` — pass `active`, or call publish_product after, to put it on the live site. Multi-variant products (sizes/colours) are set up through the variant surface after this call.',
   scope: 'write:commerce',
   confirmation: true,
   input: CreateProductWithPriceInput,
@@ -120,7 +120,7 @@ const UpdateProductArgs = z.object({
 const updateProduct: McpToolDefinition = {
   name: 'update_product',
   description:
-    "Edit an existing product: title, description, status, handle, tags, vendor, product type, SEO, and its category/collection/site links. Send only the fields you want to change — anything you omit is left untouched — inside `patch`. To change the PRICE, use update_variant: price lives on the product's variant. Setting status to `active` publishes it to the storefront; `archived` withdraws it.",
+    "Edit an existing product: title, description, status, handle, tags, vendor, product type, SEO, and its category/collection/site links. Send only the fields you want to change — anything you omit is left untouched — inside `patch`. To change the PRICE, use update_variant: price lives on the product's variant. Setting status to `active` publishes it to the live site; `archived` withdraws it.",
   scope: 'write:commerce',
   confirmation: true,
   input: UpdateProductArgs,
@@ -155,7 +155,7 @@ const updateVariant: McpToolDefinition = {
 };
 
 /** Give a product a photo. `create_product` / `update_product` cover every field EXCEPT
- *  the one a storefront card is mostly made of — its image — because product images hang
+ *  the one a card on the site is mostly made of — its image — because product images hang
  *  off the VARIANT (`variantImage`, product-level when `variantId` is null), not the
  *  product row. An agent could therefore build a whole catalog that renders as grey
  *  placeholder tiles, with no tool to fix it: the exact "looks half-built" failure the
@@ -177,7 +177,7 @@ const SetProductImageInput = z.object({
 const setProductImage: McpToolDefinition = {
   name: 'set_product_image',
   description:
-    "Attach an image to a product and, by default, make it the product's main photo — the picture shown on its storefront card and product page. Get the `mediaAssetId` from set_image_from_url (an existing hosted/Unsplash URL) or upload_image first, then pass it here with the product's id. Pass `primary: false` to add an extra gallery shot without changing the main photo. A product with no image renders as a blank placeholder, so this is part of finishing any product an agent creates.",
+    "Attach an image to a product and, by default, make it the product's main photo — the picture shown on its card on the site and product page. Get the `mediaAssetId` from set_image_from_url (an existing hosted/Unsplash URL) or upload_image first, then pass it here with the product's id. Pass `primary: false` to add an extra gallery shot without changing the main photo. A product with no image renders as a blank placeholder, so this is part of finishing any product an agent creates.",
   scope: 'write:commerce',
   confirmation: true,
   input: SetProductImageInput,
@@ -195,7 +195,7 @@ const setProductImage: McpToolDefinition = {
 
 const publishProduct: McpToolDefinition = {
   name: 'publish_product',
-  description: 'Move a product to active status (visible in storefront).',
+  description: 'Move a product to active status (visible on the site).',
   scope: 'write:commerce',
   confirmation: true,
   input: z.object({ productId: z.string().uuid() }),
@@ -204,7 +204,7 @@ const publishProduct: McpToolDefinition = {
 
 const archiveProduct: McpToolDefinition = {
   name: 'archive_product',
-  description: 'Archive a product (removes from storefront, preserves history).',
+  description: 'Archive a product (removes from the site, preserves history).',
   scope: 'write:commerce',
   confirmation: true,
   input: z.object({ productId: z.string().uuid() }),
@@ -214,7 +214,7 @@ const archiveProduct: McpToolDefinition = {
 const unpublishProduct: McpToolDefinition = {
   name: 'unpublish_product',
   description:
-    'Move a product back to draft (removes it from the storefront but keeps it editable).',
+    'Move a product back to draft (removes it from the live site but keeps it editable).',
   scope: 'write:commerce',
   confirmation: true,
   input: z.object({ productId: z.string().uuid() }),

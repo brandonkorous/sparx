@@ -134,4 +134,51 @@ export const SAMPLE_BUILDER_PRODUCT: BuilderProduct = {
       optionValueIds: ['sample-color-forest', 'sample-size-l'],
     },
   ],
+  // Typed attributes (docs/143) — an `apparel`-shaped sample so the canvas previews
+  // the auto-render attribute sections + individual `attributes.<key>` binds a real
+  // apparel product would carry.
+  attributes: {
+    fabric:
+      'Sample copy — a 3-layer insulated shell with a recycled ripstop face and a brushed inner. Replace this with the real fabric story per product.',
+    fit: 'Regular fit, true to size, with room to layer.',
+    care: 'Machine wash cold, tumble dry low. Do not iron the membrane.',
+    materials: 'Face — 100%, Insulation — 80%',
+    origin: 'Vietnam',
+  },
+  attributeSections: [
+    {
+      key: 'fabric',
+      label: 'Fabric & construction',
+      kind: 'long_text',
+      value:
+        'Sample copy — a 3-layer insulated shell with a recycled ripstop face and a brushed inner. Replace this with the real fabric story per product.',
+      items: [],
+    },
+    {
+      key: 'fit',
+      label: 'Fit',
+      kind: 'long_text',
+      value: 'Regular fit, true to size, with room to layer.',
+      items: [],
+    },
+    {
+      key: 'care',
+      label: 'Care',
+      kind: 'long_text',
+      value: 'Machine wash cold, tumble dry low. Do not iron the membrane.',
+      items: [],
+    },
+    {
+      key: 'materials',
+      label: 'Materials',
+      // Repeater section: value is empty so the auto-render sub-repeats `items`.
+      kind: 'repeater',
+      value: '',
+      items: [
+        { label: 'Recycled ripstop face', value: '100%' },
+        { label: 'Recycled insulation', value: '80%' },
+      ],
+    },
+    { key: 'origin', label: 'Made in', kind: 'text', value: 'Vietnam', items: [] },
+  ],
 };

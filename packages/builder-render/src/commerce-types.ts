@@ -29,6 +29,16 @@ export interface BuilderVariant {
   optionValueIds: string[];
 }
 
+/** One typed attribute section (docs/143), mirroring the site's
+ *  PublicProductAttributeSection — kept dependency-free here. */
+export interface BuilderAttributeSection {
+  key: string;
+  label: string;
+  kind: string;
+  value: string;
+  items: { label: string; value: string }[];
+}
+
 export interface BuilderProduct {
   /** Stable product id + URL handle (docs/98 Pillar 7) — so a pinned/looped product
    *  exposes `item.id` / `item.handle` (e.g. a card that links to the PDP). The
@@ -46,4 +56,9 @@ export interface BuilderProduct {
   priceMaxCents: number | null;
   options: BuilderOption[];
   variants: BuilderVariant[];
+  /** Typed attributes (docs/143) — `item.attributes.<key>` for an individual bind
+   *  and `attributeSections` for the auto-render repeat, so a pinned/looped product
+   *  page resolves the same refs the live PDP does. */
+  attributes: Record<string, string>;
+  attributeSections: BuilderAttributeSection[];
 }

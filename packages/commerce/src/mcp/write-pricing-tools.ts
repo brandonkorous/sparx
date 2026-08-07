@@ -1,4 +1,4 @@
-// Pricing + discounts MCP tools — the money-rules surface: storefront
+// Pricing + discounts MCP tools — the money-rules surface: site
 // discounts, gift-card adjustments, B2B pricing (price lists, bulk-quantity
 // tiers, per-account contract prices), and dropship markup / surcharge rules.
 // Thin wrappers over the service layer (locked decision #7). Issuing gift cards

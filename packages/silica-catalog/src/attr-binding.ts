@@ -31,6 +31,7 @@
 // would be for an authored one.
 
 import type { Child, ElementNode, Node } from '@wizeworks/silicaui-html';
+import { PLACEHOLDER_IMAGE_SRC } from './placeholder';
 
 /**
  * Bind `ref` into `element`'s `attr` (e.g. `bindAttr(anchor, 'href', 'url')`).
@@ -100,6 +101,76 @@ function scrub(node: ElementNode): ElementNode {
  */
 export function dropEmptyUrlAttrs(node: Node): Node {
   return walk(node) as Node;
+}
+
+/**
+ * Give any image that reached the end of the pipeline WITHOUT a usable `src` the
+ * placeholder, so it draws as grey art instead of the browser's broken-image glyph.
+ *
+ * This is the empty-catalog case, and it is every tenant's first impression: a brand new
+ * site has no products, so the starter's product cards resolve `image` to `''`, which
+ * `dropEmptyUrlAttrs` then strips (correctly — `src=""` re-requests the page). The card
+ * authors `PLACEHOLDER_IMAGE` precisely for this, but the binding overwrites it on the
+ * way through, so the fallback has to be re-applied at the end rather than defended in
+ * the middle. Measured on production: a site with products rendered 19 of 20 images with
+ * a src; one with an empty catalog rendered 0 of 2.
+ *
+ * Runs LAST, after `responsiveImages`, for two reasons: it must see the final src, and
+ * `responsiveImages` should never be handed a data: URI to build a srcset from.
+ *
+ * Deliberately NOT part of `scrub` — that one removes what must not be empty, this one
+ * supplies what must not be missing, and only images have something sensible to fall
+ * back TO. A src-less `<iframe>` or `<video>` gets nothing here on purpose.
+ */
+export function fillMissingImageSrc(node: Node): Node {
+  return fillWalk(node) as Node;
+}
+
+/** An image, whichever shape it is at this point: the `Image` component atom the catalog
+ *  authors, or a raw `<img>` somebody dropped in. */
+function imageSlot(child: Child): 'props' | 'attrs' | null {
+  if (typeof child === 'string' || child.kind === 'outlet') return null;
+  if (child.kind === 'component' && child.component === 'Image') return 'props';
+  if (child.kind === 'element' && child.tag === 'img') return 'attrs';
+  return null;
+}
+
+function fillWalk(child: Child): Child {
+  const slot = imageSlot(child);
+  let out = child;
+
+  if (slot && typeof child !== 'string' && child.kind !== 'outlet') {
+    const bag = (child as unknown as Record<string, Record<string, unknown> | undefined>)[slot];
+    const src = bag?.src;
+    // `data:` counts as unusable, not as a src. The catalog's own placeholder is a
+    // data URI and `toHtml`'s sanitiser drops those outright, so leaving one here
+    // renders a broken glyph just as surely as an empty string does.
+    const usable = typeof src === 'string' && src !== '' && !src.startsWith('data:');
+    if (!usable) {
+      const patched: Record<string, unknown> = {
+        ...child,
+        [slot]: { ...(bag ?? {}), src: PLACEHOLDER_IMAGE_SRC },
+      };
+      // A `data:value` binding still present after resolution is a DEAD one — nothing
+      // filled it. `toHtml` honours the marker over the props, so it would emit
+      // `data-sui-bind` and no src, discarding what we just put there.
+      if ((child as { data?: { kind?: string } }).data?.kind === 'value') delete patched.data;
+      // Through `unknown`: the patched object is structurally the same node with one
+      // prop swapped, but it was widened to a Record to write a computed key.
+      out = patched as unknown as Child;
+    }
+  }
+
+  if (typeof out === 'string' || out.kind === 'outlet') return out;
+  const children = out.children;
+  if (!children?.length) return out;
+  let changed = false;
+  const next = children.map((c) => {
+    const r = fillWalk(c);
+    if (r !== c) changed = true;
+    return r;
+  });
+  return changed ? { ...out, children: next } : out;
 }
 
 function walk(child: Child): Child {

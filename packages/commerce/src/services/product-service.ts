@@ -24,6 +24,7 @@ import type { Prisma, Product } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import { productSiteVisibility } from './site-visibility';
+import { resolveAndValidateAttributes } from './product-types-service';
 import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
@@ -183,6 +184,8 @@ export interface ProductDetail {
   description: string | null;
   status: ProductStatus;
   productType: string | null;
+  productTypeKey: string | null;
+  attributes: Record<string, unknown>;
   vendor: string | null;
   tags: string[];
   fulfillmentType: string;
@@ -422,6 +425,14 @@ export async function create(
   const result = await withTenant(ctx, async (tx) => {
     const handle = await ensureUniqueHandle(tx, ctx.tenantId, handleSeed);
 
+    // Typed attributes (docs/143): if a product type is set, its `attributes` bag
+    // is validated against the resolved type's schema (422 on mismatch); with no
+    // type, attributes are ignored (an untyped product has none). Empty bag when
+    // typed-but-omitted so the column stays {} rather than null.
+    const attributes = input.productTypeKey
+      ? await resolveAndValidateAttributes(tx, input.productTypeKey, input.attributes ?? {})
+      : {};
+
     const product = await tx.product.create({
       data: {
         tenantId: ctx.tenantId,
@@ -430,6 +441,8 @@ export async function create(
         description: input.description ?? null,
         status: input.status,
         productType: input.productType ?? null,
+        productTypeKey: input.productTypeKey ?? null,
+        attributes: attributes as Prisma.InputJsonValue,
         vendor: input.vendor ?? null,
         tags: input.tags,
         fulfillmentType: input.fulfillmentType,
@@ -536,9 +549,38 @@ export async function update(
     const becomingActive = statusChanging && input.status === 'active';
     becameActive = becomingActive;
 
+    // Typed attributes (docs/143). Partial semantics, mirroring the rest of this
+    // update: an omitted field is left alone; a provided one is applied.
+    //   - productTypeKey === null → clear the type AND wipe attributes ({}).
+    //   - a type is set (new or unchanged) → re-validate the bag when either the
+    //     bag or the type changed; switching type strips fields the new schema
+    //     doesn't define (validator is forgiving), which is the right behavior.
+    //   - no type now and none incoming → attributes can't be set (422).
+    const typeChanging = input.productTypeKey !== undefined;
+    const nextTypeKey = typeChanging ? input.productTypeKey : before.productTypeKey;
+    let typedWrite: { productTypeKey?: string | null; attributes?: Prisma.InputJsonValue } = {};
+    if (typeChanging && input.productTypeKey === null) {
+      typedWrite = { productTypeKey: null, attributes: {} };
+    } else if (nextTypeKey) {
+      if (input.attributes !== undefined || typeChanging) {
+        const bag = input.attributes ?? ((before.attributes ?? {}) as Record<string, unknown>);
+        const validated = await resolveAndValidateAttributes(tx, nextTypeKey, bag);
+        typedWrite = {
+          ...(typeChanging ? { productTypeKey: nextTypeKey } : {}),
+          attributes: validated as Prisma.InputJsonValue,
+        };
+      }
+    } else if (input.attributes !== undefined && Object.keys(input.attributes).length > 0) {
+      throw new CommerceValidationError(
+        'Cannot set attributes on a product with no product type. Set a product type first.',
+        [{ field: 'attributes', message: 'No product type' }]
+      );
+    }
+
     const updated = await tx.product.update({
       where: { id: productId },
       data: {
+        ...typedWrite,
         ...(input.title !== undefined ? { title: input.title } : {}),
         ...(nextHandle !== undefined ? { handle: nextHandle } : {}),
         ...(input.description !== undefined ? { description: input.description } : {}),
@@ -913,6 +955,8 @@ function toProductDetail(p: ProductWithIncludes): ProductDetail {
     description: p.description,
     status: p.status as ProductStatus,
     productType: p.productType,
+    productTypeKey: p.productTypeKey,
+    attributes: (p.attributes ?? {}) as Record<string, unknown>,
     vendor: p.vendor,
     tags: p.tags,
     fulfillmentType: p.fulfillmentType,
@@ -1064,6 +1108,8 @@ function serializeProduct(p: Product): Record<string, unknown> {
     handle: p.handle,
     status: p.status,
     productType: p.productType,
+    productTypeKey: p.productTypeKey,
+    attributes: p.attributes ?? {},
     vendor: p.vendor,
     fulfillmentType: p.fulfillmentType,
     hazmatClass: p.hazmatClass,

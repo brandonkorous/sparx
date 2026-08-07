@@ -4,6 +4,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 
 import productRoutes from './products.js';
+import productTypeRoutes from './product-types.js';
 import productTranslationRoutes from './translations.js';
 import categoryRoutes from './categories.js';
 import pricingRoutes from './pricing.js';
@@ -22,6 +23,7 @@ import commerceImportExportRoutes from './import.js';
 
 const commerceRoutes: FastifyPluginAsync = async (app) => {
   await app.register(productRoutes);
+  await app.register(productTypeRoutes);
   await app.register(productTranslationRoutes);
   await app.register(categoryRoutes);
   await app.register(pricingRoutes);

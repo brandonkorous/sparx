@@ -4,6 +4,16 @@
 
 // Phase 1 — catalog
 export * as productService from './product-service';
+// Typed product types + attributes (docs/143) — CRUD, fork-on-edit, and the
+// resolve+validate helpers the product write path uses.
+export * as productTypeService from './product-types-service';
+// The pure schema+bag → display-shapes projection a site's PDP binds against.
+export {
+  projectProductAttributes,
+  type AttributeProjection,
+  type AttributeSection,
+  type AttributeSectionItem,
+} from './attribute-projection';
 export * as variantService from './variant-service';
 export * as productTranslationService from './product-translation-service';
 export * as categoryService from './category-service';

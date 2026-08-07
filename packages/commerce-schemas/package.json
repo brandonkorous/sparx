@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@sparx/crm-schemas": "workspace:*",
+    "@sparx/field-schema": "workspace:*",
     "zod": "^4.4.3"
   },
   "devDependencies": {

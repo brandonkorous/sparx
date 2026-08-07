@@ -21,6 +21,17 @@ model Product {
 
   status          String   @default("draft") @db.VarChar(20) // draft | active | archived
   productType     String?  @map("product_type") @db.VarChar(127)
+  // The TYPED product-type link (docs/143) — mirrors ContentEntry.typeKey. A
+  // string key (not an FK) resolved against ProductType.key by the product
+  // service; it governs the `attributes` bag's schema. Distinct from the
+  // free-text `productType` above, which stays the merchandising label / collection
+  // facet. Null = untyped (renders no attributes; fully backward compatible).
+  productTypeKey  String?  @map("product_type_key") @db.VarChar(63)
+  // The typed, schema-validated descriptive attribute bag — mirrors
+  // ContentEntry.body. Validated against the resolved ProductType.attributeSchema
+  // on write (422 on mismatch, like a content entry). Distinct from `metadata`
+  // below, which stays the untyped raw escape hatch.
+  attributes      Json     @default("{}")
   vendor          String?  @db.VarChar(127)
   tags            String[] @default([]) @db.VarChar(63)
   fulfillmentType String   @default("physical") @map("fulfillment_type") @db.VarChar(20)
@@ -101,10 +112,49 @@ model Product {
   @@unique([tenantId, handle], map: "products_tenant_handle_unique")
   @@index([tenantId, status])
   @@index([tenantId, productType])
+  @@index([tenantId, productTypeKey])
   @@index([tenantId, vendor])
   @@index([tenantId, updatedAt(sort: Desc)])
   @@index([tenantId, deletedAt])
   @@map("commerce_products")
+}
+
+// A typed PRODUCT TYPE (docs/143) — the commerce mirror of ContentType. It
+// declares an `attributeSchema` (a @sparx/field-schema FieldSchema: the same 15
+// field kinds content types use) that governs a product's `attributes` bag. The
+// fixed commerce spine (variants/prices/inventory/images/SEO) is NEVER
+// type-defined — only the variable descriptive attribute layer is. Built-in
+// types (apparel, cosmetics, food_beverage, …) live under the sentinel platform
+// tenant and the RLS policy exposes them read-visible to every tenant; editing a
+// built-in forks it into a tenant-owned copy (same key, the caller's tenant_id),
+// exactly like content types.
+model ProductType {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  // null = the type is available to every site — the common case (a type is a
+  // SCHEMA, and schemas are generic). Mirrors ContentType.propertyId.
+  propertyId String? @map("property_id") @db.Uuid
+
+  key             String  @db.VarChar(63) // e.g. "apparel", "coffee"
+  name            String  @db.VarChar(127) // "Apparel"
+  pluralName      String? @map("plural_name") @db.VarChar(127)
+  description     String? @db.Text
+  attributeSchema Json    @map("attribute_schema") // FieldSchema { fields: FieldDef[] }
+  icon            String? @db.VarChar(63)
+  isBuiltIn       Boolean @default(false) @map("is_built_in")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  // Key uniqueness stays per TENANT (not per site): one key must mean one
+  // attribute schema across the tenant, exactly like ContentType.key.
+  @@unique([tenantId, key], map: "product_types_tenant_key_unique")
+  @@index([tenantId])
+  @@index([tenantId, propertyId])
+  @@map("commerce_product_types")
 }
 
 // Per-site catalog scoping (docs/49 §3 Model B) — which web PROPERTIES a product

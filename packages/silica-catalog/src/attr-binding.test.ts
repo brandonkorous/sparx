@@ -16,6 +16,7 @@
 
 import { describe, expect, it } from 'vitest';
 import {
+  atom,
   bind,
   el,
   repeat,
@@ -25,7 +26,8 @@ import {
   type ResolveHost,
 } from '@wizeworks/silicaui-html';
 
-import { bindAttr, boundAttrs, dropEmptyUrlAttrs } from './attr-binding';
+import { bindAttr, boundAttrs, dropEmptyUrlAttrs, fillMissingImageSrc } from './attr-binding';
+import { PLACEHOLDER_IMAGE, PLACEHOLDER_IMAGE_SRC } from './placeholder';
 import { renderSilicaBody } from './render';
 
 const ITEMS = [
@@ -141,5 +143,43 @@ describe('boundAttrs', () => {
   it('is empty for a text binding and for an unbound node', () => {
     expect(boundAttrs(bind(el('h3', '', { text: 'Name' }), 'title'))).toEqual([]);
     expect(boundAttrs(el('a', '', { attrs: { href: '/x' } }))).toEqual([]);
+  });
+});
+
+// A brand new tenant has an EMPTY catalog, so the starter's product cards resolve their
+// `image` to nothing — and that is the first page every new customer sees. It rendered
+// two broken-image glyphs, because the card's authored fallback is a `data:` URI and
+// `toHtml`'s sanitiser drops those on `src`. Measured on production before the fix: a
+// site WITH products emitted 19 of 20 images with a src, one with an empty catalog
+// emitted 0 of 2.
+describe('fillMissingImageSrc', () => {
+  const srcOf = (node: Parameters<typeof fillMissingImageSrc>[0]): string | null =>
+    /src="([^"]*)"/.exec(toHtml(fillMissingImageSrc(node)))?.[1] ?? null;
+
+  it('gives an image with no src the served placeholder', () => {
+    expect(srcOf(atom('Image', '', { alt: 'Product image' }))).toBe(PLACEHOLDER_IMAGE_SRC);
+  });
+
+  it('replaces a data: URI, which the sanitiser would drop outright', () => {
+    // The whole bug in one assertion: the catalog authors PLACEHOLDER_IMAGE as a data
+    // URI, and `toHtml` strips `data:` from `src` — raw, percent-encoded and base64
+    // alike — so leaving it renders exactly the broken glyph it exists to prevent.
+    expect(toHtml(atom('Image', '', { src: PLACEHOLDER_IMAGE }))).not.toContain('src=');
+    expect(srcOf(atom('Image', '', { src: PLACEHOLDER_IMAGE }))).toBe(PLACEHOLDER_IMAGE_SRC);
+  });
+
+  it('leaves a real image alone — this must not touch a site that HAS products', () => {
+    expect(srcOf(atom('Image', '', { src: 'https://cdn.test/a.jpg' }))).toBe(
+      'https://cdn.test/a.jpg'
+    );
+    expect(srcOf(atom('Image', '', { src: '/v1/public/media/abc?tenant=x' }))).toBe(
+      '/v1/public/media/abc?tenant=x'
+    );
+    expect(srcOf(el('img', '', { attrs: { src: '/m/c.jpg' } }))).toBe('/m/c.jpg');
+  });
+
+  it('reaches images nested anywhere in the tree', () => {
+    const tree = el('div', '', { children: [el('div', '', { children: [atom('Image', '')] })] });
+    expect(srcOf(tree)).toBe(PLACEHOLDER_IMAGE_SRC);
   });
 });

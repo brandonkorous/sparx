@@ -1,4 +1,4 @@
-// Catalog-authoring MCP tools — the structural surface behind a storefront:
+// Catalog-authoring MCP tools — the structural surface behind a site:
 // categories (the tree), collections (merchandising lists), bundles +
 // configurator templates, variant option lattices, product fitment, and
 // per-locale product translations. Each is a thin wrapper over a
@@ -282,7 +282,7 @@ const setDefaultVariant: McpToolDefinition = {
 const archiveVariant: McpToolDefinition = {
   name: 'archive_variant',
   description:
-    'Archive (soft-delete) a variant. It drops out of the storefront and lists but its SKU stays reserved and history is preserved. Restore with restore_variant.',
+    'Archive (soft-delete) a variant. It drops out of the live site and lists but its SKU stays reserved and history is preserved. Restore with restore_variant.',
   scope: 'write:commerce',
   confirmation: true,
   input: z.object({ variantId: uuid() }),

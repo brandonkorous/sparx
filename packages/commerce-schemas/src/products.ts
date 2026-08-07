@@ -25,6 +25,22 @@ import {
   WeightGrams,
 } from './common';
 
+// ─── Typed product-type primitives (docs/143) ────────────────────────
+
+// A product-type key — the same shape as a ContentType key (lower snake/kebab,
+// ≤63 chars) so the two systems' keys read alike.
+export const ProductTypeKey = z
+  .string()
+  .min(1)
+  .max(63)
+  .regex(/^[a-z][a-z0-9_]*$/, 'Product type key must be lower_snake_case.');
+
+// The raw attribute bag at the wire. The service validates its SHAPE against the
+// resolved product type's `attributeSchema` (@sparx/field-schema bodyValidatorFor);
+// here it is just "a JSON object", because the schema is per-tenant DB data.
+export const AttributesBag = z.record(z.string(), z.unknown());
+export type AttributesBag = z.infer<typeof AttributesBag>;
+
 // ─── Options + Option Values ─────────────────────────────────────────
 
 export const OptionDisplayType = z.enum([
@@ -222,6 +238,15 @@ export const CreateProductInput = z.object({
   description: z.string().max(50_000).optional(), // rich text (HTML allowed)
   status: ProductStatus.default('draft'),
   productType: z.string().max(127).optional(),
+  // The typed product-type link (docs/143) — mirrors ContentEntry.typeKey. When
+  // set, the product's `attributes` bag is validated against this type's schema
+  // in the service. Distinct from the free-text `productType` above (merchandising
+  // label). A key string, resolved by the service — not validated for existence here.
+  productTypeKey: ProductTypeKey.optional(),
+  // The typed descriptive attribute bag (docs/143). Shape is validated in the
+  // product service against the RESOLVED type schema (not statically here — the
+  // schema lives per-tenant in the DB), so accept any JSON object at the wire.
+  attributes: AttributesBag.optional(),
   vendor: z.string().max(127).optional(),
   tags: z.array(z.string().min(1).max(63)).max(50).default([]),
   fulfillmentType: FulfillmentType.default('physical'),
@@ -278,6 +303,8 @@ export const UpdateProductInput = CreateProductInput.partial()
     // .partial() alone only allows undefined, so we extend with .nullish() here.
     description: z.string().max(50_000).nullish(),
     productType: z.string().max(127).nullish(),
+    // Nullish so a save can clear the typed link (→ untyped, renders no attributes).
+    productTypeKey: ProductTypeKey.nullish(),
     vendor: z.string().max(127).nullish(),
     taxClass: z.string().max(63).nullish(),
     originCountry: z

@@ -1,11 +1,30 @@
 # 143 — Product Types & Typed Attributes
 
-Version: 0.2 (plan / not yet built)
+Version: 1.0 (built)
 Author: Brandon Korous
 Last Updated: 2026-08-06
 
-> **Status: PROPOSED.** This is the implementation plan for giving products a typed
-> attribute system — the commerce mirror of CMS content types. Nothing here is built yet.
+> **Status: BUILT.** All 11 phases are implemented and verified. Products now carry a typed
+> attribute layer (the commerce mirror of CMS content types), the 10 reference site templates
+> render each product's OWN attributes instead of hardcoded copy, and the shared/default PDP
+> auto-renders them too so the floor is universal.
+>
+> **What shipped beyond the original plan:**
+>
+> - **The field engine was extracted to `@sparx/field-schema` and adopted by THREE domains** —
+>   a parallel CRM effort (docs/144) added `currency` / `user` / `calculated` field kinds + an
+>   eval-free calc engine to the same package, so CMS content types, commerce product types, and
+>   CRM object properties now share one field engine. The projection (§6.4) handles the new kinds.
+> - **The auto-render floor is in the SHARED PDP, not only the 10 templates.** `buyBox()` /
+>   `productDetailPage()` in `@sparx/silica-catalog` (the code fallback every site without a
+>   bespoke product page uses — the seeded default, a fresh tenant's starter) now renders
+>   `productAttributes()` + `productPolicyLinks()` + `productStockBadge()`. So a typed product
+>   shows its real detail sections on ANY site with zero authoring.
+> - **The demo seed** gives its diesel-parts catalog `auto_part` types + real fitment/specs/warranty.
+>
+> **User-owned steps before the DB-backed end-to-end test:** `pnpm install` (the new
+> `@sparx/field-schema` package + workspace deps), `prisma generate` + apply migration
+> `20270206000000`, and re-seed. The DB-free preview/screenshot oracle already verifies rendering.
 
 ---
 

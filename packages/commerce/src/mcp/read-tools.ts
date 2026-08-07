@@ -240,7 +240,7 @@ const previewMarkup: McpToolDefinition = {
 };
 
 // Channel revenue consolidation (docs/27 §8). `channel` is the derived channel
-// key: a high-level bucket (storefront, b2b_portal, admin) OR a marketplace source
+// key: a high-level bucket (site, b2b_portal, admin) OR a marketplace source
 // slug (tiktok_shop, etsy, amazon, walmart, ebay, faire, sparx_market). Range is
 // optional everywhere and defaults to the last 30 days.
 const OptionalDateRange = DateRange.optional();
@@ -249,7 +249,7 @@ const ChannelKey = z
   .min(1)
   .max(63)
   .describe(
-    'Channel key: a bucket (storefront | b2b_portal | admin) or a marketplace slug (tiktok_shop | etsy | amazon | walmart | ebay | faire | sparx_market).'
+    'Channel key: a bucket (site | b2b_portal | admin) or a marketplace slug (tiktok_shop | etsy | amazon | walmart | ebay | faire | sparx_market).'
   );
 
 const getChannelRevenue: McpToolDefinition = {
