@@ -63,6 +63,16 @@ on:
           # yields the intended height and re-derives the compiled snapshot. Touches
           # themes only, never pages. Dry-runs by default.
           - repair-theme-units
+          # Re-stamps UNEDITED record-detail pages (product pages, blog posts) onto the
+          # CURRENT code template. A stamp is a point-in-time copy, so a site whose page
+          # was materialized before the template gained structure keeps a stale tree that
+          # SHADOWS the new floor — docs/143 added the typed-attribute sections to the
+          # product page, and every already-stamped site serves the old one until this
+          # runs. Only re-stamps trees whose fingerprint proves they are factory output
+          # (shared across two or more tenants, or opted in via `fingerprint`); a
+          # hand-edited page is a singleton and is reported, never written. Dry-runs by
+          # default. Safe to re-run.
+          - backfill-record-templates
           # Copies the media PVC into Azure Blob storage. Read-only on the disk;
           # writes to Blob. Dry-runs by default. Safe to re-run — it skips blobs
           # that already exist.
@@ -86,9 +96,28 @@ on:
         # Lets an irreversible task be run ONE tenant at a time instead of all-or-nothing.
         # `retire-legacy-site-tier` deletes authored pages with no way back, and prod's
         # legacy set mixes e2e fixtures with real tenants — without this the only options
-        # were "every one of them" or "none". Honoured by retire-legacy-site-tier and
-        # repair-theme-units; ignored by tasks that have no such filter.
+        # were "every one of them" or "none". Honoured by retire-legacy-site-tier,
+        # repair-theme-units and backfill-record-templates; ignored by tasks that have
+        # no such filter.
         description: 'Limit to one tenant slug (blank = all tenants)'
+        required: false
+        type: string
+      record_type:
+        # backfill-record-templates only. Narrows the re-stamp to one record type
+        # (`commerce.product`, `cms.blog_post`, …) so a template change that touched
+        # only the product page does not rewrite blog pages in the same run.
+        description: 'backfill-record-templates: limit to one record type (blank = all)'
+        required: false
+        type: string
+      fingerprint:
+        # backfill-record-templates only, and the reason it is an input rather than a
+        # constant: the backfill re-stamps a page only when its structural fingerprint
+        # is shared by TWO OR MORE tenants, since independent tenants cannot hand-edit
+        # their way to a byte-identical tree. A legitimate factory shape that only ONE
+        # tenant is on (a lone e2e fixture) is reported as `review` and skipped — this
+        # is how an operator opts that shape in AFTER eyeballing the dry run. Without
+        # it the task can never finish those pages.
+        description: 'backfill-record-templates: opt in a reviewed fingerprint (blank = none)'
         required: false
         type: string
       confirm:
@@ -219,6 +248,8 @@ jobs:
           REPO='ghcr.io/${{ github.repository }}'
           # Assigned unconditionally so `set -u` can't trip on a blank input.
           TENANT='${{ inputs.tenant }}'
+          RECORD_TYPE='${{ inputs.record_type }}'
+          FINGERPRINT='${{ inputs.fingerprint }}'
 
           case "$TASK" in
             platform-crm-backfill)
@@ -252,6 +283,21 @@ jobs:
               args='"node","--import","tsx","src/scripts/retire-legacy-site-tier.ts","--repair-theme-units"'
               if [ '${{ inputs.apply }}' = 'true' ]; then args="$args,\"--apply\""; fi
               if [ -n "$TENANT" ]; then args="$args,\"--tenant=$TENANT\""; fi
+              command="[$args]"
+              ;;
+            backfill-record-templates)
+              image="$REPO/api-rest:$TAG"
+              # WORKDIR is /app/services/api-rest. Unticked it prints every page it
+              # WOULD re-stamp, plus the singletons it is holding back for review, and
+              # writes nothing. Composed arg-by-arg for the same reason as
+              # retire-legacy-site-tier: four optional flags is sixteen fixed strings.
+              args='"node","--import","tsx","src/scripts/backfill-record-templates.ts"'
+              if [ '${{ inputs.apply }}' = 'true' ]; then args="$args,\"--apply\""; fi
+              if [ -n "$TENANT" ]; then args="$args,\"--tenant=$TENANT\""; fi
+              if [ -n "$RECORD_TYPE" ]; then args="$args,\"--type=$RECORD_TYPE\""; fi
+              if [ -n "$FINGERPRINT" ]; then
+                args="$args,\"--include-fingerprint=$FINGERPRINT\""
+              fi
               command="[$args]"
               ;;
             migrate-media-to-blob)
