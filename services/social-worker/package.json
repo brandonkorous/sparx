@@ -19,6 +19,7 @@
     "@sparx/attribution": "workspace:*",
     "@sparx/db": "workspace:*",
     "@sparx/events": "workspace:*",
+    "@sparx/links": "workspace:*",
     "@sparx/social": "workspace:*",
     "pino": "^9.5.0",
     "zod": "^4.4.3"

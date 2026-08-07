@@ -100,6 +100,29 @@ export interface ModuleState {
   reachable?: boolean;
 }
 
+/**
+ * The active site's slug — what every shareable address is stamped with.
+ *
+ * Slug rather than id because a link is written to be READ: `?site=savory-donuts`
+ * says which business it belongs to and a uuid says nothing. Both are accepted on
+ * the way back in, so a renamed slug degrades to an honest "that link is for a
+ * different business" rather than to silence.
+ *
+ * Undefined while either query is in flight, which callers render as "no site on
+ * the link yet" — the address is still correct, just less portable, and it
+ * upgrades in place the moment the list lands.
+ */
+export function useActiveSiteSlug(): string | undefined {
+  const { data: tokenState } = useActiveSiteId();
+  const { data: sites } = useSites();
+  if (!sites) return undefined;
+  const activeId = tokenState?.propertyId;
+  const site = activeId
+    ? sites.find((candidate) => candidate.id === activeId)
+    : sites.find((candidate) => candidate.isPrimary);
+  return site?.slug;
+}
+
 /** Which modules this tenant has turned on — drives the rail and the pulse.
  *  Modules are feature flags, never plan tiers; a disabled module simply is
  *  not part of this tenant's product. */
@@ -130,7 +153,21 @@ const ACTIVE_PROPERTY_COOKIE = 'sparx_active_property';
 export async function switchSite(
   controller: WorkbenchController,
   currentSiteKey: string,
-  nextSiteId: string
+  nextSiteId: string,
+  options?: {
+    /**
+     * Reload onto the SAME address instead of the workbench root.
+     *
+     * Exactly one caller wants this: arriving on a link that belongs to another
+     * business. There the address is the whole point — the reload has to land
+     * back on `/commerce/orders/…?site=…` so the arrival gate can open it now
+     * that the workspace matches. Everyone else is switching away from a record
+     * that belongs to the site being LEFT, and carrying its address across would
+     * mean the new workspace opens with a pane pointing at another business's
+     * data. Hence the default.
+     */
+    readonly keepAddress?: boolean;
+  }
 ): Promise<void> {
   // Flush the CURRENT arrangement under the current site before leaving —
   // the debounced auto-save may not have fired yet.
@@ -166,7 +203,14 @@ export async function switchSite(
   // stands down: with unsaved work open, the native prompt would otherwise cancel
   // the reload and leave the cookie moved but the window (and switcher) unchanged.
   controller.markIntentionalUnload();
-  window.location.reload();
+  if (options?.keepAddress === true) {
+    window.location.reload();
+    return;
+  }
+  // `replace`, not `assign`: the address being left names a record in the OTHER
+  // business, and leaving it in history means Back walks into a pane that cannot
+  // load. Replacing drops it.
+  window.location.replace('/');
 }
 
 /* ── Favorites ──────────────────────────────────────────────────────────────

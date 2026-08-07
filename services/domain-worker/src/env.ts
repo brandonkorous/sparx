@@ -17,7 +17,12 @@ const EnvSchema = z.object({
   // NODE_ENV. See @sparx/godaddy resolveEnv (OTE sandbox is chronically degraded).
   GODADDY_ENV: z.enum(['prod', 'production', 'ote', 'test']).optional(),
   SPARX_CNAME_TARGET: z.string().default('customers.sparx.zone'),
-  SPARX_DASHBOARD_URL: z.string().default('https://app.sparx.works'),
+  // Where the workbench lives is NOT declared here any more. It was one of four
+  // environment variables naming the same URL, each read by a different emitter
+  // with its own fallback — so which host an email pointed at depended on which
+  // service sent it. `@sparx/links/server`'s `appOrigin()` reads them all, in one
+  // fixed order, in one place. The variables themselves still work; only the
+  // per-service opinion about them is gone.
 });
 
 export type Env = z.infer<typeof EnvSchema>;

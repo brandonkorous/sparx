@@ -18,10 +18,9 @@
 
 import { withTenant } from '@sparx/db';
 import { createPublisher, publishEvent } from '@sparx/events';
+import { appLink, appOrigin } from '@sparx/links/server';
 import { getSocialDescriptor, type SocialPlatform } from '@sparx/social';
 import type { Logger } from 'pino';
-
-import { env } from './env.js';
 
 /** The tenant's own contact address — who hears about this. */
 async function tenantEmail(tenantId: string): Promise<{ email: string; name: string } | null> {
@@ -32,12 +31,17 @@ async function tenantEmail(tenantId: string): Promise<{ email: string; name: str
   return { email: tenant.email, name: tenant.name };
 }
 
+// These two were DEAD. They emitted `/?surface=social.composer&id=<id>` — a query
+// parameter the workbench has never read; it reads `?open=`, and now an address.
+// So every "your post didn't go out" and "reconnect your account" email landed on
+// a bare workbench with no post in sight, which is the worst possible moment for
+// a link to do nothing. Built from the address table now, like everything else.
 function composerUrl(postId: string): string {
-  return `${env.WORKBENCH_BASE_URL.replace(/\/$/, '')}/?surface=social.composer&id=${postId}`;
+  return appLink('social.composer', { id: postId }) ?? appOrigin();
 }
 
 function connectionsUrl(): string {
-  return `${env.WORKBENCH_BASE_URL.replace(/\/$/, '')}/?surface=social.connections`;
+  return appLink('social.connections') ?? appOrigin();
 }
 
 /** A post's opening words — enough to recognize it in a subject line. */

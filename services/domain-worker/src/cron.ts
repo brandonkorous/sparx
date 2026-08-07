@@ -8,8 +8,8 @@
 import type { Logger } from 'pino';
 import { prisma } from '@sparx/db';
 import { publishEvent } from '@sparx/events';
+import { appLink, appOrigin } from '@sparx/links/server';
 import { publisher, pubLogger } from './publisher.js';
-import { env } from './env.js';
 
 const THRESHOLDS = [30, 14, 7] as const;
 
@@ -75,7 +75,7 @@ export async function runRenewalCheck(logger: Logger): Promise<{ processed: numb
               domainName: domain.host,
               daysUntilExpiry: threshold,
               expiresAt: domain.expiresAt ? formatDate(domain.expiresAt) : 'soon',
-              renewUrl: `${env.SPARX_DASHBOARD_URL}/settings/domains`,
+              renewUrl: appLink('platform.settings.domains') ?? appOrigin(),
               autoRenew: domain.autoRenew,
             },
           },

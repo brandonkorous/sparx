@@ -24,6 +24,7 @@ import { constructEventWithAnySecret, parseWebhookSecrets } from '@sparx/payment
 import { ApiError } from '@sparx/api-core/errors';
 import { publish } from '@sparx/api-core/pubsub';
 import { prisma } from '@sparx/db';
+import { appLink, appOrigin } from '@sparx/links/server';
 import { env } from '../../../env.js';
 
 // ── sparx-billing notifications (docs/impl transactional-email §4 P4) ─────────
@@ -62,14 +63,13 @@ function dateLabel(unixSeconds: number): string {
   }).format(new Date(unixSeconds * 1000));
 }
 
-/** The workbench billing page — where a tenant adds/updates a card. `/settings/billing`
- *  is a friendly redirect route that translates to the `finance.subscription` pane
- *  (apps/workbench/app/settings/billing), the same emitters-use-a-readable-path
- *  convention as the domain-renewal email's `/settings/domains`. The base defaults to
- *  the app host (matching services/domain-worker), NOT the marketing site. */
+/** The workbench billing page — where a tenant adds/updates a card. The address
+ *  comes from the shared table (`@sparx/links`), which is what stops this file
+ *  from knowing a surface key: it used to append `?open=finance.subscription`,
+ *  so renaming that surface would have broken every billing email already sent.
+ *  `/settings/billing` is the canonical address and resolves on its own. */
 function billingSettingsUrl(): string {
-  const base = env.SPARX_DASHBOARD_URL ?? 'https://app.sparx.works';
-  return `${base.replace(/\/$/, '')}/settings/billing`;
+  return appLink('finance.subscription') ?? appOrigin();
 }
 
 const asString = (v: string | { id: string } | null | undefined): string | undefined =>

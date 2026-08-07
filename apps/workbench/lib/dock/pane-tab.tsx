@@ -15,8 +15,11 @@
 // point is scanning eight tabs and knowing instantly which one is commerce.
 // Pane BODIES stay neutral, so this is wayfinding, not decoration.
 //
-// Right-click is tab MANAGEMENT: close this / close others / close to the right,
-// and move the tab to its own group or window. The close operations route
+// Right-click is COPY LINK plus tab MANAGEMENT: close this / close others /
+// close to the right, and move the tab to its own group or window. Copy link
+// leads because it is the only item about the pane's CONTENT rather than about
+// housekeeping, and because right-clicking a tab to copy its address is a
+// gesture everybody already has from their browser. The close operations route
 // through controller.requestClose so a dirty pane still gets its "close anyway?"
 // conversation; the batch ones stop at the first pane the operator keeps. The
 // menu portals into the tab's OWN window, so a right-click on a tab torn off to
@@ -40,6 +43,7 @@ import { getSurface } from '../surfaces/registry';
 import { useWorkbench } from '../workbench/context';
 import { usePaneDirty } from '../workbench/dirty';
 import { useOwnerWindowBody } from './window-boundary';
+import { useCopyLink, usePaneLink } from '../../components/copy-pane-link';
 
 export function PaneTab(props: IDockviewPanelHeaderProps<{ paneId: string }>) {
   const { controller } = useWorkbench();
@@ -118,6 +122,11 @@ export function PaneTab(props: IDockviewPanelHeaderProps<{ paneId: string }>) {
 
   const Icon = definition?.icon;
   const dirty = usePaneDirty(paneId);
+
+  // Shared with the toolbar control so the two can never hand out different
+  // links for the same pane.
+  const link = usePaneLink(paneId);
+  const copyLink = useCopyLink();
 
   return (
     <ContextMenu>
@@ -219,6 +228,23 @@ export function PaneTab(props: IDockviewPanelHeaderProps<{ paneId: string }>) {
           the operator right-clicked, not back in the opener. */}
       <PortalContainerProvider container={menuContainer}>
         <ContextMenuContent>
+          {/* First, and above the close group, because it is the only item here
+              that is about the CONTENT rather than about tab housekeeping — and
+              because right-clicking a tab is the gesture people already use to
+              copy a link in every browser they have ever used. Absent when the
+              pane has no address; see components/copy-pane-link.tsx. */}
+          {link ? (
+            <>
+              <ContextMenuItem
+                onClick={() => {
+                  void copyLink(link);
+                }}
+              >
+                Copy link
+              </ContextMenuItem>
+              <ContextMenuSeparator />
+            </>
+          ) : null}
           <ContextMenuItem
             onClick={() => {
               void closeInOrder([paneId]);

@@ -65,7 +65,7 @@ import {
   type ModuleAccessMode,
 } from '@sparx/auth';
 import { MODULE_SLUGS, MODULE_SLUG_SET } from '../../lib/module-toggle.js';
-import { env } from '../../env.js';
+import { appOrigin } from '@sparx/links/server';
 
 // Better Auth's organization plugin is configured with
 // `invitationExpiresIn: 60 * 60 * 24 * 7` (packages/auth/src/server.ts). An
@@ -74,15 +74,15 @@ import { env } from '../../env.js';
 const INVITATION_TTL_DAYS = 7;
 const INVITATION_TTL_MS = INVITATION_TTL_DAYS * 24 * 60 * 60 * 1000;
 
-/** Browser-facing dashboard origin — the base of the /accept-invite link.
- *  Mirrors the BETTER_AUTH_URL fallback the plugin callback uses, so a local
- *  checkout produces a working link with no extra wiring. */
-function dashboardOrigin(): string {
-  return env.SPARX_DASHBOARD_URL ?? 'http://localhost:3001';
-}
-
+/** The base of the /accept-invite link.
+ *
+ *  `/accept-invite` is a real PAGE in the workbench, not a pane address, so it is
+ *  assembled by hand rather than through the address table — but the ORIGIN comes
+ *  from the one place that knows it. Its own fallback used to say `localhost:3001`,
+ *  the removed dashboard's port, so every invitation generated on a laptop pointed
+ *  at nothing; `appOrigin()` answers 3011 outside production. */
 function acceptUrlFor(invitationId: string): string {
-  return `${dashboardOrigin()}/accept-invite?invitation=${encodeURIComponent(invitationId)}`;
+  return `${appOrigin()}/accept-invite?invitation=${encodeURIComponent(invitationId)}`;
 }
 
 // ── Input shapes ────────────────────────────────────────────────────────────

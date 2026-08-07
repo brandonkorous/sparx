@@ -26,7 +26,14 @@
 
 import type { BuilderHost } from '@wizeworks/silicaui-builder/react';
 import type { HostNode } from '@wizeworks/silicaui-html';
-import { HOST_COMPONENTS, HOST_KEYS } from '@sparx/silica-catalog';
+import {
+  HOST_COMPONENTS,
+  HOST_KEYS,
+  frameEmbedSrc,
+  frameRatioClass,
+  mapEmbedSrc,
+  type HostComponentMeta,
+} from '@sparx/silica-catalog';
 
 // `HostRenderCtx` isn't re-exported by the builder, so derive the exact hook
 // signature from `BuilderHost` — one source of truth, no drift if it changes.
@@ -51,7 +58,7 @@ function CoreFrame({ label, children }: { label: string; children: React.ReactNo
   );
 }
 
-/** The tenant's real brand mark — logo and/or name, exactly as the storefront's
+/** The tenant's real brand mark — logo and/or name, exactly as the live site's
  *  `site.brand` core renders it, read from the resolver root `site.identity` that
  *  `buildPreviewRoot` overlays. Degrades: logo-only with no logo → the name; no name
  *  → "Your site". Never an empty tile. */
@@ -63,7 +70,7 @@ function BrandMark({ root, node }: { root: unknown; node: HostNode }) {
   const logoUrl = typeof logo?.url === 'string' && logo.url ? logo.url : null;
   const show =
     node.props?.show === 'logo' || node.props?.show === 'name' ? node.props.show : 'both';
-  // Mirror the storefront's degradation: "logo only" with no logo would render an
+  // Mirror the live site's degradation: "logo only" with no logo would render an
   // empty box, so fall back to the name.
   const mode = show === 'logo' && !logoUrl ? 'name' : show;
 
@@ -82,7 +89,7 @@ function BrandMark({ root, node }: { root: unknown; node: HostNode }) {
   );
 }
 
-/** The light/dark switch at its real size — the storefront mounts an icon button, so
+/** The light/dark switch at its real size — the live site mounts an icon button, so
  *  the canvas draws an icon button. A `<span>` carrying the button classes rather than
  *  a `<button>`: it must not be clickable on the canvas (selection belongs to the
  *  builder) and it has no state to show, so the moon glyph stands for the control the
@@ -156,6 +163,48 @@ function PagerMark({ hint }: { hint: string }) {
   );
 }
 
+/**
+ * A map or a general embed at its REAL footprint.
+ *
+ * Sized rather than skeletal, and that is the whole point: the author's only decision
+ * here is how big a hole this leaves in their layout, and a dashed card of some other
+ * height answers the wrong question. So it draws the real ratio box, the real rounding,
+ * the real surface.
+ *
+ * NOT the live frame, though. A third-party iframe on the canvas would run someone
+ * else's scripts inside the builder, reload on every keystroke that re-renders, and
+ * swallow the clicks that are supposed to SELECT the block.
+ *
+ * The UNRESOLVED state is the one that earns its words. Both of these render NOTHING on
+ * the live site until their field is filled in, so a silent grey box here would read as
+ * "placed wrong" when the truth is "not finished yet". It says which — the same sentence
+ * the pre-publish check uses.
+ */
+function FrameMark({ node, meta }: { node: HostNode; meta?: HostComponentMeta }) {
+  const props = node.props ?? {};
+  const isMap = node.component === HOST_KEYS.siteMap;
+  const resolved = isMap
+    ? mapEmbedSrc(props.location, props.zoom) !== null
+    : frameEmbedSrc(props.url) !== null;
+
+  return (
+    <span
+      className={`rounded-box bg-base-200 text-base-content flex w-full items-center justify-center border p-6 text-center ${frameRatioClass(
+        props.ratio
+      )} ${resolved ? 'border-base-300' : 'border-base-content/25 border-dashed'}`}
+      title={meta?.hint ?? node.component}
+    >
+      <span className="text-sm font-medium">
+        {resolved
+          ? `${isMap ? 'Map' : 'Embed'} · shows here`
+          : isMap
+            ? 'Type your address in the Map panel to show it here'
+            : 'Paste a link in the Embed panel to show it here'}
+      </span>
+    </span>
+  );
+}
+
 /** Build the studio's `renderHostNode`, closing over the canvas resolver root so the
  *  brand core can draw the tenant's real mark. Every other core draws a labelled
  *  skeleton keyed by its `component`; a registered-but-unhandled key still renders a
@@ -175,6 +224,9 @@ export function makeRenderHostNode(root: unknown): RenderHostNode {
     }
     if (node.component === HOST_KEYS.sitePagination) {
       return <PagerMark hint={meta?.hint ?? label} />;
+    }
+    if (node.component === HOST_KEYS.siteMap || node.component === HOST_KEYS.siteEmbed) {
+      return <FrameMark node={node} {...(meta ? { meta } : {})} />;
     }
     if (node.component === HOST_KEYS.siteLegalLinks) {
       return (

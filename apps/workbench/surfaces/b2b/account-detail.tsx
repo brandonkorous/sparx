@@ -41,6 +41,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { CustomPropertiesPanel } from '../crm/custom-properties-panel';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { MoneyInput } from '../invoicing/money-input';
 import { CustomerPicker, customerLabel, type CustomerSummary } from '../invoicing/customer-picker';
@@ -94,6 +95,8 @@ interface Draft {
   status: AccountStatus;
   notes: string;
   fleetSize: string;
+  /** The extra details THIS business tracks on a company (docs/144 §3). */
+  customProperties: Record<string, unknown>;
 }
 
 function emptyDraft(): Draft {
@@ -108,6 +111,7 @@ function emptyDraft(): Draft {
     status: 'active',
     notes: '',
     fleetSize: '',
+    customProperties: {},
   };
 }
 
@@ -123,6 +127,7 @@ function toDraft(account: AccountDetail): Draft {
     status: account.status,
     notes: account.notes ?? '',
     fleetSize: account.fleetSize != null ? String(account.fleetSize) : '',
+    customProperties: account.customProperties ?? {},
   };
 }
 
@@ -324,6 +329,7 @@ function AccountEditor({
           status: draft.status,
           internalNotes: identity.notes,
           fleetSize: draft.fleetSize === '' ? null : Number(draft.fleetSize),
+          customProperties: draft.customProperties,
         },
       },
       {
@@ -652,6 +658,17 @@ function AccountEditor({
               />
             </Field>
           </FormSection>
+
+          {/* The extra details this business tracks on a company (docs/144 §3).
+              The SAME bag the CRM's company pane edits — one record, one set of
+              fields, whichever door you came in through. */}
+          <CustomPropertiesPanel
+            objectKey="company"
+            values={draft.customProperties}
+            onChange={(next) => {
+              set('customProperties', next);
+            }}
+          />
 
           {/* 3 — Who can order */}
           {isNew ? (

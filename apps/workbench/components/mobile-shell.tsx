@@ -13,8 +13,8 @@
 // online. Unsaved work — the one signal that can lose data — is not dropped; it
 // rides the pane switcher's close button, which is where the decision is made.
 
-import { useSyncExternalStore } from 'react';
-import { Menu, Search } from 'lucide-react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
+import { Menu, Search, Share2 } from 'lucide-react';
 import {
   Button,
   DropdownMenu,
@@ -30,6 +30,7 @@ import { titleFor } from '../lib/surfaces/registry';
 import { useWorkbench } from '../lib/workbench/context';
 import type { Theme } from '../lib/theme';
 import { useFeedback } from './feedback/provider';
+import { useCopyLink, usePaneLink } from './copy-pane-link';
 import { MobileStack } from './mobile-stack';
 import { MobileNav } from './mobile-nav';
 import { BillingBanner } from './billing/billing-banner';
@@ -91,6 +92,14 @@ export function MobileShell({
             a surface has renamed itself, so reading it directly showed "sparx"
             for every pane that never called setTitle. */}
         <p className="min-w-0 flex-1 truncate font-medium">{active ? titleFor(active) : 'sparx'}</p>
+
+        {/* Sharing what you are looking at, from a phone, where sharing is what
+            a phone is FOR. It uses the system share sheet when the browser has
+            one — that is the gesture people already know, and it reaches the
+            chat app they were going to paste into anyway — and falls back to the
+            clipboard. Absent when the pane has no address; see
+            components/copy-pane-link.tsx. */}
+        <SharePaneButton paneId={active?.id ?? null} />
 
         <Button
           color="neutral"
@@ -165,6 +174,47 @@ export function MobileShell({
 
       <MobileNav open={navOpen} onOpenChange={onNavOpenChange} />
     </div>
+  );
+}
+
+/**
+ * Share (or copy) the address of the pane on screen.
+ *
+ * `navigator.share` where it exists, clipboard where it doesn't. The check is
+ * held in state rather than read during render because it differs between server
+ * and client, and reading it inline is a hydration mismatch — the button would
+ * render one glyph on the server and another the instant React took over.
+ */
+function SharePaneButton({ paneId }: { paneId: string | null }) {
+  const link = usePaneLink(paneId);
+  const copyLink = useCopyLink();
+  const [canShare, setCanShare] = useState(false);
+
+  useEffect(() => {
+    setCanShare(typeof navigator !== 'undefined' && typeof navigator.share === 'function');
+  }, []);
+
+  if (!link) return null;
+
+  return (
+    <Button
+      color="neutral"
+      variant="ghost"
+      shape="square"
+      className="min-h-11 min-w-11"
+      aria-label="Share a link to this panel"
+      onClick={() => {
+        if (canShare) {
+          // A cancelled share sheet rejects, which is not an error — it is
+          // somebody changing their mind. Swallowed rather than surfaced.
+          void navigator.share({ url: link }).catch(() => undefined);
+          return;
+        }
+        void copyLink(link);
+      }}
+    >
+      <Share2 className="size-5" aria-hidden />
+    </Button>
   );
 }
 

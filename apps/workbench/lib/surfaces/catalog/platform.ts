@@ -20,6 +20,7 @@ import {
   Plug,
   Settings,
   Shield,
+  Unlink,
   UserRound,
   Users,
 } from 'lucide-react';
@@ -35,6 +36,7 @@ import { TeamSurface } from '../../../surfaces/team';
 import { TeamMemberSurface } from '../../../surfaces/team/member';
 import { FeedbackListSurface } from '../../../surfaces/feedback/feedback-list';
 import { FeedbackThreadSurface } from '../../../surfaces/feedback/feedback-thread';
+import { LinkUnresolvedSurface } from '../../../surfaces/link-unresolved';
 import { NotificationsSurface } from '../../../surfaces/notifications/notifications';
 import { ModulesSurface } from '../../../surfaces/modules/modules-list';
 import { IndustrySurface } from '../../../surfaces/industry/industry';
@@ -106,13 +108,25 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
   {
     // Deliberately NOT listed: you reach a conversation through the list or a
     // notification, never by searching for it — and an unlisted surface still
-    // opens from a `?open=` deep link, which is how the reply email lands
+    // has an address (`/feedback/:id`), which is how the reply email lands
     // someone straight on the right thread.
     key: 'platform.feedback.thread',
     title: 'Feedback',
     module: 'platform',
     icon: MessageSquare,
     component: FeedbackThreadSurface,
+    listed: false,
+  },
+  {
+    // Where a link that cannot be honoured lands — a typo, a module this account
+    // does not have, a business this person cannot open. A PANE rather than an
+    // error page, so somebody following a broken link from a chat message keeps
+    // their layout and closes one tab. Unlisted: nobody goes looking for it.
+    key: 'platform.link.unresolved',
+    title: 'Link',
+    module: 'platform',
+    icon: Unlink,
+    component: LinkUnresolvedSurface,
     listed: false,
   },
 

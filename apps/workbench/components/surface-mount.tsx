@@ -25,6 +25,7 @@ import { PaneWaiting } from './pane-waiting';
 import { getSurface } from '../lib/surfaces/registry';
 import { useSurfaceContext, useWorkbench } from '../lib/workbench/context';
 import { DirtyScope } from '../lib/workbench/dirty';
+import { PaneIdentityProvider } from '../lib/workbench/pane-identity';
 
 interface PaneErrorBoundaryProps {
   children: ReactNode;
@@ -174,11 +175,16 @@ export function SurfaceMount({
           surface that would otherwise have to be handed it by every surface in
           turn (the beta notice under PaneToolbar). Renders no DOM. */}
       <PaneModuleProvider module={definition.module}>
-        <PaneErrorBoundary onReset={onReset}>
-          <Suspense fallback={<PaneWaiting />}>
-            <SurfaceBody paneId={paneId} />
-          </Suspense>
-        </PaneErrorBoundary>
+        {/* And which pane, for chrome that needs to name THIS pane rather than
+            this module — the copy-link control in the toolbar. Same reasoning,
+            same shape, no DOM. */}
+        <PaneIdentityProvider paneId={paneId}>
+          <PaneErrorBoundary onReset={onReset}>
+            <Suspense fallback={<PaneWaiting />}>
+              <SurfaceBody paneId={paneId} />
+            </Suspense>
+          </PaneErrorBoundary>
+        </PaneIdentityProvider>
       </PaneModuleProvider>
     </DirtyScope>
   );

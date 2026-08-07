@@ -39,11 +39,13 @@ const EnvSchema = z.object({
   // fall back to MEDIA_PUBLIC_BASE_URL (the pre-fix behavior). See cloudflare.tf
   // `sparx_works_media_direct` + the Caddy `media-direct.sparx.works` vhost.
   MEDIA_DIRECT_BASE_URL: z.string().url().optional(),
-  // Where a notification email's buttons point — the operator app's public origin. The
-  // two social notices ("your post didn't go out", "reconnect this account") are useless
-  // without a link straight to the thing that needs fixing. Unset → the worker still
-  // sends, with links to the app root.
-  WORKBENCH_BASE_URL: z.string().url().default('https://app.sparx.works'),
+  // Where a notification email's buttons point is no longer declared here. It was
+  // one of four environment variables naming the same URL, each read by a
+  // different emitter — and this one's links were dead regardless, since they
+  // used a query parameter the workbench has never read. `appOrigin()` in
+  // `@sparx/links/server` reads every such variable, in one fixed order, once.
+  // WORKBENCH_BASE_URL still works; it is simply not this service's private
+  // opinion any more.
 });
 
 export type Env = z.infer<typeof EnvSchema>;

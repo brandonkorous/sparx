@@ -15,11 +15,10 @@ import type { FastifyBaseLogger } from 'fastify';
 import { prisma, withTenant } from '@sparx/db';
 import type { TenantContext } from '@sparx/db';
 import { publish } from '@sparx/api-core/pubsub';
+import { appLink, appOrigin } from '@sparx/links/server';
 
 import { resolveActivePropertyName } from '../property.js';
 import { firstNonEmpty } from './types.js';
-
-const DASHBOARD_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://app.sparx.works';
 
 export type EscalationReason = 'ai_disabled' | 'away' | 'escalated';
 
@@ -86,7 +85,11 @@ export async function escalateToHuman(
       select: { id: true, email: true },
     });
 
-    const conversationUrl = `${DASHBOARD_URL.replace(/\/$/, '')}/chat/${conversationId}`;
+    // Built from the address table rather than assembled here, so a rename of
+    // the conversation surface cannot silently orphan links already sent. The
+    // old hand-built `/chat/<id>` stays valid as an alias for exactly that
+    // reason — every push notification already delivered carries it.
+    const conversationUrl = appLink('chat.inbox.thread', { id: conversationId }) ?? appOrigin();
     const snippet = info.snippet.slice(0, 200);
 
     // Each recipient gets an email (if they have an address) AND a web-push

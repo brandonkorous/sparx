@@ -62,15 +62,16 @@ export function descriptorKey(descriptor: PaneDescriptor): string {
 }
 
 /**
- * Encodes a descriptor for a deep link (`?open=`). The workbench is an
- * application, not a document, so the URL does not track live layout — but a
- * single shareable "open this surface" link is genuinely useful, and it is how
- * a notification or an email lands someone on the right pane.
+ * Decodes the LEGACY `?open=<surface>?<k>=<v>` deep-link form.
+ *
+ * A descriptor's address is now built by `@sparx/links` from a readable path
+ * (`/commerce/orders/:id`), so nothing emits this form any more — but links
+ * already sitting in inboxes and push notifications carry it, so it is still
+ * read. Its counterpart `encodeDescriptor` is gone: keeping a way to WRITE a
+ * format nothing should write again is how a legacy form comes back.
+ *
+ * See lib/workbench/deep-link.ts for where this is consumed.
  */
-export function encodeDescriptor(descriptor: PaneDescriptor): string {
-  return descriptorKey(descriptor);
-}
-
 export function decodeDescriptor(encoded: string): PaneDescriptor | null {
   const [surface, query] = encoded.split('?', 2);
   if (!surface) return null;

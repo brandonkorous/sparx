@@ -26,8 +26,21 @@
 // `history.state` (`__wb`) — the view itself carries pane ids and overlay flags
 // that mean nothing after a reload, where the layout restore rebuilds the world
 // from scratch regardless.
+//
+// AND EACH ENTRY CARRIES AN ADDRESS. Every pushState here used to pass
+// `window.location.href` — the SAME url, forever — because the workbench had no
+// per-surface addresses to put there. It has them now, so each entry gets the
+// address of the pane focused at that depth. Three things fall out at once, and
+// none of them needed new machinery: the bar names what you are looking at, a
+// refresh comes back to it, and copying the URL finally does what everyone
+// already tries to do with it.
+//
+// The address is DERIVED from focus, never stored alongside it. That is what
+// keeps this from becoming a second source of truth about where you are: the
+// pane is the location, the string is a rendering of it.
 
 import { useCallback, useEffect, useRef, useSyncExternalStore } from 'react';
+import { addressForPane } from './address';
 import { useWorkbench } from './context';
 
 /** The overlays a shell can have open on top of its panes. `module` is the
@@ -94,17 +107,19 @@ function mergeHistoryState(seq: number): Record<string, unknown> {
  */
 export function useBackNavigation(
   overlays: OverlayState,
-  apply: (overlays: OverlayState) => void
+  apply: (overlays: OverlayState) => void,
+  siteSlug?: string
 ): void {
   const { controller, role } = useWorkbench();
 
   // The focused pane, live. Stable object between emits (controller caches its
   // descriptors), which is what useSyncExternalStore needs.
-  const focus = useSyncExternalStore(
+  const active = useSyncExternalStore(
     controller.subscribe,
-    () => controller.getActiveDescriptor()?.id ?? null,
+    () => controller.getActiveDescriptor(),
     () => null
   );
+  const focus = active?.id ?? null;
 
   const live: View = {
     focus,
@@ -113,8 +128,15 @@ export function useBackNavigation(
     nav: overlays.nav,
   };
 
+  // The address this view should be showing. Recomputed every render rather than
+  // memoised: it is a string join over a descriptor that is already stable, and
+  // it must not lag the focus it describes.
+  const address = addressForPane(active, siteSlug);
+
   const liveRef = useRef(live);
   liveRef.current = live;
+  const addressRef = useRef(address);
+  addressRef.current = address;
   const applyRef = useRef(apply);
   applyRef.current = apply;
 
@@ -158,6 +180,11 @@ export function useBackNavigation(
     if (role === 'detached' || typeof window === 'undefined') return;
     if (!hasBase.current) {
       views.current.set(0, liveRef.current);
+      // The address the page ARRIVED with, not the one focus implies. At this
+      // instant the layout has not restored and the link has not been followed,
+      // so overwriting it with the root would throw away the very thing the
+      // deep-link resolver is about to read. The boot collapse below replaces it
+      // with the real address once things settle.
       window.history.replaceState(mergeHistoryState(0), '', window.location.href);
       hasBase.current = true;
     }
@@ -206,17 +233,29 @@ export function useBackNavigation(
       const next = liveRef.current;
 
       // Still booting: fold everything into the base entry rather than stacking
-      // steps for a restore the operator never performed.
+      // steps for a restore the operator never performed. The address settles to
+      // the focused pane's here — by now the layout has restored and any link has
+      // been followed, so this is the first moment focus means anything.
       if (booting.current) {
         views.current.set(0, next);
         counter.current = 0;
         current.current = 0;
-        window.history.replaceState(mergeHistoryState(0), '', window.location.href);
+        window.history.replaceState(mergeHistoryState(0), '', addressRef.current);
         return;
       }
 
       const here = views.current.get(current.current);
-      if (here && viewsEqual(here, next)) return;
+      if (here && viewsEqual(here, next)) {
+        // Same view, different address: the site list landed and every link can
+        // now carry `?site=`, or a pane finished loading the record it was opened
+        // for. That is the SAME location wearing a better name, so it replaces
+        // rather than pushing — pressing back should not walk through a URL that
+        // only became more complete.
+        if (window.location.pathname + window.location.search !== addressRef.current) {
+          window.history.replaceState(mergeHistoryState(current.current), '', addressRef.current);
+        }
+        return;
+      }
 
       // The operator dismissed a modal-shaped overlay they had opened: collapse
       // the pair to nothing by popping the entry that opened it, but ONLY when
@@ -236,10 +275,10 @@ export function useBackNavigation(
       // We've branched: drop any forward entries a prior back had left ahead.
       for (const key of [...views.current.keys()]) if (key > seq) views.current.delete(key);
       current.current = seq;
-      window.history.pushState(mergeHistoryState(seq), '', window.location.href);
+      window.history.pushState(mergeHistoryState(seq), '', addressRef.current);
     });
     return () => window.cancelAnimationFrame(raf);
-  }, [focus, overlays.launcher, overlays.module, overlays.nav, role]);
+  }, [focus, address, overlays.launcher, overlays.module, overlays.nav, role]);
 }
 
 /**
@@ -252,13 +291,18 @@ export function BackNavigation({
   launcher,
   module,
   nav,
+  siteSlug,
   onApply,
 }: {
   launcher: boolean;
   module: string | null;
   nav: boolean;
+  /** The active site's slug, so every address the bar shows is one that can be
+   *  handed to somebody else unchanged. Absent until the site list lands, which
+   *  the hook handles by replacing rather than pushing when it arrives. */
+  siteSlug?: string;
   onApply: (overlays: OverlayState) => void;
 }) {
-  useBackNavigation({ launcher, module, nav }, onApply);
+  useBackNavigation({ launcher, module, nav }, onApply, siteSlug);
   return null;
 }

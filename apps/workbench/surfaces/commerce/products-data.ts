@@ -102,6 +102,13 @@ export interface Product {
   description: string | null;
   status: ProductStatus;
   productType: string | null;
+  /** The typed product TYPE this product's `attributes` are governed by (docs/143),
+   *  or null for an untyped product. Distinct from `productType` (the free-text
+   *  merchandising label): this is the schema link. */
+  productTypeKey: string | null;
+  /** The typed, schema-validated attribute bag — keyed by the type's field keys.
+   *  Empty on an untyped product. Edited on the Attributes tab. */
+  attributes: Record<string, unknown>;
   vendor: string | null;
   tags: string[];
   fulfillmentType: string;
@@ -848,6 +855,12 @@ export interface ProductPatch {
   handle?: string;
   description?: string | null;
   productType?: string | null;
+  /** The typed product-type link (docs/143). `null` clears the type AND wipes the
+   *  attribute bag server-side; a key sets/keeps it and re-validates `attributes`. */
+  productTypeKey?: string | null;
+  /** The typed attribute bag, validated against the type's schema (422 on
+   *  mismatch). Only meaningful when a `productTypeKey` is set. */
+  attributes?: Record<string, unknown>;
   vendor?: string | null;
   tags?: string[];
   taxClass?: string | null;

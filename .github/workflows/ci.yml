@@ -125,7 +125,13 @@ jobs:
       - uses: ./.github/actions/setup-workspace
         with:
           turbo-cache-key: test
-      - run: pnpm exec turbo run test --concurrency=2
+      # --continue because turbo otherwise stops scheduling the moment one task
+      # fails, and the run reports only what it got to. A single red package hid
+      # the other ~58 for days: the summary read "33 successful, 38 total" out of
+      # a 96-task graph, so each push looked like one failure and fixing it only
+      # uncovered the next. Failing everything at once costs a few minutes on an
+      # already-red run and nothing at all on a green one.
+      - run: pnpm exec turbo run test --concurrency=2 --continue
 
   format:
     name: Prettier
@@ -156,6 +162,26 @@ jobs:
 
       - name: Check event/topic parity
         run: node scripts/check-event-topics.mjs
+
+  surface-routes:
+    name: Surface ↔ address parity
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Every workbench surface must have an address in @sparx/links, and every
+    # address must name a surface that exists. A surface with no address is a
+    # pane nobody can link to and one the URL bar cannot name; an address with no
+    # surface is a link that opens nothing — the failure that left
+    # `/?surface=social.composer` in production email for months. Pure Node, no
+    # install, so it fails on the first PR that adds a surface without a route.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Check surface/address parity
+        run: node scripts/check-surface-routes.mjs
 
   migration-order:
     name: Migration ordering

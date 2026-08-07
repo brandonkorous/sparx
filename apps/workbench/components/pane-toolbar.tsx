@@ -18,6 +18,7 @@
 // separate stops between you and the content.
 
 import { Toolbar } from '@wizeworks/silicaui-react';
+import { CopyPaneLink } from './copy-pane-link';
 import { PaneBetaNotice } from './module-beta-notice';
 
 /**
@@ -73,6 +74,13 @@ export function PaneToolbar({ label, wrap, className, children }: PaneToolbarPro
         className={`bg-base-100 min-h-[calc(2rem+1rem+2px)] w-full shrink-0 gap-2 p-2 ${wrap ? 'flex-wrap' : ''} ${className ?? ''}`}
       >
         {children}
+        {/* Last in the bar, on every pane, from one edit. A link to what you are
+            looking at is a property of the PANE, not of any surface — so it is
+            mounted here for the same reason the beta notice is: a dock has no
+            landing screen every route passes through, and asking 233 surfaces to
+            each add their own would guarantee that some never did. It renders
+            nothing on a pane with no address. */}
+        <CopyPaneLink />
       </Toolbar>
       {/* A beta module's standing heads-up, as the bar's SIBLING in PANE_SHELL — it
           inherits the shell's gap and card rhythm, and the bar above it never moves.

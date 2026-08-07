@@ -25,9 +25,20 @@
 // The canvas is a live preview in its own right: silica resolves `{{merge.tags}}`
 // against sample data as you type, so a `{{customer.firstName}}` reads as a real
 // name on screen, and it renders the send's brand frame (brand bar/wordmark/legal
-// footer) as inert chrome around the body (silicaui 0.34). The "Preview" here is the
-// STEP BEYOND that — the final, email-safe projected HTML, rendered by the server
-// (real client rendering, real per-recipient data), not the canvas approximation.
+// footer) as inert chrome around the body (silicaui 0.34).
+//
+// FALLBACK TOKENS RESOLVE HERE TOO, as of silicaui 0.49 — worth stating because this
+// file carried the opposite note for a long time and someone may remember it. silica
+// owns one token production, a bare dotted path, and hands every other `{{…}}` body to
+// the host's `resolveExpression`; sparx wires that to the SAME evaluator the send uses,
+// so `{{customer.firstName ?? "there"}}` reads as "there" on the canvas exactly as it
+// will in the inbox. Before the hook there was no seam and the canvas showed raw braces
+// for precisely the tokens most worth using — a fallback is what stops a nameless
+// customer reading "Hi  — thanks".
+//
+// The "Preview" below is still the STEP BEYOND the canvas — the final, email-safe
+// projected HTML, rendered by the server with real per-recipient data — but it is now a
+// step in fidelity rather than a correction of something the canvas got wrong.
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useQueryClient } from '@sparx/query';
@@ -97,6 +108,7 @@ import {
   EMAIL_CONTENT_BLOCKS,
   EMAIL_SOURCES,
   groupMergeTags,
+  resolveEmailExpression,
   SAMPLE_EMAIL_DATA,
   toSilicaDataSources,
   type MergeTag,
@@ -203,10 +215,18 @@ function emailColorsToTheme(c: EmailColorDefaults): Theme {
  *  code-defined), so built once at module load rather than per render. */
 const DATA_SOURCES = toSilicaDataSources(EMAIL_SOURCES);
 
-/** The sparx `EmailBuilderHost`: the SAME resolver the storefront and the send use,
- *  over the email sample data — so the canvas resolves bindings and merge tags
- *  exactly as a real send does. `hideWhenEmpty` matches the send's conditional (a
- *  bound block with no value is dropped, not left showing an empty label). */
+/** The sparx `EmailBuilderHost`: the SAME resolver the site and the send use,
+ *  over the email sample data, so BINDINGS resolve on the canvas as they will in the
+ *  inbox. `hideWhenEmpty` matches the send's conditional (a bound block with no value
+ *  is dropped, not left showing an empty label).
+ *
+ *  `resolveExpression` is what makes that claim true for TOKENS as well as bindings, and
+ *  it is new (silicaui 0.49). Silica owns one production — a bare dotted path — and hands
+ *  every other `{{…}}` body here verbatim, so sparx's `?? "fallback"` grammar is resolved
+ *  on the canvas by the SAME evaluator the send uses. Before the hook existed there was
+ *  no seam at all and the canvas showed raw braces for exactly the tokens most worth
+ *  using. Same evaluator, deliberately: a second one would let the canvas and the inbox
+ *  disagree about what a fallback means, which is a worse bug than the one it replaced. */
 const HOST: EmailBuilderHost = (() => {
   const resolver = createSilicaResolver({
     root: SAMPLE_EMAIL_DATA,
@@ -216,6 +236,8 @@ const HOST: EmailBuilderHost = (() => {
   return {
     resolveBinding: resolver.resolveBinding,
     resolveCollection: resolver.resolveCollection,
+    resolveExpression: (expr, scope) =>
+      resolveEmailExpression(expr, (path) => resolver.resolveBinding(path, scope)?.value),
     dataSources: () => DATA_SOURCES,
     // Curated content blocks ON TOP of silica's built-in 8 primitives (merge, not
     // replace) — a summary card / CTA / callout an author drops in one move, in the

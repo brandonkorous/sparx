@@ -63,11 +63,11 @@
 
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import Image from 'next/image';
-import { Badge, Button, Input, Switch, Textarea } from '@wizeworks/silicaui-react';
+import { Badge, Button, Input, NativeSelect, Switch, Textarea } from '@wizeworks/silicaui-react';
 import { ChevronDown, ImageOff, ImagePlus, Trash2 } from 'lucide-react';
 import { FRAME_NONE } from '@sparx/builder-schemas';
 import { useMediaPicker } from '../../cms/media-picker';
-import { usePageSettings, type PageSettingsDto } from './data';
+import { usePageSettings, useProductTypeChoices, type PageSettingsDto } from './data';
 
 /** The editable shape. Everything is a string in the form (an empty string means
  *  "not set" and normalizes to null on the way out), except the indexing switch. */
@@ -86,6 +86,13 @@ export interface PageSettingsDraft {
    * `null` or `FRAME_NONE`; a stored id it never touches survives a save untouched.
    */
   frameId: string | null;
+  /**
+   * A `commerce.product` page's product-TYPE target (docs/143 Option B) — the type key
+   * this page designs, or `null` for the default product page (any product with no
+   * more-specific page). Only editable on a product collection page; carried verbatim
+   * everywhere else so a save never disturbs it.
+   */
+  recordSubtype: string | null;
 }
 
 const BLANK: PageSettingsDraft = {
@@ -95,6 +102,7 @@ const BLANK: PageSettingsDraft = {
   ogImage: '',
   noindex: false,
   frameId: null,
+  recordSubtype: null,
 };
 
 function toDraft(stored: PageSettingsDto | undefined): PageSettingsDraft {
@@ -106,6 +114,7 @@ function toDraft(stored: PageSettingsDto | undefined): PageSettingsDraft {
     ogImage: stored.ogImage ?? '',
     noindex: stored.noindex,
     frameId: stored.frameId,
+    recordSubtype: stored.recordSubtype,
   };
 }
 
@@ -125,6 +134,9 @@ export function draftToPatch(draft: PageSettingsDraft): Partial<PageSettingsDto>
     // Sent as loaded unless the author moved the switch, so writing the same value back
     // is a no-op rather than a reset.
     frameId: draft.frameId,
+    // Carried verbatim: null on any non-product page, so a settings save never disturbs
+    // the product-type target, and the target control writes it directly when shown.
+    recordSubtype: draft.recordSubtype,
   };
 }
 
@@ -135,7 +147,8 @@ function sameDraft(a: PageSettingsDraft, b: PageSettingsDraft): boolean {
     a.canonical === b.canonical &&
     a.ogImage === b.ogImage &&
     a.noindex === b.noindex &&
-    a.frameId === b.frameId
+    a.frameId === b.frameId &&
+    a.recordSubtype === b.recordSubtype
   );
 }
 
@@ -223,12 +236,58 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
   const previewTitle = draft.seoTitle.trim() || pageName || siteName;
   const previewDescription = draft.seoDescription.trim();
 
+  // The product-type target (docs/143 Option B) only applies to a product-page
+  // template — a `commerce.product` collection page. On anything else the control
+  // stays hidden and `recordSubtype` rides along untouched.
+  const isProductPage =
+    stored.data?.recordType === 'commerce.product' && stored.data?.kind === 'collection';
+  const productTypes = useProductTypeChoices(isProductPage);
+
   return (
     <div className="flex flex-col gap-4">
       {!saved ? (
         <p className="text-sm leading-snug">
           This page is new. Fill these in now — they save along with the page itself.
         </p>
+      ) : null}
+
+      {/* WHICH products this page designs. The whole point of a per-type product page
+          (docs/143): a tenant lays out an Apparel page differently from a Beauty one, and
+          the live site serves each product the most specific page there is. "All
+          products" is the default page every product falls back to. */}
+      {isProductPage ? (
+        <PanelField
+          label="This page designs"
+          help="Choose a kind of product to design a page just for it — the rest keep using your default product page."
+        >
+          <NativeSelect
+            size="sm"
+            color="module"
+            value={draft.recordSubtype ?? ''}
+            aria-label="Which products this page designs"
+            onChange={(event) => {
+              set('recordSubtype', event.target.value === '' ? null : event.target.value);
+            }}
+          >
+            <option value="">All products (the default page)</option>
+            {(productTypes.data ?? []).map((type) => (
+              <option key={type.key} value={type.key}>
+                {type.name}
+              </option>
+            ))}
+            {/* A target already set to a type that is no longer in the list (deleted, or
+                commerce turned off) must still show, so a save doesn't silently reset it. */}
+            {draft.recordSubtype &&
+            !(productTypes.data ?? []).some((t) => t.key === draft.recordSubtype) ? (
+              <option value={draft.recordSubtype}>{draft.recordSubtype}</option>
+            ) : null}
+          </NativeSelect>
+          {draft.recordSubtype ? (
+            <Badge color="module" variant="soft" size="sm">
+              A page for one kind of product
+            </Badge>
+          ) : null}
+        </PanelField>
       ) : null}
 
       {/* The point of the whole section, made concrete: what a person actually sees

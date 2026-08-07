@@ -9,6 +9,7 @@
 // the same notification is.
 
 import { MessageSquare, Bell, type LucideIcon } from 'lucide-react';
+import { routeAcceptsId, routeForEntity } from '@sparx/links';
 import type { AppNotification } from '../../lib/api/notifications';
 import { moduleIcon } from '../../lib/surfaces/nav';
 import { ModuleScope, WORKBENCH_MODULES, type WorkbenchModule } from '../module-scope';
@@ -58,19 +59,36 @@ export function iconFor(notification: AppNotification): LucideIcon {
 }
 
 /**
- * Where a notification LEADS. The row carries `entityType`/`entityId` precisely
- * so the consumer can resolve a destination without a stored route — which is
- * what lets the same row mean "open the thread pane" here and "open the modal"
- * in the dashboard. A notification that only marks itself read is a dead end:
- * it announces something and then makes you go find it.
+ * Where a notification LEADS.
+ *
+ * The row carries `entityType`/`entityId` precisely so the consumer can resolve a
+ * destination without a stored route — the notifications table deliberately has
+ * no `href` column, because where a thing lives is a per-app concept and baking
+ * one app's paths into the database outlives that app. A notification that only
+ * marks itself read is a dead end: it announces something and then makes you go
+ * find it.
+ *
+ * This resolves through the SAME entity table that universal search and every
+ * emailed link use (`@sparx/links`), rather than a list of its own. It used to
+ * know exactly one type — feedback — so every other notification in the bell was
+ * a dead end, while the command palette could already open twenty-four of them.
+ * One table means the two cannot disagree about where an order is again.
  */
 export function destinationFor(
   notification: AppNotification
 ): { surface: string; params?: Record<string, string> } | null {
-  if (notification.entityType === 'feedback' && notification.entityId) {
-    return { surface: 'platform.feedback.thread', params: { id: notification.entityId } };
-  }
-  return null;
+  const type = notification.entityType;
+  if (type === null || type === undefined) return null;
+
+  const route = routeForEntity(type);
+  if (!route) return null;
+
+  // An entity whose home is a LIST (no path parameter) still leads somewhere —
+  // it just lands on the list rather than preselecting a row, which is the
+  // honest answer when no detail surface exists.
+  if (!routeAcceptsId(route)) return { surface: route.surface };
+  if (!notification.entityId) return null;
+  return { surface: route.surface, params: { id: notification.entityId } };
 }
 
 /**

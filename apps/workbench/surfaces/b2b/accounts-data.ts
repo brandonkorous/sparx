@@ -49,6 +49,9 @@ export interface AccountRow {
   status: AccountStatus;
   fleetSize: number | null;
   notes: string | null;
+  /** The extra details THIS business tracks on a company (docs/144 §3). The
+   *  same bag the CRM's company pane edits — one record, one set of fields. */
+  customProperties: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
 }
@@ -228,6 +231,7 @@ export interface TradeInput {
   status: AccountStatus;
   internalNotes: string | null;
   fleetSize: number | null;
+  customProperties?: Record<string, unknown>;
 }
 
 export function useCreateAccount() {

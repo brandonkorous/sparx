@@ -72,6 +72,13 @@ export class WorkbenchController {
     this.emit();
   }
 
+  /** Whether a presentation is mounted and can be opened into. Read by the
+   *  deep-link arrival gate, which must not try to open a pane into nothing —
+   *  and must try again once a host appears (or reappears, after a remount). */
+  isAttached(): boolean {
+    return this.host !== null;
+  }
+
   /** What the CURRENT presentation can do, so chrome omits the impossible
    *  rather than disabling it. Both false when nothing is attached. */
   capabilities(): PaneHostCapabilities {

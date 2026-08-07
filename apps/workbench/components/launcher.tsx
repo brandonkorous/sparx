@@ -32,7 +32,7 @@ import {
   resolveTitle,
   type OpenTarget,
 } from '../lib/surfaces/registry';
-import { recordRoute } from '../lib/surfaces/record-routes';
+import { routeAcceptsId, routeForEntity } from '@sparx/links';
 import {
   moduleIsVisible,
   useKnownModules,
@@ -153,18 +153,23 @@ export function Launcher({
   const recordEntries = useMemo<Entry[]>(() => {
     const out: Entry[] = [];
     for (const hit of records.hits) {
-      const route = recordRoute(hit.entityType);
+      const route = routeForEntity(hit.entityType);
       if (!route) continue;
       const surface = getSurface(route.surface);
       if (!surface || !moduleIsVisible(surface.module, reachable, known)) continue;
+      // A handful of entity types have no detail surface — a review is worked in
+      // a queue, a page is authored in the builder — so their home is a LIST and
+      // it takes no id. That falls out of whether the address has a parameter,
+      // rather than being a flag someone has to keep in step with the route.
+      const carriesId = routeAcceptsId(route);
       out.push({
         id: `record:${hit.key}`,
-        group: route.label,
+        group: route.entityLabel ?? surface.title.toString(),
         label: hit.title || 'Untitled',
         subtitle: hit.subtitle,
         icon: surface.icon,
         run: (mods) =>
-          controller.open(route.surface, route.withId ? { id: hit.recordId } : undefined, {
+          controller.open(route.surface, carriesId ? { id: hit.recordId } : undefined, {
             target: targetFor(mods),
           }),
       });

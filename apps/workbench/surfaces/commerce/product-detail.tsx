@@ -79,6 +79,7 @@ import { ProductOptionsTab } from './product-options';
 import { ProductVariantsTab } from './product-variants';
 import { ProductMediaTab } from './product-media';
 import { ProductPricingTab } from './product-pricing';
+import { ProductAttributesTab } from './product-attributes';
 import { ProductSeoTab } from './product-seo';
 import {
   productErrorMessage,
@@ -362,6 +363,12 @@ const TABS: { value: string; label: string; what: string; plan: string }[] = [
     label: 'Media',
     what: 'Photos',
     plan: 'The pictures shoppers see, in the order they see them. You will be able to choose the main photo and pin a picture to a particular colour, so the right image shows when someone picks it.',
+  },
+  {
+    value: 'attributes',
+    label: 'Details',
+    what: 'The extra details for this kind of product',
+    plan: 'Pick what kind of product this is — clothing, food, a gadget — and fill in the extra details that kind carries, like fabric and care, ingredients, or specifications. These show on the product page.',
   },
   {
     value: 'pricing',
@@ -752,6 +759,14 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
               {visitedTabs.has('media') ? (
                 <TabValueProvider value="media">
                   <ProductMediaTab ctx={ctx} product={product} />
+                </TabValueProvider>
+              ) : null}
+            </TabsPanel>
+
+            <TabsPanel value="attributes">
+              {visitedTabs.has('attributes') ? (
+                <TabValueProvider value="attributes">
+                  <ProductAttributesTab ctx={ctx} product={product} />
                 </TabValueProvider>
               ) : null}
             </TabsPanel>

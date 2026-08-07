@@ -24,6 +24,7 @@ import {
   Text,
 } from '@wizeworks/silicaui-react';
 import { ApiError } from '@sparx/api-client';
+import { buildPath } from '@sparx/links';
 import { CreditCard, ExternalLink } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -92,24 +93,24 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
   }, [ctx]);
 
   // Stripe sends the tenant back here after Checkout with `?billing=success|cancelled`
-  // (the api-rest checkout route builds that return URL). Read it once, clear the
-  // marker so a refresh doesn't re-show it, and on success pull fresh bill state —
-  // the subscription may have been created by the webhook moments ago.
+  // (the api-rest checkout route builds that return URL). It arrives as a PANE
+  // PARAMETER, not as something read off `window.location`: the address bar
+  // tracks whichever pane is focused now, so by the time this runs the query
+  // string may belong to a different surface entirely — and rewriting it here
+  // would fight the URL tracker for control of the same string. The matcher
+  // hands any query parameter a route does not name straight through to the
+  // surface, which is exactly what this needs.
+  //
+  // Read once. `ctx.params` is stable for a pane's lifetime, so the effect keys
+  // on the value and a refresh genuinely re-shows the outcome — which is right:
+  // a reloaded Checkout return is still a Checkout return.
+  const returnParam = ctx.params.billing;
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const params = new URLSearchParams(window.location.search);
-    const status = params.get('billing');
-    if (status !== 'success' && status !== 'cancelled') return;
-    setReturnStatus(status);
-    params.delete('billing');
-    const qs = params.toString();
-    window.history.replaceState(
-      null,
-      '',
-      window.location.pathname + (qs ? `?${qs}` : '') + window.location.hash
-    );
-    if (status === 'success') void refetch();
-  }, [refetch]);
+    if (returnParam !== 'success' && returnParam !== 'cancelled') return;
+    setReturnStatus(returnParam);
+    // The subscription may have been created by the webhook moments ago.
+    if (returnParam === 'success') void refetch();
+  }, [returnParam, refetch]);
 
   // Before a subscription exists (trial, no card) we SET UP billing through Stripe
   // Checkout — that hosted page carries the card form AND the discount-code box.
@@ -119,8 +120,16 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const openBilling = () => {
     setActionError(null);
+    // Stripe must come back to THIS surface, so the return URL is built from the
+    // address table rather than read off `window.location` — the bar names
+    // whichever pane is focused, which by the time someone clicks may be
+    // anything. api-rest appends `?billing=success|cancelled` to whatever it is
+    // given, and that lands as a pane parameter above.
     const returnUrl =
-      typeof window !== 'undefined' ? window.location.href : 'https://workbench.sparx.works';
+      typeof window === 'undefined'
+        ? 'https://app.sparx.works/settings/billing'
+        : (buildPath('finance.subscription', undefined, { origin: window.location.origin }) ??
+          window.location.origin);
     const mutation = inSetup ? checkout : portal;
     mutation.mutate(returnUrl, {
       onSuccess: ({ url }) => {

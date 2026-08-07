@@ -12,7 +12,7 @@ import { DockviewReact, type DockviewApi, type DockviewReadyEvent } from 'dockvi
 import { useWorkbench } from '../workbench/context';
 import { loadLayout, saveLayout } from '../workbench/persistence';
 import type { WorkbenchController } from '../workbench/controller';
-import { decodeDescriptor, type PaneDescriptor } from '../surfaces/descriptor';
+import type { PaneDescriptor } from '../surfaces/descriptor';
 import { DockPaneHost } from './dock-host';
 import { GroupActions } from './group-actions';
 import { Pane } from './pane';
@@ -46,59 +46,6 @@ function adoptPanesMissingFromGrid(
   for (const descriptor of Object.values(panes)) {
     if (api.getPanel(descriptor.id)) continue;
     controller.open(descriptor.surface, descriptor.params, { focus: false });
-  }
-}
-
-// A `?open=<surface>` deep link, captured once for this page load.
-//
-// The workbench is a single route with no per-surface URLs, so this is the only
-// way a notification, an email reply link, or a shared "look at this" URL can
-// land the operator on a specific pane (see descriptor.ts `encodeDescriptor`).
-//
-// It lives at module scope, not in a ref, because it must survive React
-// strict-mode's mount→unmount→mount of the dock: `hydrate()` clears the
-// controller's descriptors, so the pane the first `onReady` opened is gone by
-// the second, and a ref would be reset with the remounted component. Captured
-// once and re-applied on EACH `onReady` — exactly how DEFAULT_LAYOUT survives
-// the same remount — then retired so a later site switch can't resurrect it.
-// `null` = not captured yet; `[]` = captured (empty, or already retired).
-let capturedDeepLinks: string[] | null = null;
-
-/**
- * Open (or focus) the panes a `?open=` deep link asked for, after the layout is
- * restored. Opens rather than replaces, so the pane joins the restored layout
- * instead of wiping it; `controller.open` focuses an already-open match rather
- * than duplicating, and ignores an unknown key — so a stale link degrades to
- * "your layout, nothing added" instead of an error.
- */
-function consumeDeepLink(controller: WorkbenchController): void {
-  if (typeof window === 'undefined') return;
-
-  if (capturedDeepLinks === null) {
-    const url = new URL(window.location.href);
-    capturedDeepLinks = url.searchParams.getAll('open');
-    if (capturedDeepLinks.length > 0) {
-      // Strip immediately so the URL stops advertising a one-shot intent as
-      // durable state — but keep re-applying from the captured copy.
-      url.searchParams.delete('open');
-      window.history.replaceState(
-        window.history.state,
-        '',
-        `${url.pathname}${url.search}${url.hash}`
-      );
-      // Retire the intent once the initial mount (and its strict-mode twin, a
-      // few hundred ms apart at most) have settled, so switching sites later
-      // doesn't reopen the deep-linked pane.
-      const links = capturedDeepLinks;
-      window.setTimeout(() => {
-        if (capturedDeepLinks === links) capturedDeepLinks = [];
-      }, 5000);
-    }
-  }
-
-  for (const encoded of capturedDeepLinks) {
-    const descriptor = decodeDescriptor(encoded);
-    if (descriptor) controller.open(descriptor.surface, descriptor.params, { focus: true });
   }
 }
 
@@ -148,9 +95,10 @@ export function Dock({ siteKey }: { siteKey: string }) {
         DEFAULT_LAYOUT.forEach((entry) => controller.open(entry.surface, entry.params));
       }
 
-      // Now that the layout is restored, honour a `?open=` deep link by adding
-      // (or focusing) the requested pane on top of it.
-      consumeDeepLink(controller);
+      // A link the page was opened with is honoured by <DeepLinkArrival/>, which
+      // sits above both presentations rather than inside this one — a link has to
+      // work identically on a phone, where there is no dock at all. It watches
+      // for the host we just attached and opens on top of the restored layout.
 
       // A pane closed by the tab's × bypasses controller.close(), so reconcile
       // here rather than leaking descriptors and guards for dead panes.

@@ -2,10 +2,12 @@
 
 import {
   BarChart3,
+  Boxes,
   Building2,
   Copy,
   Filter,
   ListChecks,
+  Mailbox as MailboxIcon,
   Receipt,
   Target,
   Users,
@@ -27,6 +29,9 @@ import { TasksListSurface } from '../../../surfaces/crm/tasks-list';
 import { TaskDetailSurface } from '../../../surfaces/crm/task-detail';
 import { CustomerOrdersSurface } from '../../../surfaces/crm/customer-orders';
 import { CrmReportsSurface } from '../../../surfaces/crm/reports';
+import { ObjectTypesListSurface } from '../../../surfaces/crm/object-types-list';
+import { ObjectTypeDetailSurface } from '../../../surfaces/crm/object-type-detail';
+import { MailboxesListSurface } from '../../../surfaces/crm/mailboxes-list';
 
 export const CRM_SURFACES: SurfaceDefinition[] = [
   /* ── People ────────────────────────────────────────────────────────────── */
@@ -175,6 +180,43 @@ export const CRM_SURFACES: SurfaceDefinition[] = [
     // Commerce order data seen from the CRM side — reuses the commerce order data
     // layer and opens the real order detail. Wears the Commerce hue.
     component: CustomerOrdersSurface,
+  },
+
+  /* ── Setting up ────────────────────────────────────────────────────────── */
+  {
+    key: 'crm.object-types.list',
+    title: 'Record types',
+    module: 'crm',
+    icon: Boxes,
+    section: 'Setting up',
+    order: 40,
+    keywords: ['custom fields', 'extra details', 'properties', 'record types', 'schema'],
+    component: ObjectTypesListSurface,
+    createSurface: 'crm.object-type.detail',
+    createLabel: 'New record type',
+  },
+  {
+    key: 'crm.object-type.detail',
+    title: 'Record type',
+    module: 'crm',
+    icon: Boxes,
+    component: ObjectTypeDetailSurface,
+    // Adding one is the same surface as managing one ({key:'new'} → {key}), so
+    // it is a pane rather than a launcher entry.
+    listed: false,
+  },
+  {
+    key: 'crm.mailboxes.list',
+    title: 'Mailboxes',
+    module: 'crm',
+    icon: MailboxIcon,
+    section: 'Setting up',
+    order: 50,
+    keywords: ['email', 'inbox', 'imap', 'connect email', 'gmail', 'outlook'],
+    component: MailboxesListSurface,
+    // One list of connected accounts — there is nothing per-instance to vary,
+    // so a second copy would only ever show the same thing.
+    singleton: true,
   },
 
   /* ── Reporting ─────────────────────────────────────────────────────────── */

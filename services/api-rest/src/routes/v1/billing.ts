@@ -18,19 +18,27 @@ import { badRequest } from '@sparx/api-core/errors';
 
 const PortalBody = z.object({ returnUrl: z.string().url() });
 
-/** Where Stripe sends the tenant back after Checkout: the workbench root, deep-
- *  linked to the subscription surface (`?open=finance.subscription`) with a status
- *  marker the surface reads to show a confirmation + refresh the bill. The dock
- *  strips only `open` on boot, so `billing` survives for the surface. */
+/**
+ * Where Stripe sends the tenant back after Checkout: the address the caller gave
+ * us, plus a status marker the surface reads to show a confirmation and refresh
+ * the bill.
+ *
+ * It used to also append `?open=finance.subscription` — a surface key hardcoded
+ * in a service, which is the exact coupling `@sparx/links` exists to remove: rename
+ * that surface and every Checkout already in flight comes back to a dead link. The
+ * caller now sends its own address (`/settings/billing`, built from the table), so
+ * this only has to add the marker. `billing` reaches the surface as a pane
+ * parameter, because the matcher hands through any query parameter the route does
+ * not name.
+ */
 function checkoutReturnUrl(returnUrl: string, status: 'success' | 'cancelled'): string {
   try {
     const u = new URL(returnUrl);
-    u.searchParams.set('open', 'finance.subscription');
     u.searchParams.set('billing', status);
     return u.toString();
   } catch {
     const sep = returnUrl.includes('?') ? '&' : '?';
-    return `${returnUrl}${sep}open=finance.subscription&billing=${status}`;
+    return `${returnUrl}${sep}billing=${status}`;
   }
 }
 

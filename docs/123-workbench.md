@@ -1,8 +1,8 @@
 # 123 — Workbench: the Multi-Window Operator App
 
-Version: 1.2.0
+Version: 1.3.0
 Author: Brandon Korous
-Last Updated: 2026-07-19
+Last Updated: 2026-08-06
 
 ## Purpose
 
@@ -22,10 +22,29 @@ nowhere.
 
 ## Architecture
 
+### One application, addressable panes
+
+The workbench is a single APPLICATION, not a stack of pages — but every pane has
+an address. `/commerce/orders/8f2…?site=savory-donuts` opens that order **on top
+of** the operator's existing layout; it never replaces it, and the arrangement
+itself is never in the URL. The address bar tracks the **focused pane** so that
+refreshing, pressing back, and copying the URL all do what everyone already
+expects, without the layout leaking into a string.
+
+`@sparx/links` is the one address table — pure data, importable from a Node
+service, a server component and the browser alike — mapping a readable path ⇄ a
+surface key ⇄ an indexed entity type. Universal search, the notification bell,
+every emailed link and both copy-link controls resolve through it, and
+`scripts/check-surface-routes.mjs` fails the build if a surface has no address or
+an address names no surface. Arrival, the site gate and the failure states live
+in `lib/workbench/deep-link.ts`; the full rationale is [[workbench-addresses]] in
+the brain.
+
 ### Panes are descriptors, layout is dockview's
 
 A pane is `{surface, params}` — e.g. `invoicing.invoice.edit {id}` — resolved
-against a surface registry (`lib/surfaces/registry`). dockview owns layout
+against a surface registry (`lib/surfaces/registry`), and it is exactly what an
+address decodes to. dockview owns layout
 (grid, tab strips, splitters, popouts); the `WorkbenchController` owns meaning
 (which surface each pane shows, dirty guards, the active descriptor). The
 persisted layout is therefore two halves — dockview's opaque `grid` blob plus
@@ -204,3 +223,8 @@ Standard web-app wiring, one deliberate override:
   overlay fix (the workbench shim resolves it dynamically; no code change).
 - Pane surfaces beyond invoicing (commerce, CRM, content) follow the invoicing
   patterns above.
+- **Addressing state INSIDE a surface** — which tab of a product, which section
+  of a settings pane. `?tab=` is reserved for it (`TAB_PARAM` in `@sparx/links`)
+  and the query-parameter passthrough already carries it to `ctx.params`; what is
+  left is teaching each detail surface to read it, which is a sweep across ~131
+  surfaces and its own pass.

@@ -25,6 +25,10 @@ COPY packages/app-kit/package.json packages/app-kit/
 COPY packages/api-client/package.json packages/api-client/
 COPY packages/auth/package.json packages/auth/
 COPY packages/brand/package.json packages/brand/
+# The address table. Pure data, no dependencies of its own — but the catch-all
+# route resolves paths through it during the SERVER render, so a missing copy is
+# a boot-time failure, not a lazily-discovered one.
+COPY packages/links/package.json packages/links/
 COPY packages/query/package.json packages/query/
 # …and @sparx/auth's transitive closure. Its index re-exports server.ts →
 # tenant-events.ts, which pulls legal seeding; @sparx/email (a direct auth dep)
@@ -85,6 +89,7 @@ COPY packages/app-kit packages/app-kit
 COPY packages/api-client packages/api-client
 COPY packages/auth packages/auth
 COPY packages/brand packages/brand
+COPY packages/links packages/links
 COPY packages/query packages/query
 COPY packages/attribution packages/attribution
 COPY packages/db packages/db

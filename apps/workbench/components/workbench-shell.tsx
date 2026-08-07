@@ -23,6 +23,7 @@ import { applyThemeToDocument, readTheme, THEME_STORAGE_KEY, type Theme } from '
 import { useActiveSiteId, useSites } from '../lib/api/shell-data';
 import { WorkbenchProvider } from '../lib/workbench/context';
 import { BackNavigation } from '../lib/workbench/nav-history';
+import { readDeepLink, tidyLegacyParams } from '../lib/workbench/deep-link';
 import { loadNavState, saveNavState } from '../lib/workbench/persistence';
 import { Dock } from '../lib/dock/dock';
 import { useIsCompact } from '../lib/use-compact';
@@ -36,6 +37,7 @@ import { ModulePanel } from './module-panel';
 import { RecentsRecorder } from './recents-recorder';
 import { UpdateNotifier } from './update-notifier';
 import { FeedbackProvider } from './feedback/provider';
+import { DeepLinkArrival } from './deep-link-arrival';
 import { PaneWaiting } from './pane-waiting';
 import { FirstRunTour } from '../lib/tour/first-run-tour';
 import { ModuleTourOffers } from '../lib/tour/module-tour-offers';
@@ -78,6 +80,19 @@ export function WorkbenchShell({
   const postRef = useRef<((message: BusMessage) => void) | null>(null);
   const isCompact = useIsCompact();
 
+  // Capture the address this page load arrived with, HERE, in the outermost
+  // render — before anything downstream can rewrite it. The history bridge
+  // starts replacing the bar with the focused pane's address as soon as the
+  // layout restores, so a link read any later than this is a link already
+  // overwritten. The read is PURE and idempotent, and no-ops on the server;
+  // the one thing it used to mutate (the legacy `?open=` in the bar) is tidied
+  // from the effect below instead, because a render must not rewrite history.
+  readDeepLink();
+
+  useEffect(() => {
+    tidyLegacyParams();
+  }, []);
+
   // ── Boot: resolve the site the whole window operates under ───────────────
   const { data: tokenState } = useActiveSiteId();
   const { data: sites, isError: sitesFailed } = useSites();
@@ -111,6 +126,15 @@ export function WorkbenchShell({
   const activeSite = useMemo(() => {
     const site = siteKey ? sites?.find((candidate) => candidate.id === siteKey) : undefined;
     return site ? { id: site.id, name: site.name } : null;
+  }, [sites, siteKey]);
+
+  // The slug every address is stamped with. Slug rather than id because a link
+  // is written to be read — `?site=savory-donuts` says which business this is
+  // about, and a uuid says nothing. The matcher accepts either, so a renamed
+  // slug degrades to an unreachable-site message rather than to silence.
+  const siteSlug = useMemo(() => {
+    if (!siteKey) return undefined;
+    return sites?.find((candidate) => candidate.id === siteKey)?.slug;
   }, [sites, siteKey]);
 
   // Restore nav state after mount, not during render — localStorage isn't
@@ -233,11 +257,16 @@ export function WorkbenchShell({
             launcher={launcherOpen}
             module={null}
             nav={navOpen}
+            siteSlug={siteSlug}
             onApply={(overlays) => {
               setLauncherOpen(overlays.launcher);
               setNavOpen(overlays.nav);
             }}
           />
+          {/* Opens whatever the address bar asked for, once the stack is up and
+              the site + module gates have answered. Identical on both shells —
+              a link has to work the same on a phone. */}
+          <DeepLinkArrival siteKey={siteKey} />
           {/* Inside the provider: the notifier asks the controller what would be
               lost before it offers to reload. */}
           <UpdateNotifier />
@@ -375,11 +404,16 @@ export function WorkbenchShell({
             launcher={launcherOpen}
             module={browsing}
             nav={false}
+            siteSlug={siteSlug}
             onApply={(overlays) => {
               setLauncherOpen(overlays.launcher);
               setBrowsing((overlays.module as WorkbenchModule | null) ?? null);
             }}
           />
+
+          {/* Opens whatever the address bar asked for, once the dock is up and
+            the site + module gates have answered. See components/deep-link-arrival. */}
+          <DeepLinkArrival siteKey={siteKey} />
 
           {/* Inside the provider: the notifier asks the controller what would be
             lost before it offers to reload. */}

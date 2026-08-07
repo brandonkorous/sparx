@@ -334,7 +334,7 @@ export function useRestoreDraftVersion() {
 // editor could point a page at a different shell or turn the chrome off.
 
 /** One page's row-level settings: how it describes itself to search engines and social
- *  cards, and which chrome wraps it. */
+ *  cards, which chrome wraps it, and — for a product page — which product type it designs. */
 export interface PageSettingsDto {
   /** `null` = the site default, `'none'` = bare, otherwise a layout id (docs/silicaui/01 §5). */
   frameId: string | null;
@@ -343,6 +343,46 @@ export interface PageSettingsDto {
   canonical: string | null;
   ogImage: string | null;
   noindex: boolean;
+  /** `singleton` (a specific page) or `collection` (a template rendering every record
+   *  of `recordType`). Read-only here — set through the page's targeting, not this panel. */
+  kind: 'singleton' | 'collection';
+  /** The source a collection template renders (`commerce.product`, `cms.blog_post`, …),
+   *  or null for a plain page. Read-only here; drives whether the product-type target shows. */
+  recordType: string | null;
+  /** The product-TYPE target (docs/143 Option B) for a `commerce.product` page — the type
+   *  key this page designs, or null for the default product page. Editable in this panel. */
+  recordSubtype: string | null;
+}
+
+/** One product type a `commerce.product` page can target, stripped to what the target
+ *  picker shows. The commerce mirror of a CMS content type (docs/143). */
+export interface ProductTypeChoice {
+  key: string;
+  name: string;
+}
+
+interface ProductTypeChoiceWire {
+  key: string;
+  name: string;
+}
+
+export const PRODUCT_TYPE_CHOICES_KEY = ['builder', 'product-type-choices'];
+
+/** The tenant's product types, for the per-type page target (docs/143 §6.10). Degrades to
+ *  an EMPTY list on any failure — commerce may be switched off, in which case a product
+ *  page simply offers "All products" and nothing else, rather than erroring a panel that
+ *  is not the point of the screen. */
+export function useProductTypeChoices(enabled: boolean) {
+  return useQuery({
+    queryKey: PRODUCT_TYPE_CHOICES_KEY,
+    queryFn: () =>
+      api
+        .list<ProductTypeChoiceWire>('/v1/commerce/product-types', { take: 250 })
+        .then((r) => r.items.map((t): ProductTypeChoice => ({ key: t.key, name: t.name })))
+        .catch<ProductTypeChoice[]>(() => []),
+    enabled,
+    staleTime: 300_000,
+  });
 }
 
 export const PAGE_SETTINGS_KEY = (pageId: string) => ['builder', 'page-settings', pageId];

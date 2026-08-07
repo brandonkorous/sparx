@@ -16,6 +16,7 @@ import {
   type PublisherLogger,
 } from '@sparx/events';
 import { formatBps } from '@sparx/commerce-schemas';
+import { appLink, appOrigin } from '@sparx/links/server';
 
 import type { ServiceContext } from '../../errors';
 
@@ -80,12 +81,12 @@ const emailLogger: PublisherLogger = {
   error: (obj, msg) => console.error(JSON.stringify({ level: 'error', ...obj, msg })),
 };
 
+// Was its own two-name fallback chain, reading a variable set in exactly one of
+// the three environments. `appOrigin()` reads every name that has ever meant this
+// URL, in one fixed order, so a settlement email points at the same host as a
+// domain-renewal one regardless of which service happened to send it.
 function dashboardBase(): string {
-  return (
-    process.env.SPARX_DASHBOARD_URL ??
-    process.env.NEXT_PUBLIC_DASHBOARD_URL ??
-    'https://app.sparx.works'
-  ).replace(/\/$/, '');
+  return appOrigin();
 }
 
 function periodLabel(start: Date, end: Date): string {
@@ -136,7 +137,7 @@ async function sendSettlementReport(
       netCents: run.netCents,
       payoutDestination,
       pendingBankAccount,
-      settlementUrl: `${dashboardBase()}/finance/payouts`,
+      settlementUrl: appLink('finance.payouts.list') ?? dashboardBase(),
     },
   };
 

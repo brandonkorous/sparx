@@ -32,6 +32,7 @@ import {
   Puzzle,
   Repeat2,
   Settings2,
+  Shapes,
   ShoppingBag,
   SlidersHorizontal,
   ShoppingCart,
@@ -50,6 +51,8 @@ import { OrderDetailSurface } from '../../../surfaces/commerce/order-detail';
 import { OrdersListSurface } from '../../../surfaces/commerce/orders-list';
 import { ProductDetailSurface } from '../../../surfaces/commerce/product-detail';
 import { ProductsListSurface } from '../../../surfaces/commerce/products-list';
+import { ProductTypesListSurface } from '../../../surfaces/commerce/product-types-list';
+import { ProductTypeDetailSurface } from '../../../surfaces/commerce/product-type-detail';
 import { ProductChannelsSurface } from '../../../surfaces/commerce/product-channels';
 import { ProductConfiguratorSurface } from '../../../surfaces/commerce/product-configurator';
 import { ProductDropshipSurface } from '../../../surfaces/commerce/product-dropship';
@@ -364,6 +367,33 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     module: 'commerce',
     icon: Settings2,
     component: ConfiguratorTemplateDetailSurface,
+    listed: false,
+  },
+  // Product TYPES (docs/143) — the typed attribute schema a product carries, the
+  // commerce mirror of CMS content types. NOT a product facet (the frozen set
+  // above): this is a catalog-structure list + its editor, added here per docs/143
+  // §6.7, so the "do not add a facet" rule above does not apply.
+  {
+    key: 'commerce.product-types.list',
+    title: 'Product types',
+    module: 'commerce',
+    icon: Shapes,
+    section: 'Catalog',
+    order: 16,
+    keywords: ['attributes', 'schema', 'fields', 'kind', 'fabric', 'ingredients', 'specs'],
+    component: ProductTypesListSurface,
+    createSurface: 'commerce.product-types.detail',
+    createLabel: 'New product type',
+  },
+  {
+    key: 'commerce.product-types.detail',
+    title: 'Product type',
+    module: 'commerce',
+    icon: Shapes,
+    component: ProductTypeDetailSurface,
+    // Opened from the list and the nav panel's `+` ({key:'new'} to define, {key} to
+    // edit) — a create is the same surface as an edit, so it is a pane, not a
+    // launcher entry of its own.
     listed: false,
   },
 

@@ -213,6 +213,36 @@ const EnvSchema = z
     MICROSOFT_OAUTH_CLIENT_ID: z.string().optional(),
     MICROSOFT_OAUTH_CLIENT_SECRET: z.string().optional(),
     MICROSOFT_OAUTH_TENANT: z.string().optional(),
+    // Connected mailboxes (docs/144 §5.2) — AES-256-GCM key (32 bytes, base64 or
+    // hex) encrypting the IMAP/SMTP app password at rest in
+    // crm_mailbox_connections.
+    //
+    // A SEPARATE key from SCHEDULING_CALENDAR_TOKEN_KEY on purpose. The blast
+    // radius of a compromised key should be one capability, not every connected
+    // account a tenant owns — and reading someone's mail is a strictly larger
+    // harm than reading their free/busy. Rotating it invalidates every stored
+    // mailbox credential (tenants reconnect); never log it. Unset → the mailbox
+    // connect endpoints report "not configured" and the sync tick is inert, with
+    // the rest of the engagement spine (send via the platform domain, calls,
+    // notes, templates) unaffected.
+    //
+    // There is deliberately NO Gmail/Graph OAuth counterpart here. Connecting a
+    // mailbox over those APIs needs Google's restricted-scope CASA assessment
+    // and Microsoft's publisher verification — an annual third-party security
+    // audit as the price of a mailbox connector. IMAP/SMTP reaches the same
+    // mailboxes (Gmail and 365 both speak it) with an app password the tenant
+    // issues themselves, and no vendor sitting in the middle of the decision.
+    CRM_MAILBOX_TOKEN_KEY: z.string().optional(),
+    // Calling (docs/144 §5.6) — AES-256-GCM key (32 bytes, base64 or hex)
+    // encrypting a tenant's own phone-system auth token at rest in
+    // crm_voice_connections. Its own key, following the house pattern of one
+    // key per capability (SEARCH_CONSOLE_TOKEN_KEY, SCHEDULING_CALENDAR_TOKEN_KEY,
+    // CHANNELS_TOKEN_KEY): a compromised key should cost one capability rather
+    // than every connected account a tenant owns, and a voice token can place
+    // calls on their bill. Unset → the connect endpoint reports "not
+    // configured" and click-to-call is unavailable; logging a call by hand,
+    // which is the rest of the feature, is unaffected.
+    CRM_VOICE_TOKEN_KEY: z.string().optional(),
     // Public api-rest origin used as the push-notification target for Google
     // watch-channels + Microsoft Graph subscriptions (docs/79 §8.3). Must be a
     // public HTTPS URL the provider can POST to; unset (or localhost) → push
@@ -308,13 +338,17 @@ const EnvSchema = z
     // is deployed + the platform Stripe account is ready). MARKET_COMMISSION_BPS is
     // the flat platform commission in basis points (default 200 = 2%); a per-tenant
     // override on the merchant profile wins. MARKET_PAYOUTS_PROVIDER selects the ACH
-    // disbursement rail (defaults to manual / out-of-band). SPARX_DASHBOARD_URL is
-    // the base for settlement-report email links. The MoR checkout reuses the
-    // platform STRIPE_SECRET_KEY (above) + CHANNELS_TOKEN_KEY (payout encryption).
+    // disbursement rail (defaults to manual / out-of-band). The MoR checkout
+    // reuses the platform STRIPE_SECRET_KEY (above) + CHANNELS_TOKEN_KEY (payout
+    // encryption).
+    //
+    // Where the workbench lives is deliberately NOT declared here. Four variables
+    // named that same URL and each emitter read one with its own fallback, so
+    // which host an email pointed at depended on which service sent it —
+    // `appOrigin()` in `@sparx/links/server` reads them all, in one fixed order.
     MARKET_ENABLED: z.string().optional(),
     MARKET_COMMISSION_BPS: z.string().optional(),
     MARKET_PAYOUTS_PROVIDER: z.string().optional(),
-    SPARX_DASHBOARD_URL: z.string().optional(),
     // In-cluster origin of the dashboard Next.js service, used ONLY for the
     // service-to-service partner account-provisioning call (POST
     // /api/internal/partner-provision, docs/114 §B.2). Distinct from
@@ -385,6 +419,20 @@ const EnvSchema = z
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['SCHEDULING_CALENDAR_TOKEN_KEY'],
+        message: 'Must be a 32-byte key encoded as base64 (44 chars) or hex (64 chars).',
+      });
+    }
+    if (data.CRM_MAILBOX_TOKEN_KEY && decodeKeyBytes(data.CRM_MAILBOX_TOKEN_KEY) !== 32) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['CRM_MAILBOX_TOKEN_KEY'],
+        message: 'Must be a 32-byte key encoded as base64 (44 chars) or hex (64 chars).',
+      });
+    }
+    if (data.CRM_VOICE_TOKEN_KEY && decodeKeyBytes(data.CRM_VOICE_TOKEN_KEY) !== 32) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['CRM_VOICE_TOKEN_KEY'],
         message: 'Must be a 32-byte key encoded as base64 (44 chars) or hex (64 chars).',
       });
     }

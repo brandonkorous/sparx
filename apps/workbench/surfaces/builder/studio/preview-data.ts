@@ -48,6 +48,33 @@ const SAMPLE_PARAS = [
   'Two or three sentences of body copy — enough to show measure and rhythm. Real content replaces this once the record is filled.',
 ];
 
+/** The typed product attributes (docs/143), shaped exactly like the live site's
+ *  resolved `attributeSections` array so a product page's auto-render repeat shows
+ *  believable content on the canvas — a couple of label/value blocks plus one
+ *  section that is itself a small table (a `items` sub-repeat, e.g. spec rows).
+ *  Real values arrive from each product's own typed attributes on the live site. */
+const SAMPLE_ATTRIBUTE_SECTIONS: Record<string, unknown>[] = [
+  {
+    label: 'Materials',
+    value: 'Midweight 100% organic cotton, garment-dyed for a lived-in feel.',
+    items: [],
+  },
+  {
+    label: 'Care',
+    value: 'Machine wash cold, tumble dry low, warm iron if needed.',
+    items: [],
+  },
+  {
+    label: 'Specifications',
+    value: '',
+    items: [
+      { label: 'Weight', value: '240 gsm' },
+      { label: 'Fit', value: 'Relaxed' },
+      { label: 'Origin', value: 'Made in Portugal' },
+    ],
+  },
+];
+
 function pick(arr: string[], i: number): string {
   return arr[i % arr.length] ?? '';
 }
@@ -61,6 +88,12 @@ function imageValue(f: FieldSchema, i: number): { url: string; alt: string; desc
 }
 
 function placeholder(f: FieldSchema, i: number): unknown {
+  // The product's typed attribute sections (docs/143) get realistic sample content
+  // rather than the generic title/line filler, so the PDP's auto-render repeat reads
+  // like a real product-detail block on the canvas.
+  if (f.key === 'attributeSections' && f.kind === 'list') {
+    return SAMPLE_ATTRIBUTE_SECTIONS;
+  }
   switch (f.kind) {
     case 'richtext':
       return pick(SAMPLE_PARAS, i);
