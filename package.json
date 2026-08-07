@@ -20,6 +20,7 @@
     "typecheck": "turbo run typecheck",
     "check:events": "node scripts/check-event-topics.mjs",
     "check:routes": "node scripts/check-surface-routes.mjs",
+    "check:docker": "node scripts/check-dockerfile-deps.mjs",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
     "db:up": "pnpm --filter @sparx/db db:up",

@@ -207,6 +207,24 @@ module "pubsub" {
     "crm.billing_document.paid"          = []
     "crm.billing_document.voided"        = []
 
+    # CRM parity (docs/144) — the object registry, associations and engagement.
+    # Topic-only; every one of these is a prime automation trigger ("when a
+    # contact is associated with a company", "when an inbound email lands on a
+    # record"), and the webhook fan-out carries them to tenant integrations
+    # through the same bridge as the rest of the CRM bus.
+    "crm.object_def.created"  = []
+    "crm.object_def.updated"  = []
+    "crm.object_def.archived" = []
+    "crm.record.created"      = []
+    "crm.record.updated"      = []
+    "crm.record.deleted"      = []
+    "crm.property.changed"    = []
+    "crm.association.added"   = []
+    "crm.association.removed" = []
+    "crm.engagement.logged"   = []
+    "crm.engagement.sent"     = []
+    "crm.engagement.received" = []
+
     # Cart
     "cart.abandoned" = []
 

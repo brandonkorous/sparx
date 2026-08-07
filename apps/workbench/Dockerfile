@@ -56,6 +56,8 @@ COPY packages/blueprints/package.json packages/blueprints/
 COPY packages/cms-schemas/package.json packages/cms-schemas/
 COPY packages/commerce-schemas/package.json packages/commerce-schemas/
 COPY packages/crm-schemas/package.json packages/crm-schemas/
+COPY packages/field-schema/package.json packages/field-schema/
+COPY packages/integrations/package.json packages/integrations/
 COPY packages/marketplace-schemas/package.json packages/marketplace-schemas/
 COPY packages/silica-catalog/package.json packages/silica-catalog/
 COPY packages/site-themes/package.json packages/site-themes/
@@ -107,6 +109,8 @@ COPY packages/blueprints packages/blueprints
 COPY packages/cms-schemas packages/cms-schemas
 COPY packages/commerce-schemas packages/commerce-schemas
 COPY packages/crm-schemas packages/crm-schemas
+COPY packages/field-schema packages/field-schema
+COPY packages/integrations packages/integrations
 COPY packages/marketplace-schemas packages/marketplace-schemas
 COPY packages/silica-catalog packages/silica-catalog
 COPY packages/site-themes packages/site-themes

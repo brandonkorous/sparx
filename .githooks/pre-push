@@ -28,6 +28,16 @@ step "pnpm install --frozen-lockfile (lockfile drift check)"
 pnpm install --frozen-lockfile --ignore-scripts --silent || fail "pnpm-lock.yaml out of sync with a package.json — run \`pnpm install\` and commit the updated lockfile"
 ok "lockfile in sync"
 
+# The pure-Node structural checks CI runs. Under a second each, no install, and
+# they catch the class of drift that otherwise surfaces minutes into a release
+# build: an event with no topic, a surface with no address, an image built
+# without a package it imports.
+step "structural checks (events, routes, dockerfiles)"
+node scripts/check-event-topics.mjs >/dev/null || fail "event/topic parity failed — run \`pnpm check:events\` to see it"
+node scripts/check-surface-routes.mjs >/dev/null || fail "surface/address parity failed — run \`pnpm check:routes\` to see it"
+node scripts/check-dockerfile-deps.mjs >/dev/null || fail "a Dockerfile is missing a workspace package it imports — run \`pnpm check:docker\` to see it"
+ok "structure clean"
+
 step "pnpm format:check"
 pnpm format:check >/dev/null || fail "prettier found unformatted files — run \`pnpm format\` and commit"
 ok "format clean"

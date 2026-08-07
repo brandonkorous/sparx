@@ -183,6 +183,27 @@ jobs:
       - name: Check surface/address parity
         run: node scripts/check-surface-routes.mjs
 
+  dockerfile-deps:
+    name: Dockerfile ↔ workspace deps
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # The five Next.js app images hand-list their dependency closure and run a
+    # FILTERED pnpm install, because copying the whole workspace into each one is
+    # what took a release generation to ~18 GB. A hand-written list drifts: a new
+    # shared package lands under two schema packages, nobody adds the COPY, and
+    # `Module not found` comes back three minutes into the release — for a fact
+    # that was knowable from two package.json files. Pure Node, no install, so it
+    # fails before anything is built.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Check Dockerfile dependency closure
+        run: node scripts/check-dockerfile-deps.mjs
+
   migration-order:
     name: Migration ordering
     runs-on: ubuntu-latest
