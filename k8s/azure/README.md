@@ -1,8 +1,8 @@
 # AKS deployment
 
-**Version:** 2.0
+**Version:** 2.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-02
+**Last Updated:** 2026-08-07
 
 The deployed platform, on `aks-sparx-prod-cus` in centralus. Infrastructure comes
 from [terraform/envs/azure](../../terraform/envs/azure); this is the workload on
@@ -62,26 +62,85 @@ roughly double for IOPS neither Typesense nor the media volume needs.
 `gh_cli_commands` output):
 
 - `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`
+- `AZURE_KEY_VAULT_NAME` — the vault holding the app secrets. **Setting this is
+  the cutover**; see below.
 
 **Secrets:**
 
-- `TYPESENSE_API_KEY` — any random string; also goes in the app bundle below.
-- `SPARX_APP_SECRETS_ENV` — **the whole `sparx-app-secrets` bundle as one dotenv
-  blob.** One secret rather than ~30, because GitHub has no secret grouping and
-  30 individually-managed values drift. Format:
+- `TYPESENSE_API_KEY` — any random string; also goes in the app bundle.
+- `SPARX_APP_SECRETS_ENV` — the legacy bundle, kept only as a rollback until the
+  Key Vault cutover is green. See below.
 
-  ```
-  DATABASE_URL=postgresql://sparx_app:<pw>@psql-sparx-prod-cus.postgres.database.azure.com:5432/sparx?sslmode=require
-  AUTH_DATABASE_URL=postgresql://sparx_owner:<admin-pw>@psql-sparx-prod-cus.postgres.database.azure.com:5432/sparx?sslmode=require
-  SPARX_APP_PASSWORD=<pw>
-  BETTER_AUTH_SECRET=...
-  ...
-  ```
+## Where the app secrets live
 
-  Start from [../local/secrets.example.env](../local/secrets.example.env), which
-  documents where every value comes from.
+**Azure Key Vault** (`kv-sparx-prod-cus`, created by `terraform/bootstrap-azure`).
+Each secret is its own object, so adding one is a single command:
 
-Three things about that bundle are load-bearing:
+```bash
+az keyvault secret set --vault-name kv-sparx-prod-cus \
+  --name crm-voice-token-key --value <value>
+```
+
+Names are kebab-case in the vault and become `SCREAMING_SNAKE` env vars —
+`crm-voice-token-key` → `CRM_VOICE_TOKEN_KEY`. The mapping is bijective because
+vault names allow only `[0-9a-zA-Z-]` and env names never contain a hyphen.
+
+**Why not a GitHub secret.** It used to be one: `SPARX_APP_SECRETS_ENV`, the whole
+bundle as a dotenv blob, because GitHub has no secret grouping. The real problem
+was never the grouping — it is that **GitHub secrets are write-only.** Nothing can
+read one back, so adding a single key meant reconstructing all ~30 from a copy
+kept elsewhere, and `gh secret set` _replaces_. One mistake was a platform outage
+on the next release. Key Vault also brings versioning, audit logs and rollback,
+and costs about **$0.06/month** at this read volume (Standard tier: no base fee,
+free storage, $0.03 per 10,000 operations — never Premium, which buys HSM keys
+this platform does not use).
+
+### Migrating, and rolling back
+
+```powershell
+# 1. Seed the vault from your existing blob (verifies every value reads back)
+./k8s/scripts/sync-secrets.ps1 -VaultName kv-sparx-prod-cus -FromEnvFile secrets.env
+
+# 2. Check it
+./k8s/scripts/sync-secrets.ps1 -VaultName kv-sparx-prod-cus -List
+
+# 3. Cut over — LAST, after the vault is loaded
+gh variable set AZURE_KEY_VAULT_NAME -b 'kv-sparx-prod-cus'
+```
+
+Step 3 is the switch: set → the vault is the source of truth; unset → the release
+falls back to the blob, byte-for-byte as before. **Rollback is unsetting one
+variable.**
+
+A vault that is set but empty **fails the release** rather than falling back —
+same reasoning as `EVENT_BROKER`'s throw-on-unset. A silent fallback turns a
+config mistake into a half-populated Secret that deploys fine and breaks
+somewhere unrelated hours later.
+
+**The first release after cutover proves the migration.** The sync step hashes
+the `sparx-app-secrets` Secret before and after writing it; a run logging
+`App secrets unchanged` means the vault reproduced the bundle byte-for-byte.
+Only after that green run:
+
+```bash
+gh secret delete SPARX_APP_SECRETS_ENV
+```
+
+Start from [../local/secrets.example.env](../local/secrets.example.env), which
+documents where every value comes from.
+
+### What is NOT in the vault
+
+- `AZURE_STORAGE_ACCOUNT` / `AZURE_STORAGE_KEY` — read from Terraform output each
+  release. Vaulting them would mean a key rotation silently reverts media to the
+  local-disk backend, which has already cost months of production media on a
+  single ReadWriteOnce disk.
+- `OPERATOR_DATABASE_URL` — derived from `DATABASE_URL` unless supplied.
+- `AZURE_CLIENT_ID` / `TENANT_ID` / `SUBSCRIPTION_ID` — repo variables, not
+  secrets, and they are the credential that _unlocks_ the vault.
+- `GITHUB_TOKEN` — minted per run by Actions.
+
+Three things about the bundle are load-bearing:
 
 - **`sslmode=require`.** Flexible Server enforces TLS and Prisma will not
   negotiate it implicitly.

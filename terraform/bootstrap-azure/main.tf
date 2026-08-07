@@ -219,6 +219,85 @@ resource "azurerm_role_assignment" "gha_aks_admin" {
   principal_id         = azuread_service_principal.gha.object_id
 }
 
+# ---------------------------------------------------------------------------
+# Key Vault — the platform's secrets, one object each
+#
+# WHY IT LIVES IN BOOTSTRAP RATHER THAN terraform/envs/azure. Two reasons, both
+# ordering:
+#
+#   1. The release's `infrastructure` stage applies envs/azure and then, in the
+#      SAME job, reads these secrets to build `sparx-app-secrets`. A vault
+#      created by that apply would be empty the first time anything read it.
+#   2. `terraform destroy` on envs/azure must never be able to take the secrets
+#      with the cluster. The tfstate account above is separated for exactly this
+#      reason; the vault earns it more.
+#
+# WHAT IT REPLACES. One GitHub repo secret (`SPARX_APP_SECRETS_ENV`) holding the
+# whole bundle as a dotenv blob — because GitHub has no secret grouping. The
+# problem with that is not the grouping, it is that GitHub secrets are WRITE
+# ONLY: there is no API to read one back, so adding a single key means
+# reconstructing all ~30 from a copy kept somewhere else, and `gh secret set`
+# REPLACES. A typo there is a platform outage on the next release.
+#
+# Key Vault makes each secret an individually readable, writable, VERSIONED
+# object, so adding one is `az keyvault secret set` and nothing else. It also
+# brings audit logs, RBAC and rollback, none of which a repo secret has.
+#
+# COST is a rounding error: Standard tier has no base fee, secret storage is
+# free, and operations are $0.03 per 10,000. The release reads ~30 secrets per
+# run, so a busy day is thousandths of a cent. Do NOT reach for Premium — it
+# buys HSM-backed cryptographic KEYS, which this platform does not use.
+# ---------------------------------------------------------------------------
+resource "azurerm_key_vault" "app" {
+  name                = var.key_vault_name
+  location            = azurerm_resource_group.tfstate.location
+  resource_group_name = azurerm_resource_group.tfstate.name
+  tenant_id           = data.azurerm_client_config.current.tenant_id
+  sku_name            = "standard"
+  tags                = local.tags
+
+  # RBAC, not the legacy access-policy model. Access policies are per-vault ACLs
+  # that Terraform and the portal fight over; RBAC is the same role system the
+  # rest of this file already uses, and it is what `az keyvault secret` expects
+  # by default now.
+  rbac_authorization_enabled = true
+
+  # A deleted secret is recoverable for this long. Soft delete cannot be turned
+  # off — Azure removed that option — so the only choice is the window.
+  soft_delete_retention_days = var.key_vault_soft_delete_retention_days
+
+  # Blocks PERMANENT deletion (`az keyvault purge`) inside the retention window,
+  # including by the Actions identity, which holds subscription Contributor.
+  #
+  # ONE-WAY. Once true this can never be set false on this vault, and a destroyed
+  # vault keeps its NAME reserved until the window expires — so rebuilding means
+  # picking a new name. That is the deliberate price of making "delete every
+  # platform secret" something no single bad apply can do.
+  purge_protection_enabled = var.key_vault_purge_protection
+}
+
+# The Actions identity READS secrets; it must never write them. `Key Vault
+# Secrets User` is get + list and nothing more, so a compromised workflow cannot
+# rewrite a credential the platform then deploys.
+#
+# Scoped to the vault, not the subscription — Contributor above is broad, this
+# deliberately is not.
+resource "azurerm_role_assignment" "gha_kv_secrets" {
+  scope                = azurerm_key_vault.app.id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = azuread_service_principal.gha.object_id
+}
+
+# The HUMAN loading secrets needs WRITE, and — exactly like the blob role below —
+# being subscription Owner does NOT grant it. Key Vault's data plane is its own
+# RBAC surface, so without this `az keyvault secret set` fails with a 403 that
+# says nothing about a missing role.
+resource "azurerm_role_assignment" "operator_kv_secrets" {
+  scope                = azurerm_key_vault.app.id
+  role_definition_name = "Key Vault Secrets Officer"
+  principal_id         = data.azurerm_client_config.current.object_id
+}
+
 # The HUMAN running Terraform needs blob data access too, and this is the single
 # easiest thing to miss: being subscription Owner or Contributor does NOT grant
 # it. The data plane is a separate RBAC surface.

@@ -571,8 +571,9 @@ jobs:
           kubectl version --client
 
       # -----------------------------------------------------------------------
-      # Secrets. Recreated every release from repository secrets, so the cluster
-      # never holds a value that has been rotated in GitHub.
+      # Secrets. Recreated every release from Azure Key Vault (or, until the
+      # cutover, the SPARX_APP_SECRETS_ENV repo blob), so the cluster never holds
+      # a value that has been rotated at the source.
       #
       # `create --dry-run | apply` is the idempotent form: plain `create` fails
       # on the second run, and `apply` alone cannot build a Secret from
@@ -581,10 +582,21 @@ jobs:
       # This is stage 1 rather than stage 2 because the migration, the seed and
       # the ingest all read these — the schema cannot be moved before the
       # credential to move it with exists.
+      #
+      # The vault is created by terraform/bootstrap-azure, NOT by the environment
+      # this job applies: that apply and this read happen in the same job, so a
+      # vault created there would be empty the first time anything looked at it —
+      # and a `terraform destroy` of the cluster must never take the secrets with
+      # it. Reading it needs `Key Vault Secrets User`, which bootstrap grants to
+      # this identity; subscription Contributor does NOT include the data plane.
       # -----------------------------------------------------------------------
       - name: Sync secrets
         id: secrets
         env:
+          # The source of the bundle is chosen by AZURE_KEY_VAULT_NAME — see the
+          # branch below. Both inputs are declared because the cutover keeps the
+          # blob available as a one-variable rollback.
+          KEY_VAULT_NAME: ${{ vars.AZURE_KEY_VAULT_NAME }}
           APP_SECRETS: ${{ secrets.SPARX_APP_SECRETS_ENV }}
           TYPESENSE_API_KEY: ${{ secrets.TYPESENSE_API_KEY }}
           # For `terraform output` below — the media storage credentials are read
@@ -597,14 +609,74 @@ jobs:
           set -euo pipefail
           kubectl create namespace "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
 
-          if [ -z "$APP_SECRETS" ]; then
-            echo "::error::SPARX_APP_SECRETS_ENV is empty. See k8s/azure/README.md."
-            exit 1
-          fi
+          # WHERE THE BUNDLE COMES FROM.
+          #
+          # `AZURE_KEY_VAULT_NAME` set → Key Vault is the source of truth. Unset →
+          # the legacy `SPARX_APP_SECRETS_ENV` repo blob. Cutover is setting one
+          # repository variable; rollback is unsetting it, and the blob path below
+          # is byte-for-byte what it always was so that rollback is a true one.
+          #
+          # A SET-BUT-EMPTY VAULT FAILS THE RELEASE rather than falling back to the
+          # blob. That is deliberate and matches EVENT_BROKER's throw-on-unset: a
+          # silent fallback turns a configuration mistake into a half-populated
+          # Secret that deploys successfully and then fails somewhere unrelated,
+          # hours later, looking like an application bug.
+          #
+          # WHY A VAULT AT ALL. GitHub secrets are WRITE ONLY — nothing can read one
+          # back — so adding a single key meant rebuilding all ~30 from a copy kept
+          # elsewhere and hoping `gh secret set`, which REPLACES, got every one of
+          # them right. Key Vault makes each secret its own readable, versioned
+          # object: adding one is `az keyvault secret set`, and nothing else moves.
+          if [ -n "$KEY_VAULT_NAME" ]; then
+            echo "App secrets: source is Key Vault '$KEY_VAULT_NAME'."
 
-          # A dotenv blob, so one repo secret carries the whole bundle rather
-          # than ~30 individually-managed ones.
-          printf '%s' "$APP_SECRETS" > /tmp/app.env
+            # Disabled secrets are skipped, which is how a secret is retired
+            # without being destroyed — disable it, release, then delete once a
+            # green run proves nothing needed it.
+            NAMES=$(az keyvault secret list --vault-name "$KEY_VAULT_NAME" \
+                      --query "[?attributes.enabled].name" -o tsv)
+            if [ -z "$NAMES" ]; then
+              echo "::error::Key Vault '$KEY_VAULT_NAME' holds no enabled secrets." \
+                   "Load it with k8s/scripts/sync-secrets.ps1 BEFORE setting the" \
+                   "AZURE_KEY_VAULT_NAME repository variable, or unset that variable" \
+                   "to fall back to SPARX_APP_SECRETS_ENV."
+              exit 1
+            fi
+
+            # kebab-case → SCREAMING_SNAKE. Bijective, and that is not an accident:
+            # vault names allow only [0-9a-zA-Z-] while env names never contain a
+            # hyphen, so the mapping round-trips with nothing to disambiguate.
+            #
+            # Values are streamed through a FILE and `jq -j`, never through $(…),
+            # because command substitution strips trailing newlines — the exact
+            # class of silent truncation the _B64 convention further down exists to
+            # defeat. `jq -j` writes the raw value and adds nothing of its own.
+            : > /tmp/app.env
+            KV_COUNT=0
+            for name in $NAMES; do
+              env_name=$(printf '%s' "$name" | tr 'a-z-' 'A-Z_')
+              az keyvault secret show --vault-name "$KEY_VAULT_NAME" \
+                --name "$name" -o json > /tmp/kv-one.json
+              printf '%s=' "$env_name" >> /tmp/app.env
+              jq -j '.value' /tmp/kv-one.json >> /tmp/app.env
+              printf '\n' >> /tmp/app.env
+              KV_COUNT=$((KV_COUNT + 1))
+            done
+            rm -f /tmp/kv-one.json
+            echo "App secrets: read $KV_COUNT secret(s) from Key Vault."
+          else
+            if [ -z "$APP_SECRETS" ]; then
+              echo "::error::SPARX_APP_SECRETS_ENV is empty and AZURE_KEY_VAULT_NAME is unset," \
+                   "so there is no source for the app secrets. See k8s/azure/README.md."
+              exit 1
+            fi
+            echo "App secrets: source is the SPARX_APP_SECRETS_ENV repo blob." \
+                 "Set the AZURE_KEY_VAULT_NAME repository variable to move to Key Vault."
+
+            # A dotenv blob, so one repo secret carries the whole bundle rather
+            # than ~30 individually-managed ones.
+            printf '%s' "$APP_SECRETS" > /tmp/app.env
+          fi
 
           # KEY_B64=<base64> → KEY=<decoded>, for values a dotenv line cannot
           # carry safely.

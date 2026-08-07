@@ -17,7 +17,22 @@ output "gh_cli_commands" {
     "gh variable set AZURE_CLIENT_ID       -R ${var.github_owner}/${var.github_repository} -b '${azuread_application.gha.client_id}'",
     "gh variable set AZURE_TENANT_ID       -R ${var.github_owner}/${var.github_repository} -b '${data.azurerm_client_config.current.tenant_id}'",
     "gh variable set AZURE_SUBSCRIPTION_ID -R ${var.github_owner}/${var.github_repository} -b '${var.subscription_id}'",
+    "",
+    "# Sets Key Vault as the source of truth for sparx-app-secrets. Set it LAST —",
+    "# after the vault is loaded — because the release fails rather than falling",
+    "# back if the vault is set but empty. Unsetting it returns to the repo blob.",
+    "gh variable set AZURE_KEY_VAULT_NAME  -R ${var.github_owner}/${var.github_repository} -b '${azurerm_key_vault.app.name}'",
   ])
+}
+
+output "key_vault_name" {
+  description = "Name of the app secrets vault. Load it with k8s/scripts/sync-secrets.ps1, then set AZURE_KEY_VAULT_NAME on the repository."
+  value       = azurerm_key_vault.app.name
+}
+
+output "key_vault_uri" {
+  description = "Vault URI, for `az keyvault secret set --id` and portal links."
+  value       = azurerm_key_vault.app.vault_uri
 }
 
 # The values terraform/envs/azure needs in its `backend "azurerm"` block.
