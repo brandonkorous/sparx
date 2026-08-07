@@ -224,13 +224,46 @@ export interface HostComponentProp {
 export interface HostComponentMeta {
   /** The allowlist key an author's placed `HostNode.component` carries. */
   key: HostComponentKey;
-  /** Insert-palette + Navigator label, e.g. "Shopping cart". */
+  /** Insert-palette + Navigator label, e.g. "Shopping cart". Must be unique against the
+   *  CATALOG's labels too — both land in one flat, searchable palette list with no
+   *  de-duplication, so "Map" here and "Map" in `sections/media.ts` is a coin toss for
+   *  the author. */
   label: string;
-  /** Palette grouping — the owning module, so cores sit beside that module's blocks. */
+  /** Palette group heading. Display copy, Title Case — NOT a slug.
+   *
+   *  Since `0.51.0` the engine slugs this and looks it up among its own built-in groups,
+   *  matching either their key or their slugged label. A hit puts these cores INSIDE that
+   *  group (`'media'` would join silicaui's Media, beside Image/Video/Embed); a miss makes
+   *  a `hostcat:<slug>` group labelled with this string verbatim.
+   *
+   *  sparx deliberately misses. "Your shop / bookings / site / writing / media" name the
+   *  one thing every core in here has in common and no static primitive does: sparx fills
+   *  it from the tenant's own data on every request. Merging them into Media would file a
+   *  live, self-updating map beside a static `<img>`. (Before `0.51.0` the lookup did not
+   *  exist, and `'media'` drew a SECOND section also headed MEDIA — so this started as
+   *  collision avoidance and is now a choice.)
+   *
+   *  Note the lookup only sees silicaui's built-ins, not `SPARX_CATALOG`, so a core can
+   *  never be filed into one of sparx's own section groups. */
   category: string;
-  /** A registered icon name (silica `IconName`) for the palette row. */
+  /** A registered icon name (silica `IconName`), drawn in the palette row, the Navigator
+   *  and the inspector's identity header.
+   *
+   *  LIVE since `0.51.0` — `hostIcon()` reads it, validates with `isIconName`, and on an
+   *  unknown name falls back to `"plug"` with a one-time console warning. (Through
+   *  `0.50.0` it was ignored outright and every core drew that plug; if you are reading a
+   *  comment elsewhere that calls this a dead field, it is stale.)
+   *
+   *  There is still no map or pin glyph in the 109-name set, which is why the map core
+   *  reaches for `contact`. */
   icon: string;
-  /** One-line palette hint. */
+  /** One-line description, in the tenant's language.
+   *
+   *  LIVE since `0.51.0`: it is the palette row's `title` tooltip and feeds search
+   *  ranking, alongside label / key / group. It is ALSO the `title=` the workbench canvas
+   *  puts on a placed core (`host-cores.tsx`). So it has two audiences — someone
+   *  scanning the palette for a block they have not placed yet, and someone hovering one
+   *  they have. Write it for the first; it reads fine for the second. */
   hint: string;
   /** Default wrapper classes stamped onto a freshly-inserted node (LITERAL strings so
    *  the Tailwind `@source` harness safelists them — same rule as every composite). */
@@ -251,7 +284,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
   {
     key: HOST_KEYS.commerceCart,
     label: 'Shopping cart',
-    category: 'commerce',
+    category: 'Your shop',
     // The curated silica icon set (LUCIDE_ICONS) is UI-oriented — no cart glyph;
     // `box` (a package) is the closest registered name. An unregistered name renders
     // empty (the curated-set footgun), so cores pick only from the shipped keys.
@@ -262,7 +295,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
   {
     key: HOST_KEYS.commerceSearch,
     label: 'Search results',
-    category: 'commerce',
+    category: 'Your shop',
     icon: 'search',
     hint: 'The live search — query field, filters, sort, and the result grid. Pinned: style and surround it, but it can’t be removed.',
     defaultClass: 'mx-auto w-full max-w-6xl px-6 py-6',
@@ -270,7 +303,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
   {
     key: HOST_KEYS.commercePlp,
     label: 'Product listing',
-    category: 'commerce',
+    category: 'Your shop',
     icon: 'grid',
     hint: 'The live catalog grid with filters, sort, and pagination. Pinned: style and surround it, but it can’t be removed.',
     defaultClass: 'mx-auto w-full max-w-6xl px-6 py-6',
@@ -278,7 +311,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
   {
     key: HOST_KEYS.commerceCollections,
     label: 'Collection index',
-    category: 'commerce',
+    category: 'Your shop',
     icon: 'gallery',
     hint: 'The live grid of all collections. Pinned: style and surround it, but it can’t be removed.',
     defaultClass: 'mx-auto w-full max-w-6xl px-6 py-6',
@@ -286,7 +319,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
   {
     key: HOST_KEYS.commerceCategories,
     label: 'Category index',
-    category: 'commerce',
+    category: 'Your shop',
     icon: 'grid',
     hint: 'The live grid of top-level browse categories. Pinned: style and surround it, but it can’t be removed.',
     defaultClass: 'mx-auto w-full max-w-6xl px-6 py-6',
@@ -294,7 +327,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
   {
     key: HOST_KEYS.schedulingServices,
     label: 'Booking services',
-    category: 'scheduling',
+    category: 'Your bookings',
     // `calendar` is a registered curated-set icon; the scheduling module's glyph.
     icon: 'calendar',
     hint: 'The live list of services open for booking, each linking to its time-picker. Pinned: style and surround it, but it can’t be removed.',
@@ -303,7 +336,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
   {
     key: HOST_KEYS.commerceCategoryDetail,
     label: 'Category detail',
-    category: 'commerce',
+    category: 'Your shop',
     icon: 'grid',
     hint: 'One category: its header, subcategories, and the full product rollup beneath it. Pinned: style and surround it, but it can’t be removed.',
     defaultClass: 'mx-auto w-full max-w-6xl px-6 py-6',
@@ -311,7 +344,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
   {
     key: HOST_KEYS.commerceCollectionDetail,
     label: 'Collection detail',
-    category: 'commerce',
+    category: 'Your shop',
     icon: 'gallery',
     hint: 'One collection: its header and members as a filterable, sortable, paginated grid. Pinned: style and surround it, but it can’t be removed.',
     defaultClass: 'mx-auto w-full max-w-6xl px-6 py-6',
@@ -319,7 +352,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
   {
     key: HOST_KEYS.schedulingServiceDetail,
     label: 'Booking widget',
-    category: 'scheduling',
+    category: 'Your bookings',
     icon: 'calendar',
     hint: 'One service: its details and the live time-picker to book it. Pinned: style and surround it, but it can’t be removed.',
     defaultClass: 'mx-auto w-full max-w-4xl px-6 py-10',
@@ -327,7 +360,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
   {
     key: HOST_KEYS.commerceAuth,
     label: 'Account form',
-    category: 'commerce',
+    category: 'Your shop',
     icon: 'avatar',
     hint: 'The shopper sign-in / create-account form. Pinned: style and surround it with your own copy, but it can’t be removed.',
     defaultClass: 'mx-auto w-full max-w-xl px-6 py-12',
@@ -335,7 +368,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
   {
     key: HOST_KEYS.siteBrand,
     label: 'Brand (logo + name)',
-    category: 'brand',
+    category: 'Your site',
     icon: 'image',
     hint: 'Your logo and site name, linked to your home page. Set them once in Site settings — this always shows what’s there.',
     // The `wordmark` class is load-bearing, not decoration: silicaui's own
@@ -370,7 +403,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
   {
     key: HOST_KEYS.siteThemeToggle,
     label: 'Theme toggle (light / dark)',
-    category: 'brand',
+    category: 'Your site',
     icon: 'settings',
     hint: 'A light/dark switch for visitors. Appears only when your site offers both themes (Appearance: toggle) — otherwise it stays hidden. Place it in your header.',
     defaultClass: 'inline-flex items-center',
@@ -380,7 +413,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
   {
     key: HOST_KEYS.siteLegalLinks,
     label: 'Legal links',
-    category: 'brand',
+    category: 'Your site',
     icon: 'article',
     hint: 'Links to the legal pages you have published — privacy, terms, cookies, returns. Always current, and hidden entirely until you publish one. Put it in your footer.',
     // A footer link column: the heading + its links stacked, matching the hand-authored
@@ -403,7 +436,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
   {
     key: HOST_KEYS.sitePagination,
     label: 'Page links (older / newer)',
-    category: 'brand',
+    category: 'Your site',
     // `layout`, not a chevron: the curated silica icon set is UI-oriented and an
     // UNREGISTERED name renders empty (the footgun this file's cart entry already
     // documents), so a core only ever picks a name proven in use here.
@@ -435,7 +468,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
   {
     key: HOST_KEYS.cmsArticleBody,
     label: 'Article body',
-    category: 'cms',
+    category: 'Your writing',
     icon: 'article',
     hint: 'The written body of the post being shown — headings, lists, quotes, and images exactly as they were typed. Pinned: style and surround it, but it can’t be removed.',
     // Prose measure, not the 6xl page measure the commerce cores use: a line of body
@@ -445,8 +478,24 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
   },
   {
     key: HOST_KEYS.siteMap,
-    label: 'Map',
-    category: 'media',
+    // "on its own" because the Add palette ALSO carries `map_embed` — the whole block,
+    // heading and address and map together — and the engine gives both rows the same
+    // weight. Two rows reading exactly "Map" is a coin toss, and the one an author
+    // almost always wants is the block. This says which is which without jargon.
+    //
+    // `0.51.0` made `hide` reach host rows, so suppressing this one is now possible and
+    // is deliberately NOT done: the bare core is the only way to put a map inside a
+    // layout the author built themselves (a column, a card, a two-up row). The block is
+    // a whole section and cannot go there. Keeping both and naming them honestly beats
+    // removing the one that composes.
+    label: 'Map on its own',
+    // Title Case, and NOT "media": the raw `category` string is used verbatim as the
+    // palette's group heading, so lowercase slugs render as lowercase headings beside
+    // properly-cased ones — and "media" collided outright with silicaui's own built-in
+    // "Media" group, drawing two separate sections that both read MEDIA. "Your …"
+    // also says the true thing about every core in here: sparx fills it in from the
+    // tenant's own data.
+    category: 'Your media',
     // The curated set has no map or pin glyph (and an UNREGISTERED name renders empty —
     // the footgun the cart entry above documents). `contact` is the registered one that
     // means this: a map is the contact page's "where we are".
@@ -489,8 +538,12 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
   },
   {
     key: HOST_KEYS.siteEmbed,
-    label: 'Embed from another site',
-    category: 'media',
+    // Same collision as the map above, and worse: this label was IDENTICAL to the
+    // catalog's `other_embed`, and silicaui's own Content group ships a third row
+    // simply called "Embed". Three rows, three different things, one name. Kept visible
+    // for the same reason as the map — it is the composable one.
+    label: 'Embed on its own',
+    category: 'Your media',
     icon: 'code',
     hint: 'Something from another website — a booking calendar, an order form, a playlist. Paste its link. Some sites don’t allow this; if nothing shows, that site has blocked it.',
     defaultClass: 'mx-auto w-full max-w-3xl px-6 py-10',

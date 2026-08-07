@@ -96,8 +96,10 @@ function BrandMark({ root, node }: { root: unknown; node: HostNode }) {
  *  way a light-mode visitor first sees it.
  *
  *  Always drawn, even under a single-theme appearance policy that would hide it live —
- *  a node you cannot see is a node you cannot place, and the palette hint already says
- *  when it appears. Same call the Builder-path `ThemeToggle` canvas node makes. */
+ *  a node you cannot see is a node you cannot place, and the `title` below says when it
+ *  appears. (That tooltip is the ONLY place the hint reaches an author: the engine drops
+ *  `hint` when it builds palette rows, so "the palette hint says so" — which this comment
+ *  used to claim — was never true.) Same call the Builder-path `ThemeToggle` node makes. */
 function ThemeToggleMark({ hint }: { hint: string }) {
   return (
     <span className="btn btn-ghost btn-sm" title={hint}>
@@ -125,7 +127,7 @@ function ThemeToggleMark({ hint }: { hint: string }) {
  *  studio doesn't make. Three of the six kinds, in the order the checklist lists them,
  *  so the author sees the column's true shape and rhythm. What actually renders is
  *  whatever they've published (and nothing at all until they publish one) — the `title`
- *  says so, and so does the palette hint. */
+ *  says so, and it is the only place that does; the palette drops the hint. */
 function LegalLinksColumn({ heading, hint }: { heading: string; hint: string }) {
   return (
     // Its own flex column rather than `display:contents`, which generates no box and
@@ -177,8 +179,13 @@ function PagerMark({ hint }: { hint: string }) {
  *
  * The UNRESOLVED state is the one that earns its words. Both of these render NOTHING on
  * the live site until their field is filled in, so a silent grey box here would read as
- * "placed wrong" when the truth is "not finished yet". It says which — the same sentence
- * the pre-publish check uses.
+ * "placed wrong" when the truth is "not finished yet". It says which, and it names WHERE
+ * to fix it — the props live under the inspector's **Settings** tab, not on Design, and
+ * an author who is told to "open the block" looks at Design and finds colours. (An earlier
+ * version pointed at a "Map panel" / "Embed panel", neither of which exists.) The
+ * pre-publish check states the same problem in its own, longer words; these two are
+ * deliberately consistent rather than shared, because one is a caption inside a sized box
+ * and the other is a finding with room to explain.
  */
 function FrameMark({ node, meta }: { node: HostNode; meta?: HostComponentMeta }) {
   const props = node.props ?? {};
@@ -196,10 +203,12 @@ function FrameMark({ node, meta }: { node: HostNode; meta?: HostComponentMeta })
     >
       <span className="text-sm font-medium">
         {resolved
-          ? `${isMap ? 'Map' : 'Embed'} · shows here`
+          ? isMap
+            ? 'Your map shows here'
+            : 'Your embed shows here'
           : isMap
-            ? 'Type your address in the Map panel to show it here'
-            : 'Paste a link in the Embed panel to show it here'}
+            ? 'Type your address under Settings to show the map here'
+            : 'Paste a link under Settings to show it here'}
       </span>
     </span>
   );

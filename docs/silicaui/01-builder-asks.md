@@ -1,10 +1,49 @@
-# silicaui-builder — the asks (1–19, ALL ANSWERED AND ADOPTED)
+# silicaui-builder — the asks (1–22, ALL ANSWERED AND ADOPTED)
 
-**Version:** 4.1.0
+**Version:** 4.3.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-02
+**Last Updated:** 2026-08-07
 
-> ## ⚑ EVERY ASK ON THIS LIST IS ANSWERED — §16, §18 AND §19 CLOSED IN `0.45.0` (2026-08-02)
+> ## ⚑ §20, §21 AND §22 — FILED AGAINST `0.50.0` AND CLOSED IN `0.51.0`, SAME DAY (2026-08-07)
+>
+> All three shipped together, and **all three were verified here the same day**. They were
+> found by **opening the Add palette in production** and then reading `dist/react/index.js`
+> to confirm each one — not by any test, and that is the point: all three lived in how the
+> engine RENDERS the palette and inspector, so nothing that asserts on trees or on rendered
+> HTML could see them. sparx had shipped a full render sweep (21 blueprints, 237 pages) and
+> every one survived it.
+>
+> **[§20 — a host component is a second-class palette row](#20--a-host-component-is-a-second-class-palette-row)
+> — ANSWERED in `0.51.0`,** all five parts. `hostComponentGroups` now takes the base groups
+> and reads the def: `icon: hostIcon(def)` (validated with `isIconName`, falling back to the
+> plug with a `warnOnce` rather than silently), `hint: def.hint` (a new field — it feeds the
+> row's `title` and search ranking), and `hostGroupFor(category, base)` resolves the category
+> against the built-in groups by key OR slugged label, so a host can now file its cores INTO
+> an existing group instead of shadowing it. `makeInsertNode` stamps `label` for
+> `node.kind === "host"`, and `nodeTypeLabel` grew a `host` arm resolving through a new
+> `useHostDisplay()` — which derives from `hostComponents()`, so **no host wiring is
+> required**. `kindLabelOf` says "Host component" rather than "Outlet".
+>
+> **[§21 — `hide` cannot reach a host row](#21--hide-cannot-reach-a-host-row)
+> — ANSWERED in `0.51.0`.** `catalogForHost` now runs the host groups through
+> `mergeCatalog(hostComponentGroups(defs, base), { hide: contributed?.hide })` before
+> extending, so a `host:*` key is suppressible like any other row.
+>
+> **[§22 — a palette row loses its name before it loses its group badge](#22--a-palette-row-loses-its-name-before-it-loses-its-group-badge)
+> — ANSWERED in `0.51.0`.** The label is now `min-w-0 flex-auto truncate text-left` and the
+> badge `min-w-0 shrink-[99] truncate` — the category gives way ~99× faster than the name,
+> which is the right precedence. The icon also gained `shrink-0`.
+>
+> **What sparx changed on adoption.** Less than expected, because the workarounds were
+> naming rather than code. The relabelled cores ("Map on its own") are KEPT — with §21 fixed
+> they could now be hidden, and deliberately are not: the bare core is the only way to place
+> a map inside an author-built layout, where the whole-section block cannot go. The five
+> `category` values are kept as "Your …" for the same reason they were introduced, now as a
+> choice rather than collision-avoidance (detail in `host-nodes.ts`). Every host icon was
+> re-validated against the 109-name set — all resolve, none falls back to the plug; there is
+> still no map or pin glyph, so the map core keeps `contact`.
+
+> ## ⚑ ASKS 1–19 ARE ANSWERED — §16, §18 AND §19 CLOSED IN `0.45.0` (2026-08-02)
 >
 > The last three open items shipped together, and **all three were adopted here the same day** —
 > peers on `/ws/builder` + `<Builder peers>`, the check count as a `StatusItem` disclosure, and
@@ -1063,6 +1102,202 @@ the live page notices the problem. sparx's class validator only rejects viewport
 the engine floor only rejects `fixed`/`url(…)`, and `toHtml` emits `class` verbatim — all
 correct individually, but the combined effect is that `btn-sunset` reaches production
 looking like a typo nobody made.
+
+---
+
+## 20 — A host component is a second-class palette row
+
+**The ask:** let `hostComponentGroups` carry the whole `HostComponentDef` into the palette
+row and onto the inserted node, the way `blockItem` already carries a block's.
+
+**Verified against `0.50.0`** (`dist/react/index.js`), and **found by opening the palette,
+not by a test** — every defect below is invisible to any assertion about trees or rendered
+HTML, which is why it survived a full render sweep.
+
+`hostComponentGroups` (:6605) builds its item from four of the def's fields and drops the
+rest:
+
+```js
+const item = {
+  key: `host:${def.name}`,
+  label: def.label,
+  icon: "plug",          // :6611 — def.icon is never read
+  make: () => { … }      // no hint, ever
+};
+const cat = def.category ?? "Host";   // :6618 — used as the group LABEL
+```
+
+Five consequences, one root cause:
+
+1. **`icon` is dead.** Every host core in the palette draws the same plug glyph. The field
+   is declared on `HostComponentDef` (`index.d.ts`) and read nowhere, so a host spends
+   real effort picking a registered `IconName` — sparx has comments in two files
+   explaining its choices — and none of it renders. Worse, silence: the honest outcome of
+   an unimplemented field is a type error, not a plug.
+2. **`hint` cannot be supplied at all** — `HostComponentDef` has no `hint` field. So a host
+   row gets no `title` tooltip (`ItemRow` sets `title: item.hint`) and contributes nothing
+   to search ranking, which scores over label / key / hint / groupLabel. Catalog rows get
+   all four; host rows get two.
+3. **`category` is used verbatim as the group's display LABEL**, while its key becomes
+   `hostcat:<slug>`. Nothing says so — the name reads like a slug, and every host in the
+   world will pass one. sparx passed `'media'` and got a second group heading rendering as
+   `MEDIA`, sitting directly beneath silicaui's own built-in `Media` group: two sections,
+   one heading, because `mergeCatalog` only ever merges by key.
+4. **The registered `label` never reaches the node.** `makeInsertNode` stamps
+   `label: item.label` only when the key starts with `block:`, so a placed host core has
+   no `label` and `nodeName` falls through to the derived type name. The inspector header
+   for `site.map` reads **`Site.map`** — the raw key, sentence-cased — rather than the
+   label the host registered two lines away in the same object.
+5. **`IdentityHeader` calls a host node an Outlet** (:9397) — the ternary has no arm for
+   `kind: "host"`, so it lands in the `else`:
+
+   ```js
+   const kindLabel =
+     node.kind === 'component' ? 'Component' : node.kind === 'element' ? `<${node.tag}>` : 'Outlet';
+   ```
+
+   `kind: "host"` and `kind: "outlet"` are different primitives with different semantics —
+   one is a host-rendered region, the other is where a page body lands — and the inspector
+   tells the author they are the same thing.
+
+**Why a host cannot do this.** All five are inside the engine's own palette + inspector
+rendering. A host supplies `hostComponents()` and has no seam between that call and the
+row; `catalog().extend` cannot contribute a `host:` item because only
+`hostComponentGroups` knows how to build the `make()` that stamps `locked: "host"`.
+
+**Shape.** No new API — read the fields that already exist, add the one that doesn't:
+
+```ts
+interface HostComponentDef {
+  icon?: IconName; // read it (fall back to "plug")
+  hint?: string; // add it; flow to ItemRow's title + search scoring
+  category?: string; // document as DISPLAY COPY, not a slug
+}
+```
+
+…plus `makeInsertNode` stamping `label` for `host:` keys as it does for `block:`, and a
+`"Host"` arm in `IdentityHeader`'s `kindLabel`.
+
+**Generic?** Yes — and this is the ask that most clearly is. Host components are the
+engine's declared extension point for "regions the host renders": a CMS's related-posts
+strip, an analytics tile, a commerce cart. Any host that registers more than three of them
+hits all five, and every one of them will write the same workaround sparx did — encoding
+the distinction into the `label` string, because that is the only field that survives.
+
+**What sparx did meanwhile.** Relabelled its bare cores (`Map` → `Map on its own`) because
+two of its host labels collided exactly with catalog blocks and there is no other lever
+(see §21), and rewrote its five `category` slugs as Title Case display copy. Pinned with
+`packages/silica-catalog/src/palette-names.test.ts`.
+
+### ANSWERED — `0.51.0`
+
+All five parts, and `category` came back better than the ask. The ask only wanted it
+DOCUMENTED as display copy; `hostGroupFor(category, base)` instead slugs it and looks it up
+among the built-in groups by key or slugged label, so a host can file its cores **into**
+Media rather than merely avoiding the name. `hostIcon` also does more than read the field —
+it validates with `isIconName` and warns once on a miss, which turns the original
+silent-empty-glyph footgun into a diagnosable one.
+
+sparx keeps its "Your …" groups (a host core is filled from tenant data on every request;
+filing a live map beside a static `<img>` would lose that distinction), and keeps the
+distinct labels — see §21. The one thing that did NOT need adopting is `useHostDisplay`: it
+derives from `hostComponents()`, which sparx already supplies, so the inspector went from
+`Site.map` to the registered label with no code change.
+
+---
+
+## 21 — `hide` cannot reach a host row
+
+**The ask:** apply `host.catalog().hide` AFTER host component groups are merged, so a host
+can suppress a `host:*` row.
+
+**Verified against `0.50.0`.** `catalogForHost` (:6629) merges twice, and only the first
+merge carries the hide set:
+
+```js
+function catalogForHost(base, adapter) {
+  let groups = mergeCatalog(base, adapter?.catalog?.()); // ← hide applied here
+  const defs = adapter?.hostComponents?.() ?? [];
+  if (defs.length) groups = mergeCatalog(groups, { extend: hostComponentGroups(defs) });
+  return groups; // ← host rows never filtered
+}
+```
+
+So a `host:<name>` key can never be in `hidden` at the moment it would matter. Every other
+palette row is suppressible; host rows alone are mandatory.
+
+**Why this bites.** A host core is frequently the RAW INGREDIENT of a curated block rather
+than something an author should place directly. sparx's `site.map` core is the bare frame;
+its `map_embed` catalog block is that core wrapped in a heading and — the part that
+matters — the address as readable text, because a map is a picture that cannot be copied
+into a phone or read by a screen reader. The palette offers both with equal weight, and
+the bare one is the worse answer on every axis. Hiding it is the correct fix and is not
+expressible.
+
+**Shape.** One line — filter after the second merge, or thread `hidden` through both.
+
+**Generic?** Yes. It is a plain inconsistency in an existing seam: `hide` is documented as
+the way a host curates the palette, and it silently covers everything except the rows the
+host itself contributed.
+
+### ANSWERED — `0.51.0`
+
+`catalogForHost` runs the host groups through `mergeCatalog(…, { hide: contributed?.hide })`
+before extending, so a `host:*` key is now suppressible like any other row.
+
+**And sparx is not using it** — worth recording, because the ask argued it should. The
+argument was that `site.map` is the raw ingredient of `map_embed` and therefore noise. That
+is right about the common case and wrong about the composing one: the catalog block is a
+whole `<section>`, so an author placing a map inside a column, a card, or a two-up row they
+built has no other route. What actually fixed the problem was the naming (§20's label rule),
+not removal. The capability is the right one to have; this particular row just is not the
+one to spend it on.
+
+---
+
+## 22 — A palette row loses its name before it loses its group badge
+
+**The ask:** in `ItemRow`, let the group badge shrink or drop before the item label does.
+
+**Verified against `0.50.0`** (:8036). The row is a flex button with three children:
+
+```js
+jsx(Icon, …),
+jsx("span", { className: "truncate", children: item.label }),
+groupLabel && jsx("span", { className: "ml-auto shrink-0 text-xs uppercase …", children: groupLabel })
+```
+
+The label has `truncate` but no `min-w-0`, and the badge is `shrink-0`. In a narrow panel
+the badge keeps its full width — `VIDEO, AUDIO & MAPS` is 19 characters at `text-xs` — and
+the label truncates to **nothing**. The result is a search result list where several rows
+show an icon and a category and no name at all.
+
+Not host-specific: it hits every row, and it only appears in SEARCH results (the browse
+list renders the group as an `<h3>` and passes no `groupLabel`), which is exactly when the
+author is reading names rather than scanning sections.
+
+**Why a host cannot do this.** The row is engine-internal; a host cannot restyle it, and
+the panel width is the host's own dock, so "make the panel wider" is not a fix — a
+tear-off pane or a compact layout reproduces it.
+
+**Shape.** `min-w-0` on the label span, and let the badge shrink (or hide below a width).
+The badge is the redundant half — the label is what the author searched for.
+
+**Generic?** Yes; nothing about it involves the host at all.
+
+### ANSWERED — `0.51.0`
+
+```js
+(jsx(Icon, { className: 'shrink-0 …' }),
+  jsx('span', { className: 'min-w-0 flex-auto truncate text-left', children: item.label }),
+  groupLabel && jsx('span', { className: 'min-w-0 shrink-[99] truncate text-xs uppercase …' }));
+```
+
+`shrink-[99]` rather than dropping the badge outright is the better call than the one the
+ask proposed: the category still degrades gracefully instead of vanishing at a breakpoint,
+and the row keeps its shape at every width. The icon also gained `shrink-0`, which the ask
+missed — without it the glyph would have been the next thing to collapse. Nothing to adopt;
+it is engine-internal.
 
 ---
 

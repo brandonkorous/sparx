@@ -74,12 +74,18 @@ function embed(opts: {
   ]);
 }
 
-/** The video block: an `Embed` under a heading, sized for watching. */
+/** The video-or-audio block: an `Embed` under a heading.
+ *
+ *  The seeded copy covers BOTH, because the block does. It was written when the engine
+ *  framed video only, and when audio providers were added the palette row and its hint
+ *  were updated while this heading still said "Watch" over a lead about "a short film" —
+ *  so an owner who inserted it to embed their podcast got a block telling them to make a
+ *  video. Seeded copy is the block's real first impression; it moves with the block. */
 export function videoBlock(): Node {
   return embed({
-    heading: 'Watch',
-    lead: 'A short film says more than a page of copy — an introduction, a walkthrough, a customer telling their own story.',
-    title: 'Video',
+    heading: 'Watch or listen',
+    lead: 'A few minutes of you talking does more than a page of copy — an introduction, a walkthrough, an episode, a customer telling their own story.',
+    title: 'Video or audio',
   });
 }
 

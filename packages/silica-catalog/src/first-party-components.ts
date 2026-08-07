@@ -59,7 +59,10 @@ export const GROUP_FACET: Record<string, string> = {
   sparx_convert: 'Get in touch',
   sparx_content: 'Writing',
   sparx_offer: 'Selling',
-  sparx_media: 'Video & maps',
+  // Matches the group's own label exactly (19 chars, inside the cap). It said
+  // "Video & maps" while the group had grown to carry audio, so the marketplace
+  // browse facet quietly hid podcasts and music from anyone filtering by it.
+  sparx_media: 'Video, audio & maps',
   // Added to unblock the suite: another in-flight change introduced the
   // `sparx_publishing` group and this table is what fails when a group has no facet.
   // Taken verbatim from that group's own label (17 chars, inside the 20-char cap) —
