@@ -178,7 +178,7 @@ Don't claim builds/tests pass without actually running them.
 
 ### Pre-push guard
 
-`pnpm install` wires `git config core.hooksPath .githooks` (via the root `prepare` script), which enables [.githooks/pre-push](.githooks/pre-push). Every `git push` first runs `pnpm install --frozen-lockfile && pnpm format:check && pnpm lint && pnpm typecheck` against the working tree. A red local check blocks the push — this is intentional: CI on `main` is the production tripwire, not a debugging surface. Fix the failing check before pushing — `--no-verify` is not an acceptable bypass.
+`pnpm install` wires `git config core.hooksPath .githooks` (via the root `prepare` script), which enables [.githooks/pre-push](.githooks/pre-push). Every `git push` first runs `pnpm install --frozen-lockfile && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test` (plus the `@sparx/db` RLS audit) against the working tree. The test step runs with `CI=true`, so it excludes the DB-backed integration suites CI also excludes — the guard is never stricter than CI, which is what keeps it from being bypassed. A red local check blocks the push — this is intentional: CI on `main` is the production tripwire, not a debugging surface. Fix the failing check before pushing — `--no-verify` is not an acceptable bypass.
 
 ### File & function size
 

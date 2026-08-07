@@ -44,6 +44,14 @@ step "pnpm -r run typecheck"
 pnpm -r --workspace-concurrency=4 run typecheck || fail "tsc found type errors — fix errors above and commit"
 ok "typecheck clean"
 
+# CI=true so this excludes the same DB-backed integration suites CI excludes
+# (see e.g. packages/inventory/vitest.config.ts). Without it the hook would
+# demand a running `pnpm db:up` on every push and fail for anyone who has not
+# got one — a check stricter than CI, which is how hooks get bypassed.
+step "pnpm -r run test"
+CI=true pnpm -r --workspace-concurrency=4 run test || fail "tests failed — fix the failures above and commit"
+ok "tests clean"
+
 step "pnpm --filter @sparx/db db:rls-audit"
 pnpm --filter @sparx/db db:rls-audit >/dev/null || fail "RLS audit failed — see output above; hand-edit the migration SQL to add the missing clauses (ENABLE+FORCE+POLICY, a current_tenant_id() GUC read, or an owner-read policy for a cross-tenant scan)"
 ok "RLS audit clean"

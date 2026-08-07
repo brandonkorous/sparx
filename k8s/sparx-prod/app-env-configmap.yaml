@@ -37,6 +37,12 @@ data:
   # (distinct from BETTER_AUTH_SECRET) lives in sparx-app-secrets. NOT a secret.
   CUSTOMER_AUTH_URL: https://api.sparx.works
   CUSTOMER_MCP_LOGIN_PAGE: /account/login
+  # The ONE name for the workbench's public origin — every link a service puts in
+  # an email resolves through it (@sparx/links/server appOrigin). Four variables
+  # used to mean this and each emitter read a different one with its own fallback,
+  # so which host an email pointed at depended on which service sent it. The old
+  # names still resolve, in a fixed order, so nothing breaks mid-rollout.
+  SPARX_APP_URL: https://app.sparx.works
   NEXT_PUBLIC_APP_URL: https://app.sparx.works
   NEXT_PUBLIC_API_URL: https://api.sparx.works
   NEXT_PUBLIC_MARKETING_URL: https://sparx.works

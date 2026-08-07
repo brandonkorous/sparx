@@ -4,6 +4,8 @@
 import { resolveTransport } from '@sparx/events';
 import { startWebhookDeliveryLoop } from '@sparx/api-core/webhook-delivery';
 import { installCrmWebhookFanout, preconnectWebhookFanout, registerCrmConsumers } from '@sparx/crm';
+import { installEngagementMailSink } from './lib/engagement-mail.js';
+import { installCallPlacer } from './lib/crm-voice.js';
 import { installCrmPubSubBridge } from '@sparx/crm/pubsub';
 import { installBuilderPubSubBridge } from '@sparx/builder/pubsub';
 import { registerCommerceConsumers } from '@sparx/commerce/consumers';
@@ -85,6 +87,12 @@ async function main(): Promise<void> {
   // in any one domain package, so the dependency graph stays acyclic; subscribes
   // to the same in-process bus.
   registerModuleProvisioningConsumer();
+
+  // A 1:1 sales email (docs/144 §5) leaves through the same `email.send` bus
+  // event as every other outbound message, so suppression, bounce handling and
+  // per-site branding have one place to be correct rather than two.
+  installEngagementMailSink(console);
+  installCallPlacer();
 
   // Wrap the CRM publisher so every publishCrmEvent() also enqueues a
   // WebhookDelivery row per matching tenant subscription. Pre-warm the
