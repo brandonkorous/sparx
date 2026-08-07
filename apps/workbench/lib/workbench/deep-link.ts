@@ -181,12 +181,18 @@ const SWITCH_ATTEMPT_KEY = 'sparx-workbench-link-switch';
  * sessionStorage rather than memory, because the reload is precisely what
  * destroys memory. Per-tab, so another tab's attempt never suppresses this one's.
  */
-export function noteSwitchAttempt(siteId: string): void {
+export function noteSwitchAttempt(siteId: string): boolean {
   try {
     sessionStorage.setItem(SWITCH_ATTEMPT_KEY, siteId);
+    return true;
   } catch {
-    // Storage blocked. The switch still happens; only the loop guard is lost,
-    // which is strictly better than refusing to follow the link at all.
+    // Storage blocked, so there is nowhere to record that we tried — and the
+    // reload is about to destroy memory. WE MUST NOT SWITCH: an unrecorded
+    // attempt is an attempt that repeats forever, because the next load has no
+    // way to know it already happened. Reporting the link as unreachable is a
+    // dead end for one link; switching without a guard is a dead end for the
+    // whole tab. Fail safe, not eager.
+    return false;
   }
 }
 
@@ -198,7 +204,16 @@ export function switchAlreadyAttempted(siteId: string): boolean {
   }
 }
 
-/** Clears the guard once we have actually landed on the site the link named. */
+/**
+ * Clears the guard once we have actually landed on the site the link named.
+ *
+ * ONLY on a genuine success. Clearing it when the guard has just FIRED — when
+ * the answer was "that site is unreachable" — disarms the one thing standing
+ * between a failed switch and an infinite reload loop: the next document load
+ * would try the same switch again, fail the same way, clear the guard again.
+ * That is not hypothetical; it shipped, and it alternated the address bar
+ * between the link and the unresolved pane until the tab was closed.
+ */
 export function clearSwitchAttempt(): void {
   try {
     sessionStorage.removeItem(SWITCH_ATTEMPT_KEY);
@@ -268,6 +283,15 @@ export function resolveDeepLink(
 
   if (link.site !== undefined && link.site !== '') {
     if (!site.sites) return { kind: 'nothing' }; // still loading — ask again
+    // And the site we are ON has to be settled too. Comparing the link against a
+    // site key that is still null (booting) or the `default` placeholder (the
+    // sites query failed) can only ever report a mismatch, and a mismatch here
+    // costs a reload — so an unsettled key must mean "ask again", never "switch".
+    // The two facts arrive from independent queries; only one of them being
+    // ready is not enough to make this decision.
+    if (site.activeSiteId === null || site.activeSiteId === 'default') {
+      return { kind: 'nothing' };
+    }
     const named = site.sites.find(
       (candidate) => candidate.slug === link.site || candidate.id === link.site
     );

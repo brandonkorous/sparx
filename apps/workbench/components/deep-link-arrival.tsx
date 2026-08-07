@@ -106,16 +106,33 @@ export function DeepLinkArrival({ siteKey }: { siteKey: string | null }) {
             return;
           }
         }
-        noteSwitchAttempt(target);
+        // Record the attempt BEFORE reloading, and refuse to switch if it could
+        // not be recorded — see noteSwitchAttempt. An attempt nothing remembers
+        // is an attempt that repeats forever.
+        if (!noteSwitchAttempt(target)) {
+          arrived.current = true;
+          switching.current = false;
+          applyDeepLink(controller, {
+            kind: 'unresolved',
+            reason: 'site-unavailable',
+            detail: readDeepLink()?.site ?? target,
+          });
+          return;
+        }
         await switchSite(controller, siteKey ?? 'default', target, { keepAddress: true });
       })();
       return;
     }
 
-    // We are where the link asked to be — a later link to a different site gets
-    // its own fresh attempt.
-    clearSwitchAttempt();
     arrived.current = true;
+
+    // Clear the guard ONLY on a real arrival. Reaching here with `unresolved`
+    // means the guard just fired ("that site is unreachable") — and clearing it
+    // there re-arms the switch for the next document load, which is precisely
+    // how this became an infinite reload alternating between two addresses.
+    // A failed switch must STAY remembered.
+    if (resolved.kind === 'open') clearSwitchAttempt();
+
     applyDeepLink(controller, resolved);
   }, [attached, controller, siteKey, sites, moduleStates]);
 
