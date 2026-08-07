@@ -225,6 +225,20 @@ module "pubsub" {
     "crm.engagement.sent"     = []
     "crm.engagement.received" = []
 
+    # Service requests (docs/144 §7). Topic-only, like the rest of the CRM bus.
+    # The two SLA topics are the reason the support clock is worth storing at
+    # all: they are what a tenant hangs "tell the shift lead when an urgent
+    # request is running out of time" off. Missing them would leave the sweep
+    # marking rows in a table with nothing listening — which is how a promise
+    # quietly becomes a column nobody reads.
+    "crm.ticket.created"       = []
+    "crm.ticket.updated"       = []
+    "crm.ticket.assigned"      = []
+    "crm.ticket.stage_changed" = []
+    "crm.ticket.resolved"      = []
+    "crm.ticket.sla.warning"   = []
+    "crm.ticket.sla.breached"  = []
+
     # Cart
     "cart.abandoned" = []
 
