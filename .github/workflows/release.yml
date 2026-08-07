@@ -1334,15 +1334,33 @@ jobs:
   # the tag marks the release, it does not start another one.
   # ---------------------------------------------------------------------------
   tag:
-    needs: [target, infrastructure, data, containers]
+    needs: [target, base, build, infrastructure, data, containers]
     # Any stage that FAILED means this version did not ship, so it does not get
     # a tag. A SKIPPED stage is fine — `containers` skips itself when nothing
     # runtime-affecting changed, and that is still a completed release.
+    #
+    # `base` and `build` ARE IN THIS LIST, and leaving them out is how the bug
+    # this gate exists to prevent came back. Gating only on the three deploy
+    # stages looks sufficient because they are the ones that ship — but `data`
+    # and `containers` each carry `needs.build.result == 'success'`, so a failed
+    # BUILD does not FAIL them, it SKIPS them, and the line above says a skipped
+    # stage is fine. Three skips therefore read as a clean release and got a tag.
+    #
+    # v1.206.0 and v1.207.0 both sit on commits whose release failed at build and
+    # deployed nothing — and because the failure was a build failure, the images
+    # for those SHAs do not all exist, so neither tag can be deployed or rolled
+    # back to. v1.208.0 was minted the same way and is only true by accident: its
+    # release was re-run by hand and passed the second time.
+    #
+    # Same failure as v1.195.0, through a different door: "did not fail" is not
+    # "succeeded" when a stage can be skipped by something upstream dying.
     #
     # `bump: none` is the opt-out for a dispatch that is re-running part of a
     # release and should not mint a version for it.
     if: >-
       always() &&
+      needs.base.result == 'success' &&
+      needs.build.result == 'success' &&
       needs.infrastructure.result != 'failure' && needs.infrastructure.result != 'cancelled' &&
       needs.data.result != 'failure' && needs.data.result != 'cancelled' &&
       needs.containers.result != 'failure' && needs.containers.result != 'cancelled' &&
