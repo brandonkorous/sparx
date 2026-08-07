@@ -21,6 +21,7 @@ import { applyInvoicing } from './engine/invoicing';
 import { applyBundlesAndConfigurator } from './engine/bundles';
 import { applyAi } from './engine/ai';
 import { applyRecordTypes } from './engine/record-types';
+import { applySupportRequests } from './engine/support';
 import { hasPhysicalGoods, withFallbacks } from './engine/fallbacks';
 import { clearSampleDataOnTx } from './engine/clear';
 import { countsTotal, summarizeSampleDataOnTx } from './engine/summarize';
@@ -138,6 +139,7 @@ async function applyPack(ctx: ApplyCtx, pack: SampleDataPack): Promise<void> {
   await applyScheduling(ctx, eff);
   await applyQuotes(ctx, eff);
   await applyDeals(ctx, eff);
+  await applySupportRequests(ctx, eff);
   await applyInvoicing(ctx, eff);
   await applyBundlesAndConfigurator(ctx, eff);
   await applyAi(ctx, eff);

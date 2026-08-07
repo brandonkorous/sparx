@@ -15,10 +15,11 @@ import { z } from 'zod';
 import { callService, voiceConnectionService } from '@sparx/crm';
 import { toE164 } from '@sparx/voice';
 import { ok, paged } from '@sparx/api-core/envelope';
-import { requireRole } from '@sparx/api-core/auth';
+import { requireAuth, requireRole } from '@sparx/api-core/auth';
 import { badRequest } from '@sparx/api-core/errors';
 
 import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
+import { resolvePropertyId } from '../../../lib/property.js';
 import {
   encryptVoiceSecret,
   isVoiceCryptoConfigured,
@@ -70,18 +71,31 @@ const callRoutes: FastifyPluginAsync = (app) => {
       throw badRequest('That does not look like a phone number sparx can ring.');
     }
 
+    const auth = requireAuth(request);
     const ctx = toCrmContext(request);
-    const { fromNumber } = await providerFor(ctx.tenantId, null);
-    if (!fromNumber) {
-      throw badRequest(
-        'No phone system is connected yet, so sparx cannot place the call. You can still log a call you made yourself.'
-      );
-    }
+    const header = request.headers['x-sparx-property-id'];
 
+    // The number is resolved for the CUSTOMER'S site, which the service knows
+    // and this route does not — so it hands down a resolver rather than a
+    // number. Returning null raises a 422 from the service with the message a
+    // person needs; pre-checking here could only ever check the wrong site.
+    //
+    // A GLOBAL customer (no site of their own) is called from the site the
+    // operator is working IN. They belong to every site equally, so the only
+    // number that means anything to them is the one for the business the person
+    // dialling is currently running.
     const result = await callService.placeCall(
       ctx,
       { ...body, fromDeviceNumber: device },
-      { fromNumber }
+      {
+        resolveOrigin: async (customerPropertyId) => {
+          const propertyId =
+            customerPropertyId ??
+            (await resolvePropertyId(auth, typeof header === 'string' ? header : null));
+          const { fromNumber } = await providerFor(ctx.tenantId, propertyId);
+          return fromNumber ? { fromNumber, propertyId } : null;
+        },
+      }
     );
     return reply.code(201).send(ok(result));
   });

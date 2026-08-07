@@ -32,6 +32,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { Mail, Phone, PhoneCall, Send, StickyNote } from 'lucide-react';
+import { useActiveSiteId } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import {
   callErrorMessage,
@@ -65,12 +66,27 @@ export interface EngagementComposerProps {
   /** When the record being viewed is a deal, so what is said is filed against
    *  it as well as against the person. */
   dealId?: string | null;
+  /**
+   * When the record being viewed is a support request (docs/144 §7).
+   *
+   * NOT decoration: an outbound message on a request's thread is what records
+   * the FIRST RESPONSE, which is half of what the support clock measures.
+   * Without this the reply is filed against the person and the request stays
+   * marked as unanswered — so the queue would show a request somebody replied
+   * to twenty minutes ago going red.
+   */
+  ticketId?: string | null;
   /** Whether this person has an email address at all — the Email tab is not
    *  offered without one, rather than offered and then refused. */
   canEmail?: boolean;
 }
 
-export function EngagementComposer({ customerId, dealId, canEmail }: EngagementComposerProps) {
+export function EngagementComposer({
+  customerId,
+  dealId,
+  ticketId,
+  canEmail,
+}: EngagementComposerProps) {
   const toast = useToast();
   const [mode, setMode] = useState<Mode>('note');
 
@@ -89,15 +105,26 @@ export function EngagementComposer({ customerId, dealId, canEmail }: EngagementC
   const { data: snippetData } = useSalesSnippets();
 
   const { data: voiceData } = useVoiceConnections();
+  const { data: siteState } = useActiveSiteId();
+  const activeSiteId = siteState?.propertyId ?? null;
   const placeCall = usePlaceCall();
 
   const sendEmail = useSendEngagementEmail();
   const logCall = useLogCall();
   const logNote = useLogNote();
 
-  // Click-to-call is offered only when a phone system is actually connected.
-  // A rep without admin rights simply gets no button rather than an error.
-  const canDial = (voiceData?.items ?? []).some((entry) => entry.status === 'active');
+  // Click-to-call is offered only when a phone system is actually connected FOR
+  // THIS SITE — mirroring how the server resolves one: the site's own phone
+  // system, falling back to a tenant-wide one. A tenant whose only connection
+  // belongs to a different business would otherwise be shown a button that
+  // always fails, which is worse than no button.
+  //
+  // A rep without admin rights gets a 403 on the voice list and so gets no
+  // button either, rather than an error.
+  const canDial = (voiceData?.items ?? []).some(
+    (entry) =>
+      entry.status === 'active' && (entry.propertyId === null || entry.propertyId === activeSiteId)
+  );
 
   const busy = sendEmail.isPending || logCall.isPending || logNote.isPending;
 
@@ -176,12 +203,13 @@ export function EngagementComposer({ customerId, dealId, canEmail }: EngagementC
   const submit = async () => {
     try {
       if (mode === 'note') {
-        await logNote.mutateAsync({ customerId, dealId, body: note.trim() });
+        await logNote.mutateAsync({ customerId, dealId, ticketId, body: note.trim() });
         toast.add({ title: 'Note saved', type: 'success' });
       } else if (mode === 'call') {
         await logCall.mutateAsync({
           customerId,
           dealId,
+          ticketId,
           direction,
           outcome,
           ...(minutes.trim() !== '' ? { durationSec: Math.round(Number(minutes) * 60) } : {}),
@@ -192,6 +220,7 @@ export function EngagementComposer({ customerId, dealId, canEmail }: EngagementC
         await sendEmail.mutateAsync({
           customerId,
           dealId,
+          ticketId,
           subject: subject.trim(),
           bodyHtml: body,
           ...(mailboxId !== '' ? { mailboxConnectionId: mailboxId } : {}),

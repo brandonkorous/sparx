@@ -363,6 +363,12 @@ export interface SampleDataPack {
    *  only when `crm` is on, and only ever ADDING properties — a pack never
    *  renames a record type or removes a property the tenant added. */
   recordTypes?: SampleRecordType[];
+  /** The support queue's demo requests (docs/144 §7), applied only when `crm`
+   *  is on. Omit and the engine derives a set from the pack's own products —
+   *  the states it puts them in are fixed either way, because the point of the
+   *  demo queue is the SPREAD (one breached, one amber, one unclaimed, one
+   *  resolved) rather than the wording. */
+  supportRequests?: SampleSupportRequest[];
   articles?: SampleArticle[];
   scheduling?: SampleScheduling;
   bundles?: SampleBundle[];
@@ -370,6 +376,14 @@ export interface SampleDataPack {
   /** Demo AI prompts (applied only when `ai` is on). Omit and the engine derives a
    *  small industry-flavored set from the pack label. */
   aiPrompts?: SampleAiPrompt[];
+}
+
+/** One demo support request (docs/144 §7) — what a customer said, in the words
+ *  a customer of THIS kind of business would use. The state it lands in is
+ *  decided by the engine, not here. */
+export interface SampleSupportRequest {
+  subject: string;
+  detail: string;
 }
 
 /** Per-entity counts returned by load/clear/status — drives the dashboard summary
@@ -386,6 +400,8 @@ export interface SampleDataCounts {
   questions: number;
   bookings: number;
   deals: number;
+  /** Demo support requests (docs/144 §7) — the queue's spread of states. */
+  tickets: number;
   /** Authored billing documents (docs/87 invoicing surface) — quotes are
    *  billing documents on the system b2b-quotes workflow, so this covers both. */
   billingDocuments: number;

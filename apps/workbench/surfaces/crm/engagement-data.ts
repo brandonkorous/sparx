@@ -220,6 +220,9 @@ export function useSendEngagementEmail() {
 export interface LogCallInput {
   customerId: string;
   dealId?: string | null;
+  /** The support request this was about (docs/144 §7), so a call logged from a
+   *  request lands on the request's own thread rather than only on the person's. */
+  ticketId?: string | null;
   direction: 'in' | 'out';
   outcome: CallOutcome;
   durationSec?: number;
@@ -237,8 +240,12 @@ export function useLogCall() {
 export function useLogNote() {
   const invalidate = useInvalidateEngagement();
   return useMutation({
-    mutationFn: (input: { customerId: string; dealId?: string | null; body: string }) =>
-      api.post('/v1/crm/engagement/notes', input),
+    mutationFn: (input: {
+      customerId: string;
+      dealId?: string | null;
+      ticketId?: string | null;
+      body: string;
+    }) => api.post('/v1/crm/engagement/notes', input),
     onSuccess: invalidate,
   });
 }

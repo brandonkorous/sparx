@@ -19,6 +19,7 @@ import {
   dealService,
   leadService,
   taskService,
+  ticketService,
 } from '@sparx/crm/services';
 import type { ActionOutput, EffectInput, TenantCtx } from '@sparx/automation';
 import { registerAction } from '@sparx/automation';
@@ -27,6 +28,7 @@ import { z } from 'zod';
 import {
   interpolateFields,
   optionalEntityId,
+  optionalStringField,
   requireEntityId,
   resolveTenantActor,
 } from './entity.js';
@@ -68,6 +70,69 @@ const CreateTaskConfig = z.object({
 const MoveStageConfig = z.object({
   toStageId: z.string().uuid(),
 });
+
+// Intake routing (docs/144 §7.4). Everything is optional and interpolated,
+// because the tenant is writing one rule that has to read sensibly whether it
+// fires on a chat, a form or an email.
+const CreateTicketConfig = z.object({
+  /** Merge-token subject. Omitted falls back to something the origin knows —
+   *  the form's message, the email's subject — see `subjectFor` below. */
+  subject: z.string().max(255).optional(),
+  description: z.string().max(20_000).optional(),
+  priority: z.enum(['low', 'medium', 'high', 'urgent']).optional(),
+  /** Which queue and which promise. Omitted uses the tenant's defaults, so the
+   *  simplest possible rule — "when a form is submitted, open a request" — needs
+   *  no ids in it at all. */
+  pipelineId: z.string().uuid().optional(),
+  stageId: z.string().uuid().optional(),
+  slaPolicyId: z.string().uuid().optional(),
+  assigneeField: z.string().min(1).optional(),
+  assignedToUserId: z.string().uuid().optional(),
+  tags: z.array(z.string().min(1).max(63)).max(20).optional(),
+});
+
+/**
+ * Where the request came from, read off whichever fields the trigger carried.
+ *
+ * The SAME action serves all three intakes, because the tenant's rule is "when
+ * X happens, open a request" and the difference between a chat and a form is
+ * the trigger, not the action. The origin id it finds is what makes the intake
+ * idempotent: a rule that fires twice on one conversation updates nothing.
+ */
+function originOf(fields: Record<string, unknown>): {
+  source: 'chat' | 'form' | 'email' | 'api';
+  recordId: string | null;
+} {
+  const conversationId = optionalEntityId(fields, 'conversation.id');
+  if (conversationId) return { source: 'chat', recordId: conversationId };
+  const submissionId = optionalEntityId(fields, 'form.submissionId');
+  if (submissionId) return { source: 'form', recordId: submissionId };
+  // The THREAD, not the message: a customer sending three emails about one
+  // problem before anyone replies should get one request, not three.
+  const threadId = optionalEntityId(fields, 'engagement.threadId');
+  if (threadId) return { source: 'email', recordId: threadId };
+  // A trigger with no recognisable origin still opens a request; it simply has
+  // no dedupe key, so a rule wired to one must not be expected to be idempotent.
+  return { source: 'api', recordId: null };
+}
+
+/** A subject a person would recognise, in descending order of how much the
+ *  origin actually knows. Never empty: an untitled request in a queue is
+ *  unreadable, and "Request from a website form" at least says where to look. */
+function subjectFor(source: string, fields: Record<string, unknown>): string {
+  const fromEmail = fields['engagement.subject'];
+  if (typeof fromEmail === 'string' && fromEmail.trim().length > 0) return fromEmail.slice(0, 255);
+  const formName = fields['form.formName'];
+  if (source === 'form' && typeof formName === 'string' && formName.length > 0) {
+    return `${formName} submission`.slice(0, 255);
+  }
+  const name = fields['customer.fullName'];
+  const who = typeof name === 'string' && name.length > 0 ? ` from ${name}` : '';
+  if (source === 'chat') return `Live chat${who}`.slice(0, 255);
+  if (source === 'form') return `Website form${who}`.slice(0, 255);
+  if (source === 'email') return `Email${who}`.slice(0, 255);
+  return `Request${who}`.slice(0, 255);
+}
 
 let installed = false;
 
@@ -210,6 +275,60 @@ export function installCrmActions(): void {
       await leadService.captureFormLead(svcCtx, { submissionId });
       if (openDeal) await leadService.openFormDeal(svcCtx, { submissionId });
       return { submissionId, openedDeal: openDeal };
+    },
+  });
+
+  registerAction({
+    type: 'crm.create_ticket',
+    module: 'crm',
+    gates: [],
+    manifestNote:
+      'internal CRM write (opens a service request from a chat, form or inbound email, and links the conversation to it); no external effect — global gates suffice',
+    async execute(ctx: TenantCtx, effect: EffectInput): Promise<ActionOutput> {
+      const cfg = CreateTicketConfig.parse(effect.config);
+      const origin = originOf(effect.fields);
+      const svcCtx = { tenantId: ctx.tenantId, tx: ctx.tx };
+
+      // Assignee resolution matches crm.create_task: a field path on the trigger
+      // entity (`conversation.assignedToId` — whoever was already handling the
+      // chat), then an explicit id. UNLIKE a task, an unresolved assignee is
+      // fine and leaves the request in the unassigned queue, which is where a
+      // support lead expects new work to appear.
+      const fromField = cfg.assigneeField
+        ? optionalEntityId(effect.fields, cfg.assigneeField)
+        : undefined;
+
+      const ticket = await ticketService.create(svcCtx, {
+        subject: cfg.subject
+          ? interpolateFields(cfg.subject, effect.fields)
+          : subjectFor(origin.source, effect.fields),
+        description: cfg.description
+          ? interpolateFields(cfg.description, effect.fields)
+          : (optionalStringField(effect.fields, 'form.message') ??
+            optionalStringField(effect.fields, 'engagement.preview') ??
+            null),
+        priority: cfg.priority ?? 'medium',
+        source: origin.source,
+        sourceRecordId: origin.recordId,
+        customerId: optionalEntityId(effect.fields, 'customer.id') ?? null,
+        assignedToUserId: fromField ?? cfg.assignedToUserId ?? null,
+        ...(cfg.pipelineId ? { pipelineId: cfg.pipelineId } : {}),
+        ...(cfg.stageId ? { stageId: cfg.stageId } : {}),
+        ...(cfg.slaPolicyId ? { slaPolicyId: cfg.slaPolicyId } : {}),
+        tags: cfg.tags ?? [],
+      });
+
+      // Put the customer's actual words ON the request. Without this the email
+      // thread and the ticket sit side by side and nobody joins them up, which
+      // is the exact failure a support queue exists to fix.
+      if (origin.source === 'email' && origin.recordId) {
+        await ticketService.linkThread(svcCtx, {
+          ticketId: ticket.ticket.id,
+          threadId: origin.recordId,
+        });
+      }
+
+      return { ticketId: ticket.ticket.id, number: ticket.ticket.number, source: origin.source };
     },
   });
 

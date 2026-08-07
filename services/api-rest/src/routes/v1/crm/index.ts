@@ -17,6 +17,7 @@ import objectDefRoutes from './object-defs.js';
 import associationRoutes from './associations.js';
 import engagementRoutes from './engagement.js';
 import callRoutes from './calls.js';
+import ticketRoutes from './tickets.js';
 import pipelineRoutes from './pipelines.js';
 import dealRoutes from './deals.js';
 import activityRoutes from './activities.js';
@@ -34,6 +35,10 @@ const crmRoutes: FastifyPluginAsync = async (app) => {
   await app.register(associationRoutes);
   await app.register(engagementRoutes);
   await app.register(callRoutes);
+  // Service requests (docs/144 §7) — registered before customers so the queue's
+  // routes are mounted alongside the rest of the engagement surface they belong
+  // with, rather than at the end of an unrelated list.
+  await app.register(ticketRoutes);
   await app.register(customerRoutes);
   await app.register(b2bAccountRoutes);
   await app.register(pipelineRoutes);

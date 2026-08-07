@@ -20,6 +20,10 @@ export const ActionType = z.enum([
   'email.sequence_remove',
   // CRM
   'crm.create_task',
+  // Intake routing (docs/144 §7.4) — a chat, a form or an inbound email becomes
+  // a service request. One action for all three: the difference is the trigger,
+  // not what happens next.
+  'crm.create_ticket',
   'crm.update_deal_stage',
   'crm.add_note',
   'crm.add_tag',

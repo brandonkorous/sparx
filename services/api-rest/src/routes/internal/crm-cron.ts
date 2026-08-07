@@ -10,6 +10,7 @@
 //   • POST /internal/crm/overdue-reminders    → emitOverdueTaskReminders (per active tenant)
 //   • POST /internal/crm/segment-recompute    → segmentService.recomputeFull (per active tenant)
 //   • POST /internal/crm/mailbox-sync         → syncTenantMailboxes (per active tenant)
+//   • POST /internal/crm/sla-sweep            → ticketSlaSweep.sweepTenant (per active tenant)
 //
 // Per-tenant loops are sequential. CRM-active tenant count is tiny in
 // Phase 1; sequential keeps DB load predictable and lets one failing
@@ -17,7 +18,7 @@
 
 import { timingSafeEqual } from 'node:crypto';
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
-import { crmSchedulers, segmentService } from '@sparx/crm';
+import { crmSchedulers, segmentService, ticketSlaSweep } from '@sparx/crm';
 
 import { env } from '../../env.js';
 import { syncTenantMailboxes } from '../../lib/crm-mailbox-sync.js';
@@ -108,6 +109,18 @@ const crmCronRoutes: FastifyPluginAsync = (app) => {
     authorize(request);
     const summary = await forEachActiveTenant((tenantId) =>
       syncTenantMailboxes(request.log, tenantId)
+    );
+    return { success: true, data: summary };
+  });
+
+  // The support clock (docs/144 §7.3). A due date on a row is only worth having
+  // if something reads it while there is still time to act — this is that
+  // something. Idempotent by construction (see ticket-sla-sweep.ts), so an
+  // overlapping run or a pod that dies halfway announces nothing twice.
+  app.post('/internal/crm/sla-sweep', async (request) => {
+    authorize(request);
+    const summary = await forEachActiveTenant((tenantId) =>
+      ticketSlaSweep.sweepTenant({ tenantId })
     );
     return { success: true, data: summary };
   });

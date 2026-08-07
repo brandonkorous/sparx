@@ -11,6 +11,8 @@ import {
   ReorderPipelineStagesInput,
   UpdatePipelineInput,
   UpdatePipelineStageInput,
+  stageTypesFor,
+  type StageType,
 } from '@sparx/crm-schemas';
 import { DEFAULT_PIPELINE_TEMPLATE } from '@sparx/crm-schemas/builtins';
 import { withTenant } from '@sparx/db';
@@ -21,6 +23,24 @@ import { publishCrmEvent } from '../events';
 import type { ServiceContext } from '../errors';
 import { CrmConflictError, CrmNotFoundError, CrmValidationError } from '../errors';
 
+/**
+ * A stage's meaning has to belong to the object the pipeline moves.
+ *
+ * `StageType` is one permissive enum across every object (docs/144 §7.2), which
+ * is right for storage and wrong at the boundary: a DEAL parked on a "Resolved"
+ * stage is counted as neither won nor lost, so it vanishes from the forecast and
+ * from the funnel's denominator at the same time — silently, and only in the
+ * reports, which is where nobody looks for a data-entry mistake.
+ */
+function assertStageTypeFits(objectKey: string, stageType: StageType): void {
+  const allowed = stageTypesFor(objectKey);
+  if (allowed.includes(stageType)) return;
+  throw new CrmValidationError(
+    `A ${objectKey} stage cannot be "${stageType}". Use one of: ${allowed.join(', ')}.`,
+    [{ field: 'stageType', message: `not valid for ${objectKey}` }]
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────────────
 // Pipelines
 // ─────────────────────────────────────────────────────────────────────────
@@ -30,6 +50,14 @@ export async function list(
   args: {
     q?: string;
     includeArchived?: boolean;
+    /**
+     * Which object's processes to list (docs/144 §7.2). Defaults to `deal`,
+     * NOT to "everything": every caller that existed before pipelines became
+     * generic meant sales, and returning the support queue to a deal-board
+     * stage picker would put "Waiting on Customer" in front of a rep.
+     * Pass `'all'` to genuinely mean all of them.
+     */
+    objectKey?: string;
     /** Member's reachable sites (docs/131 §3.3); undefined = unrestricted. */
     propertyIds?: string[];
     take?: number;
@@ -37,7 +65,9 @@ export async function list(
   } = {}
 ): Promise<{ items: (Pipeline & { stages: PipelineStage[] })[]; total: number }> {
   return withTenant(ctx, async (tx) => {
+    const objectKey = args.objectKey ?? 'deal';
     const where: Prisma.PipelineWhereInput = {
+      ...(objectKey === 'all' ? {} : { objectKey }),
       ...(args.includeArchived ? {} : { archivedAt: null }),
       ...(args.propertyIds
         ? { OR: [{ propertyId: { in: args.propertyIds } }, { propertyId: null }] }
@@ -82,6 +112,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Pi
         // The site this sales process belongs to (docs/131 §5); the route
         // defaults it to the site being worked in, explicit null = tenant-wide.
         propertyId: input.propertyId ?? null,
+        objectKey: input.objectKey,
         name: input.name,
         slug: input.slug,
         isDefault: input.isDefault,
@@ -177,6 +208,7 @@ export async function createStage(
   return withTenant(ctx, async (tx) => {
     const pipeline = await tx.pipeline.findUnique({ where: { id: pipelineId } });
     if (!pipeline) throw new CrmNotFoundError('Pipeline', pipelineId);
+    assertStageTypeFits(pipeline.objectKey, input.stageType);
     const created = await tx.pipelineStage.create({
       data: {
         tenantId: ctx.tenantId,
@@ -209,8 +241,14 @@ export async function updateStage(
 ): Promise<PipelineStage> {
   const input = UpdatePipelineStageInput.parse(rawInput);
   return withTenant(ctx, async (tx) => {
-    const before = await tx.pipelineStage.findUnique({ where: { id: stageId } });
+    const before = await tx.pipelineStage.findUnique({
+      where: { id: stageId },
+      include: { pipeline: { select: { objectKey: true } } },
+    });
     if (!before) throw new CrmNotFoundError('PipelineStage', stageId);
+    if (input.stageType !== undefined) {
+      assertStageTypeFits(before.pipeline.objectKey, input.stageType);
+    }
     const updated = await tx.pipelineStage.update({
       where: { id: stageId },
       data: {
@@ -240,11 +278,15 @@ export async function updateStage(
  *
  * Two guards make this safe rather than destructive:
  *   • A pipeline must keep at least one stage — deleting the last is refused
- *     (409), because a deal has nowhere to live otherwise.
- *   • A stage that still has open deals on it cannot just vanish: the caller must
- *     name a DIFFERENT stage on the SAME pipeline to move those deals to, and the
- *     move + delete run in one transaction. With no deals on it, the stage is
+ *     (409), because its records have nowhere to live otherwise.
+ *   • A stage that still has open records on it cannot just vanish: the caller
+ *     must name a DIFFERENT stage on the SAME pipeline to move them to, and the
+ *     move + delete run in one transaction. With nothing on it, the stage is
  *     removed directly. Returns the pipeline with its remaining stages.
+ *
+ * "Records" means deals or tickets, whichever this pipeline moves (docs/144
+ * §7.2) — the wording below follows, because "this stage still has deals on it"
+ * is meaningless on a support queue.
  */
 export async function deleteStage(
   ctx: ServiceContext,
@@ -267,31 +309,42 @@ export async function deleteStage(
       );
     }
 
-    const dealsOnStage = await tx.deal.count({
-      where: { stageId: args.stageId, deletedAt: null },
-    });
+    // Whichever kind of record this pipeline moves. A support queue's stage can
+    // be as full as a sales pipeline's, and counting only deals would have
+    // deleted a stage out from under every open request on it — the FK would
+    // then refuse the delete with a constraint error nobody could act on.
+    const isTickets = pipeline.objectKey === 'ticket';
+    const recordsOnStage = isTickets
+      ? await tx.ticket.count({ where: { stageId: args.stageId, deletedAt: null } })
+      : await tx.deal.count({ where: { stageId: args.stageId, deletedAt: null } });
 
-    let movedDeals = 0;
-    if (dealsOnStage > 0) {
+    const noun = isTickets ? 'requests' : 'deals';
+    let movedRecords = 0;
+    if (recordsOnStage > 0) {
       if (!args.reassignToStageId) {
         throw new CrmValidationError(
-          'This stage still has deals on it. Choose a stage to move them to before removing it.',
-          [{ field: 'reassignToStageId', message: 'required when the stage has deals' }]
+          `This stage still has ${noun} on it. Choose a stage to move them to before removing it.`,
+          [{ field: 'reassignToStageId', message: `required when the stage has ${noun}` }]
         );
       }
       if (args.reassignToStageId === args.stageId) {
-        throw new CrmValidationError('Choose a different stage to move the deals to.', [
+        throw new CrmValidationError(`Choose a different stage to move the ${noun} to.`, [
           { field: 'reassignToStageId', message: 'must differ from the stage being removed' },
         ]);
       }
       const target = pipeline.stages.find((s) => s.id === args.reassignToStageId);
       if (!target) throw new CrmNotFoundError('PipelineStage', args.reassignToStageId);
 
-      const moved = await tx.deal.updateMany({
-        where: { stageId: args.stageId, deletedAt: null },
-        data: { stageId: args.reassignToStageId },
-      });
-      movedDeals = moved.count;
+      const moved = isTickets
+        ? await tx.ticket.updateMany({
+            where: { stageId: args.stageId, deletedAt: null },
+            data: { stageId: args.reassignToStageId },
+          })
+        : await tx.deal.updateMany({
+            where: { stageId: args.stageId, deletedAt: null },
+            data: { stageId: args.reassignToStageId },
+          });
+      movedRecords = moved.count;
     }
 
     await tx.pipelineStage.delete({ where: { id: args.stageId } });
@@ -306,7 +359,7 @@ export async function deleteStage(
       entityId: args.stageId,
       diff: {
         before: { name: stage.name, pipelineId: args.pipelineId },
-        after: { movedDeals, reassignedTo: args.reassignToStageId ?? null },
+        after: { movedRecords, reassignedTo: args.reassignToStageId ?? null },
       },
     });
 
@@ -401,7 +454,7 @@ export async function bootstrapDefaultPipeline(
     // findUnique: the unique is now (tenant, property, slug) NULLS NOT DISTINCT,
     // and Prisma cannot reach a null-property row through a compound-unique key.
     const existing = await tx.pipeline.findFirst({
-      where: { propertyId: null, slug: DEFAULT_PIPELINE_TEMPLATE.slug },
+      where: { propertyId: null, objectKey: 'deal', slug: DEFAULT_PIPELINE_TEMPLATE.slug },
       include: { stages: { orderBy: { sortOrder: 'asc' } } },
     });
     if (existing) return existing;
@@ -410,6 +463,7 @@ export async function bootstrapDefaultPipeline(
       data: {
         tenantId: ctx.tenantId,
         propertyId: null,
+        objectKey: 'deal',
         name: DEFAULT_PIPELINE_TEMPLATE.name,
         slug: DEFAULT_PIPELINE_TEMPLATE.slug,
         isDefault: DEFAULT_PIPELINE_TEMPLATE.isDefault,

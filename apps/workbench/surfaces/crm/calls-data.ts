@@ -48,6 +48,17 @@ export interface PlaceCallResult {
   error?: string;
 }
 
+export interface ConnectPhoneSystemInput {
+  provider: 'twilio';
+  accountSid: string;
+  authToken: string;
+  fromNumber: string;
+  /** Which site calls from this number. Null → every site that has none of its
+   *  own, which is the right answer for a business with one phone line. */
+  propertyId?: string | null;
+  recordingEnabled?: boolean;
+}
+
 export const callKeys = {
   all: ['crm', 'calls'] as const,
   forRecord: (params: Record<string, unknown>) => [...callKeys.all, params] as const,
@@ -84,6 +95,58 @@ export function useVoiceConnections() {
     // retrying or surfacing, it just means no click-to-call button for them.
     retry: false,
   });
+}
+
+export function useConnectPhoneSystem() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: ConnectPhoneSystemInput) =>
+      api.post<VoiceConnection>('/v1/crm/voice', input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: callKeys.voice });
+    },
+  });
+}
+
+export function useDisconnectPhoneSystem() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.delete(`/v1/crm/voice/${id}`),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: callKeys.voice });
+    },
+  });
+}
+
+/* ── Presentation ───────────────────────────────────────────────────────── */
+
+/** What a connection's state means, in a word a person can act on. */
+export function voiceStatusTone(status: string): string {
+  if (status === 'active') return 'success';
+  if (status === 'expired') return 'danger';
+  return 'warning';
+}
+
+export function voiceStatusLabel(status: string): string {
+  if (status === 'active') return 'Working';
+  if (status === 'expired') return 'Needs a new token';
+  return 'Having trouble';
+}
+
+/** True when the deployment has no encryption key, so connecting is refused
+ *  before a token is ever typed rather than after it is submitted. */
+export function isVoiceSetupUnavailable(error: unknown): boolean {
+  return (
+    error instanceof ApiError && error.status === 400 && /not switched on/i.test(error.message)
+  );
+}
+
+export function isVoiceForbidden(error: unknown): boolean {
+  return error instanceof ApiError && error.status === 403;
+}
+
+export function isModuleDisabled(error: unknown): boolean {
+  return error instanceof ApiError && error.status === 404 && /module/i.test(error.message);
 }
 
 export function useCallsFor(params: { customerId?: string; dealId?: string }) {

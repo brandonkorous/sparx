@@ -44,6 +44,10 @@ export async function clearSampleDataOnTx(
   // Orders (cascade items/payments/fulfillments/returns), deals.
   await tx.order.deleteMany({ where: { tenantId, metadata: sampleMeta } });
   await tx.deal.deleteMany({ where: { tenantId, metadata: sampleMeta } });
+  // Support requests (docs/144 §7). The queue's PIPELINE stays — it is durable
+  // config a tenant may have renamed stages on, exactly like the sales pipeline
+  // and the warehouses below.
+  await tx.ticket.deleteMany({ where: { tenantId, tags: { has: 'sample' } } });
 
   // Billing documents (cascade lines/payments/snapshots) — quotes are billing
   // documents too, so this covers both. The workflow/stages/line-types are

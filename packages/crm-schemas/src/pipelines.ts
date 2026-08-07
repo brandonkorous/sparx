@@ -15,12 +15,25 @@ const Slug = z
   .max(63)
   .regex(/^[a-z][a-z0-9-]*$/, 'Slug must be lowercase kebab-case');
 
+// The object whose records this process moves (docs/144 §7.2). Matches a key in
+// crm_object_defs — `deal`, `ticket`, or one a tenant invented — so it is
+// shape-validated rather than enumerated.
+export const PipelineObjectKey = z
+  .string()
+  .min(1)
+  .max(63)
+  .regex(/^[a-z][a-z0-9_]*$/, 'Object key must be lowercase snake_case');
+
 export const CreatePipelineInput = z.object({
   // The site this sales process belongs to (docs/131 §5); explicit null =
   // tenant-wide. The dashboard route defaults it to the site being worked in.
   propertyId: z.string().uuid().nullable().optional(),
   name: z.string().min(1).max(120),
   slug: Slug,
+  // Defaults to `deal` because every pipeline that existed before phase 4 was
+  // one, and a caller that does not mention an object means the sales process
+  // it has always meant.
+  objectKey: PipelineObjectKey.default('deal'),
   isDefault: z.boolean().default(false),
   sortOrder: z.number().int().min(0).default(0),
 });
@@ -29,10 +42,16 @@ export type CreatePipelineInput = z.infer<typeof CreatePipelineInput>;
 // Defaults survive `.partial()` and the service writes every non-undefined key,
 // so renaming a pipeline DEMOTED it from being the tenant's default and reset
 // its position in the list. Re-declared without the defaults.
-export const UpdatePipelineInput = CreatePipelineInput.extend({
-  isDefault: z.boolean(),
-  sortOrder: z.number().int().min(0),
-}).partial();
+//
+// `objectKey` is omitted entirely rather than re-declared: what a pipeline moves
+// is not editable. Repointing a live sales pipeline at tickets would leave every
+// deal on it attached to stages that now mean something else.
+export const UpdatePipelineInput = CreatePipelineInput.omit({ objectKey: true })
+  .extend({
+    isDefault: z.boolean(),
+    sortOrder: z.number().int().min(0),
+  })
+  .partial();
 export type UpdatePipelineInput = z.infer<typeof UpdatePipelineInput>;
 
 export const CreatePipelineStageInput = z.object({

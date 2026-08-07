@@ -40,6 +40,7 @@
     "@sparx/events": "workspace:*",
     "@sparx/field-schema": "workspace:*",
     "@sparx/modules": "workspace:*",
+    "@sparx/time": "workspace:*",
     "zod": "^4.4.3"
   },
   "devDependencies": {

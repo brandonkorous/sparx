@@ -183,6 +183,24 @@ export async function sendEmail(
 
     await touchThread(tx, thread.id, message.sentAt);
 
+    // ANSWERING ON A REQUEST'S THREAD IS THE FIRST RESPONSE (docs/144 §7.3).
+    //
+    // The honest signal, and the reason the support clock is worth having: the
+    // alternative is a "mark as responded" button, which a person forgets to
+    // press on exactly the days the queue is busy enough for it to matter — so
+    // the metric would be worst precisely when it is most needed.
+    //
+    // `updateMany` with the null guard rather than read-then-write: two replies
+    // sent at the same moment would otherwise both see "not answered yet" and
+    // race, and the guard also makes this a no-op from the second reply on, so
+    // a thread of six still measures the first.
+    if (thread.ticketId) {
+      await tx.ticket.updateMany({
+        where: { id: thread.ticketId, firstRespondedAt: null, deletedAt: null },
+        data: { firstRespondedAt: message.sentAt },
+      });
+    }
+
     // ONE timeline (docs/144 §5.5) — the same rows every other kind of history
     // lands in, so nobody has to look in two places.
     await tx.crmActivity.create({

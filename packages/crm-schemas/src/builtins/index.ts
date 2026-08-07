@@ -6,6 +6,12 @@
 
 export { DEFAULT_PIPELINE_TEMPLATE } from './pipeline';
 export type { PipelineTemplate, PipelineStageTemplate } from './pipeline';
+export {
+  DEFAULT_TICKET_PIPELINE_TEMPLATE,
+  DEFAULT_SLA_POLICY_TEMPLATE,
+  TICKET_PIPELINE_SLUG,
+} from './tickets';
+export type { SlaPolicyTemplate, SlaTargetTemplate } from './tickets';
 export { BUILT_IN_SEGMENT_TEMPLATES, NEWSLETTER_SEGMENT_SLUG } from './segments';
 export type { SegmentTemplate } from './segments';
 export {

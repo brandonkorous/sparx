@@ -87,6 +87,7 @@ model Customer {
   addresses        CustomerAddress[]
   documents        CustomerDocument[]
   deals            Deal[]
+  tickets          Ticket[]
   activities       CrmActivity[]
   tasks            Task[]
   segmentMembers   SegmentMember[]

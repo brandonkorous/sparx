@@ -18,6 +18,17 @@ model Pipeline {
   propertyId String?   @map("property_id") @db.Uuid
   name       String    @db.VarChar(120)
   slug       String    @db.VarChar(63)
+
+  /// WHAT this process moves through its stages (docs/144 §7.2): `deal` today,
+  /// `ticket` since phase 4, and a tenant-invented object key after that.
+  ///
+  /// A pipeline was implicitly a SALES pipeline, which is why the board and the
+  /// funnel report both hardcoded deals. Naming the object turns one column into
+  /// the thing that lets a support queue reuse every one of them unchanged —
+  /// rather than a second board, a second funnel and a second stage editor that
+  /// drift apart the week after they ship.
+  objectKey  String    @default("deal") @map("object_key") @db.VarChar(63)
+
   isDefault  Boolean   @default(false) @map("is_default")
   sortOrder  Int       @default(0) @map("sort_order")
   archivedAt DateTime? @map("archived_at") @db.Timestamptz
@@ -29,11 +40,15 @@ model Pipeline {
   property Property?       @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   stages   PipelineStage[]
   deals    Deal[]
+  tickets  Ticket[]
 
-  // (tenant, property, slug), NULLS NOT DISTINCT — two sites may each run a
-  // `sales` pipeline; the tenant-wide tier still can't duplicate a slug.
-  @@unique([tenantId, propertyId, slug])
+  // (tenant, property, object, slug), NULLS NOT DISTINCT — two sites may each
+  // run a `sales` pipeline, and one site may run a `default` pipeline for deals
+  // AND one for tickets; the tenant-wide tier still can't duplicate a slug
+  // within one object.
+  @@unique([tenantId, propertyId, objectKey, slug])
   @@index([tenantId, archivedAt])
+  @@index([tenantId, objectKey, archivedAt])
   @@index([tenantId, propertyId, archivedAt])
   @@map("pipelines")
 }
@@ -45,7 +60,12 @@ model PipelineStage {
   name        String   @db.VarChar(120)
   sortOrder   Int      @map("sort_order")
   probability Decimal  @default(0) @db.Decimal(5, 2)
-  stageType   String   @default("open") @map("stage_type") @db.VarChar(20) // open | won | lost
+  // open | won | lost | resolved | closed. The last two are the ticket vocabulary
+  // (docs/144 §7.2): `resolved` = we answered, `closed` = filed and done with.
+  // ONE column for both objects rather than a per-object enum, because everything
+  // that reads it — the board's terminal columns, the funnel's denominator, the
+  // "is this still ours to do" filter — asks the same question of either.
+  stageType   String   @default("open") @map("stage_type") @db.VarChar(20)
   color       String?  @db.VarChar(9)
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz
@@ -53,6 +73,7 @@ model PipelineStage {
   tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   pipeline Pipeline @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
   deals    Deal[]
+  tickets  Ticket[]
 
   // No property_id (docs/131 §2 pattern 3): a stage exists only under a pipeline,
   // so it inherits the pipeline's site. A column would be able to disagree.

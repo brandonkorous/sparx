@@ -87,8 +87,45 @@ export type B2BAccountStatus = z.infer<typeof B2BAccountStatus>;
 export const PaymentTerms = z.enum(['prepay', 'net15', 'net30', 'net60', 'net90']);
 export type PaymentTerms = z.infer<typeof PaymentTerms>;
 
-export const StageType = z.enum(['open', 'won', 'lost']);
+// What a stage MEANS, across every object a pipeline can move (docs/144 §7.2).
+// `won`/`lost` are the sales vocabulary; `resolved`/`closed` are the service
+// one — we answered, versus filed and done with. One enum rather than one per
+// object, because everything that reads it asks the same question of either:
+// is this still ours to do?
+export const StageType = z.enum(['open', 'won', 'lost', 'resolved', 'closed']);
 export type StageType = z.infer<typeof StageType>;
+
+/**
+ * Which terminal vocabulary belongs to which object.
+ *
+ * A deal pipeline with a "Resolved" column is a mistake, not a preference: the
+ * forecast counts `won` and the funnel divides by `lost`, so a deal parked on a
+ * stage neither of them recognises silently vanishes from both. The enum above
+ * is deliberately permissive (a tenant-invented object brings its own words);
+ * this is the per-object narrowing the service applies at the boundary.
+ *
+ * An unknown object key gets the full set — we cannot know what a tenant's own
+ * object considers finished, and refusing it would make custom objects
+ * unusable in a pipeline.
+ */
+export const DEAL_STAGE_TYPES: readonly StageType[] = ['open', 'won', 'lost'];
+export const TICKET_STAGE_TYPES: readonly StageType[] = ['open', 'resolved', 'closed'];
+
+export function stageTypesFor(objectKey: string): readonly StageType[] {
+  if (objectKey === 'deal') return DEAL_STAGE_TYPES;
+  if (objectKey === 'ticket') return TICKET_STAGE_TYPES;
+  return StageType.options;
+}
+
+// Service requests (docs/144 §7). Priority selects which SLA target applies, so
+// it is not a decoration — changing it recomputes what was promised.
+export const TicketPriority = z.enum(['low', 'medium', 'high', 'urgent']);
+export type TicketPriority = z.infer<typeof TicketPriority>;
+
+// WHERE the request came from — the first thing a support lead slices by, and
+// the reason the intake can be idempotent (see Ticket.sourceRecordId).
+export const TicketSource = z.enum(['chat', 'email', 'form', 'phone', 'manual', 'api']);
+export type TicketSource = z.infer<typeof TicketSource>;
 
 export const TaskPriority = z.enum(['low', 'medium', 'high', 'urgent']);
 export type TaskPriority = z.infer<typeof TaskPriority>;

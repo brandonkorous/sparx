@@ -62,10 +62,14 @@ export async function summarizeSampleDataOnTx(
   ]);
   // billingDocuments covers quotes too now (quotes are billing documents on the
   // system b2b-quotes workflow) — no separate quotes count.
-  const [aiPrompts, toolCalls, billingDocuments] = await Promise.all([
+  const [aiPrompts, toolCalls, billingDocuments, tickets] = await Promise.all([
     tx.aiPromptTemplate.count({ where: { tenantId, metadata: sampleMeta } }),
     tx.auditLog.count({ where: { tenantId, entityType: 'McpToolCall', diff: sampleMeta } }),
     tx.billingDocument.count({ where: { tenantId, metadata: sampleMeta } }),
+    // Sample requests are the ones tagged `sample` — a ticket has no metadata
+    // column to hide a marker in, and the tag is visible in the queue anyway,
+    // which is honest: a demo row should look like a demo row.
+    tx.ticket.count({ where: { tenantId, tags: { has: 'sample' } } }),
   ]);
   const orders = orderIds.length;
 
@@ -81,6 +85,7 @@ export async function summarizeSampleDataOnTx(
     questions,
     bookings,
     deals,
+    tickets,
     billingDocuments,
     bundles,
     movements,
@@ -104,6 +109,7 @@ export function countsTotal(c: SampleDataCounts): number {
     c.questions +
     c.bookings +
     c.deals +
+    c.tickets +
     c.billingDocuments +
     c.bundles +
     c.movements +

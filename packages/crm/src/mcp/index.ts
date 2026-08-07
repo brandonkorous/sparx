@@ -13,6 +13,7 @@ import { OBJECT_TOOLS } from './object-tools';
 import { ASSOCIATION_TOOLS } from './association-tools';
 import { ENGAGEMENT_TOOLS } from './engagement-tools';
 import { CALL_TOOLS } from './call-tools';
+import { TICKET_TOOLS } from './ticket-tools';
 
 export * from './read-tools';
 export * from './write-tools';
@@ -20,6 +21,7 @@ export * from './object-tools';
 export * from './association-tools';
 export * from './engagement-tools';
 export * from './call-tools';
+export * from './ticket-tools';
 
 /** The full CRM tool set the MCP server publishes. */
 export const crmMcpTools = [
@@ -29,6 +31,7 @@ export const crmMcpTools = [
   ...ASSOCIATION_TOOLS,
   ...ENGAGEMENT_TOOLS,
   ...CALL_TOOLS,
+  ...TICKET_TOOLS,
 ];
 
 // Invoicing (docs/87 §12) — a first-class module with its own scopes, so it ships

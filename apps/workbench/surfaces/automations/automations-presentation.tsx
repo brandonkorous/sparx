@@ -17,6 +17,7 @@ import {
   Filter,
   GitBranch,
   Hourglass,
+  LifeBuoy,
   ListChecks,
   Mail,
   MailPlus,
@@ -364,6 +365,7 @@ export type NodeIconKey =
   | 'field'
   | 'task'
   | 'deal'
+  | 'support'
   | 'mail'
   | 'mail-plus'
   | 'sequence'
@@ -384,6 +386,7 @@ export const NODE_ICONS: Record<NodeIconKey, LucideIcon> = {
   field: PencilLine,
   task: ListChecks,
   deal: GitBranch,
+  support: LifeBuoy,
   mail: Mail,
   'mail-plus': MailPlus,
   sequence: Repeat,
@@ -467,6 +470,7 @@ const ACTION_ICONS: Record<string, NodeIconKey> = {
   'crm.add_note': 'note',
   'crm.update_field': 'field',
   'crm.create_task': 'task',
+  'crm.create_ticket': 'support',
   'crm.update_deal_stage': 'deal',
   'crm.capture_lead': 'task',
   'form.notify': 'mail-plus',

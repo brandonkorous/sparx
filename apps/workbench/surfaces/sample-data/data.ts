@@ -28,6 +28,7 @@ export interface SampleDataCounts {
   questions: number;
   bookings: number;
   deals: number;
+  tickets: number;
   billingDocuments: number;
   bundles: number;
   movements: number;
@@ -118,6 +119,7 @@ export const COUNT_LABELS: readonly { key: keyof SampleDataCounts; label: string
   { key: 'billingDocuments', label: 'Invoices & quotes' },
   { key: 'bookings', label: 'Bookings' },
   { key: 'deals', label: 'Sales leads' },
+  { key: 'tickets', label: 'Support requests' },
   { key: 'articles', label: 'Articles' },
   { key: 'reviews', label: 'Reviews' },
   { key: 'questions', label: 'Questions' },

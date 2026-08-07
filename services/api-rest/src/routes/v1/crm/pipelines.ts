@@ -28,6 +28,15 @@ const StagePathIds = z.object({
 const ListQuery = z.object({
   q: z.string().trim().min(1).max(200).optional(),
   include_archived: z.coerce.boolean().optional(),
+  // Which object's processes (docs/144 §7.2). Omitted means `deal` — every
+  // caller that existed before pipelines became generic meant sales, and a
+  // deal-board stage picker that silently gained "Waiting on Customer" would be
+  // a worse default than a narrow one. `all` genuinely means all of them.
+  object_key: z
+    .string()
+    .regex(/^(all|[a-z][a-z0-9_]*)$/)
+    .max(63)
+    .optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -43,6 +52,7 @@ const pipelineRoutes: FastifyPluginAsync = (app) => {
     const { items, total } = await pipelineService.list(toCrmContext(request), {
       q: q.q,
       includeArchived: q.include_archived,
+      objectKey: q.object_key,
       // Restricted members see only their businesses' pipelines (docs/131 §3.3).
       propertyIds: reachableSiteIds(auth),
       take: q.take,

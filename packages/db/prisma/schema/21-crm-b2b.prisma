@@ -46,6 +46,7 @@ model B2BAccount {
 
   customers  Customer[]
   deals      Deal[]
+  tickets    Ticket[]
   activities CrmActivity[]
 
   // Commerce module inverse relations

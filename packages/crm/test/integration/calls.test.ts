@@ -44,12 +44,25 @@ async function messagesFor(tenantId: string, threadCustomerId: string) {
 }
 
 const FROM = '+15550100000';
+/** The number a second, unrelated site under the same tenant calls from. */
+const OTHER_SITE_FROM = '+15550100001';
+
+/**
+ * The origin resolver most tests want: one number, whatever the site.
+ *
+ * Real callers resolve it from the CUSTOMER'S site — which is the point of the
+ * callback, and has its own tests below.
+ */
+const origin = (fromNumber: string | null = FROM, propertyId: string | null = null) => ({
+  resolveOrigin: () => Promise.resolve(fromNumber ? { fromNumber, propertyId } : null),
+});
 
 describe('callService', () => {
   let test: TestContext;
   let placer: RecordingCallPlacer;
   let customerId: string;
   let silentId: string;
+  let siteCustomerId: string;
 
   beforeAll(async () => {
     test = await makeTestContext('owner');
@@ -72,6 +85,18 @@ describe('callService', () => {
       doNotContact: true,
     });
     silentId = silent.id;
+
+    // A customer belonging to ONE site, as against the global customers above.
+    // Which number rings them is the whole question this fixture exists for.
+    const siteCustomer = await customerService.create(test.ctx, {
+      type: 'retail',
+      email: 'sitebound@customer.test',
+      phone: '+15550107777',
+      firstName: 'Site',
+      lastName: 'Bound',
+      propertyId: test.propertyId,
+    });
+    siteCustomerId = siteCustomer.id;
   });
 
   afterAll(async () => {
@@ -88,7 +113,7 @@ describe('callService', () => {
     const result = await callService.placeCall(
       test.ctx,
       { customerId, fromDeviceNumber: '+15550101111' },
-      { fromNumber: FROM }
+      origin()
     );
 
     expect(result.placed).toBe(true);
@@ -97,9 +122,78 @@ describe('callService', () => {
       bridgeTo: '+15550101111',
       to: '+15550109999',
       from: FROM,
+      propertyId: null,
     });
     expect(result.call.status).toBe('ringing');
     expect(result.call.direction).toBe('out');
+  });
+
+  it('calls a site’s customer from that site’s own number', async () => {
+    // A tenant can run two unrelated businesses under one account, each with its
+    // own number. Dialling a customer of one from the other's number reaches
+    // them as a business they have never heard of — so the site the customer
+    // belongs to is what decides the caller ID, not the tenant's default.
+    const seen: (string | null)[] = [];
+    const placed = await callService.placeCall(
+      test.ctx,
+      { customerId: siteCustomerId, fromDeviceNumber: '+15550101111' },
+      {
+        resolveOrigin: (customerPropertyId) => {
+          seen.push(customerPropertyId);
+          return Promise.resolve(
+            customerPropertyId === test.propertyId
+              ? { fromNumber: FROM, propertyId: test.propertyId }
+              : { fromNumber: OTHER_SITE_FROM, propertyId: 'some-other-site' }
+          );
+        },
+      }
+    );
+
+    expect(seen).toEqual([test.propertyId]);
+    expect(placed.call.fromNumber).toBe(FROM);
+    // And the placer is told which site, so the credentials it decrypts belong
+    // to the account that owns that number.
+    expect(placer.placed[0]?.propertyId).toBe(test.propertyId);
+  });
+
+  it('leaves the site open for a global customer, and calls from whichever answers', async () => {
+    // A customer with no site of their own is GLOBAL — shared across every site
+    // (docs/58 D2) — not a customer whose site is unknown. So the service must
+    // hand the caller a null and let it decide, rather than assuming the
+    // tenant-wide number: the REST route answers with the site the operator is
+    // working in, which is the only number that means anything to that person.
+    const placed = await callService.placeCall(
+      test.ctx,
+      { customerId, fromDeviceNumber: '+15550101111' },
+      {
+        resolveOrigin: (customerPropertyId) => {
+          expect(customerPropertyId).toBeNull();
+          return Promise.resolve({ fromNumber: OTHER_SITE_FROM, propertyId: test.propertyId });
+        },
+      }
+    );
+
+    // The ORIGIN's site reaches the placer, not the customer's null — they are
+    // different here, and the credentials must follow the number.
+    expect(placed.call.fromNumber).toBe(OTHER_SITE_FROM);
+    expect(placer.placed[0]?.propertyId).toBe(test.propertyId);
+  });
+
+  it('refuses when the customer’s site has no phone system connected', async () => {
+    // Nothing is written: a call that could never be placed is not an attempt
+    // somebody made, and a row would show a failure the tenant did not cause.
+    const before = await callService.listFor(test.ctx, { customerId });
+    await expect(
+      callService.placeCall(
+        test.ctx,
+        { customerId, fromDeviceNumber: '+15550101111' },
+        origin(null)
+      )
+    ).rejects.toThrow(/no phone system is connected for this site/i);
+
+    expect(placer.placed).toHaveLength(0);
+    const after = await callService.listFor(test.ctx, { customerId });
+    expect(after.length).toBe(before.length);
   });
 
   it('does not write a timeline entry until the call has ended', async () => {
@@ -107,7 +201,7 @@ describe('callService', () => {
     await callService.placeCall(
       test.ctx,
       { customerId, fromDeviceNumber: '+15550101111' },
-      { fromNumber: FROM }
+      origin()
     );
     const after = await activitiesFor(test.ctx.tenantId, customerId);
     // A call that is still ringing is not yet a conversation. Recording one
@@ -120,7 +214,7 @@ describe('callService', () => {
       callService.placeCall(
         test.ctx,
         { customerId: silentId, fromDeviceNumber: '+15550101111' },
-        { fromNumber: FROM }
+        origin()
       )
     ).rejects.toThrow(/asked not to be contacted/i);
     expect(placer.placed).toHaveLength(0);
@@ -133,7 +227,7 @@ describe('callService', () => {
     const result = await callService.placeCall(
       test.ctx,
       { customerId, fromDeviceNumber: '+15550101111' },
-      { fromNumber: FROM }
+      origin()
     );
     expect(result.placed).toBe(false);
     // `failed` from the start — there is nothing to wait for, and leaving it
@@ -145,7 +239,7 @@ describe('callService', () => {
     const placed = await callService.placeCall(
       test.ctx,
       { customerId, fromDeviceNumber: '+15550101111' },
-      { fromNumber: FROM }
+      origin()
     );
 
     const finished = await callService.recordStatus(test.ctx, {
@@ -170,7 +264,7 @@ describe('callService', () => {
     const placed = await callService.placeCall(
       test.ctx,
       { customerId, fromDeviceNumber: '+15550101111' },
-      { fromNumber: FROM }
+      origin()
     );
     await callService.recordStatus(test.ctx, {
       providerCallId: placed.call.providerCallId ?? '',
@@ -187,7 +281,7 @@ describe('callService', () => {
     const placed = await callService.placeCall(
       test.ctx,
       { customerId, fromDeviceNumber: '+15550101111' },
-      { fromNumber: FROM }
+      origin()
     );
     const update = {
       providerCallId: placed.call.providerCallId ?? '',
@@ -219,7 +313,7 @@ describe('callService', () => {
     const placed = await callService.placeCall(
       test.ctx,
       { customerId, fromDeviceNumber: '+15550101111' },
-      { fromNumber: FROM }
+      origin()
     );
     // A six-second "completed" call is a voicemail greeting about as often as it
     // is a very short conversation, so the provider's guess must be correctable.
@@ -263,7 +357,7 @@ describe('callService', () => {
       callService.placeCall(
         test.ctx,
         { customerId: noPhone.id, fromDeviceNumber: '+15550101111' },
-        { fromNumber: FROM }
+        origin()
       )
     ).rejects.toThrow(/no phone number/i);
   });

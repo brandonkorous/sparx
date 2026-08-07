@@ -64,6 +64,7 @@ model User {
   assignedCustomers        Customer[]                @relation("CustomerAssignedRep")
   assignedB2bAccounts      B2BAccount[]              @relation("B2BAccountAssignedRep")
   assignedDeals            Deal[]                    @relation("DealAssignedRep")
+  assignedTickets          Ticket[]                  @relation("TicketAssignedTo")
   assignedTasks            Task[]                    @relation("TaskAssignedTo")
   createdTasks             Task[]                    @relation("TaskCreatedBy")
   completedTasks           Task[]                    @relation("TaskCompletedBy")

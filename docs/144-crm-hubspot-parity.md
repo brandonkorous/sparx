@@ -1,17 +1,18 @@
 # 144 — CRM: from 5 to 10
 
-Version: 0.3 (phase 3 complete; mailbox sync is IMAP/SMTP only)
+Version: 0.4 (phase 4 complete; tickets, SLA and intake routing)
 Author: Brandon Korous
-Last Updated: 2026-08-06
+Last Updated: 2026-08-07
 
 > **Status: IN PROGRESS.** This is the implementation plan for closing the gap between the sparx CRM
 > as it stands today and a CRM that beats HubSpot on every axis a small business can see. §2 is an
 > audit of what already existed when the plan was written and is deliberately specific, because most
 > of this plan is _extending_ working machinery rather than starting anything.
 >
-> **Phases 0–3 are built.** One decision in §5.2 was reversed during the build and the section below
-> records it: sparx connects mailboxes over **IMAP/SMTP only**, never the Gmail API or Microsoft
-> Graph. §14.1 is the first thing to read before picking this up again.
+> **Phases 0–4 are built.** Two decisions were reversed during the build and both sections record
+> it: sparx connects mailboxes over **IMAP/SMTP only**, never the Gmail API or Microsoft Graph
+> (§5.2), and a support promise carries its **own** business-hours calendar rather than reusing the
+> Scheduling module's (§7.3). §14.1 is the first thing to read before picking this up again.
 
 ---
 
@@ -449,9 +450,21 @@ work on tickets the day this lands, because both are parameterised by object.
 ### 7.3 SLA
 
 `TicketSlaPolicy` — first-response and resolution targets per priority, evaluated against **business
-hours** rather than wall clock by reusing the scheduling module's `AvailabilityWindow`. Breach and
-approaching-breach fire events, which the automation engine can act on and the ticket list colours
-by. A ticket at 80% of its clock is amber; a breached one is danger — colour carries it (RULE #4).
+hours** rather than wall clock. Breach and approaching-breach fire events, which the automation
+engine can act on and the ticket list colours by. A ticket at 80% of its clock is amber; a breached
+one is danger — colour carries it (RULE #4).
+
+**Correction to this plan, made while building it.** The line above originally said the business
+hours would come from reusing the scheduling module's `AvailabilityWindow`. That is the wrong table:
+an availability window hangs off a `SchedulingResource`, so reusing it would make "we answer support
+within four hours" depend on the **Scheduling module being switched on** and a bookable resource
+existing. Modules are independent and never default on, and a CRM-only tenant has neither. They are
+also different facts — when the support desk is staffed is not when bay 2 can be booked. The policy
+therefore carries its **own** calendar (weekly windows + IANA timezone + holidays).
+
+What IS shared is the arithmetic underneath, extracted to **`@sparx/time`**: two unrelated promises
+in this platform are stated in local time and stored as UTC instants, both have to survive daylight
+saving, and a DST bug fixed in one copy would still be a bug in the other.
 
 ### 7.4 Routing
 
@@ -615,14 +628,27 @@ re-read eleven sections to find out. **Read this before picking the work up agai
 | **1**   | ✅    | ✅                               | `20270207000000_crm_custom_properties`                                                              |
 | **2**   | ✅    | ❌ **never driven in a browser** | `20270208000000_crm_associations`                                                                   |
 | **3**   | ✅    | ❌ **never driven in a browser** | `20270209000000_crm_engagement`, `20270210000000_crm_mailbox_imap_only`, `20270211000000_crm_calls` |
-| **4–7** | ❌    | —                                | —                                                                                                   |
+| **4**   | ✅    | ❌ **never driven in a browser** | `20270212000000_crm_tickets`                                                                        |
+| **5–7** | ❌    | —                                | —                                                                                                   |
 
 **THE BROWSER COLUMN IS THE MOST IMPORTANT ONE HERE.** The phase 0/1 browser pass found **six bugs
 with typecheck and the full test suite green the whole time** — one of which left Save permanently
-disabled and made the headline feature of phase 1 completely unusable. Phases 2 and 3 have tests and
-have never been driven by hand: associations, the mailbox connect flow, and click-to-call are all
-unverified that way. Treat their scores below as provisional, and strongly prefer a browser pass
-over 2 and 3 before building three more phases on top of them.
+disabled and made the headline feature of phase 1 completely unusable. Phases 2, 3 and 4 have tests
+and have never been driven by hand: associations, the mailbox connect flow, click-to-call, the
+support queue, the request pane and the response-times editor are all unverified that way. Treat
+their scores below as provisional.
+
+**THE AGREED NEXT STEP IS THAT BROWSER PASS, BEFORE PHASE 5** (decided 2026-08-07). Load sample data
+into the demo tenant first: the support slice writes five requests deliberately spread across
+breached / amber / unclaimed / waiting-on-customer / resolved, so the queue's colour logic and the
+`due_asc` ordering have something real to show. An empty queue verifies nothing, and the whole point
+of that surface is the spread.
+
+Worth checking specifically, because tests cannot see any of it: that the queue's colour reads
+correctly across a room; that the stage picker on a request offers the SUPPORT stages and not the
+sales ones; that moving to Resolved stops the clock in the toolbar; that the response-times editor
+round-trips a weekly pattern without losing a day; and that replying from a request marks it as
+answered rather than leaving it going red.
 
 ### Where the score actually sits
 
@@ -642,22 +668,27 @@ unrelated. What remains is three areas that do not exist AT ALL rather than area
 | Quotes, invoicing & AR | 9     | 9      | 10        | e-sign (§12)                           |
 | Lists & segmentation   | 7     | 8      | 10        | static lists, membership history (§10) |
 | Extensibility          | 1     | 7      | 10        | custom-object surfaces (§3.6)          |
-| Workflows / automation | 6     | **6**  | 9         | phase 6 untouched                      |
+| Workflows / automation | 6     | 7      | 9         | phase 6 (intake routing landed)        |
 | Companies              | 5     | **5**  | 9         | phase 7 untouched                      |
 | Reporting & dashboards | 3     | **3**  | 9         | phase 5 untouched                      |
-| Service / tickets      | 0     | **0**  | 9         | phase 4 untouched                      |
-| **Weighted overall**   | **5** | **~7** | **10**    |                                        |
+| Service / tickets      | 0     | 9      | 9         | — done, unverified in a browser        |
+| **Weighted overall**   | **5** | **~8** | **10**    |                                        |
 
-Verified absent as of this checkpoint (grepped, not assumed): no `Ticket` model or service, no report
-builder or dashboard service, no saved views. **Reporting is the one a business owner notices
-fastest** — they can now record everything and still cannot ask a question of it.
+Verified absent as of this checkpoint (grepped, not assumed): no report builder or dashboard
+service, no saved views. **Reporting is now the single biggest gap, and the one a business owner
+notices fastest** — they can record everything and still cannot ask a question of it.
 
-At this checkpoint, with all migrations applied and the client regenerated: `@sparx/crm` 35 files /
-**262 tests**, `crm-schemas` 36, `field-schema` 34, `voice` 11, `links` 26. Repo-wide **typecheck
-99/99 packages** and **lint 96/96** clean. Two pre-push blockers at the time of writing belong to a
-PARALLEL agent's in-flight work and not to this plan: `format:check` on `marketplace-catalog/*` +
-`silica-catalog/src/embed.test.ts`, and `blueprint-bundles.test.ts` failing on the untracked
-`sparx-artist-media` blueprint's empty `media/` directory.
+At this checkpoint, with all migrations applied and the client regenerated: `@sparx/crm` 37 files /
+**322 tests**, `crm-schemas` 38, `field-schema` 34, `voice` 11, `links` 26, `time` (pure re-export
+of what scheduling's 109 tests already cover). Repo-wide **typecheck 100/100**, **lint 97/97**,
+`format:check` clean, the full suite **91/91 tasks** green under `CI=true`, all four structural
+checks passing, and the RLS audit clean across **345 tables (313 tenant-scoped)**.
+
+Of phase 4's 57 new tests, 32 are the pure clock (both DST boundaries) and 25 are integration
+against the real schema — the second set matters more, because it is the only thing that has ever
+executed `ticketService` and `ticketSlaSweep`. Writing it found nothing in the product and three
+faults in the tests themselves, all the same one: they share a tenant, and a policy promoted to
+default in one test legitimately changes what the next test is measured against.
 
 **Phase 0** shipped a generic `RecordBoard<T>` (`apps/workbench/components/record-board.tsx`) rather
 than a deal-specific one, so §7's ticket board is a parameterisation rather than a second board.
@@ -700,6 +731,36 @@ beside it. Then the two halves that were outstanding:
   id, and the outcome is **correctable**, because a six-second "completed" call is a voicemail
   greeting about as often as it is a conversation. Recording is off by default and stays that way.
 
+**Phase 4.** The intake finally has somewhere to go. Five things are worth knowing before touching
+it again:
+
+- **A ticket has no status column.** Its state is the pipeline stage it sits on, so `moveStage` is
+  the only sanctioned state change — it stamps `resolved_at`/`closed_at`, writes the timeline entry
+  and emits the event a tenant's rules fire on, and a plain field write would skip all three. That
+  is the same guard `dealService` carries, for the same reason. `Pipeline.objectKey` is what makes
+  it possible: the board and the funnel report work on tickets unchanged, and a deal pipeline is
+  refused a `resolved` stage (`stageTypesFor`) because a deal on one vanishes from the forecast and
+  the funnel's denominator at once — silently, and only in the reports.
+- **The clock is resolved once, at creation**, and stored as four absolute instants (due + warn, per
+  promise). Never recomputed on read: a policy edited in March must not move what was promised in
+  February. Re-prioritising DOES re-promise — measured from when the request arrived, not from the
+  escalation, because restarting the clock would reward being slow to notice. The warn instants are
+  stored rather than derived, because 80% of a business-hours budget is not 80% of the wall-clock
+  interval it spans; a sweep deriving it would be quietly wrong on every overnight request.
+- **`sla-clock.ts` is pure and carries 32 tests**, including both DST boundaries. It counts in real
+  elapsed milliseconds between UTC instants rather than in local minute arithmetic, which is what
+  makes a desk open 9–5 across a spring-forward day come out as seven real hours.
+- **The sweep is idempotent by construction** — every query carries a "not already announced" guard
+  and the statement that stamps the row is the same one that claims it, so an overlapping run or a
+  pod that dies halfway announces nothing twice. Breaches are checked before warnings, so a request
+  that crossed both marks between two runs is reported as breached rather than twice.
+- **Routing is the tenant's, not ours.** One `crm.create_ticket` action serves chat, forms and
+  inbound email — the difference is the trigger, not what happens next — and it dedupes on the
+  origin id (`crm_tickets_source_record_key`), because automations retry and "fires twice on one
+  conversation" is the normal case. Answering on a request's thread is what records the first
+  response; a "mark as responded" button would be forgotten on exactly the days a queue is busy
+  enough for it to matter.
+
 **What needs a person, not code:**
 
 - New env keys, both optional and both inert when unset: `CRM_MAILBOX_TOKEN_KEY` (encrypts the app
@@ -709,6 +770,10 @@ beside it. Then the two halves that were outstanding:
   a tenant owns.
 - `k8s/cronjobs/crm-mailbox-sync.yaml` is the ONLY thing that brings inbound mail onto a timeline.
   Nothing arrives if it is not deployed.
+- `k8s/cronjobs/crm-sla-sweep.yaml` is the ONLY thing that notices a response promise is about to be
+  missed. Without it every due date in `crm_tickets` is a number in a column nobody reads, and the
+  two `crm.ticket.sla.*` topics never fire.
+- Nothing else. `20270212000000_crm_tickets` is applied and the client regenerated.
 
 ## 15. The scorecard, after
 

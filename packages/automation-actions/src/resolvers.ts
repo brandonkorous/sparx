@@ -341,6 +341,53 @@ async function hydrateEmailEngagement(
   return fields;
 }
 
+// ─── inbound engagement — a customer wrote to us (event) ─────────────────────
+//
+// `crm.engagement.received` carries { threadId, messageId, customerId } (the
+// engagement service publishes exactly these — packages/crm engagement-service).
+// This is what makes "when a customer emails us, open a support request" a rule
+// a tenant can write rather than behaviour we hardcode (docs/144 §7.4).
+//
+// THE THREAD IS THE ENTITY, not the message. A customer who sends three emails
+// about one problem before anyone replies should produce one request, so the
+// thread id is what the intake dedupes on — see `originOf` in ./crm.ts.
+
+async function hydrateInboundEngagement(
+  ctx: TenantCtx,
+  threadId: string,
+  payload: Record<string, unknown>
+): Promise<ResolvedFields> {
+  const thread = await ctx.tx.engagementThread.findUnique({
+    where: { id: threadId },
+    select: { id: true, subject: true, customerId: true, dealId: true, ticketId: true },
+  });
+  if (!thread) return {};
+
+  const messageId = typeof payload.messageId === 'string' ? payload.messageId : null;
+  const message = messageId
+    ? await ctx.tx.engagementMessage.findUnique({
+        where: { id: messageId },
+        select: { bodyText: true, fromAddress: true, sentAt: true },
+      })
+    : null;
+
+  return {
+    'engagement.threadId': thread.id,
+    'engagement.messageId': messageId,
+    'engagement.subject': thread.subject,
+    'engagement.fromAddress': message?.fromAddress ?? null,
+    // A short excerpt, not the whole body: this becomes a request's description
+    // and lands in condition evaluation, and a 40kB email in either place is a
+    // performance problem rather than useful context.
+    'engagement.preview': message?.bodyText ? message.bodyText.slice(0, 2000) : null,
+    'engagement.receivedAt': message?.sentAt?.toISOString() ?? null,
+    // Already filed against a request — lets a rule say "only open one if there
+    // isn't one already", on top of the intake's own idempotency.
+    'engagement.ticketId': thread.ticketId,
+    ...(await resolveContact(ctx, { customerId: thread.customerId })),
+  };
+}
+
 // ─── chat conversation (event + scan) ─────────────────────────────────────────
 
 const CONVERSATION_SELECT = {
@@ -857,6 +904,11 @@ export function installEntityResolvers(): void {
   for (const ev of FORM_EVENTS) {
     registerResolver(ev, byId(['submissionId', 'id'], hydrateFormSubmission));
   }
+
+  // A customer wrote to us (docs/144 §5, §7.4). The trigger behind "when
+  // somebody emails support, open a request" — which is a rule the tenant
+  // writes, not behaviour the platform imposes on every inbound message.
+  registerResolver('crm.engagement.received', byId(['threadId', 'id'], hydrateInboundEngagement));
 
   // Task created (docs/11) — crm.* tees to the automation fan-in via the CRM bus.
   // The payload is thin ({ taskId, ... }); hydrateTask re-reads the row for the

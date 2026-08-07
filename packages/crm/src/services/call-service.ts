@@ -46,7 +46,22 @@ import { CrmNotFoundError, CrmValidationError } from '../errors';
  * vendor up, and the delivery path can change without a service rewrite.
  */
 export interface CallPlacer {
-  place(params: { tenantId: string; to: string; from: string; bridgeTo: string }): Promise<{
+  place(params: {
+    tenantId: string;
+    /**
+     * The site the customer belongs to, so the phone system used is the one
+     * THAT site connected — falling back to the tenant-wide one when it has
+     * none of its own. Null for a customer that is not site-scoped.
+     *
+     * A tenant running two unrelated businesses has two numbers, and dialling a
+     * customer of one from the other's number is a call they will not recognise
+     * and may not answer.
+     */
+    propertyId: string | null;
+    to: string;
+    from: string;
+    bridgeTo: string;
+  }): Promise<{
     success: boolean;
     providerCallId?: string;
     provider?: string;
@@ -74,17 +89,32 @@ export function setCallPlacer(placer: CallPlacer): void {
 
 /** Records what it was asked to dial, for tests. */
 export class RecordingCallPlacer implements CallPlacer {
-  readonly placed: { to: string; from: string; bridgeTo: string }[] = [];
+  readonly placed: {
+    to: string;
+    from: string;
+    bridgeTo: string;
+    propertyId: string | null;
+  }[] = [];
   private sequence = 0;
 
   constructor(private readonly result: { success: boolean } = { success: true }) {}
 
-  place(params: { to: string; from: string; bridgeTo: string }): Promise<{
+  place(params: {
+    to: string;
+    from: string;
+    bridgeTo: string;
+    propertyId: string | null;
+  }): Promise<{
     success: boolean;
     providerCallId?: string;
     provider?: string;
   }> {
-    this.placed.push({ to: params.to, from: params.from, bridgeTo: params.bridgeTo });
+    this.placed.push({
+      to: params.to,
+      from: params.from,
+      bridgeTo: params.bridgeTo,
+      propertyId: params.propertyId,
+    });
     this.sequence += 1;
     return Promise.resolve({
       ...this.result,
@@ -142,6 +172,45 @@ export interface PlaceCallResult {
   error?: string;
 }
 
+/** Which number a call goes out on, and which site owns it. */
+export interface CallOrigin {
+  /** The tenant's own number, in E.164 — what the customer sees ring. */
+  fromNumber: string;
+  /**
+   * The site that number belongs to, which is NOT always the customer's own.
+   *
+   * Returned rather than assumed so the placer decrypts the credentials of the
+   * account that owns this number. Resolving the number from one site and the
+   * vendor account from another is how a call goes out with a caller ID the
+   * account has no claim to — which carriers drop.
+   */
+  propertyId: string | null;
+}
+
+export interface PlaceCallOptions {
+  /**
+   * Which number to call FROM, given the site the customer belongs to.
+   * Null when no phone system can be reached for them at all.
+   *
+   * A CALLBACK RATHER THAN A VALUE because the site is not knowable until the
+   * customer has been read, and the customer is read here. A caller that
+   * resolved a number up front would have to load the customer a second time to
+   * know which site to resolve for — and, having no reason to, would resolve the
+   * tenant-wide one and dial every site's customers from the same number. That
+   * is the bug this shape removes.
+   *
+   * `customerPropertyId` IS NULL FOR A GLOBAL CUSTOMER — one deliberately shared
+   * across every site (docs/58 D2), not one whose site is unknown. So null means
+   * "you decide", and a caller with an active site should answer with THAT
+   * site's number: the person dialling is working in a site, and the customer
+   * belongs to all of them equally.
+   *
+   * The credential itself stays outside this package — the caller returns a
+   * number, never a token.
+   */
+  resolveOrigin(customerPropertyId: string | null): Promise<CallOrigin | null>;
+}
+
 /**
  * Ring the rep, then bridge them to the customer.
  *
@@ -152,7 +221,7 @@ export interface PlaceCallResult {
 export async function placeCall(
   ctx: ServiceContext,
   rawInput: unknown,
-  options: { fromNumber: string }
+  options: PlaceCallOptions
 ): Promise<PlaceCallResult> {
   const input = PlaceCallInput.parse(rawInput);
 
@@ -183,13 +252,28 @@ export async function placeCall(
     return { id: customer.id, phone: customer.phone, propertyId: customer.propertyId };
   });
 
+  // Resolved for the CUSTOMER'S site, not the tenant's default — see
+  // PlaceCallOptions. Nothing has been written at this point, so refusing here
+  // leaves no half-placed call behind.
+  const origin = await options.resolveOrigin(target.propertyId);
+  if (!origin) {
+    throw new CrmValidationError(
+      'No phone system is connected for this site, so sparx cannot place the call. You can still log a call you made yourself.',
+      [{ field: 'customerId', message: 'No phone system is connected for this site.' }]
+    );
+  }
+
   // Placed BEFORE the row is written, because the provider's call id is what
   // every later webhook arrives with — and a row without it could never be
   // matched to the call it represents.
+  //
+  // The site passed on is the ORIGIN'S, not the customer's: it is the one whose
+  // vendor account owns `from`, and those two must be the same account.
   const outcome = await activePlacer.place({
     tenantId: ctx.tenantId,
+    propertyId: origin.propertyId,
     to: target.phone,
-    from: options.fromNumber,
+    from: origin.fromNumber,
     bridgeTo: input.fromDeviceNumber,
   });
 
@@ -202,7 +286,7 @@ export async function placeCall(
         dealId: input.dealId ?? null,
         ticketId: input.ticketId ?? null,
         direction: 'out',
-        fromNumber: options.fromNumber,
+        fromNumber: origin.fromNumber,
         toNumber: target.phone,
         // A refused call is `failed` from the start: there is nothing to wait
         // for, and leaving it `placing` would show a call ringing forever.

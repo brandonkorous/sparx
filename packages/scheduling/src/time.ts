@@ -61,92 +61,12 @@ export function subtractIntervals(base: Interval[], cuts: Interval[]): Interval[
 
 // ── Time-zone resolution ────────────────────────────────────────────────────
 // Availability windows are authored in the resource's LOCAL wall-clock time
-// (minutes from local midnight); bookings are stored as UTC instants. These two
-// helpers bridge the two DST-correctly using the platform Intl tz database — no
-// external date library.
+// (minutes from local midnight); bookings are stored as UTC instants.
+//
+// THESE NOW LIVE IN @sparx/time. They were written here because scheduling was
+// the only thing that needed them; CRM service-level agreements (docs/144 §7.3)
+// are the second consumer, and a DST bug fixed in one copy of this arithmetic
+// would still be a DST bug in the other. Re-exported rather than moved-and-
+// rewritten so every existing `from './time'` import keeps working.
 
-/** Offset (ms) to ADD to a UTC instant to get the wall-clock reading in `tz`. */
-export function tzOffsetMs(utcMs: number, tz: string): number {
-  const dtf = new Intl.DateTimeFormat('en-US', {
-    timeZone: tz,
-    hour12: false,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  });
-  const parts = dtf.formatToParts(new Date(utcMs));
-  const get = (t: string): number => Number(parts.find((p) => p.type === t)?.value);
-  let hour = get('hour');
-  if (hour === 24) hour = 0; // some engines emit 24 for midnight
-  const asIfUtc = Date.UTC(
-    get('year'),
-    get('month') - 1,
-    get('day'),
-    hour,
-    get('minute'),
-    get('second')
-  );
-  return asIfUtc - utcMs;
-}
-
-/** Convert a local wall time (calendar Y/M/D + minutes-from-midnight in `tz`) to
- *  the UTC epoch ms. Two-pass offset resolution handles DST except the ~1
- *  ambiguous/nonexistent hour at a transition (acceptable for v1 scheduling). */
-export function localWallToUtc(
-  year: number,
-  month1: number, // 1-12
-  day: number,
-  minuteOfDay: number,
-  tz: string
-): number {
-  const naiveUtc = Date.UTC(year, month1 - 1, day, Math.floor(minuteOfDay / 60), minuteOfDay % 60);
-  const off1 = tzOffsetMs(naiveUtc, tz);
-  const guess = naiveUtc - off1;
-  const off2 = tzOffsetMs(guess, tz);
-  return naiveUtc - off2;
-}
-
-/** The calendar Y/M/D + weekday (0=Sun..6=Sat) of a UTC instant, read in `tz`. */
-export function localCalendarParts(
-  utcMs: number,
-  tz: string
-): { year: number; month1: number; day: number; weekday: number } {
-  const local = new Date(utcMs + tzOffsetMs(utcMs, tz));
-  return {
-    year: local.getUTCFullYear(),
-    month1: local.getUTCMonth() + 1,
-    day: local.getUTCDate(),
-    weekday: local.getUTCDay(),
-  };
-}
-
-/** Iterate calendar days (as local Y/M/D + weekday) spanned by [fromUtc, toUtc]
- *  in `tz`. Used to expand weekly availability windows over a query range. */
-export function eachLocalDay(
-  fromUtc: number,
-  toUtc: number,
-  tz: string
-): { year: number; month1: number; day: number; weekday: number }[] {
-  const out: { year: number; month1: number; day: number; weekday: number }[] = [];
-  // Step a day at a time from the local date of `from` to the local date of `to`.
-  const start = localCalendarParts(fromUtc, tz);
-  let cursor = Date.UTC(start.year, start.month1 - 1, start.day);
-  const endParts = localCalendarParts(toUtc, tz);
-  const endUtcDay = Date.UTC(endParts.year, endParts.month1 - 1, endParts.day);
-  // Guard against pathological ranges.
-  let guard = 0;
-  while (cursor <= endUtcDay && guard++ < 1000) {
-    const d = new Date(cursor);
-    out.push({
-      year: d.getUTCFullYear(),
-      month1: d.getUTCMonth() + 1,
-      day: d.getUTCDate(),
-      weekday: d.getUTCDay(),
-    });
-    cursor += 24 * 60 * 60 * 1000;
-  }
-  return out;
-}
+export { tzOffsetMs, localWallToUtc, localCalendarParts, eachLocalDay } from '@sparx/time';

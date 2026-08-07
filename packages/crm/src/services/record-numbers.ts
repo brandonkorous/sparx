@@ -23,6 +23,19 @@ export async function nextOrderNumber(tx: TxClient, tenantId: string): Promise<s
   return formatNumber(ORDER_PREFIX, count + 1);
 }
 
+// ── Service requests (docs/144 §7) ──────────────────────────────────────────
+// A ticket number is an INTEGER, not a prefixed string: people say "ticket
+// 1042" out loud and type it into a search box, and `T-001042` is three extra
+// characters to get wrong every time. Same count-and-retry scheme as orders,
+// with the (tenant_id, number) unique index as the collision backstop.
+
+export async function nextTicketNumber(tx: TxClient, tenantId: string): Promise<number> {
+  // Deleted tickets are COUNTED. Skipping them would re-issue a number that a
+  // customer may already have in an email, and a gap costs nothing.
+  const count = await tx.ticket.count({ where: { tenantId } });
+  return count + 1;
+}
+
 // ── Invoicing module billing documents (docs/87 §9) ──────────────────────────
 // A billing document carries ONE stable per-tenant sequence for life. The
 // human-facing number swaps prefix as the document advances (EST-000123 →

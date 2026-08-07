@@ -58,6 +58,10 @@ function pipelinePreset(spec: {
       const pipelineInput: CreatePipelineInput = {
         name: spec.name,
         slug: spec.slug,
+        // Every preset pipeline is a SALES process (docs/144 §7.2). Stated
+        // rather than left to the schema default because `CreatePipelineInput`
+        // is the PARSED type, where a defaulted field is already resolved.
+        objectKey: 'deal',
         isDefault: false,
         sortOrder: 0,
       };

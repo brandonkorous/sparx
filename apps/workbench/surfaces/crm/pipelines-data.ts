@@ -41,6 +41,8 @@ export interface Pipeline {
   id: string;
   name: string;
   slug: string;
+  /** What this process moves (docs/144 §7.2) — `deal` or `ticket`. */
+  objectKey: string;
   isDefault: boolean;
   sortOrder: number;
   archivedAt: string | null;
@@ -52,6 +54,9 @@ export interface Pipeline {
 export interface PipelineListParams {
   q?: string;
   includeArchived?: boolean;
+  /** Which object's processes to list. Omitted means sales deals — the meaning
+   *  every caller had before pipelines became generic. `'all'` for both. */
+  objectKey?: string;
 }
 
 export const pipelineKeys = {
@@ -60,11 +65,32 @@ export const pipelineKeys = {
   detail: (id: string) => [...pipelineKeys.all, id] as const,
 };
 
-export const STAGE_TYPES: { value: StageType; label: string }[] = [
+/**
+ * What a stage can MEAN, per kind of process (docs/144 §7.2).
+ *
+ * Split by object rather than offered as one list: a sales pipeline with a
+ * "Resolved" column is a mistake the server refuses, and offering it in the
+ * dropdown first would just be a slower way of finding that out.
+ */
+export const DEAL_STAGE_TYPES: { value: StageType; label: string }[] = [
   { value: 'open', label: 'In progress' },
   { value: 'won', label: 'Won' },
   { value: 'lost', label: 'Lost' },
 ];
+
+export const TICKET_STAGE_TYPES: { value: StageType; label: string }[] = [
+  { value: 'open', label: 'Still open' },
+  { value: 'resolved', label: 'Sorted out' },
+  { value: 'closed', label: 'Filed away' },
+];
+
+export function stageTypesFor(objectKey: string): { value: StageType; label: string }[] {
+  return objectKey === 'ticket' ? TICKET_STAGE_TYPES : DEAL_STAGE_TYPES;
+}
+
+/** The sales vocabulary, kept under its old name so existing callers read
+ *  unchanged. New code should ask `stageTypesFor` what this process uses. */
+export const STAGE_TYPES = DEAL_STAGE_TYPES;
 
 export function stageTypeMeta(type: string): {
   label: string;
@@ -72,6 +98,11 @@ export function stageTypeMeta(type: string): {
 } {
   if (type === 'won') return { label: 'Won', tone: 'success' };
   if (type === 'lost') return { label: 'Lost', tone: 'danger' };
+  // A request that is sorted is a good outcome, same as a deal that is won —
+  // and one that is merely filed away is neither good nor bad, which is what
+  // makes it the earned kind of neutral.
+  if (type === 'resolved') return { label: 'Sorted out', tone: 'success' };
+  if (type === 'closed') return { label: 'Filed away', tone: 'info' };
   return { label: 'In progress', tone: 'info' };
 }
 
@@ -84,6 +115,7 @@ export function usePipelines(params: PipelineListParams = {}) {
       api.list<Pipeline>('/v1/crm/pipelines', {
         ...(params.q?.trim() ? { q: params.q.trim() } : {}),
         ...(params.includeArchived ? { include_archived: true } : {}),
+        ...(params.objectKey ? { object_key: params.objectKey } : {}),
         take: 100,
       }),
     placeholderData: (previous) => previous,

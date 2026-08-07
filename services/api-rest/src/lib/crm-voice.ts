@@ -140,11 +140,16 @@ export async function providerFor(
  * Resolves the tenant's own vendor per call rather than caching one: a tenant
  * can rotate their token or change their number at any moment, and a cached
  * provider would keep dialling from the old one until the pod restarted.
+ *
+ * `propertyId` is the CUSTOMER'S site, handed down by the call service, so the
+ * credentials used are the ones belonging to the number the call goes out on.
+ * Resolving with `null` here would decrypt the tenant-wide account and dial
+ * from a site-specific caller ID it does not own.
  */
 export function installCallPlacer(): void {
   callService.setCallPlacer({
-    place: async ({ tenantId, to, from, bridgeTo }) => {
-      const { provider } = await providerFor(tenantId, null);
+    place: async ({ tenantId, propertyId, to, from, bridgeTo }) => {
+      const { provider } = await providerFor(tenantId, propertyId);
       const token = await signCallStatusToken(tenantId);
       const result = await provider.place({
         to,

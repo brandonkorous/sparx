@@ -41,7 +41,7 @@ import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { SLUG_RE, slugify } from './segment-rules';
 import {
-  STAGE_TYPES,
+  stageTypesFor,
   pipelineErrorMessage,
   stageTypeMeta,
   useArchivePipeline,
@@ -407,6 +407,11 @@ function PipelineEditor({
                     <StageRow
                       key={stage.id}
                       pipelineId={id}
+                      // `deal` while the pipeline is still loading: the stage
+                      // list is empty then, so this maps over nothing and the
+                      // fallback never actually renders — it just keeps the
+                      // picker from ever being handed `undefined`.
+                      objectKey={pipeline?.objectKey ?? 'deal'}
                       stage={stage}
                       isFirst={index === 0}
                       isLast={index === stages.length - 1}
@@ -455,6 +460,7 @@ function PipelineEditor({
 
 function StageRow({
   pipelineId,
+  objectKey,
   stage,
   isFirst,
   isLast,
@@ -465,6 +471,11 @@ function StageRow({
   onMoveDown,
 }: {
   pipelineId: string;
+  /** What this pipeline moves (docs/144 §7.2). Decides which terminal words the
+   *  "Means" picker offers: a sales stage cannot be "Sorted out", and a support
+   *  stage cannot be "Won" — the server refuses both, so offering them here
+   *  would only be a slower way to find that out. */
+  objectKey: string;
   stage: PipelineStage;
   isFirst: boolean;
   isLast: boolean;
@@ -613,7 +624,7 @@ function StageRow({
             color="module"
             aria-label="What this stage means"
             value={stage.stageType}
-            items={Object.fromEntries(STAGE_TYPES.map((t) => [t.value, t.label]))}
+            items={Object.fromEntries(stageTypesFor(objectKey).map((t) => [t.value, t.label]))}
             onValueChange={(next) => {
               patch({ stageType: next as StageType });
             }}

@@ -8,7 +8,10 @@ export interface PipelineStageTemplate {
   name: string;
   sortOrder: number;
   probability: number;
-  stageType: 'open' | 'won' | 'lost';
+  // Widened for tickets (docs/144 §7.2) — `resolved`/`closed` are the service
+  // vocabulary. Which of these a given template may use is narrowed per object
+  // by `stageTypesFor` in ../common.
+  stageType: 'open' | 'won' | 'lost' | 'resolved' | 'closed';
   color?: string;
 }
 
@@ -16,6 +19,9 @@ export interface PipelineTemplate {
   name: string;
   slug: string;
   isDefault: boolean;
+  /** What this process moves. Optional so the sales template — the only one
+   *  that existed before pipelines became generic — reads unchanged. */
+  objectKey?: string;
   stages: PipelineStageTemplate[];
 }
 
@@ -23,6 +29,7 @@ export const DEFAULT_PIPELINE_TEMPLATE: PipelineTemplate = {
   name: 'Sales Pipeline',
   slug: 'sales',
   isDefault: true,
+  objectKey: 'deal',
   stages: [
     { name: 'Lead', sortOrder: 0, probability: 10, stageType: 'open', color: '#94A3B8' },
     { name: 'Qualified', sortOrder: 1, probability: 25, stageType: 'open', color: '#06B6D4' },

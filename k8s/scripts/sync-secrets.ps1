@@ -30,6 +30,11 @@ $secretKeys = @(
     # Social-posting token-encryption key (docs/133 §5) — api-rest encrypts the
     # per-tenant social OAuth grants on connect. Maps to SOCIAL_TOKEN_KEY.
     "social-token-key",
+    # CRM conversation credentials (docs/144 §5.2, §5.6) — the phone-vendor auth
+    # token and the mailbox app password. Both gate their feature: absent, the
+    # connect endpoint refuses rather than storing anything unprotected.
+    "crm-voice-token-key",
+    "crm-mailbox-token-key",
     # Per-platform OAuth app credentials for the social + channels modules. An
     # adapter's `isConfigured()` is FALSE when its pair is absent, so the platform
     # silently disappears from the connect UI rather than erroring — a missing key

@@ -247,6 +247,9 @@ model Property {
   // outlives the site). PipelineStage inherits and has no relation here.
   pipelines Pipeline[]
   deals     Deal[]
+  // Same reasoning as Deal: a service request is a record of something a real
+  // person asked for, so it survives the site closing (SetNull).
+  tickets   Ticket[]
 
   // CRM tasks (docs/131 §5) — a work queue item, denormalized from its
   // customer/deal so a site-scoped member sees only their business's tasks.

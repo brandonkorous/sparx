@@ -100,6 +100,11 @@ export type {
   // tenant's own phone-system credentials.
   CallRecord,
   VoiceConnection,
+  // CRM — service requests (docs/144 §7): the request, the promise made about
+  // it, and that promise's per-priority targets.
+  Ticket,
+  TicketSlaPolicy,
+  TicketSlaTarget,
   // CRM — orders + child tables
   Order,
   OrderItem,

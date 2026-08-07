@@ -97,7 +97,18 @@ export type CrmTopic =
   // automation engine's "they answered" trigger keys off.
   | 'crm.engagement.sent'
   | 'crm.engagement.received'
-  | 'crm.engagement.logged';
+  | 'crm.engagement.logged'
+  // Service requests (docs/144 §7). The two SLA topics are the ones a business
+  // most wants to act on and the reason the clock is worth storing at all: an
+  // automation that pages the shift lead when an urgent request is 80% of the
+  // way through its promise is the difference between a due date and a system.
+  | 'crm.ticket.created'
+  | 'crm.ticket.updated'
+  | 'crm.ticket.assigned'
+  | 'crm.ticket.stage_changed'
+  | 'crm.ticket.resolved'
+  | 'crm.ticket.sla.warning'
+  | 'crm.ticket.sla.breached';
 
 export interface Publisher {
   publish(event: CrmEvent): Promise<void>;

@@ -38,9 +38,18 @@ export function requireEntityId(fields: ResolvedFields, key: string, action: str
   return requireStringField(fields, key, action);
 }
 
-export function optionalEntityId(fields: ResolvedFields, key: string): string | undefined {
+/** Read an optional non-empty string field. Returns undefined when the trigger
+ *  didn't resolve it, or resolved it to an empty string — which for a subject
+ *  line or a message body means the same thing as absent. */
+export function optionalStringField(fields: ResolvedFields, key: string): string | undefined {
   const value = fields[key];
   return typeof value === 'string' && value.length > 0 ? value : undefined;
+}
+
+/** Optional entity id — an intent-revealing alias of the above, mirroring the
+ *  required pair. */
+export function optionalEntityId(fields: ResolvedFields, key: string): string | undefined {
+  return optionalStringField(fields, key);
 }
 
 /** Read an optional boolean field (e.g. `customer.doNotContact`). Returns

@@ -4,10 +4,13 @@ import {
   BarChart3,
   Boxes,
   Building2,
+  Clock,
   Copy,
   Filter,
+  LifeBuoy,
   ListChecks,
   Mailbox as MailboxIcon,
+  PhoneCall,
   Receipt,
   Target,
   Users,
@@ -32,6 +35,10 @@ import { CrmReportsSurface } from '../../../surfaces/crm/reports';
 import { ObjectTypesListSurface } from '../../../surfaces/crm/object-types-list';
 import { ObjectTypeDetailSurface } from '../../../surfaces/crm/object-type-detail';
 import { MailboxesListSurface } from '../../../surfaces/crm/mailboxes-list';
+import { PhoneSystemsListSurface } from '../../../surfaces/crm/phone-systems-list';
+import { TicketsListSurface } from '../../../surfaces/crm/tickets-list';
+import { TicketDetailSurface } from '../../../surfaces/crm/ticket-detail';
+import { SlaPoliciesSurface } from '../../../surfaces/crm/sla-policies';
 
 export const CRM_SURFACES: SurfaceDefinition[] = [
   /* ── People ────────────────────────────────────────────────────────────── */
@@ -182,6 +189,67 @@ export const CRM_SURFACES: SurfaceDefinition[] = [
     component: CustomerOrdersSurface,
   },
 
+  /* ── Support ───────────────────────────────────────────────────────────── */
+  //
+  // Its own section, not a corner of Sales. A request is somebody asking for
+  // help, which is a different job from working a deal, and the person doing it
+  // is often not the person selling.
+  {
+    key: 'crm.tickets.list',
+    title: 'Requests',
+    module: 'crm',
+    icon: LifeBuoy,
+    section: 'Support',
+    order: 25,
+    // What someone types when they are looking for this, which is rarely the
+    // word we chose for it — "tickets", "helpdesk", and the thing they are
+    // actually worried about ("overdue", "sla").
+    keywords: [
+      'tickets',
+      'support',
+      'helpdesk',
+      'service',
+      'issues',
+      'complaints',
+      'sla',
+      'overdue',
+    ],
+    component: TicketsListSurface,
+    createSurface: 'crm.ticket.detail',
+    createLabel: 'New request',
+  },
+  {
+    key: 'crm.ticket.detail',
+    title: 'Request',
+    module: 'crm',
+    icon: LifeBuoy,
+    component: TicketDetailSurface,
+    // Opening one is the same surface as working one ({id:'new'} → {id}), so it
+    // is a pane rather than a launcher entry.
+    listed: false,
+  },
+  {
+    key: 'crm.sla-policies',
+    title: 'Response times',
+    module: 'crm',
+    icon: Clock,
+    section: 'Support',
+    order: 26,
+    keywords: [
+      'sla',
+      'response time',
+      'business hours',
+      'opening hours',
+      'targets',
+      'promise',
+      'reply time',
+    ],
+    component: SlaPoliciesSurface,
+    // One promise per business — a second copy of this pane would show the same
+    // thing and let two people save over each other.
+    singleton: true,
+  },
+
   /* ── Setting up ────────────────────────────────────────────────────────── */
   {
     key: 'crm.object-types.list',
@@ -216,6 +284,28 @@ export const CRM_SURFACES: SurfaceDefinition[] = [
     component: MailboxesListSurface,
     // One list of connected accounts — there is nothing per-instance to vary,
     // so a second copy would only ever show the same thing.
+    singleton: true,
+  },
+  {
+    key: 'crm.phone-systems.list',
+    title: 'Phone systems',
+    module: 'crm',
+    icon: PhoneCall,
+    section: 'Setting up',
+    order: 60,
+    // What someone actually types when the Call button is missing — they search
+    // for the thing they want to do ("click to call"), or for their vendor.
+    keywords: [
+      'phone',
+      'calls',
+      'calling',
+      'click to call',
+      'voice',
+      'twilio',
+      'connect phone',
+      'caller id',
+    ],
+    component: PhoneSystemsListSurface,
     singleton: true,
   },
 

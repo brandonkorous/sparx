@@ -1,0 +1,80 @@
+# The support clock (docs/144 §7.3).
+#
+# A response-time promise stored on a row is only worth having if something
+# reads it WHILE THERE IS STILL TIME TO ACT. This is that something: it marks
+# requests that have crossed their warning mark or their due instant, and
+# announces each once on the CRM bus — where a tenant's own automation rules
+# pick it up ("when a request is running out of time, tell the shift lead").
+#
+# Every five minutes, matching the mailbox poll. A slower cadence would be
+# indefensible against the platform's own shortest promise: an urgent request
+# with a one-hour target that goes amber at 48 minutes needs to be noticed
+# within a few minutes of that, not within half an hour of it.
+#
+# The sweep is IDEMPOTENT BY CONSTRUCTION — every query it runs carries a
+# "not already announced" guard, and the statement that stamps the row is the
+# same one that claims it. So unlike the mailbox poll, an overlapping run here
+# is harmless. `Forbid` is set anyway, because two runs doing identical work is
+# still two runs' worth of database load for one run's worth of result.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: crm-sla-sweep
+  namespace: sparx-prod
+  labels:
+    app: crm-cron
+    job: sla-sweep
+spec:
+  schedule: '*/5 * * * *'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  # A missed window is skipped rather than queued. The next sweep compares
+  # against the clock at the moment it runs, so it catches everything the missed
+  # one would have — a backlog of catch-up runs would all reach the same answer.
+  startingDeadlineSeconds: 120
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            app: crm-cron
+            job: sla-sweep
+        spec:
+          serviceAccountName: sparx-app
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.1
+              command: ['sh', '-c']
+              args:
+                - >
+                  curl --fail-with-body --silent --show-error
+                  --max-time 270
+                  -X POST
+                  -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
+                  http://api-rest.sparx-prod.svc.cluster.local:3000/internal/crm/sla-sweep
+              env:
+                - name: SPARX_INTERNAL_CRON_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: sparx-app-secrets
+                      key: SPARX_INTERNAL_CRON_TOKEN
+              resources:
+                requests:
+                  cpu: '50m'
+                  memory: '32Mi'
+                limits:
+                  cpu: '200m'
+                  memory: '64Mi'
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ['ALL']
+                seccompProfile:
+                  type: RuntimeDefault

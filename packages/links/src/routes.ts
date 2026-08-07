@@ -221,6 +221,17 @@ export const ROUTES: readonly AppRoute[] = [
     entity: 'pipeline',
     entityLabel: 'Pipelines',
   },
+  // Support requests (docs/144 §7). `/crm/requests`, not `/crm/tickets`: the
+  // surface is called Requests everywhere a person sees it, and an address that
+  // disagrees with the tab title is a URL nobody can guess.
+  { path: '/crm/requests', surface: 'crm.tickets.list' },
+  {
+    path: '/crm/requests/:id',
+    surface: 'crm.ticket.detail',
+    entity: 'ticket',
+    entityLabel: 'Requests',
+  },
+  { path: '/crm/response-times', surface: 'crm.sla-policies' },
   { path: '/crm/tasks', surface: 'crm.tasks.list' },
   { path: '/crm/tasks/:id', surface: 'crm.task.detail', entity: 'task', entityLabel: 'Tasks' },
   { path: '/crm/orders', surface: 'crm.orders.list' },
@@ -229,6 +240,7 @@ export const ROUTES: readonly AppRoute[] = [
   // parameter through under its own name, so `:id` here would open a blank pane.
   { path: '/crm/record-types/:key', surface: 'crm.object-type.detail' },
   { path: '/crm/mailboxes', surface: 'crm.mailboxes.list' },
+  { path: '/crm/phone-systems', surface: 'crm.phone-systems.list' },
   { path: '/crm/reports', surface: 'crm.reports' },
 
   /* ── Wholesale ────────────────────────────────────────────────────────── */

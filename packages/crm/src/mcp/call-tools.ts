@@ -51,17 +51,24 @@ export const placeCall: McpToolDefinition = {
   scope: 'write:crm',
   confirmation: true,
   input: PlaceCallInput,
-  // The caller ID comes from the tenant's connected phone system rather than
-  // from the tool input — an assistant must not be able to choose what number a
-  // customer sees ringing them.
+  // The caller ID comes from the connected phone system of the CUSTOMER'S OWN
+  // SITE rather than from the tool input — an assistant must not be able to
+  // choose what number a customer sees ringing them, and a tenant running two
+  // unrelated businesses must not have one dial out as the other.
+  //
+  // A GLOBAL customer resolves to the tenant-wide phone system here, where the
+  // REST route would use the site the operator is working in. That difference is
+  // real rather than an oversight: an MCP client has no site it is "in", and
+  // picking one on its behalf would silently choose which of a tenant's
+  // businesses appears to be calling.
   run: (ctx, input) =>
-    voiceConnectionService.forProperty(ctx, null).then((connection) => {
-      if (!connection) {
-        throw new Error(
-          'No phone system is connected, so sparx cannot place calls. Log a call made by hand instead.'
-        );
-      }
-      return callService.placeCall(ctx, input, { fromNumber: connection.fromNumber });
+    callService.placeCall(ctx, input, {
+      resolveOrigin: async (customerPropertyId) => {
+        const connection = await voiceConnectionService.forProperty(ctx, customerPropertyId);
+        return connection
+          ? { fromNumber: connection.fromNumber, propertyId: connection.propertyId }
+          : null;
+      },
     }),
 };
 

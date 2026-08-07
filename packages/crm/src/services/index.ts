@@ -21,6 +21,28 @@ export * as taskService from './task-service';
 // action and the CRM-activation backfill.
 export * as leadService from './lead-service';
 export * as segmentService from './segment-service';
+// Service requests (docs/144 §7) — the intake that already existed finally has
+// somewhere to go. `slaPolicyService` is the promise; `sla-clock` is the pure
+// business-hours arithmetic behind it; the sweep is what notices a promise is
+// about to be missed while there is still time to act on it.
+export * as ticketService from './ticket-service';
+export * as slaPolicyService from './sla-policy-service';
+export * as ticketSlaSweep from './ticket-sla-sweep';
+export type { TicketView, TicketRow } from './ticket-service';
+export type { SlaPolicyWithTargets } from './sla-policy-service';
+export type { SweepResult } from './ticket-sla-sweep';
+export {
+  addBusinessMinutes,
+  businessMinutesBetween,
+  computeDueDates,
+  isOpenAt,
+  readClock,
+  type BusinessCalendar,
+  type BusinessHourWindow,
+  type SlaClockView,
+  type SlaPolicyShape,
+  type SlaState,
+} from './sla-clock';
 
 // The object registry (docs/144 §3) — what a CRM record IS, per tenant: the
 // four built-ins plus whatever the business invented, and the extra properties

@@ -115,6 +115,31 @@ export const TRIGGER_EVENTS: readonly TriggerEventDef[] = [
     module: 'crm',
   },
   { eventType: 'crm.task.created', label: 'A task is created', module: 'crm' },
+  // ── Support requests (docs/144 §7) ──
+  //
+  // The inbound one is listed FIRST because it is the trigger most rules start
+  // from — "somebody wrote to us" is the moment a support process begins.
+  {
+    eventType: 'crm.engagement.received',
+    label: 'A customer replies or writes in',
+    module: 'crm',
+  },
+  { eventType: 'crm.ticket.created', label: 'A support request is opened', module: 'crm' },
+  {
+    eventType: 'crm.ticket.stage_changed',
+    label: 'A support request moves along (e.g. resolved)',
+    module: 'crm',
+  },
+  {
+    eventType: 'crm.ticket.sla.warning',
+    label: 'A support request is running out of time',
+    module: 'crm',
+  },
+  {
+    eventType: 'crm.ticket.sla.breached',
+    label: 'A support request missed its response time',
+    module: 'crm',
+  },
   // ── Invoicing ──
   {
     eventType: 'crm.billing_document.created',
@@ -503,6 +528,36 @@ export const ACTION_DEFS: readonly ActionDef[] = [
         type: 'text',
         required: true,
         help: 'The ID of the pipeline stage to move the deal into.',
+      },
+    ],
+  },
+  {
+    type: 'crm.create_ticket',
+    label: 'Open a support request',
+    module: 'crm',
+    description:
+      'Turn whatever started this rule — a live chat, a form, an email someone sent you — into a support request in your queue, with a response time attached. Runs once per conversation, so a rule that fires twice will not open two requests.',
+    mode: 'fields',
+    available: true,
+    configFields: [
+      {
+        key: 'subject',
+        label: 'Subject',
+        type: 'text',
+        help: 'Leave blank and we will name it from where it came in — the form name, the email subject, or the customer’s name.',
+      },
+      {
+        key: 'description',
+        label: 'Details',
+        type: 'textarea',
+        help: 'Leave blank to use what they actually wrote.',
+      },
+      { key: 'priority', label: 'Priority', type: 'select', options: PRIORITY_OPTIONS },
+      {
+        key: 'assignedToUserId',
+        label: 'Assign to (team member ID)',
+        type: 'text',
+        help: 'Leave blank to put it in the unassigned queue for whoever picks it up first.',
       },
     ],
   },

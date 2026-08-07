@@ -1,0 +1,221 @@
+// CRM — service requests (docs/144 §7).
+//
+// The intake already existed and had nowhere to go. Live chat, site forms and
+// (since §5) inbound email all arrive today, and a business working from them
+// is working from three inboxes and a memory. A ticket is the thing that says
+// "somebody asked us for something, and here is whether we have answered yet".
+//
+// A TICKET HAS NO STATUS COLUMN, AND THAT IS THE DESIGN. Its state is the
+// pipeline stage it sits on, exactly like a deal — because "New → Waiting on us
+// → Waiting on them → Resolved" is a process a business owns, not a vocabulary
+// the platform hands them. Pipeline gains an `objectKey` for this (below), so
+// the board and the funnel report both work on tickets the day this lands.
+//
+// The clock is the other half. A support promise a business cannot measure is a
+// slogan; `crm_ticket_sla_policies` makes "urgent gets a reply within an hour"
+// a number, and the due timestamps below make it visible on a list before it is
+// missed rather than in a report afterwards.
+
+model Ticket {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  /// The business this request came in to (docs/131 §5); null = tenant-wide.
+  /// Denormalized from the pipeline at creation, like Deal — re-scoping a
+  /// pipeline later must not rewrite which business past requests belonged to.
+  propertyId String? @map("property_id") @db.Uuid
+
+  /// Human-readable, per tenant, monotonic. People say "ticket 1042" out loud
+  /// and write it in emails; a uuid is unusable for that. Gap-prone (a deleted
+  /// ticket leaves one), which is fine for an identifier a person reads.
+  number Int
+
+  pipelineId String @map("pipeline_id") @db.Uuid
+  stageId    String @map("stage_id") @db.Uuid
+
+  /// Who asked. Both optional and independent: a request may come from a person
+  /// we know, from a trade account, or from an address we have never seen (in
+  /// which case the intake creates the contact first — see leadService).
+  customerId   String? @map("customer_id") @db.Uuid
+  b2bAccountId String? @map("b2b_account_id") @db.Uuid
+
+  assignedToUserId String? @map("assigned_to_user_id") @db.Uuid
+
+  subject     String  @db.VarChar(255)
+  description String? @db.Text
+
+  /// low | medium | high | urgent. Drives which SLA target applies, so it is not
+  /// a decoration — changing it recomputes the due dates.
+  priority String @default("medium") @db.VarChar(20)
+
+  /// chat | email | form | phone | manual | api. WHERE it came from, which is
+  /// the first thing a support lead wants to slice by.
+  source String @default("manual") @db.VarChar(20)
+
+  /// The id of the thing that raised it — the chat conversation, the form
+  /// submission, the inbound message. Not a foreign key, because the row it
+  /// points at lives in a different module that may be switched off, and the
+  /// ticket has to outlive it either way.
+  ///
+  /// The real work it does is IDEMPOTENCY: unique per (tenant, source, id), so
+  /// a routing rule that fires twice on one chat updates nothing rather than
+  /// opening a second ticket for the same conversation.
+  sourceRecordId String? @map("source_record_id") @db.VarChar(64)
+
+  tags String[] @default([]) @db.VarChar(63)
+
+  /// Tenant-declared extra fields (docs/144 §3), validated against the `ticket`
+  /// row in crm_object_defs — "product area", "warranty claim number".
+  customProperties Json @default("{}") @map("custom_properties")
+
+  // ── The clock (docs/144 §7.3) ─────────────────────────────────────────────
+  //
+  // Resolved ONCE, at creation, from the policy that applied then. A policy
+  // edited in March must not silently move what was promised in February.
+  slaPolicyId String? @map("sla_policy_id") @db.Uuid
+
+  /// Absolute instants, already converted through the policy's business hours —
+  /// so everything downstream (the list colour, the sweep, a report) compares
+  /// two timestamps instead of each re-deriving a calendar. Null when the
+  /// policy sets no target for this priority, which is a legitimate answer.
+  ///
+  /// The `WarnAt` pair is the `warnAtPercent` mark, computed on the SAME clock
+  /// at the same moment. Stored rather than derived because 80% of a business-
+  /// hours budget is not 80% of the wall-clock interval it spans, so a sweep
+  /// deriving it would either be wrong or would re-read the policy per ticket.
+  firstResponseDueAt  DateTime? @map("first_response_due_at") @db.Timestamptz
+  firstResponseWarnAt DateTime? @map("first_response_warn_at") @db.Timestamptz
+  firstRespondedAt    DateTime? @map("first_responded_at") @db.Timestamptz
+  resolutionDueAt     DateTime? @map("resolution_due_at") @db.Timestamptz
+  resolutionWarnAt    DateTime? @map("resolution_warn_at") @db.Timestamptz
+
+  /// Set when the ticket reaches a stage typed `resolved` / `closed`. Two
+  /// timestamps, not one, because a resolved ticket that the customer reopens
+  /// is normal and closing is the separate, later filing action.
+  resolvedAt DateTime? @map("resolved_at") @db.Timestamptz
+  closedAt   DateTime? @map("closed_at") @db.Timestamptz
+
+  /// "We have already said this." The sweep runs every few minutes and must be
+  /// idempotent; without these it would re-announce the same breach forever.
+  /// Warned = crossed the approaching threshold; breached = missed it.
+  firstResponseWarnedAt   DateTime? @map("first_response_warned_at") @db.Timestamptz
+  firstResponseBreachedAt DateTime? @map("first_response_breached_at") @db.Timestamptz
+  resolutionWarnedAt      DateTime? @map("resolution_warned_at") @db.Timestamptz
+  resolutionBreachedAt    DateTime? @map("resolution_breached_at") @db.Timestamptz
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // SetNull: a ticket is a RECORD of something a real person asked for, and it
+  // outlives the site it was raised on — same reasoning as orders and chat.
+  property     Property?     @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  pipeline     Pipeline      @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+  stage        PipelineStage @relation(fields: [stageId], references: [id])
+  customer     Customer?     @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  b2bAccount   B2BAccount?   @relation(fields: [b2bAccountId], references: [id], onDelete: SetNull)
+  assignedTo   User?         @relation("TicketAssignedTo", fields: [assignedToUserId], references: [id], onDelete: SetNull)
+  slaPolicy    TicketSlaPolicy? @relation(fields: [slaPolicyId], references: [id], onDelete: SetNull)
+
+  @@unique([tenantId, number])
+  @@unique([tenantId, source, sourceRecordId])
+  @@index([tenantId, stageId, createdAt(sort: Desc)])
+  @@index([tenantId, propertyId, stageId])
+  @@index([tenantId, pipelineId, stageId])
+  @@index([tenantId, assignedToUserId, stageId])
+  @@index([tenantId, customerId])
+  @@index([tenantId, b2bAccountId])
+  @@index([tenantId, priority, stageId])
+  // The sweep's own index: it looks for tickets that are still owed something.
+  @@index([tenantId, firstResponseDueAt])
+  @@index([tenantId, resolutionDueAt])
+  @@index([tenantId, updatedAt(sort: Desc)])
+  @@map("crm_tickets")
+}
+
+// What a business promised, and when it is open to keep the promise.
+//
+// SELF-CONTAINED CALENDAR, NOT the scheduling module's AvailabilityWindow. The
+// plan named that table, and it is the wrong one: an availability window hangs
+// off a SchedulingResource, so reusing it would make "we answer support within
+// four hours" depend on the Scheduling module being switched on and a bookable
+// resource existing. Modules are independent and never default on (root
+// CLAUDE.md), and a CRM-only tenant has neither. They are also different facts:
+// when the support desk is staffed is not when bay 2 can be booked.
+model TicketSlaPolicy {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  /// Which business's promise (docs/131 §5); null = tenant-wide. Two businesses
+  /// under one login answer their customers on different schedules.
+  propertyId String? @map("property_id") @db.Uuid
+
+  name        String  @db.VarChar(120)
+  description String? @db.Text
+
+  /// The one applied when a new ticket names no other. At most one per site,
+  /// enforced by a partial unique index.
+  isDefault Boolean @default(false) @map("is_default")
+
+  /// IANA zone — "America/Denver". Business hours are local by definition, and
+  /// a promise stated in UTC would drift by an hour twice a year.
+  timezone String @default("UTC") @db.VarChar(64)
+
+  /// The weekly pattern: `[{ day: 1, startMinute: 540, endMinute: 1020 }, …]`,
+  /// day 0 = Sunday, minutes from local midnight. JSON rather than a child
+  /// table because it is always read, written and edited as ONE set — nothing
+  /// ever queries a single Tuesday — and a seven-row delete-and-reinsert on
+  /// every save buys nothing for it.
+  ///
+  /// An EMPTY array means 24/7, which is the honest reading of "the business
+  /// declared no hours" for a promise about response time.
+  businessHours Json @default("[]") @map("business_hours")
+
+  /// Days the desk is shut regardless of the weekly pattern. Dates, not
+  /// timestamps: a holiday is a whole local day.
+  holidays DateTime[] @default([]) @db.Date
+
+  /// How far into the clock counts as "about to miss this" — 80 means a ticket
+  /// goes amber at 80% of its budget. Per policy, because a one-hour promise
+  /// and a five-day promise want warning at different points.
+  warnAtPercent Int @default(80) @map("warn_at_percent")
+
+  archivedAt DateTime? @map("archived_at") @db.Timestamptz
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  targets TicketSlaTarget[]
+  tickets Ticket[]
+
+  @@unique([tenantId, propertyId, name])
+  @@index([tenantId, archivedAt])
+  @@map("crm_ticket_sla_policies")
+}
+
+// One priority's two promises. A row per priority rather than eight columns on
+// the policy: "we make no promise about low-priority requests" is then the
+// absence of a row instead of two nulls that have to be read as a pair.
+model TicketSlaTarget {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+  policyId String @map("policy_id") @db.Uuid
+
+  /// low | medium | high | urgent — matches Ticket.priority.
+  priority String @db.VarChar(20)
+
+  /// BUSINESS minutes, not wall-clock. 60 on a desk open 9–5 means an email
+  /// arriving at 4:45pm is due at 9:45 the next morning, which is what the
+  /// business actually promised.
+  firstResponseMinutes Int? @map("first_response_minutes")
+  resolutionMinutes    Int? @map("resolution_minutes")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  policy TicketSlaPolicy @relation(fields: [policyId], references: [id], onDelete: Cascade)
+
+  @@unique([policyId, priority])
+  @@index([tenantId, policyId])
+  @@map("crm_ticket_sla_targets")
+}

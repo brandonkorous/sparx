@@ -23,6 +23,7 @@
   "dependencies": {
     "@sparx/db": "workspace:*",
     "@sparx/scheduling-schemas": "workspace:*",
+    "@sparx/time": "workspace:*",
     "zod": "^4.4.3"
   },
   "devDependencies": {

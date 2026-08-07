@@ -37,6 +37,10 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = usePipelines({
     q: search,
     includeArchived: scope === 'all',
+    // BOTH kinds (docs/144 §7.2) — sales pipelines and support queues. This is
+    // the only surface where a support queue's stages can be renamed or
+    // reordered, so filtering to deals here would leave it unreachable.
+    objectKey: 'all',
   });
 
   const rows = data?.items ?? [];
@@ -132,6 +136,7 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
             <thead>
               <tr>
                 <th>Name</th>
+                <th>Moves</th>
                 <th className="hidden text-right @md:table-cell">Stages</th>
                 <th>State</th>
               </tr>
@@ -153,6 +158,20 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
                   }}
                 >
                   <td className="font-medium">{row.name}</td>
+                  <td>
+                    {/* WHAT this process moves (docs/144 §7.2). Two things live
+                        in one list now, and their stage words mean different
+                        things — so which is which cannot be left to the name a
+                        tenant happened to pick. Distinct hues, because that is
+                        the distinction the column exists to draw. */}
+                    <Badge
+                      color={row.objectKey === 'ticket' ? 'info' : 'module'}
+                      variant="soft"
+                      size="sm"
+                    >
+                      {row.objectKey === 'ticket' ? 'Support requests' : 'Sales deals'}
+                    </Badge>
+                  </td>
                   <td className="hidden text-right text-sm tabular-nums @md:table-cell">
                     {row.stages.length}
                   </td>
