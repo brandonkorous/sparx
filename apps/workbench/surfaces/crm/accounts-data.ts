@@ -48,6 +48,8 @@ export interface B2BAccount {
   fleetSize: number | null;
   notes: string | null;
   tags: string[];
+  /** The extra details THIS business tracks on a company (docs/144 §3). */
+  customProperties: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
 }
@@ -181,6 +183,7 @@ export interface AccountInput {
   fleetSize?: number | null;
   notes?: string | null;
   tags?: string[];
+  customProperties?: Record<string, unknown>;
 }
 
 export function useCreateAccount() {

@@ -35,6 +35,11 @@ export const CreateB2BAccountInput = z.object({
   engineProfiles: z.array(EngineProfile).max(100).default([]),
   notes: z.string().max(10_000).nullable().optional(),
   tags: TagList.optional(),
+  // Tenant-declared extra fields (docs/144 §3), validated by the service against
+  // the `company` object definition. No `.default()` — this schema is the
+  // sharpest instance of the trap described below, and a default here would wipe
+  // the bag on every unrelated account edit.
+  customProperties: z.record(z.string(), z.unknown()).optional(),
 });
 export type CreateB2BAccountInput = z.infer<typeof CreateB2BAccountInput>;
 

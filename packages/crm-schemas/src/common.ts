@@ -149,5 +149,21 @@ export const ActivityType = z.enum([
   'customer.assigned',
   'b2b.credit_hold',
   'b2b.credit_resumed',
+  // The engagement spine (docs/144 §5.5). These are what someone SAID, as
+  // opposed to what the platform DID — and they land in the same timeline as
+  // everything above deliberately: a person looking at a customer should never
+  // have to learn a second place to look for "what happened with them".
+  'email.received',
+  'email.replied',
+  'call.logged',
+  'call.missed',
+  'meeting.booked',
+  // A tenant-declared property moved (docs/144 §3). On the timeline because
+  // "their warranty date changed" is history, not just current state.
+  'property.changed',
+  // Service requests (docs/144 §7).
+  'ticket.opened',
+  'ticket.replied',
+  'ticket.resolved',
 ]);
 export type ActivityType = z.infer<typeof ActivityType>;

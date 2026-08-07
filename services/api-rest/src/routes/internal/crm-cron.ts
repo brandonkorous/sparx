@@ -9,6 +9,7 @@
 //   • POST /internal/crm/automation-triggers  → runDailyAutomationTriggers (per active tenant)
 //   • POST /internal/crm/overdue-reminders    → emitOverdueTaskReminders (per active tenant)
 //   • POST /internal/crm/segment-recompute    → segmentService.recomputeFull (per active tenant)
+//   • POST /internal/crm/mailbox-sync         → syncTenantMailboxes (per active tenant)
 //
 // Per-tenant loops are sequential. CRM-active tenant count is tiny in
 // Phase 1; sequential keeps DB load predictable and lets one failing
@@ -19,6 +20,7 @@ import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { crmSchedulers, segmentService } from '@sparx/crm';
 
 import { env } from '../../env.js';
+import { syncTenantMailboxes } from '../../lib/crm-mailbox-sync.js';
 
 const CRON_TOKEN_HEADER = 'x-sparx-internal-cron-token';
 
@@ -94,6 +96,18 @@ const crmCronRoutes: FastifyPluginAsync = (app) => {
     authorize(request);
     const summary = await forEachActiveTenant((tenantId) =>
       segmentService.recomputeFull({ tenantId })
+    );
+    return { success: true, data: summary };
+  });
+
+  // Connected mailboxes (docs/144 §5.2). This is the ONLY thing that brings
+  // inbound mail onto a timeline — sparx polls IMAP rather than holding an
+  // always-open IDLE socket per mailbox, so nothing arrives unless this runs.
+  // Its CronJob is the most frequent of the CRM set for that reason.
+  app.post('/internal/crm/mailbox-sync', async (request) => {
+    authorize(request);
+    const summary = await forEachActiveTenant((tenantId) =>
+      syncTenantMailboxes(request.log, tenantId)
     );
     return { success: true, data: summary };
   });

@@ -51,6 +51,50 @@ export const SegmentField = z.enum([
 ]);
 export type SegmentField = z.infer<typeof SegmentField>;
 
+/**
+ * A tenant-declared property, as a rule field (docs/144 §3.4).
+ *
+ * `custom.<objectKey>.<propertyKey>` — e.g. `custom.contact.warrantyExpires`,
+ * `custom.company.industry`. The enum above cannot list these because they do
+ * not exist at build time: they are whatever this business decided to track.
+ *
+ * Bounded to the three objects a CUSTOMER-shaped segment can reach. A segment
+ * selects customers, so it can read the contact's own properties, the company
+ * they belong to, and (Phase 2 associations) a deal they are on — not an
+ * arbitrary object graph, which would make membership impossible to materialize
+ * incrementally.
+ */
+export const CustomPropertyField = z
+  .string()
+  .max(140)
+  .regex(
+    /^custom\.(contact|company|deal)\.[a-z][a-zA-Z0-9_]*$/,
+    'Custom property fields look like custom.contact.yourFieldName'
+  );
+
+/**
+ * Any field a rule may name — a built-in path or a tenant-declared property.
+ *
+ * A union, not an extended enum: existing stored rules parse byte-identically
+ * (the enum branch is tried first), so nothing has to be migrated.
+ */
+export const SegmentFieldPath = z.union([SegmentField, CustomPropertyField]);
+export type SegmentFieldPath = z.infer<typeof SegmentFieldPath>;
+
+/** True when a rule field names a tenant-declared property rather than a spine one. */
+export function isCustomPropertyField(field: string): boolean {
+  return field.startsWith('custom.');
+}
+
+/** Split `custom.contact.warrantyExpires` into its object key and property key. */
+export function parseCustomPropertyField(
+  field: string
+): { objectKey: string; propertyKey: string } | null {
+  const parts = field.split('.');
+  if (parts.length !== 3 || parts[0] !== 'custom') return null;
+  return { objectKey: parts[1]!, propertyKey: parts[2]! };
+}
+
 export const SegmentOperator = z.enum([
   'eq',
   'neq',
@@ -74,7 +118,7 @@ const LiteralArray = z.array(Literal);
 
 const PredicateLeaf = z.object({
   kind: z.literal('predicate'),
-  field: SegmentField,
+  field: SegmentFieldPath,
   op: SegmentOperator,
   value: z.union([Literal, LiteralArray]).optional(),
 });

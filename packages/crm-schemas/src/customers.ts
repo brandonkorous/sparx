@@ -53,6 +53,12 @@ export const CreateCustomerInput = z.object({
   gdprConsent: GdprConsent.optional(),
   tags: TagList.optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),
+  // The extra details THIS business tracks (docs/144 §3). Validated by the
+  // service against the tenant's `contact` object definition — not here, because
+  // the shape is per-tenant and only the service can read it. No `.default()`:
+  // omitting it must mean "leave the bag alone", and a default would survive
+  // `.partial()` below and wipe it on every unrelated edit.
+  customProperties: z.record(z.string(), z.unknown()).optional(),
   // Optional profile photo — a MediaAsset id (cms module). `null` clears it.
   avatarMediaAssetId: Uuid.nullable().optional(),
 });

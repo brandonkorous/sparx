@@ -10,8 +10,16 @@
 //   company_name, tax_id, website, pricing_tier, credit_limit,
 //   payment_terms, discount_percent, status, notes, tags
 
+// Any OTHER column that names one of the tenant's declared company properties
+// (docs/144 §3) is imported into `custom_properties`.
+
 import type { Logger } from 'pino';
-import { b2bAccountService } from '@sparx/crm';
+import {
+  b2bAccountService,
+  describeColumnProblems,
+  objectDefService,
+  propertiesFromRow,
+} from '@sparx/crm';
 import { withTenant } from '@sparx/db';
 
 export interface B2bAccountRow {
@@ -65,6 +73,20 @@ function parseDecimal(val: string | undefined): number | undefined {
   return isNaN(n) ? undefined : n;
 }
 
+/** The headers the mapping above already owns — see `propertiesFromRow`. */
+const RESERVED_COLUMNS = [
+  'company_name',
+  'tax_id',
+  'website',
+  'pricing_tier',
+  'credit_limit',
+  'payment_terms',
+  'discount_percent',
+  'status',
+  'notes',
+  'tags',
+] as const;
+
 export async function processB2bAccountRows(
   ctx: { tenantId: string },
   rows: B2bAccountRow[],
@@ -72,6 +94,9 @@ export async function processB2bAccountRows(
   logger: Logger
 ): Promise<RowResult[]> {
   const results: RowResult[] = [];
+
+  // Once for the file — the schema cannot change mid-import.
+  const schema = await objectDefService.schemaFor(ctx, 'company');
 
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i]!;
@@ -104,6 +129,20 @@ export async function processB2bAccountRows(
             .filter(Boolean)
         : undefined;
 
+      const extra = propertiesFromRow(schema, row, RESERVED_COLUMNS);
+      if (extra.problems.length > 0) {
+        results.push({
+          rowIndex: i,
+          status: 'error',
+          naturalKey: companyName,
+          errorMsg: describeColumnProblems(extra.problems),
+        });
+        log.warn({ problems: extra.problems }, 'row has unreadable extra details');
+        continue;
+      }
+      const customProperties =
+        Object.keys(extra.values).length > 0 ? { customProperties: extra.values } : {};
+
       if (existing && opts.upsert) {
         await b2bAccountService.update(ctx, existing.id, {
           companyName,
@@ -120,6 +159,7 @@ export async function processB2bAccountRows(
           ...(row.status ? { status: normalizeStatus(row.status) } : {}),
           ...(row.notes !== undefined ? { notes: row.notes.trim() || null } : {}),
           ...(tags !== undefined ? { tags } : {}),
+          ...customProperties,
         });
         results.push({ rowIndex: i, status: 'updated', naturalKey: companyName });
         log.debug('updated');
@@ -138,6 +178,7 @@ export async function processB2bAccountRows(
           status: normalizeStatus(row.status),
           notes: blank(row.notes) ?? null,
           tags: tags ?? [],
+          ...customProperties,
         });
         results.push({ rowIndex: i, status: 'imported', naturalKey: companyName });
         log.debug('imported');

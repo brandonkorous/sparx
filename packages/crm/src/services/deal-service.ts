@@ -17,8 +17,30 @@ import type { Deal, Prisma } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import { publishCrmEvent } from '../events';
+import { syncPrimaryFromColumn } from './association-service';
+import { changedProperties, resolvePropertyBag, toJsonInput } from './custom-properties';
+import { schemaFor } from './object-def-service';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
+
+/**
+ * Record what `customer_id` / `b2b_account_id` already say, as primary
+ * relationships (docs/144 §6).
+ *
+ * The bridge in the direction nobody thinks about: the association panel is not
+ * the only thing that links a deal to a customer — the order consumer, the
+ * import worker and every existing form write the column directly. Without this,
+ * the graph would only know about deals someone had opened the panel on, and
+ * "who is involved" would be right for new deals and blank for every old one.
+ */
+async function syncDealAssociations(
+  tx: Prisma.TransactionClient,
+  tenantId: string,
+  deal: Deal
+): Promise<void> {
+  await syncPrimaryFromColumn(tx, tenantId, 'deal', deal.id, 'contact', deal.customerId);
+  await syncPrimaryFromColumn(tx, tenantId, 'deal', deal.id, 'company', deal.b2bAccountId);
+}
 
 export interface ListDealsFilter {
   q?: string;
@@ -112,6 +134,14 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<De
       select: { propertyId: true },
     });
 
+    // Tenant-declared extra fields (docs/144 §3), validated + calculated in the
+    // same transaction that writes the deal.
+    const customProperties = resolvePropertyBag({
+      schema: await schemaFor(ctx, 'deal', tx),
+      existing: {},
+      incoming: input.customProperties ?? {},
+    });
+
     const created = await tx.deal.create({
       data: {
         tenantId: ctx.tenantId,
@@ -129,6 +159,9 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<De
         source: input.source ?? null,
         tags: input.tags ?? [],
         metadata: (input.metadata ?? {}) as Prisma.InputJsonValue,
+        ...(customProperties !== undefined
+          ? { customProperties: toJsonInput(customProperties) }
+          : {}),
       },
     });
 
@@ -150,6 +183,12 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<De
         linkedEntityId: created.id,
       },
     });
+
+    // The relationship graph (docs/144 §6) records what the FK columns already
+    // say, so "who is involved in this deal" is answerable from one place from
+    // the very first deal — rather than only for deals created after someone
+    // opened the association panel.
+    await syncDealAssociations(tx, ctx.tenantId, created);
 
     await writeAuditLog({
       tx,
@@ -192,9 +231,18 @@ export async function update(
     );
   }
 
-  return withTenant(ctx, async (tx) => {
+  const result = await withTenant(ctx, async (tx) => {
     const before = await tx.deal.findUnique({ where: { id: dealId } });
     if (before?.deletedAt !== null) throw new CrmNotFoundError('Deal', dealId);
+
+    // Merged onto what is stored — a PATCH carrying one extra detail means
+    // "change this one", never "delete the others".
+    const customProperties = resolvePropertyBag({
+      schema: await schemaFor(ctx, 'deal', tx),
+      existing: before.customProperties,
+      incoming: input.customProperties,
+    });
+
     const updated = await tx.deal.update({
       where: { id: dealId },
       data: {
@@ -211,12 +259,25 @@ export async function update(
         ...(input.b2bAccountId !== undefined ? { b2bAccountId: input.b2bAccountId } : {}),
         ...(input.assignedRepId !== undefined ? { assignedRepId: input.assignedRepId } : {}),
         ...(input.source !== undefined ? { source: input.source } : {}),
+        // Correcting the reason is a plain edit — the stage is not moving, so it
+        // deliberately does NOT go down the `moveStage` path or emit its event.
+        ...(input.closedReason !== undefined ? { closedReason: input.closedReason } : {}),
         ...(input.tags !== undefined ? { tags: input.tags } : {}),
         ...(input.metadata !== undefined
           ? { metadata: input.metadata as Prisma.InputJsonValue }
           : {}),
+        ...(customProperties !== undefined
+          ? { customProperties: toJsonInput(customProperties) }
+          : {}),
       },
     });
+    // Repointing `customerId` / `b2bAccountId` moves the PRIMARY relationship
+    // with it. Skipped when neither was in the patch, so an ordinary rename
+    // costs nothing.
+    if (input.customerId !== undefined || input.b2bAccountId !== undefined) {
+      await syncDealAssociations(tx, ctx.tenantId, updated);
+    }
+
     await writeAuditLog({
       tx,
       tenantId: ctx.tenantId,
@@ -227,8 +288,24 @@ export async function update(
       entityId: updated.id,
       diff: null,
     });
-    return updated;
+    return {
+      updated,
+      changed: changedProperties(before.customProperties, updated.customProperties),
+    };
   });
+
+  // Fires only when a DECLARED property actually moved (docs/144 §9) — renaming
+  // a deal must not wake every workflow watching its properties.
+  if (result.changed.length > 0) {
+    await publishCrmEvent({
+      tenantId: ctx.tenantId,
+      topic: 'crm.property.changed',
+      payload: { objectKey: 'deal', recordId: result.updated.id, properties: result.changed },
+      dedupeKey: `crm.property.changed:${result.updated.id}:${result.updated.updatedAt.toISOString()}`,
+    });
+  }
+
+  return result.updated;
 }
 
 /** Move a deal to a new stage. The single sanctioned stage-change path —

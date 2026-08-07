@@ -19,6 +19,8 @@ import { withTenant } from '@sparx/db';
 
 import * as documentLineTypeService from '../services/document-line-type-service';
 import * as documentWorkflowService from '../services/document-workflow-service';
+import * as objectDefService from '../services/object-def-service';
+import * as associationService from '../services/association-service';
 import * as pipelineService from '../services/pipeline-service';
 import * as segmentService from '../services/segment-service';
 import { captureFormLead } from '../services/lead-service';
@@ -43,6 +45,15 @@ export function registerModuleActivationConsumers(ctx: ConsumerContext): (() => 
       // (audit logger, publishCrmEvent) might.
       invalidateModuleCache(event.tenantId, 'crm');
       const serviceCtx = { tenantId: event.tenantId, userId: undefined };
+      // The object registry FIRST (docs/144 §3): every contact/deal/company
+      // write reads its object's schema, so the four built-in rows must exist
+      // before anything below can create a record. `ensureBuiltins` only ever
+      // creates — a tenant who renamed "Customers" to "Patients" and added six
+      // properties keeps both through any re-activation.
+      await objectDefService.ensureBuiltins(serviceCtx);
+      // The relationships sparx ships (docs/144 §6) — "Signs it off", "Works
+      // there", "Introduced by". Create-only, so a tenant's renames survive.
+      await associationService.ensureBuiltinLabels(serviceCtx);
       await pipelineService.bootstrapDefaultPipeline(serviceCtx);
       await segmentService.bootstrapBuiltInSegments(serviceCtx);
 

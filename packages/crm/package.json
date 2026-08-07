@@ -16,6 +16,10 @@
     "./pubsub": {
       "types": "./src/pubsub-bridge.ts",
       "default": "./src/pubsub-bridge.ts"
+    },
+    "./mail": {
+      "types": "./src/mail/index.ts",
+      "default": "./src/mail/index.ts"
     }
   },
   "files": [
@@ -34,6 +38,7 @@
     "@sparx/crm-schemas": "workspace:*",
     "@sparx/db": "workspace:*",
     "@sparx/events": "workspace:*",
+    "@sparx/field-schema": "workspace:*",
     "@sparx/modules": "workspace:*",
     "zod": "^4.4.3"
   },

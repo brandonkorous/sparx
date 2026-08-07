@@ -8,10 +8,20 @@
 //
 // Column aliases (case-insensitive):
 //   email, first_name, last_name, company, phone, job_title, type, tags
+//
+// Any OTHER column that names one of the tenant's declared properties (docs/144
+// §3) is imported into `custom_properties`: a business that tracks "Warranty
+// expires" on their customers has that column in the spreadsheet they are
+// importing, and dropping it silently is the failure this guards against.
 
 import type { Logger } from 'pino';
 import { withTenant } from '@sparx/db';
-import { customerService } from '@sparx/crm';
+import {
+  customerService,
+  describeColumnProblems,
+  objectDefService,
+  propertiesFromRow,
+} from '@sparx/crm';
 
 export interface CustomerRow {
   email?: string;
@@ -42,6 +52,18 @@ function normalizeType(val: string | undefined): 'retail' | 'b2b' | 'partner' | 
   return 'retail';
 }
 
+/** The headers the mapping above already owns — see `propertiesFromRow`. */
+const RESERVED_COLUMNS = [
+  'email',
+  'first_name',
+  'last_name',
+  'company',
+  'phone',
+  'job_title',
+  'type',
+  'tags',
+] as const;
+
 export async function processCustomerRows(
   ctx: { tenantId: string },
   rows: CustomerRow[],
@@ -50,6 +72,11 @@ export async function processCustomerRows(
 ): Promise<RowResult[]> {
   const results: RowResult[] = [];
 
+  // Read ONCE for the whole file, not per row: the schema cannot change
+  // mid-import, and a 10,000-row file would otherwise be 10,000 identical
+  // queries.
+  const schema = await objectDefService.schemaFor(ctx, 'contact');
+
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i]!;
     const emailRaw = row.email?.trim().toLowerCase();
@@ -57,6 +84,23 @@ export async function processCustomerRows(
     const log = logger.child({ rowIndex: i, email });
 
     try {
+      const extra = propertiesFromRow(schema, row, RESERVED_COLUMNS);
+      // A cell we could not read fails the ROW. Importing the rest of it and
+      // saying nothing is how a business ends up with three hundred contacts
+      // whose renewal date is quietly missing.
+      if (extra.problems.length > 0) {
+        results.push({
+          rowIndex: i,
+          status: 'error',
+          naturalKey: email,
+          errorMsg: describeColumnProblems(extra.problems),
+        });
+        log.warn({ problems: extra.problems }, 'row has unreadable extra details');
+        continue;
+      }
+      const customProperties =
+        Object.keys(extra.values).length > 0 ? { customProperties: extra.values } : {};
+
       // Look up existing customer by email (if provided).
       let existing: { id: string } | null = null;
       if (email) {
@@ -84,6 +128,7 @@ export async function processCustomerRows(
                   .filter(Boolean),
               }
             : {}),
+          ...customProperties,
         });
         results.push({ rowIndex: i, status: 'updated', naturalKey: email });
         log.debug('updated');
@@ -106,6 +151,7 @@ export async function processCustomerRows(
                 .filter(Boolean)
             : [],
           doNotContact: false,
+          ...customProperties,
         });
         results.push({ rowIndex: i, status: 'imported', naturalKey: email });
         log.debug('imported');

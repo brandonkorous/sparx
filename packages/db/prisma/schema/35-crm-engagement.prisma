@@ -1,0 +1,248 @@
+// CRM — the engagement spine (docs/144 §5).
+//
+// What was SAID, as opposed to what the platform DID. Today a contact's timeline
+// can tell you an order shipped and an email campaign was opened; it cannot tell
+// you that the rep emailed them on Tuesday and they replied on Wednesday asking
+// for a discount. That conversation is the actual relationship, and it currently
+// lives in somebody's personal inbox where nobody else can see it.
+//
+// FOUR CAPABILITIES, ONE SPINE: send from the record, receive onto the record,
+// template what you send, and log what you say out loud.
+//
+// ONE PROTOCOL: IMAP AND SMTP, deliberately NOT the Gmail API or Microsoft
+// Graph.
+//
+// Reading mail through those needs Google's restricted-scope CASA assessment
+// and Microsoft's publisher verification — an annual third-party security audit
+// as the standing price of a mailbox connector, plus a vendor holding a veto
+// over a feature our customers have already paid for. IMAP reaches the SAME
+// mailboxes: Gmail and Microsoft 365 both speak it, over an app password the
+// tenant issues in their own account settings and can revoke the same way. That
+// also puts the tenant, not us, in the consent loop — which is the right place
+// for it.
+//
+// One protocol also means one sync path to keep correct instead of three, and
+// no OAuth token lifecycle (refresh, revocation, push-channel expiry) to get
+// wrong in two places.
+model MailboxConnection {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  /// The site this mailbox belongs to (docs/131 §5); null = tenant-wide.
+  propertyId String? @map("property_id") @db.Uuid
+
+  /// `imap_smtp` today. Kept as a column rather than assumed, so a future
+  /// inbound path (a forwarding address on the sending domain, say) is a new
+  /// value rather than a new table.
+  provider String @db.VarChar(20)
+
+  /// personal — ONE staff user's mailbox, so a reply lands in their Sent folder
+  /// and reads as coming from a person. shared — a team address (sales@,
+  /// support@) that anyone with access can send from.
+  ///
+  /// The distinction is a privacy boundary, not a preference: a personal mailbox
+  /// contains that person's private mail, so the sync gate below is far stricter
+  /// for one than the other.
+  scope String @default("personal") @db.VarChar(20)
+  /// Whose mailbox, for a personal connection. Null on a shared address.
+  userId String? @map("user_id") @db.Uuid
+
+  emailAddress String  @map("email_address") @db.VarChar(320)
+  /// What a recipient sees in the From line. Null falls back to the user's name.
+  displayName  String? @map("display_name") @db.VarChar(255)
+
+  /// The app password, encrypted at rest with AES-256-GCM — an opaque ciphertext
+  /// bundle, never plaintext, the same way scheduling's calendar credentials and
+  /// Search Console's tokens are stored. Out-of-band Secret Manager provisioning
+  /// cannot hold a credential a tenant types into a form, which is why
+  /// encrypt-at-rest is the platform pattern rather than an exception here.
+  appPasswordEnc String? @map("app_password_enc") @db.Text
+
+  // IMAP/SMTP hosts. Plain columns — a hostname is not a secret, and hiding it
+  // would only make a misconfiguration harder to diagnose.
+  imapHost String? @map("imap_host") @db.VarChar(255)
+  imapPort Int?    @map("imap_port")
+  smtpHost String? @map("smtp_host") @db.VarChar(255)
+  smtpPort Int?    @map("smtp_port")
+  imapUser String? @map("imap_user") @db.VarChar(320)
+
+  /// `UIDVALIDITY:UID` — where the last poll got to. The UIDVALIDITY half is not
+  /// decoration: when a server issues a new one, every UID it ever gave us means
+  /// something else, and resuming from the old cursor would read the WRONG
+  /// messages. Storing both is what lets the sync notice and start over.
+  syncCursor String? @map("sync_cursor") @db.Text
+
+  /// active | expired | error — surfaced to the person, because a mailbox that
+  /// quietly stopped working is worse than one that says so.
+  status       String    @default("active") @db.VarChar(20)
+  lastSyncedAt DateTime? @map("last_synced_at") @db.Timestamptz
+  lastError    String?   @map("last_error") @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  messages EngagementMessage[]
+
+  @@unique([tenantId, emailAddress])
+  @@index([tenantId, userId])
+  @@index([tenantId, status])
+  @@map("crm_mailbox_connections")
+}
+
+// A conversation. One per real email thread, plus one for each phone call or
+// note logged against a record — because "the last thing that happened with this
+// customer" should not have to be assembled from three different tables.
+model EngagementThread {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  propertyId String? @map("property_id") @db.Uuid
+
+  subject String? @db.VarChar(998)
+
+  /// The provider's own thread id, when there is one. The SECOND threading
+  /// signal, after In-Reply-To — see the resolution order in the service.
+  providerThreadId String? @map("provider_thread_id") @db.VarChar(255)
+
+  /// What this conversation is about. All optional and all independent: an email
+  /// may be with a person about nothing in particular, or about a specific deal,
+  /// or about a support request.
+  customerId String? @map("customer_id") @db.Uuid
+  dealId     String? @map("deal_id") @db.Uuid
+  ticketId   String? @map("ticket_id") @db.Uuid
+
+  /// open | closed. Closing is a filing action, not a deletion.
+  status String @default("open") @db.VarChar(20)
+
+  /// Denormalized so the timeline can sort without touching the messages table.
+  lastMessageAt DateTime @default(now()) @map("last_message_at") @db.Timestamptz
+  messageCount  Int      @default(0) @map("message_count")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  messages EngagementMessage[]
+
+  @@index([tenantId, customerId, lastMessageAt(sort: Desc)])
+  @@index([tenantId, dealId, lastMessageAt(sort: Desc)])
+  @@index([tenantId, ticketId, lastMessageAt(sort: Desc)])
+  @@index([tenantId, providerThreadId])
+  @@map("crm_engagement_threads")
+}
+
+// One message in a conversation: an email either way, or a logged call, or a
+// note. One table rather than three, because the timeline reads them together
+// and a note that cannot be replied to is still a thing that was said.
+model EngagementMessage {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+  threadId String @map("thread_id") @db.Uuid
+
+  /// email | call | note | meeting — what KIND of thing was said.
+  kind String @default("email") @db.VarChar(20)
+  /// out (we said it) | in (they said it). A note is `out`: someone on the team
+  /// wrote it.
+  direction String @db.VarChar(3)
+
+  fromAddress String?  @map("from_address") @db.VarChar(320)
+  toAddresses String[] @map("to_addresses")
+  ccAddresses String[] @map("cc_addresses")
+
+  bodyHtml String? @map("body_html") @db.Text
+  bodyText String? @map("body_text") @db.Text
+
+  /// The RFC 5322 Message-ID: minted on the way out, read on the way in. This is
+  /// what joins an open or a click in `email_events` back to the exact message,
+  /// and what makes threading work with mail clients we do not control.
+  rfcMessageId String? @map("rfc_message_id") @db.VarChar(998)
+  inReplyTo    String? @map("in_reply_to") @db.VarChar(998)
+  /// The full References chain, for threading against clients that rewrite ids.
+  references   String? @db.Text
+
+  sentAt              DateTime  @default(now()) @map("sent_at") @db.Timestamptz
+  sentByUserId        String?   @map("sent_by_user_id") @db.Uuid
+  mailboxConnectionId String?   @map("mailbox_connection_id") @db.Uuid
+  /// When the recipient first opened it. Null means never (or images blocked —
+  /// which is why the COUNT below is the honest signal and this is the nicety).
+  firstOpenedAt       DateTime? @map("first_opened_at") @db.Timestamptz
+  openCount           Int       @default(0) @map("open_count")
+  clickCount          Int       @default(0) @map("click_count")
+
+  /// Calls only. Seconds, and how it ended.
+  durationSec Int?    @map("duration_sec")
+  outcome     String? @db.VarChar(20)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  thread  EngagementThread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  mailbox MailboxConnection? @relation(fields: [mailboxConnectionId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, threadId, sentAt])
+  @@index([tenantId, rfcMessageId])
+  @@index([tenantId, kind, sentAt(sort: Desc)])
+  @@map("crm_engagement_messages")
+}
+
+// A reusable email a rep sends over and over — the follow-up, the pricing note,
+// the "still interested?".
+//
+// The counters are the point of templating at all: a business that can see one
+// template gets replies and another does not can stop sending the second one.
+model SalesTemplate {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  propertyId String? @map("property_id") @db.Uuid
+
+  name    String  @db.VarChar(255)
+  /// A plain grouping word the tenant chooses, not a nested structure. Folders
+  /// within folders is a thing people build and then never use.
+  folder  String? @db.VarChar(120)
+  subject String  @db.VarChar(998)
+
+  /// Composed from @sparx/email's atomic components on render, not raw markup —
+  /// the same rule every transactional template follows (root CLAUDE.md).
+  bodyHtml String @map("body_html") @db.Text
+
+  /// Who made it, and whether the rest of the team can use it. A private
+  /// template is the default: a half-written draft should not appear in a
+  /// colleague's picker.
+  ownerUserId String? @map("owner_user_id") @db.Uuid
+  isShared    Boolean @default(false) @map("is_shared")
+
+  sendCount  Int @default(0) @map("send_count")
+  openCount  Int @default(0) @map("open_count")
+  replyCount Int @default(0) @map("reply_count")
+
+  archivedAt DateTime? @map("archived_at") @db.Timestamptz
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@unique([tenantId, name])
+  @@index([tenantId, folder, archivedAt])
+  @@index([tenantId, ownerUserId])
+  @@map("crm_sales_templates")
+}
+
+// A paragraph someone types constantly, expanded by a shortcut. Smaller than a
+// template and used mid-sentence rather than as a whole message.
+model SalesSnippet {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  /// What you type to get it: `;hours`, `;returns`.
+  shortcut String @db.VarChar(63)
+  name     String @db.VarChar(255)
+  body     String @db.Text
+
+  ownerUserId String? @map("owner_user_id") @db.Uuid
+  isShared    Boolean @default(true) @map("is_shared")
+
+  useCount Int @default(0) @map("use_count")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@unique([tenantId, shortcut])
+  @@map("crm_sales_snippets")
+}

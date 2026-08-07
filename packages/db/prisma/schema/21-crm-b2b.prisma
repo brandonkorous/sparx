@@ -30,6 +30,12 @@ model B2BAccount {
   notes String?  @db.Text
   tags  String[] @default([]) @db.VarChar(63)
 
+  // Tenant-declared extra fields on a company (docs/144 §3) — "industry",
+  // "renewal month", "account manager". Validated against the `company` row in
+  // crm_object_defs. The object key is `company`, not `b2b_account`: this table
+  // is the platform's company record and §11 renames it to match.
+  customProperties Json @default("{}") @map("custom_properties")
+
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz

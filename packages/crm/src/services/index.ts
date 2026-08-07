@@ -22,6 +22,65 @@ export * as taskService from './task-service';
 export * as leadService from './lead-service';
 export * as segmentService from './segment-service';
 
+// The object registry (docs/144 §3) — what a CRM record IS, per tenant: the
+// four built-ins plus whatever the business invented, and the extra properties
+// they track on each. `crmRecordService` holds the rows of a custom object.
+export * as objectDefService from './object-def-service';
+export * as crmRecordService from './crm-record-service';
+// The relationship graph (docs/144 §6) — "these two records are related, and
+// here is how", layered over the legacy FK columns rather than replacing them.
+export * as associationService from './association-service';
+export type { AssociationView } from './association-service';
+// The engagement spine (docs/144 §5) — what was SAID, as opposed to what the
+// platform did. Sending, receiving, logging a call, writing a note.
+export * as engagementService from './engagement-service';
+export * as mailboxService from './mailbox-service';
+export * as salesTemplateService from './sales-template-service';
+export type { ThreadWithMessages, InboundOutcome } from './engagement-service';
+export type { MailboxView } from './mailbox-service';
+// Calling (docs/144 §5.6) — click-to-call, and the record of what happened.
+export * as callService from './call-service';
+export * as voiceConnectionService from './voice-connection-service';
+export { setCallPlacer, RecordingCallPlacer, describeCall } from './call-service';
+export type { CallPlacer, PlaceCallResult, StatusUpdate } from './call-service';
+export type { VoiceConnectionView } from './voice-connection-service';
+export type { TemplatePerformance } from './sales-template-service';
+// Where a 1:1 sales email leaves the building. Injected so @sparx/crm carries no
+// transport dependency — api-rest installs the real one at boot.
+export {
+  setOutboundMailSink,
+  htmlToText,
+  mintMessageId,
+  RecordingMailSink,
+  type OutboundMail,
+  type OutboundMailSink,
+} from './outbound-mail';
+export {
+  primaryMirrorFor,
+  recordExists,
+  resolveRecordRefs,
+  type RecordRef,
+} from './record-locator';
+// The one write path for a tenant-declared property bag, shared by contacts,
+// companies, deals, tickets and custom records — exported so the ticket service
+// (Phase 4) and the import worker validate exactly the way everything else does.
+export {
+  asBag,
+  asPropertySchema,
+  changedProperties,
+  resolvePropertyBag,
+  toJsonInput,
+  type PropertyBag,
+} from './custom-properties';
+// Spreadsheet columns → declared properties, for the import worker (docs/144
+// §3.5). Lives beside the write path because it feeds it.
+export {
+  describeColumnProblems,
+  propertiesFromRow,
+  type ColumnProblem,
+  type PropertyColumnResult,
+} from './property-columns';
+
 // CRM — orders spine (Phase 3). Each service file stays under the 200-line
 // target by splitting subresources into their own files.
 export * as orderService from './order-service';

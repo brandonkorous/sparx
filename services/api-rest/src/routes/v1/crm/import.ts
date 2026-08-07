@@ -12,7 +12,7 @@ import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { publish } from '@sparx/api-core/pubsub';
 import { notFound } from '@sparx/api-core/errors';
-import { customerService } from '@sparx/crm';
+import { asBag, customerService, objectDefService } from '@sparx/crm';
 import { isModuleEnabled } from '@sparx/auth';
 import { requireAuth } from '@sparx/api-core/auth';
 import { moduleDisabled } from '@sparx/api-core/errors';
@@ -140,20 +140,35 @@ const crmImportExportRoutes: FastifyPluginAsync = async (app) => {
       take: q.take ?? 5_000,
     });
 
-    const rows = items.map((c) => ({
-      id: c.id,
-      type: c.type,
-      email: c.email ?? '',
-      first_name: c.firstName ?? '',
-      last_name: c.lastName ?? '',
-      company: c.company ?? '',
-      phone: c.phone ?? '',
-      job_title: c.jobTitle ?? '',
-      tags: c.tags.join(','),
-      do_not_contact: String(c.doNotContact),
-      created_at: c.createdAt.toISOString(),
-      updated_at: c.updatedAt.toISOString(),
-    }));
+    // The tenant's own declared properties export too, one column each, headed
+    // by the label they wrote. An export that drops them is an export that
+    // cannot be re-imported without losing them — and "download, edit in a
+    // spreadsheet, upload" is the whole point of this endpoint. The header is
+    // `custom.<key>` so a property whose label collides with a built-in column
+    // still round-trips; the importer reads that prefix explicitly.
+    const schema = await objectDefService.schemaFor(ctx, 'contact');
+    const exportable = schema.fields.filter((field) => field.type !== 'calculated');
+
+    const rows = items.map((c) => {
+      const bag = asBag((c as { customProperties?: unknown }).customProperties);
+      return {
+        id: c.id,
+        type: c.type,
+        email: c.email ?? '',
+        first_name: c.firstName ?? '',
+        last_name: c.lastName ?? '',
+        company: c.company ?? '',
+        phone: c.phone ?? '',
+        job_title: c.jobTitle ?? '',
+        tags: c.tags.join(','),
+        do_not_contact: String(c.doNotContact),
+        created_at: c.createdAt.toISOString(),
+        updated_at: c.updatedAt.toISOString(),
+        ...Object.fromEntries(
+          exportable.map((field) => [`custom.${field.key}`, cellFor(bag[field.key])])
+        ),
+      };
+    });
 
     const csv = toCsv(rows);
 
@@ -166,6 +181,32 @@ const crmImportExportRoutes: FastifyPluginAsync = async (app) => {
 export default crmImportExportRoutes;
 
 type CsvPrimitive = string | number | boolean | null | undefined;
+
+/**
+ * One stored property value as a spreadsheet cell.
+ *
+ * Money exports as the bare amount followed by its code ("4800 USD") because
+ * that is what the importer's coercion reads back; a list joins with commas;
+ * anything nested falls back to JSON, which is also what the importer expects
+ * for that shape. Round-trip fidelity is the requirement, not prettiness.
+ */
+function cellFor(value: unknown): string {
+  if (value === null || value === undefined) return '';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (Array.isArray(value)) return value.map((item) => cellFor(item)).join(',');
+  if (typeof value === 'object') {
+    const money = value as { amount?: unknown; currency?: unknown };
+    if (typeof money.amount === 'number' && typeof money.currency === 'string') {
+      return `${String(money.amount)} ${money.currency}`;
+    }
+    return JSON.stringify(value);
+  }
+  // Everything an object could be is handled above; what is left is a symbol or
+  // a function, neither of which belongs in a property bag. JSON is still the
+  // honest answer rather than "[object Object]".
+  return JSON.stringify(value) ?? '';
+}
 
 function toCsv(rows: Record<string, CsvPrimitive>[]): string {
   if (rows.length === 0) return '';

@@ -12,6 +12,7 @@ import type { RuleProjection } from '@sparx/crm-schemas';
 
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError } from '../errors';
+import { asBag } from '../services/custom-properties';
 
 export async function buildSegmentRuleProjection(
   ctx: ServiceContext,
@@ -88,6 +89,18 @@ export async function buildSegmentRuleProjection(
         clickedLast30d: clicked,
         unsubscribed: customer.doNotContact,
         subscribed,
+      },
+      // Tenant-declared properties (docs/144 §3.4), so a rule can say
+      // `custom.contact.warrantyExpires` alongside `customer.totalSpent`. The
+      // bags are read straight off the rows already loaded above — the company's
+      // comes free with the b2bAccount include, so this costs no extra query.
+      //
+      // `deal` is deliberately absent: a customer can be on several deals, and
+      // "which one does the rule mean?" has no single answer. Deal properties
+      // become reachable through a labelled association once Phase 2 lands.
+      custom: {
+        contact: asBag(customer.customProperties),
+        company: customer.b2bAccount ? asBag(customer.b2bAccount.customProperties) : undefined,
       },
     };
   });

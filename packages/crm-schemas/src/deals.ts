@@ -27,6 +27,14 @@ export const CreateDealInput = z.object({
   source: z.string().max(63).nullable().optional(),
   tags: TagList.optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),
+  // Why it ended the way it did. Normally captured by the stage move that closed
+  // the deal, but editable here too: it is the one part of a lost deal nobody
+  // can reconstruct later, so a typo in it must not be permanent.
+  closedReason: z.string().max(500).nullable().optional(),
+  // Tenant-declared extra fields (docs/144 §3), validated by the service against
+  // the `deal` object definition. No `.default()` — see the note below on why a
+  // default here would be destructive under `.partial()`.
+  customProperties: z.record(z.string(), z.unknown()).optional(),
 });
 export type CreateDealInput = z.infer<typeof CreateDealInput>;
 

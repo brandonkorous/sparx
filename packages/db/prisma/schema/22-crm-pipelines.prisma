@@ -86,6 +86,12 @@ model Deal {
   tags              String[]  @default([]) @db.VarChar(63)
   metadata          Json      @default("{}")
 
+  // Tenant-declared extra fields on a deal (docs/144 §3) — "contract length",
+  // "competitor", "renewal date". Validated against the `deal` row in
+  // crm_object_defs. See the note on customers.custom_properties for why this
+  // is not `metadata`.
+  customProperties  Json      @default("{}") @map("custom_properties")
+
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz

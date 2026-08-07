@@ -1,0 +1,123 @@
+// CRM — calling (docs/144 §5.6).
+//
+// A phone call is the highest-signal thing that happens in most sales
+// relationships and the one least likely to be written down, because logging it
+// means opening a screen after the conversation is already over. Click-to-call
+// closes that loop from the other end: the platform placed the call, so it
+// already knows who, when, and how long — and the only thing left for a person
+// to add is what was said.
+//
+// SEPARATE FROM EngagementMessage, AND ON PURPOSE. A call that was placed is
+// not yet a call that happened: it can ring out, hit voicemail, or fail at the
+// carrier, and those states arrive minutes later over a webhook. This table is
+// the PLACEMENT and its lifecycle; the engagement message is what a person
+// wrote about it afterwards, and it is created only once the call reaches a
+// terminal state. Merging the two would mean the timeline showed a conversation
+// that had not started yet.
+
+model CallRecord {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  /// The site this was made on behalf of (docs/131 §5); null = tenant-wide.
+  propertyId String? @map("property_id") @db.Uuid
+
+  /// What it was about. All optional and independent — a call may be with a
+  /// person about nothing in particular, or about a deal, or about a request.
+  customerId String? @map("customer_id") @db.Uuid
+  dealId     String? @map("deal_id") @db.Uuid
+  ticketId   String? @map("ticket_id") @db.Uuid
+
+  /// out (we rang them) | in (they rang us).
+  direction String @db.VarChar(3)
+
+  /// E.164 both ways. Stored as dialled rather than as a link to the customer's
+  /// current number: a record of a call has to survive the contact editing their
+  /// phone number afterwards.
+  fromNumber String @map("from_number") @db.VarChar(20)
+  toNumber   String @map("to_number") @db.VarChar(20)
+
+  startedAt   DateTime  @default(now()) @map("started_at") @db.Timestamptz
+  /// Null until the call ends. A null duration on an old row means the status
+  /// webhook never arrived, which is a real thing that happens and is better
+  /// left visibly unknown than filled in with a guess.
+  durationSec Int?      @map("duration_sec")
+  endedAt     DateTime? @map("ended_at") @db.Timestamptz
+
+  /// placing | ringing | completed | failed — the LIFECYCLE, distinct from the
+  /// outcome below. A call can complete and still have reached nobody.
+  status String @default("placing") @db.VarChar(20)
+
+  /// connected | no_answer | voicemail | busy | wrong_number. Set from the
+  /// provider's status where it can be inferred, and CORRECTABLE by a person —
+  /// a machine's guess about what happened on a phone call is a guess.
+  outcome String? @db.VarChar(20)
+
+  /// What was said. The entire reason for logging a call at all.
+  notes String? @db.Text
+
+  /// RECORDING IS OFF BY DEFAULT and this is null unless a tenant deliberately
+  /// switched it on. Call recording is jurisdictionally loaded — one-party and
+  /// two-party consent states, and the EU's own rules — and a platform that
+  /// quietly opted a business into recording would be handing them a legal
+  /// problem they never agreed to.
+  recordingUrl String? @map("recording_url") @db.Text
+
+  /// The vendor's own call id, which every status webhook carries. Unique per
+  /// tenant so a re-delivered webhook updates the row instead of creating a
+  /// second one.
+  providerCallId String? @map("provider_call_id") @db.VarChar(255)
+  provider       String? @db.VarChar(20)
+
+  /// Who on the team made or took it.
+  userId String? @map("user_id") @db.Uuid
+
+  /// The timeline entry written when the call reached a terminal state, so the
+  /// two never drift apart and a correction can find its message.
+  engagementMessageId String? @map("engagement_message_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@unique([tenantId, providerCallId], map: "crm_calls_provider_id_unique")
+  @@index([tenantId, customerId, startedAt(sort: Desc)])
+  @@index([tenantId, dealId, startedAt(sort: Desc)])
+  @@index([tenantId, userId, startedAt(sort: Desc)])
+  @@map("crm_calls")
+}
+
+// A tenant's own phone-system credentials (docs/144 §5.6).
+//
+// TENANT-BYO, NOT PLATFORM. sparx never fronts its own vendor account for a
+// tenant's outbound calls: their account, their number, their bill, and their
+// compliance posture on a call their business is making. The auth token is
+// encrypted at rest with the same AES-256-GCM pattern every other runtime
+// credential on the platform uses.
+model VoiceConnection {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  propertyId String? @map("property_id") @db.Uuid
+
+  /// twilio today.
+  provider String @default("twilio") @db.VarChar(20)
+
+  accountSid    String  @map("account_sid") @db.VarChar(255)
+  authTokenEnc  String  @map("auth_token_enc") @db.Text
+  /// The tenant's own number, E.164 — what the customer sees ring.
+  fromNumber    String  @map("from_number") @db.VarChar(20)
+
+  /// Off unless deliberately switched on — see the note on CallRecord.
+  recordingEnabled Boolean @default(false) @map("recording_enabled")
+
+  status    String  @default("active") @db.VarChar(20)
+  lastError String? @map("last_error") @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  /// One phone system per site. A tenant with two businesses under one login
+  /// needs two numbers; a tenant with one needs exactly one row.
+  @@unique([tenantId, propertyId], map: "crm_voice_connections_per_site")
+  @@map("crm_voice_connections")
+}

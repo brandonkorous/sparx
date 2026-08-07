@@ -9,18 +9,7 @@
 // Orders are Commerce's data seen from the customer's side, so that one tab
 // wears the Commerce hue via a nested ModuleScope; the rest are the CRM's own.
 
-import { useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  Select,
-  Table,
-  Text,
-  Textarea,
-  useToast,
-} from '@wizeworks/silicaui-react';
+import { Badge, Card, EmptyState, Table, Text } from '@wizeworks/silicaui-react';
 import { Activity, Handshake, ListTodo, Receipt, Repeat, StickyNote } from 'lucide-react';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { ModuleScope } from '../../components/module-scope';
@@ -34,12 +23,11 @@ import { useSubscriptions, type SubscriptionStatus } from '../commerce/subscript
 import { useDeals, formatMoney as formatDealMoney } from './deals-data';
 import { stageTypeMeta } from './pipelines-data';
 import { isOverdue, taskStatusMeta, useTasks } from './tasks-data';
+import { EngagementComposer } from './engagement-composer';
 import {
   activityTone,
   activityTypeLabel,
-  LOGGABLE_ACTIVITY_TYPES,
   useCustomerActivities,
-  useRecordActivity,
   type CustomerActivity,
 } from './customer-activity-data';
 
@@ -423,94 +411,46 @@ function ActivityRow({ activity, isLast }: { activity: CustomerActivity; isLast:
   );
 }
 
-const TYPE_ITEMS = Object.fromEntries(LOGGABLE_ACTIVITY_TYPES.map((t) => [t.value, t.label]));
-
-/** Log a note, call or meeting against this customer — the one place a person
- *  WRITES to the timeline (everything else is recorded by the services that own
- *  the events). It commits straight to the server, so Save lives on the composer
- *  itself, not the pane toolbar. */
-function ActivityComposer({ customerId }: { customerId: string }) {
-  const record = useRecordActivity(customerId);
-  const toast = useToast();
-  const [type, setType] = useState<'note' | 'call' | 'meeting'>('note');
-  const [text, setText] = useState('');
-
-  const submit = () => {
-    if (text.trim() === '') return;
-    record.mutate(
-      { type, description: text },
-      {
-        onSuccess: () => {
-          setText('');
-          toast.add({ title: 'Added to the timeline', type: 'success' });
-        },
-        onError: () => {
-          toast.add({
-            title: 'Could not log that',
-            description: 'Nothing was saved.',
-            type: 'error',
-          });
-        },
-      }
-    );
-  };
-
-  return (
-    <div className="card bg-base-100 flex flex-col gap-3 p-4">
-      <div className="flex flex-col gap-2 @sm:flex-row">
-        <div className="@sm:w-40 @sm:shrink-0">
-          <Select
-            color="module"
-            aria-label="Kind of activity"
-            value={type}
-            items={TYPE_ITEMS}
-            onValueChange={(next) => {
-              setType(next as 'note' | 'call' | 'meeting');
-            }}
-          />
-        </div>
-        <Textarea
-          color="module"
-          rows={2}
-          className="min-w-0 flex-1"
-          placeholder="What happened? Log a note, a call, a meeting…"
-          value={text}
-          onChange={(event) => {
-            setText(event.target.value);
-          }}
-        />
-      </div>
-      <div className="flex justify-end">
-        <Button
-          size="sm"
-          color="module"
-          loading={record.isPending}
-          disabled={text.trim() === ''}
-          onClick={submit}
-        >
-          Add to timeline
-        </Button>
-      </div>
-    </div>
-  );
-}
-
 // The activity types a person AUTHORS by hand — the Notes tab's whole content.
 // Everything else in the log (orders, emails, task/deal lifecycle) is recorded
 // by the services that own it and only ever shows on the broader Activity tab.
-const HUMAN_ACTIVITY_TYPES = new Set(['note', 'call', 'meeting']);
+//
+// The engagement kinds (docs/144 §5) join them: an email someone typed here and
+// a call they logged are as hand-authored as a note, and belong in the same
+// short list rather than buried in the full stream.
+const HUMAN_ACTIVITY_TYPES = new Set([
+  'note',
+  'call',
+  'meeting',
+  'call.logged',
+  'call.missed',
+  'email.sent',
+  'email.replied',
+  'email.received',
+]);
 
-// NOTES — what YOU recorded. A composer to add a note/call/meeting, and just the
+// NOTES — what YOU recorded. The engagement composer, and just the
 // human-authored entries. Deliberately separate from Activity: notes are the
 // handful of things you jot down; activity is the whole event stream, most of it
 // not yours. Different sizes, different jobs, different tabs.
-export function CustomerNotesTab({ customerId }: { customerId: string }) {
+export function CustomerNotesTab({
+  customerId,
+  canEmail,
+}: {
+  customerId: string;
+  /** Whether the person has an email address, so the Email tab is offered only
+   *  when it can actually work. */
+  canEmail?: boolean;
+}) {
   const { data, isPending, isError } = useCustomerActivities(customerId);
   const rows = (data ?? []).filter((activity) => HUMAN_ACTIVITY_TYPES.has(activity.type));
 
   return (
     <div className="flex flex-col gap-3">
-      <ActivityComposer customerId={customerId} />
+      {/* One control for note / email / call (docs/144 §5.5). It replaced a
+          note-only composer: logging what just happened has to be cheaper than
+          not logging it, and everything a CRM knows is downstream of that. */}
+      <EngagementComposer customerId={customerId} canEmail={canEmail} />
       <RelatedCard
         isPending={isPending}
         isError={isError}

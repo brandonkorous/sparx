@@ -6,6 +6,7 @@ resources:
   - crm-automation-triggers.yaml
   - crm-overdue-reminders.yaml
   - crm-segment-recompute.yaml
+  - crm-mailbox-sync.yaml
   - commerce-reservation-reaper.yaml
   - commerce-revenue-rollup.yaml
   - commerce-payment-reconcile-sweep.yaml

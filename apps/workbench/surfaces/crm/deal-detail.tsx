@@ -31,6 +31,7 @@ import {
   Select,
   TagInput,
   Text,
+  Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
@@ -39,6 +40,8 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { CustomPropertiesPanel } from './custom-properties-panel';
+import { AssociationsPanel } from './associations-panel';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useTeamRoster } from '../../lib/api/team';
 import { customerName, useCustomers } from './customers-data';
@@ -68,6 +71,10 @@ interface Draft {
   customerId: string;
   assignedRepId: string;
   tags: string[];
+  /** Why the deal ended the way it did — only meaningful once it is closed. */
+  closedReason: string;
+  /** The extra details THIS business tracks (docs/144 §3). Shape is per-tenant. */
+  customProperties: Record<string, unknown>;
 }
 
 function emptyDraft(): Draft {
@@ -83,6 +90,8 @@ function emptyDraft(): Draft {
     customerId: '',
     assignedRepId: '',
     tags: [],
+    closedReason: '',
+    customProperties: {},
   };
 }
 
@@ -101,6 +110,8 @@ function toDraft(deal: Deal): Draft {
     customerId: deal.customerId ?? '',
     assignedRepId: deal.assignedRepId ?? '',
     tags: deal.tags,
+    closedReason: deal.closedReason ?? '',
+    customProperties: deal.customProperties ?? {},
   };
 }
 
@@ -210,6 +221,13 @@ function DealEditor({ ctx, id, deal }: { ctx: SurfaceContext; id: string; deal?:
   const currentPipeline: Pipeline | undefined = pipelineList.find((p) => p.id === draft.pipelineId);
   const stages = currentPipeline?.stages ?? [];
   const currentStage = stages.find((s) => s.id === draft.stageId);
+  // Whether the deal has finished, and how — drives the "why it was won/lost"
+  // field. Read from the DRAFT's stage, not the saved one, so choosing a closing
+  // stage in the Stage select reveals the field before Save rather than after.
+  const closedStageType =
+    currentStage?.stageType === 'won' || currentStage?.stageType === 'lost'
+      ? currentStage.stageType
+      : null;
 
   const changePipeline = (pipelineId: string) => {
     const pipeline = pipelineList.find((p) => p.id === pipelineId);
@@ -280,6 +298,8 @@ function DealEditor({ ctx, id, deal }: { ctx: SurfaceContext; id: string; deal?:
     customerId: draft.customerId || null,
     assignedRepId: draft.assignedRepId || null,
     tags: draft.tags,
+    closedReason: trimOrNull(draft.closedReason),
+    customProperties: draft.customProperties,
   });
 
   const submit = () => {
@@ -542,6 +562,39 @@ function DealEditor({ ctx, id, deal }: { ctx: SurfaceContext; id: string; deal?:
               />
               <FieldDescription>When you think it will close. Optional.</FieldDescription>
             </Field>
+
+            {/* Only once the deal has finished. Dragging it onto a Won or Lost
+                column asks for this, and it is the one thing about a closed deal
+                nobody can reconstruct six months later — so it has to be visible
+                here afterwards, and correctable. */}
+            {closedStageType ? (
+              <Field>
+                <FieldLabel>
+                  {closedStageType === 'won' ? 'Why it was won' : 'Why it was lost'}
+                </FieldLabel>
+                <FieldControl
+                  render={
+                    <Textarea
+                      color="module"
+                      rows={2}
+                      value={draft.closedReason}
+                      placeholder={
+                        closedStageType === 'won'
+                          ? 'Best price and they knew the team.'
+                          : 'Went with a cheaper quote.'
+                      }
+                      onChange={(event) => {
+                        set('closedReason', event.target.value);
+                      }}
+                    />
+                  }
+                />
+                <FieldDescription>
+                  What actually happened. Worth a sentence — it is what tells you why you win and
+                  lose once there are enough of them.
+                </FieldDescription>
+              </Field>
+            ) : null}
           </FormSection>
 
           <FormSection title="Who and where from">
@@ -601,6 +654,26 @@ function DealEditor({ ctx, id, deal }: { ctx: SurfaceContext; id: string; deal?:
               />
             </Field>
           </FormSection>
+
+          {/* Everyone else on this deal (docs/144 §6). The `Customer` select
+              above names ONE person; a real deal has the one who signs it, the
+              one who will use it and the one who pays, and this is where the
+              other two live. Writes immediately — a relationship is its own
+              record, not a field of this form. */}
+          {!isNew && deal ? (
+            <AssociationsPanel objectKey="deal" recordId={deal.id} ctx={ctx} />
+          ) : null}
+
+          {/* The extra details this business tracks on a deal (docs/144 §3) —
+              "competitor", "renewal month", whatever they already keep in a
+              spreadsheet column. Renders nothing until they declare some. */}
+          <CustomPropertiesPanel
+            objectKey="deal"
+            values={draft.customProperties}
+            onChange={(next) => {
+              set('customProperties', next);
+            }}
+          />
 
           {!isNew && deal ? (
             <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">

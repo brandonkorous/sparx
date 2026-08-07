@@ -51,6 +51,14 @@ model Customer {
   tags                   String[] @default([]) @db.VarChar(63)
   metadata               Json     @default("{}")
 
+  // The extra details THIS business tracks about a person (docs/144 §3) —
+  // "warranty expires", "dietary needs", "referred by". Validated on write
+  // against the `contact` row in crm_object_defs, which is the tenant's own
+  // FieldSchema. Distinct from `metadata`, which is an untyped internal bag no
+  // UI renders and no segment can filter: these are declared, typed, editable,
+  // filterable and reportable — that is the whole difference.
+  customProperties       Json     @default("{}") @map("custom_properties")
+
   // Optional profile photo — a SOFT reference to a MediaAsset (cms module), no
   // FK by design (mirrors CrmActivity.linkedEntityId's cross-module soft ref).
   // The client resolves the id to a URL and falls back to initials if the asset

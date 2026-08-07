@@ -63,6 +63,8 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { CustomPropertiesPanel } from './custom-properties-panel';
+import { AssociationsPanel } from './associations-panel';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useTeamRoster } from '../../lib/api/team';
 import { useAccounts } from './accounts-data';
@@ -147,6 +149,8 @@ interface Draft {
   assignedRepId: string;
   b2bAccountId: string;
   tags: string[];
+  /** The extra details THIS business tracks (docs/144 §3). Shape is per-tenant. */
+  customProperties: Record<string, unknown>;
 }
 
 function emptyDraft(): Draft {
@@ -165,6 +169,7 @@ function emptyDraft(): Draft {
     assignedRepId: '',
     b2bAccountId: '',
     tags: [],
+    customProperties: {},
   };
 }
 
@@ -184,6 +189,7 @@ function toDraft(c: Customer): Draft {
     assignedRepId: c.assignedRepId ?? '',
     b2bAccountId: c.b2bAccountId ?? '',
     tags: c.tags,
+    customProperties: c.customProperties ?? {},
   };
 }
 
@@ -364,6 +370,7 @@ function CustomerEditor({
       : null,
     doNotContact: draft.doNotContact,
     tags: draft.tags,
+    customProperties: draft.customProperties,
   });
 
   const submit = () => {
@@ -711,6 +718,34 @@ function CustomerEditor({
           section only appears once the customer exists. */}
       {!isNew && customer ? <CustomerAddressesSection customerId={customer.id} /> : null}
 
+      {/* Who else this person is connected to (docs/144 §6) — the company they
+          work at, the deals they are involved in, who introduced them. Writes
+          immediately, so it is only offered once the person exists. */}
+      {!isNew && customer ? (
+        <AssociationsPanel
+          objectKey="contact"
+          recordId={customer.id}
+          ctx={ctx}
+          title="Who they are connected to"
+        />
+      ) : null}
+
+      {/* The extra details this business tracks (docs/144 §3). Renders nothing at
+          all until they declare some, so a tenant who has not been near Record
+          types never meets an empty panel asking them to imagine what could go in
+          it. It belongs HERE — with the other fields, above the removal row —
+          because a section a person types into must never sit below the button
+          that deletes the record. */}
+      <CustomPropertiesPanel
+        objectKey="contact"
+        values={draft.customProperties}
+        onChange={(next) => {
+          // `set`, not a raw `setDraft` — it is what marks the pane touched, and
+          // without it an edit made ONLY here leaves Save disabled forever.
+          set('customProperties', next);
+        }}
+      />
+
       {!isNew && customer ? (
         <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
           <Text className="text-sm">
@@ -884,7 +919,7 @@ function CustomerEditor({
                 </TabsPanel>
                 <TabsPanel value="notes">
                   {visited.current.has('notes') ? (
-                    <CustomerNotesTab customerId={customer.id} />
+                    <CustomerNotesTab customerId={customer.id} canEmail={Boolean(customer.email)} />
                   ) : null}
                 </TabsPanel>
                 <TabsPanel value="orders">

@@ -22,7 +22,7 @@
 
 import { MergeCustomersInput } from '@sparx/crm-schemas';
 import { withTenant } from '@sparx/db';
-import type { Customer } from '@sparx/db';
+import type { Customer, Prisma } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import { publishCrmEvent } from '../events';
@@ -40,6 +40,72 @@ export interface MergeResult {
     tasks: number;
     addresses: number;
   };
+}
+
+/**
+ * Move every relationship off the duplicates and onto the primary (docs/144 §6).
+ *
+ * Done one row at a time rather than as an `updateMany`, because the unique
+ * index on (pair, label) means a duplicate that shared a relationship with the
+ * primary — both linked to the same deal as "main contact", which is exactly how
+ * a duplicate gets noticed — would make the bulk update fail. The link that
+ * would collide is DELETED instead: it says the same thing the primary's already
+ * says, so keeping it would be keeping a copy of a fact, not a second fact.
+ *
+ * A link between a duplicate and the primary itself is also dropped — after the
+ * merge it would be the primary related to itself, which the table refuses and
+ * which means nothing anyway.
+ */
+async function moveAssociations(
+  tx: Prisma.TransactionClient,
+  duplicateIds: string[],
+  primaryId: string
+): Promise<void> {
+  const rows = await tx.crmAssociation.findMany({
+    where: {
+      OR: [
+        { fromType: 'contact', fromId: { in: duplicateIds } },
+        { toType: 'contact', toId: { in: duplicateIds } },
+      ],
+    },
+  });
+
+  for (const row of rows) {
+    const onFrom = row.fromType === 'contact' && duplicateIds.includes(row.fromId);
+    const nextFromId = onFrom ? primaryId : row.fromId;
+    const nextToId =
+      row.toType === 'contact' && duplicateIds.includes(row.toId) ? primaryId : row.toId;
+
+    if (row.fromType === row.toType && nextFromId === nextToId) {
+      await tx.crmAssociation.delete({ where: { id: row.id } });
+      continue;
+    }
+
+    const clash = await tx.crmAssociation.findFirst({
+      where: {
+        fromType: row.fromType,
+        fromId: nextFromId,
+        toType: row.toType,
+        toId: nextToId,
+        labelKey: row.labelKey,
+        id: { not: row.id },
+      },
+    });
+    if (clash) {
+      // The primary already holds this exact relationship. Keep whichever is
+      // primary, so a merge never demotes a pointer the reports read.
+      if (row.isPrimary && !clash.isPrimary) {
+        await tx.crmAssociation.update({ where: { id: clash.id }, data: { isPrimary: true } });
+      }
+      await tx.crmAssociation.delete({ where: { id: row.id } });
+      continue;
+    }
+
+    await tx.crmAssociation.update({
+      where: { id: row.id },
+      data: { fromId: nextFromId, toId: nextToId },
+    });
+  }
 }
 
 /** Collapse `duplicateCustomerIds` into `primaryCustomerId`. All ids must
@@ -101,6 +167,11 @@ export async function merge(ctx: ServiceContext, rawInput: unknown): Promise<Mer
         data: { customerId: input.primaryCustomerId },
       }),
     ]);
+
+    // 1b. Relationships (docs/144 §6), both directions. Endpoints carry no FK,
+    // so nothing else moves them — and a merge that left them behind would
+    // silently break "who else is involved" on every deal the duplicate was on.
+    await moveAssociations(tx, duplicateIds, input.primaryCustomerId);
 
     // 2. Roll up commerce stats. Sum across primary + duplicates.
     const totalSpent = liveDuplicates.reduce(

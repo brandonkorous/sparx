@@ -36,6 +36,8 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { CustomPropertiesPanel } from './custom-properties-panel';
+import { AssociationsPanel } from './associations-panel';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useTeamRoster } from '../../lib/api/team';
 import { useViewer } from '../../lib/api/shell-data';
@@ -72,6 +74,8 @@ interface Draft {
   fleetSize: string;
   notes: string;
   tags: string[];
+  /** The extra details THIS business tracks (docs/144 §3). Shape is per-tenant. */
+  customProperties: Record<string, unknown>;
 }
 
 function emptyDraft(): Draft {
@@ -88,6 +92,7 @@ function emptyDraft(): Draft {
     fleetSize: '',
     notes: '',
     tags: [],
+    customProperties: {},
   };
 }
 
@@ -111,6 +116,7 @@ function toDraft(a: B2BAccount): Draft {
     fleetSize: a.fleetSize === null ? '' : String(a.fleetSize),
     notes: a.notes ?? '',
     tags: a.tags,
+    customProperties: a.customProperties ?? {},
   };
 }
 
@@ -261,6 +267,7 @@ function AccountEditor({
     fleetSize: draft.fleetSize.trim() === '' ? null : Number(draft.fleetSize),
     notes: trimOrNull(draft.notes),
     tags: draft.tags,
+    customProperties: draft.customProperties,
   });
 
   const submit = () => {
@@ -628,6 +635,28 @@ function AccountEditor({
               />
             </Field>
           </FormSection>
+
+          {/* The people at this business, and any group it belongs to
+              (docs/144 §6). Writes immediately, so it is only offered once the
+              account exists. */}
+          {!isNew && account ? (
+            <AssociationsPanel
+              objectKey="company"
+              recordId={account.id}
+              ctx={ctx}
+              title="Who is involved here"
+            />
+          ) : null}
+
+          {/* The extra details this business tracks on a company (docs/144 §3).
+              Renders nothing until they declare some. */}
+          <CustomPropertiesPanel
+            objectKey="company"
+            values={draft.customProperties}
+            onChange={(next) => {
+              set('customProperties', next);
+            }}
+          />
 
           {!isNew && account ? (
             <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">

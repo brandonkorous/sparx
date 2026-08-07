@@ -59,6 +59,10 @@ export interface Customer {
   preferredContactMethod: string | null;
   doNotContact: boolean;
   tags: string[];
+  /** The extra details this business declared on contacts (docs/144 §3). Its
+   *  shape is per-tenant, so it stays an open bag here and is rendered by
+   *  reading the tenant's own property schema. */
+  customProperties: Record<string, unknown>;
   /** Optional profile photo — a MediaAsset id, resolved to a URL for display. */
   avatarMediaAssetId: string | null;
   /** Serialized Prisma Decimal — a string like `"1234.50"`. */
@@ -497,6 +501,8 @@ export interface CustomerInput {
   preferredContactMethod?: 'email' | 'phone' | 'sms' | null;
   doNotContact?: boolean;
   tags?: string[];
+  /** Merged onto what is stored — sending one detail changes only that one. */
+  customProperties?: Record<string, unknown>;
   /** A MediaAsset id for the profile photo; `null` clears it. */
   avatarMediaAssetId?: string | null;
 }

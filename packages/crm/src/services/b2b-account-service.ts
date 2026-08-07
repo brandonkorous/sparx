@@ -12,6 +12,8 @@ import { writeAuditLog } from '../audit';
 import { publishCrmEvent } from '../events';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError } from '../errors';
+import { changedProperties, resolvePropertyBag, toJsonInput } from './custom-properties';
+import { schemaFor } from './object-def-service';
 
 export interface ListB2BAccountsFilter {
   status?: 'active' | 'credit_hold' | 'suspended' | 'inactive';
@@ -61,6 +63,15 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<B2
   const input = CreateB2BAccountInput.parse(rawInput);
 
   const account = await withTenant(ctx, async (tx) => {
+    // Tenant-declared extra fields on a company (docs/144 §3). The object key is
+    // `company`, not `b2b_account` — the vocabulary a business owner uses should
+    // not have to change under them when §11 renames the table.
+    const customProperties = resolvePropertyBag({
+      schema: await schemaFor(ctx, 'company', tx),
+      existing: {},
+      incoming: input.customProperties ?? {},
+    });
+
     const created = await tx.b2BAccount.create({
       data: {
         tenantId: ctx.tenantId,
@@ -77,6 +88,9 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<B2
         engineProfiles: input.engineProfiles,
         notes: input.notes ?? null,
         tags: input.tags ?? [],
+        ...(customProperties !== undefined
+          ? { customProperties: toJsonInput(customProperties) }
+          : {}),
       },
     });
 
@@ -111,11 +125,21 @@ export async function update(
 ): Promise<B2BAccount> {
   const input = UpdateB2BAccountInput.parse(rawInput);
 
+  // Captured inside the transaction, read after it commits — the property-changed
+  // event must never be emitted for a write that rolled back.
+  let changedPropertyKeys: string[] = [];
+
   const result = await withTenant(ctx, async (tx) => {
     const before = await tx.b2BAccount.findUnique({ where: { id: accountId } });
     if (before?.deletedAt !== null) {
       throw new CrmNotFoundError('B2BAccount', accountId);
     }
+
+    const customProperties = resolvePropertyBag({
+      schema: await schemaFor(ctx, 'company', tx),
+      existing: before.customProperties,
+      incoming: input.customProperties,
+    });
 
     const updated = await tx.b2BAccount.update({
       where: { id: accountId },
@@ -133,6 +157,9 @@ export async function update(
         ...(input.engineProfiles !== undefined ? { engineProfiles: input.engineProfiles } : {}),
         ...(input.notes !== undefined ? { notes: input.notes } : {}),
         ...(input.tags !== undefined ? { tags: input.tags } : {}),
+        ...(customProperties !== undefined
+          ? { customProperties: toJsonInput(customProperties) }
+          : {}),
       },
     });
 
@@ -147,6 +174,7 @@ export async function update(
       diff: { before: { status: before.status }, after: { status: updated.status } },
     });
 
+    changedPropertyKeys = changedProperties(before.customProperties, updated.customProperties);
     return updated;
   });
 
@@ -156,6 +184,15 @@ export async function update(
     payload: { b2bAccountId: result.id, status: result.status },
     dedupeKey: `crm.b2b_account.updated:${result.id}:${result.updatedAt.toISOString()}`,
   });
+
+  if (changedPropertyKeys.length > 0) {
+    await publishCrmEvent({
+      tenantId: ctx.tenantId,
+      topic: 'crm.property.changed',
+      payload: { objectKey: 'company', recordId: result.id, properties: changedPropertyKeys },
+      dedupeKey: `crm.property.changed:${result.id}:${result.updatedAt.toISOString()}`,
+    });
+  }
 
   return result;
 }

@@ -1,0 +1,76 @@
+# Connected-mailbox poll (docs/144 §5.2).
+#
+# THIS JOB IS THE ONLY THING THAT BRINGS INBOUND MAIL ONTO A TIMELINE. sparx
+# polls IMAP rather than holding an always-open IDLE socket per mailbox per
+# tenant — a socket mail servers drop without telling you, in a pod that
+# restarts on every deploy. Nothing arrives unless this runs.
+#
+# Every five minutes, which is what a person means by "the reply shows up on
+# the record". Each poll asks only for UIDs above the stored cursor, so a quiet
+# mailbox costs one short connection and no message transfer at all.
+#
+# `Forbid` matters more here than on the nightly jobs: two overlapping runs
+# would open two sessions against the same mail server, and several providers
+# rate-limit or temporarily lock an account for exactly that.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: crm-mailbox-sync
+  namespace: sparx-prod
+  labels:
+    app: crm-cron
+    job: mailbox-sync
+spec:
+  schedule: '*/5 * * * *'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  # A missed window is skipped rather than queued: the next poll picks up
+  # everything since the cursor anyway, so a backlog of catch-up runs would all
+  # do the same work.
+  startingDeadlineSeconds: 120
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            app: crm-cron
+            job: mailbox-sync
+        spec:
+          serviceAccountName: sparx-app
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.1
+              command: ['sh', '-c']
+              args:
+                - >
+                  curl --fail-with-body --silent --show-error
+                  --max-time 270
+                  -X POST
+                  -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
+                  http://api-rest.sparx-prod.svc.cluster.local:3000/internal/crm/mailbox-sync
+              env:
+                - name: SPARX_INTERNAL_CRON_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: sparx-app-secrets
+                      key: SPARX_INTERNAL_CRON_TOKEN
+              resources:
+                requests:
+                  cpu: '50m'
+                  memory: '32Mi'
+                limits:
+                  cpu: '200m'
+                  memory: '64Mi'
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ['ALL']
+                seccompProfile:
+                  type: RuntimeDefault

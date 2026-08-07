@@ -11,6 +11,11 @@
 import { z } from 'zod';
 import { withTenant } from '@sparx/db';
 import { notFound } from '@sparx/api-core/errors';
+// A trade account IS the CRM's company row, so its tenant-declared properties go
+// through the CRM's single write path rather than a second one here (docs/144
+// §3). `@sparx/b2b` already depends on `@sparx/crm`, and crm does not depend
+// back, so this adds no cycle.
+import { asBag, objectDefService, resolvePropertyBag, toJsonInput } from '@sparx/crm';
 import type { B2bContext } from './context.js';
 
 // ── Schemas ──────────────────────────────────────────────────────────────────
@@ -32,6 +37,13 @@ export const AccountPatchBody = z.object({
   status: z.enum(['active', 'credit_hold', 'suspended', 'inactive']).optional(),
   internalNotes: z.string().max(5000).nullable().optional(),
   fleetSize: z.number().int().min(0).nullable().optional(),
+  // The extra details this business tracks on a company (docs/144 §3). A trade
+  // account IS the CRM's company, so the same declared properties have to be
+  // writable from the wholesale pane — otherwise the same record answers
+  // differently depending on which door you came in through. NO `.default({})`:
+  // a default survives `.partial()` and would fabricate an empty bag on every
+  // patch, wiping properties the caller never mentioned.
+  customProperties: z.record(z.string(), z.unknown()).optional(),
 });
 
 export const AccountOverrideBody = z
@@ -114,6 +126,7 @@ function toAccountView(a: {
   fleetSize: number | null;
   engineProfiles: unknown;
   notes: string | null;
+  customProperties?: unknown;
   createdAt: Date;
   updatedAt: Date;
   pricingTierFk?: { id: string; name: string; discountType: string; discountValue: unknown } | null;
@@ -145,6 +158,7 @@ function toAccountView(a: {
     fleetSize: a.fleetSize,
     engineProfiles: a.engineProfiles,
     notes: a.notes,
+    customProperties: asBag(a.customProperties),
     createdAt: a.createdAt.toISOString(),
     updatedAt: a.updatedAt.toISOString(),
   };
@@ -324,8 +338,18 @@ export async function updateTradeConfig(
     if (!tier) throw notFound('pricing tier');
   }
 
-  const updated = await withTenant(ctx, (tx) =>
-    tx.b2BAccount.update({
+  const updated = await withTenant(ctx, async (tx) => {
+    // ONE write path for declared properties, shared with the CRM's own company
+    // pane: validate against the tenant's schema, recompute calculated fields,
+    // then merge onto what is stored. `undefined` when the patch says nothing
+    // about them, which leaves the stored bag untouched.
+    const customProperties = resolvePropertyBag({
+      schema: await objectDefService.schemaFor(ctx, 'company', tx),
+      existing: existing.customProperties,
+      incoming: body.customProperties,
+    });
+
+    return tx.b2BAccount.update({
       where: { id },
       data: {
         pricingTierId: body.pricingTierId,
@@ -338,11 +362,14 @@ export async function updateTradeConfig(
         status: body.status,
         notes: body.internalNotes,
         fleetSize: body.fleetSize,
+        ...(customProperties !== undefined
+          ? { customProperties: toJsonInput(customProperties) }
+          : {}),
         updatedAt: new Date(),
       },
       include: PRICING_TIER_FK_SELECT,
-    })
-  );
+    });
+  });
   return toAccountView(updated);
 }
 

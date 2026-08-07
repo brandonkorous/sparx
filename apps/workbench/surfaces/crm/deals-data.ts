@@ -48,6 +48,8 @@ export interface Deal {
   closedReason: string | null;
   source: string | null;
   tags: string[];
+  /** The extra details THIS business tracks on a deal (docs/144 §3). */
+  customProperties: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
   /** Present on list + detail via the service include. */
@@ -61,6 +63,12 @@ export interface DealListParams {
   stageId?: string;
   customerId?: string;
   state?: 'open' | 'closed';
+  /**
+   * How many to pull. The table wants a page; the board wants every deal on the
+   * pipeline at once, because a column that silently stops at 100 reads as "this
+   * is all of them" when it isn't. Server caps this at 250.
+   */
+  take?: number;
 }
 
 export const dealKeys = {
@@ -78,6 +86,36 @@ export function dealCustomerName(link: DealCustomerLink | null): string | null {
   if (link.company?.trim()) return link.company.trim();
   if (link.email?.trim()) return link.email.trim();
   return 'A customer';
+}
+
+/**
+ * The one thing worth saying about a deal at a glance, or nothing.
+ *
+ * A board card that badges everything badges nothing, so this returns AT MOST
+ * one signal, and only when the date is actually urgent: a close date three
+ * months out is not news. Closed deals return null — "past due" on a deal you
+ * won last week is noise.
+ */
+export function dealDueSignal(
+  deal: Pick<Deal, 'expectedCloseDate' | 'stage'>,
+  now: Date = new Date()
+): { label: string; tone: 'danger' | 'warning' } | null {
+  if (deal.stage && deal.stage.stageType !== 'open') return null;
+  if (!deal.expectedCloseDate) return null;
+
+  const due = new Date(deal.expectedCloseDate);
+  if (Number.isNaN(due.getTime())) return null;
+
+  // Whole days apart, both floored to local midnight — otherwise a deal due
+  // this afternoon reads as "due in 0 days" all morning and "past due" at 5pm.
+  const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  const days = Math.round((startOfDay(due) - startOfDay(now)) / 86_400_000);
+
+  if (days < 0) return { label: days === -1 ? '1 day late' : `${-days} days late`, tone: 'danger' };
+  if (days === 0) return { label: 'Due today', tone: 'warning' };
+  if (days === 1) return { label: 'Due tomorrow', tone: 'warning' };
+  if (days <= 7) return { label: `Due in ${days} days`, tone: 'warning' };
+  return null;
 }
 
 export function formatMoney(value: number | string | null | undefined, currency = 'USD'): string {
@@ -102,7 +140,7 @@ export function useDeals(params: DealListParams) {
         ...(params.stageId ? { stage_id: params.stageId } : {}),
         ...(params.customerId ? { customer_id: params.customerId } : {}),
         ...(params.state ? { state: params.state } : {}),
-        take: 100,
+        take: params.take ?? 100,
       }),
     placeholderData: (previous) => previous,
   });
@@ -142,6 +180,8 @@ export interface DealInput {
   expectedCloseDate?: string | null;
   source?: string | null;
   tags?: string[];
+  closedReason?: string | null;
+  customProperties?: Record<string, unknown>;
 }
 
 export function useCreateDeal() {
@@ -173,6 +213,78 @@ export function useMoveDealStage(id: string) {
       api.post<Deal>(`/v1/crm/deals/${id}/move-stage`, input),
     onSuccess: () => {
       invalidate(id);
+    },
+  });
+}
+
+/**
+ * Move ANY deal to a new stage — the board's mutation.
+ *
+ * `useMoveDealStage` above is bound to one id, which is right for the detail
+ * pane and wrong for a board where every card is a candidate. This takes the
+ * deal in the variables instead, and patches the cached lists optimistically so
+ * the card lands in its new column on drop rather than after a round trip.
+ *
+ * The caller passes the whole target stage, not just its id: a cached row
+ * carries `stage: { name, stageType }` for its badge, so patching only
+ * `stageId` would leave the card labelled with the stage it came from until the
+ * refetch landed.
+ */
+export function useMoveDealToStage() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      toStage,
+      closedReason,
+    }: {
+      id: string;
+      toStage: { id: string; name: string; stageType: StageType };
+      closedReason?: string;
+    }) =>
+      api.post<Deal>(`/v1/crm/deals/${id}/move-stage`, {
+        toStageId: toStage.id,
+        ...(closedReason?.trim() ? { closedReason: closedReason.trim() } : {}),
+      }),
+
+    onMutate: async ({ id, toStage }) => {
+      // Stop an in-flight list refetch from overwriting the patch below.
+      await queryClient.cancelQueries({ queryKey: dealKeys.all });
+      const previous = queryClient.getQueriesData({ queryKey: dealKeys.all });
+
+      queryClient.setQueriesData<{ items: Deal[]; total?: number }>(
+        { queryKey: dealKeys.all },
+        (current) => {
+          if (!current?.items) return current;
+          return {
+            ...current,
+            items: current.items.map((deal) =>
+              deal.id === id
+                ? {
+                    ...deal,
+                    stageId: toStage.id,
+                    stage: { name: toStage.name, stageType: toStage.stageType },
+                  }
+                : deal
+            ),
+          };
+        }
+      );
+
+      return { previous };
+    },
+
+    onError: (_error, _variables, context) => {
+      // Put every list back exactly as it was — the card returns to its column.
+      for (const [key, data] of context?.previous ?? []) {
+        queryClient.setQueryData(key, data);
+      }
+    },
+
+    // Settled, not success: a failed move still needs the server's truth back.
+    onSettled: (_deal, _error, variables) => {
+      void queryClient.invalidateQueries({ queryKey: dealKeys.all });
+      void queryClient.invalidateQueries({ queryKey: dealKeys.detail(variables.id) });
     },
   });
 }

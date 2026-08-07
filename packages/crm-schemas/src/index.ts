@@ -8,6 +8,10 @@
 
 export * from './customers';
 export * from './b2b-accounts';
+export * from './object-defs';
+export * from './associations';
+export * from './engagement';
+export * from './calls';
 export * from './pipelines';
 export * from './deals';
 export * from './activities';

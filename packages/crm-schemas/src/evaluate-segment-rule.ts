@@ -7,7 +7,7 @@
 // Same function, three callers — no rule-evaluation drift between dashboard
 // preview and production materialization.
 
-import type { PredicateLeaf, SegmentField, SegmentOperator, SegmentRule } from './segment-rule';
+import type { PredicateLeaf, SegmentFieldPath, SegmentOperator, SegmentRule } from './segment-rule';
 
 // Projection is typed loosely here so the evaluator stays a pure JS function
 // — the Zod schema lives next to the field whitelist in segment-rule.ts.
@@ -17,6 +17,18 @@ export interface RuleProjection {
   customer: Record<string, unknown>;
   b2bAccount: Record<string, unknown> | null;
   email: Record<string, unknown>;
+  /**
+   * Tenant-declared property bags, keyed by object (docs/144 §3.4) — so
+   * `custom.contact.warrantyExpires` reads `custom.contact.warrantyExpires`
+   * here. Optional: a projection built before this feature existed, or for a
+   * tenant that has declared nothing, simply omits it and every custom
+   * predicate reads null (and so matches only `is_null`).
+   */
+  custom?: {
+    contact?: Record<string, unknown>;
+    company?: Record<string, unknown>;
+    deal?: Record<string, unknown>;
+  };
 }
 
 export function evaluateSegmentRule(rule: SegmentRule, projection: RuleProjection): boolean {
@@ -44,12 +56,37 @@ function evaluatePredicate(leaf: PredicateLeaf, projection: RuleProjection): boo
   return applyOperator(leaf.op, fieldValue, leaf.value);
 }
 
-/** Walk the dotted path (e.g. `customer.totalSpent`) into the projection. */
-function readField(field: SegmentField, projection: RuleProjection): unknown {
+/**
+ * Walk the dotted path into the projection.
+ *
+ * Two shapes: a two-part spine path (`customer.totalSpent`) and a three-part
+ * tenant-declared one (`custom.contact.warrantyExpires`). A missing bag reads
+ * null rather than throwing — a business that removed a property yesterday must
+ * not have every segment referencing it start erroring today.
+ */
+function readField(field: SegmentFieldPath, projection: RuleProjection): unknown {
   const parts = field.split('.');
+
+  if (parts[0] === 'custom') {
+    const objectKey = parts[1] as keyof NonNullable<RuleProjection['custom']>;
+    const propertyKey = parts[2] ?? '';
+    const bag = projection.custom?.[objectKey];
+    if (bag == null) return null;
+    const raw = bag[propertyKey];
+    // A `currency` property compares on its amount — "spend over 500" should
+    // work without the rule author knowing money is stored as a pair.
+    if (raw && typeof raw === 'object' && !Array.isArray(raw) && 'amount' in raw) {
+      return raw.amount;
+    }
+    return raw ?? null;
+  }
+
   const root = parts[0] as keyof RuleProjection;
   const key = parts[1] ?? '';
-  const obj = projection[root] as Record<string, unknown> | null | undefined;
+  // The `custom` branch above already returned, so what is left is one of the
+  // flat projection groups — a bag of values keyed by property name.
+  const obj: Record<string, unknown> | null | undefined =
+    root === 'custom' ? null : projection[root];
   if (obj == null) return null;
   return obj[key];
 }

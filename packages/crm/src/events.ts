@@ -69,7 +69,35 @@ export type CrmTopic =
   | 'crm.billing_document.finalized'
   | 'crm.billing_document.paid'
   | 'crm.billing_document.voided'
-  | 'crm.billing_document.converted';
+  | 'crm.billing_document.converted'
+  // The object registry (docs/144 §3). A schema change is worth an event
+  // because it invalidates cached property lists in every open workbench pane
+  // and every AI client that read the object's shape.
+  | 'crm.object_def.created'
+  | 'crm.object_def.updated'
+  | 'crm.object_def.archived'
+  // Rows of a tenant-invented object. Named generically (`record`, with the
+  // object key in the payload) rather than per-object, because the whole point
+  // of a custom object is that we do not know its name at build time.
+  | 'crm.record.created'
+  | 'crm.record.updated'
+  | 'crm.record.deleted'
+  // A tenant-declared property changed value on ANY object. The automation
+  // engine's `crm.property.changed` trigger (docs/144 §9) keys off this; the
+  // payload carries the object key, the record id and which properties moved.
+  | 'crm.property.changed'
+  // Relationships (docs/144 §6). Worth an event because "a decision maker was
+  // added to this deal" is a thing a business wants to act on — notify the rep,
+  // start a sequence — and because the panel on any open pane showing the other
+  // record is now stale.
+  | 'crm.association.added'
+  | 'crm.association.removed'
+  // The engagement spine (docs/144 §5). `engagement.received` is the one a
+  // business most wants to act on — a customer replied — and the one the
+  // automation engine's "they answered" trigger keys off.
+  | 'crm.engagement.sent'
+  | 'crm.engagement.received'
+  | 'crm.engagement.logged';
 
 export interface Publisher {
   publish(event: CrmEvent): Promise<void>;

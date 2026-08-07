@@ -7,12 +7,16 @@
 // no one of them owns the namespace. See lib/order-context.ts.
 
 import type { FastifyPluginAsync } from 'fastify';
-import { pipelineService, segmentService } from '@sparx/crm';
+import { associationService, objectDefService, pipelineService, segmentService } from '@sparx/crm';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 
 import customerRoutes from './customers.js';
 import b2bAccountRoutes from './b2b-accounts.js';
+import objectDefRoutes from './object-defs.js';
+import associationRoutes from './associations.js';
+import engagementRoutes from './engagement.js';
+import callRoutes from './calls.js';
 import pipelineRoutes from './pipelines.js';
 import dealRoutes from './deals.js';
 import activityRoutes from './activities.js';
@@ -23,6 +27,13 @@ import crmImportExportRoutes from './import.js';
 import { toCrmContext } from '../../../lib/crm-context.js';
 
 const crmRoutes: FastifyPluginAsync = async (app) => {
+  // The object registry first — it is what says what every other record IS.
+  await app.register(objectDefRoutes);
+  // Associations name their endpoints with object keys, so they follow the
+  // registry (docs/144 §14 — phases 1 and 2 are strictly ordered).
+  await app.register(associationRoutes);
+  await app.register(engagementRoutes);
+  await app.register(callRoutes);
   await app.register(customerRoutes);
   await app.register(b2bAccountRoutes);
   await app.register(pipelineRoutes);
@@ -42,6 +53,11 @@ const crmRoutes: FastifyPluginAsync = async (app) => {
   app.post('/v1/crm/bootstrap', async (request) => {
     requireRole(request, 'admin');
     const ctx = toCrmContext(request);
+    // The object registry first: every contact/deal/company write reads its
+    // object's schema, so the four built-in rows have to exist before the
+    // pipeline and segment seeds below create anything.
+    await objectDefService.ensureBuiltins(ctx);
+    await associationService.ensureBuiltinLabels(ctx);
     await pipelineService.bootstrapDefaultPipeline(ctx);
     await segmentService.bootstrapBuiltInSegments(ctx);
     return ok({ bootstrapped: true });

@@ -28,6 +28,8 @@ import type { Customer, CustomerAddress, CustomerDocument, Prisma } from '@sparx
 
 import { writeAuditLog } from '../audit';
 import { publishCrmEvent } from '../events';
+import { changedProperties, resolvePropertyBag, toJsonInput } from './custom-properties';
+import { schemaFor } from './object-def-service';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError } from '../errors';
 import { ensureBuiltInSegment } from './segment-service';
@@ -161,6 +163,15 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Cu
   const input = CreateCustomerInput.parse(rawInput);
 
   const customer = await withTenant(ctx, async (tx) => {
+    // The tenant's declared extra fields (docs/144 §3), validated + calculated
+    // inside the same transaction that writes the row, so a bad property can
+    // never leave a half-created contact behind.
+    const customProperties = resolvePropertyBag({
+      schema: await schemaFor(ctx, 'contact', tx),
+      existing: {},
+      incoming: input.customProperties ?? {},
+    });
+
     const created = await tx.customer.create({
       data: {
         tenantId: ctx.tenantId,
@@ -183,6 +194,9 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Cu
         gdprConsent: input.gdprConsent ?? {},
         tags: input.tags ?? [],
         metadata: (input.metadata ?? {}) as Prisma.InputJsonValue,
+        ...(customProperties !== undefined
+          ? { customProperties: toJsonInput(customProperties) }
+          : {}),
         avatarMediaAssetId: input.avatarMediaAssetId ?? null,
       },
     });
@@ -390,6 +404,14 @@ export async function update(
       throw new CrmNotFoundError('Customer', customerId);
     }
 
+    // Merged onto what is stored, not replacing it: a PATCH carrying one extra
+    // detail means "change this one", never "delete the other nine".
+    const customProperties = resolvePropertyBag({
+      schema: await schemaFor(ctx, 'contact', tx),
+      existing: before.customProperties,
+      incoming: input.customProperties,
+    });
+
     const updated = await tx.customer.update({
       where: { id: customerId },
       data: {
@@ -420,6 +442,9 @@ export async function update(
         ...(input.avatarMediaAssetId !== undefined
           ? { avatarMediaAssetId: input.avatarMediaAssetId }
           : {}),
+        ...(customProperties !== undefined
+          ? { customProperties: toJsonInput(customProperties) }
+          : {}),
       },
     });
 
@@ -434,17 +459,35 @@ export async function update(
       diff: { before: serializeCustomer(before), after: serializeCustomer(updated) },
     });
 
-    return updated;
+    return {
+      updated,
+      changed: changedProperties(before.customProperties, updated.customProperties),
+    };
   });
 
   await publishCrmEvent({
     tenantId: ctx.tenantId,
     topic: 'crm.customer.updated',
-    payload: { customerId: result.id },
-    dedupeKey: `crm.customer.updated:${result.id}:${result.updatedAt.toISOString()}`,
+    payload: { customerId: result.updated.id },
+    dedupeKey: `crm.customer.updated:${result.updated.id}:${result.updated.updatedAt.toISOString()}`,
   });
 
-  return result;
+  // Only when a DECLARED property actually moved (docs/144 §9). An edit to a
+  // phone number must not wake every workflow watching this object.
+  if (result.changed.length > 0) {
+    await publishCrmEvent({
+      tenantId: ctx.tenantId,
+      topic: 'crm.property.changed',
+      payload: {
+        objectKey: 'contact',
+        recordId: result.updated.id,
+        properties: result.changed,
+      },
+      dedupeKey: `crm.property.changed:${result.updated.id}:${result.updated.updatedAt.toISOString()}`,
+    });
+  }
+
+  return result.updated;
 }
 
 export async function softDelete(ctx: ServiceContext, customerId: string): Promise<Customer> {

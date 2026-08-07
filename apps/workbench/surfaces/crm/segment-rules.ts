@@ -25,7 +25,13 @@
 // can author, and safe (never throws) for anything it cannot.
 // ══════════════════════════════════════════════════════════════════════════
 
-import type { PredicateLeaf, SegmentField, SegmentOperator, SegmentRule } from '@sparx/crm-schemas';
+import type {
+  PredicateLeaf,
+  SegmentField,
+  SegmentFieldPath,
+  SegmentOperator,
+  SegmentRule,
+} from '@sparx/crm-schemas';
 import {
   LEAD_STATUSES,
   LIFECYCLE_STAGES,
@@ -37,7 +43,7 @@ import {
 
 // Re-exported so the rest of the surface imports these from one place — but they
 // are the REAL shared types, not a local copy.
-export type { PredicateLeaf, SegmentField, SegmentOperator, SegmentRule };
+export type { PredicateLeaf, SegmentField, SegmentFieldPath, SegmentOperator, SegmentRule };
 
 /** A JSON scalar — the concrete leaf a predicate value can be. Not a server enum,
  *  just the shape `coerceScalar` produces before it goes into a `PredicateLeaf`. */
@@ -59,8 +65,10 @@ export type ValueKind =
 
 interface FieldMeta {
   label: string;
-  /** Which card the field is grouped under in the picker. */
-  group: 'Customer' | 'Wholesale account' | 'Email';
+  /** Which card the field is grouped under in the picker. Open, not a union:
+   *  a tenant-declared property group is named after the business's own record
+   *  type, which cannot be known here (docs/144 §3.4). */
+  group: string;
   kind: ValueKind;
   /** For `enum` fields — the allowed values and their plain labels. */
   options?: { value: string; label: string }[];
@@ -160,8 +168,55 @@ export const FIELD_META: Record<SegmentField, FieldMeta> = {
  *  guarantee in one place and hands callers a `FieldMeta`, not the
  *  `FieldMeta | undefined` a bare `FIELD_META[field]` widens to across a module
  *  boundary under `noUncheckedIndexedAccess`. */
-export function fieldMeta(field: SegmentField): FieldMeta {
-  return FIELD_META[field];
+export function fieldMeta(field: SegmentFieldPath, custom: CustomFieldIndex = {}): FieldMeta {
+  // A tenant-declared property (docs/144 §3.4). It cannot be in the map above —
+  // it did not exist when this file was written — so its metadata is derived
+  // from the object's own schema, and falls back to a readable label if the
+  // property has since been removed (an old rule must still RENDER).
+  if (field.startsWith('custom.')) {
+    const [, objectKey = '', propertyKey = ''] = field.split('.');
+    const declared = custom[objectKey]?.find((f) => f.key === propertyKey);
+    return {
+      label: declared?.label ?? propertyKey,
+      group: CUSTOM_GROUP_LABELS[objectKey] ?? 'Extra details',
+      kind: declared ? valueKindFor(declared.type) : 'text',
+      hint: declared?.helpText,
+    };
+  }
+  return FIELD_META[field as SegmentField];
+}
+
+/** Tenant-declared property fields, by object key, as the builder knows them. */
+export type CustomFieldIndex = Record<
+  string,
+  { key: string; label: string; type: string; helpText?: string }[]
+>;
+
+const CUSTOM_GROUP_LABELS: Record<string, string> = {
+  contact: 'Your customer details',
+  company: 'Your company details',
+  deal: 'Your deal details',
+};
+
+/** Map a field-engine type onto the builder's value kinds. */
+function valueKindFor(type: string): ValueKind {
+  switch (type) {
+    case 'number':
+    case 'currency':
+    case 'calculated':
+      return 'number';
+    case 'boolean':
+      return 'boolean';
+    case 'date':
+    case 'datetime':
+      return 'date';
+    case 'enum':
+      return 'text';
+    case 'user':
+      return 'rep';
+    default:
+      return 'text';
+  }
 }
 
 /**
@@ -199,12 +254,26 @@ export const OFFERED_FIELDS: SegmentField[] = [
 /** The field picker's items, always including `current` even when it is a field
  *  the builder does not otherwise offer (a stored date rule, say), so loading
  *  never drops a condition. Grouped by area, offered fields first. */
-export function fieldOptionsIncluding(current: SegmentField): { value: string; label: string }[] {
-  const fields = OFFERED_FIELDS.includes(current) ? OFFERED_FIELDS : [...OFFERED_FIELDS, current];
-  return fields.map((f) => ({
-    value: f,
-    label: `${FIELD_META[f].group} · ${FIELD_META[f].label}`,
-  }));
+export function fieldOptionsIncluding(
+  current: SegmentFieldPath,
+  custom: CustomFieldIndex = {}
+): { value: string; label: string }[] {
+  // Every tenant-declared property, offered alongside the built-in ones — a
+  // property you cannot filter on is a text box, not a property (docs/144 §3.4).
+  const customPaths: SegmentFieldPath[] = Object.entries(custom).flatMap(([objectKey, fields]) =>
+    fields
+      // A calculated property is a real number and filters fine; an asset or a
+      // repeater has no sensible comparison, so it is not offered.
+      .filter((f) => !['asset', 'object', 'repeater', 'rich_text'].includes(f.type))
+      .map((f) => `custom.${objectKey}.${f.key}`)
+  );
+
+  const all: SegmentFieldPath[] = [...OFFERED_FIELDS, ...customPaths];
+  const fields = all.includes(current) ? all : [...all, current];
+  return fields.map((f) => {
+    const meta = fieldMeta(f, custom);
+    return { value: f, label: `${meta.group} · ${meta.label}` };
+  });
 }
 
 /* ── Operators ──────────────────────────────────────────────────────────── */
@@ -223,17 +292,21 @@ const OPERATORS_BY_KIND: Record<ValueKind, SegmentOperator[]> = {
 /** The operators offered for a field, always including `current` so a stored
  *  operator the builder would not offer still renders. */
 export function operatorOptionsIncluding(
-  field: SegmentField,
-  current: SegmentOperator
+  field: SegmentFieldPath,
+  current: SegmentOperator,
+  custom: CustomFieldIndex = {}
 ): { value: SegmentOperator; label: string }[] {
-  const kind = FIELD_META[field].kind;
+  const kind = fieldMeta(field, custom).kind;
   const base = OPERATORS_BY_KIND[kind];
   const ops = base.includes(current) ? base : [...base, current];
   return ops.map((op) => ({ value: op, label: operatorLabel(op, kind) }));
 }
 
-export function defaultOperator(field: SegmentField): SegmentOperator {
-  return OPERATORS_BY_KIND[FIELD_META[field].kind][0] ?? 'eq';
+export function defaultOperator(
+  field: SegmentFieldPath,
+  custom: CustomFieldIndex = {}
+): SegmentOperator {
+  return OPERATORS_BY_KIND[fieldMeta(field, custom).kind][0] ?? 'eq';
 }
 
 /** Plain-language operator label, tuned per value kind (a date reads "is after",
@@ -298,7 +371,7 @@ export type Combinator = 'and' | 'or';
 export interface PredNode {
   id: string;
   kind: 'predicate';
-  field: SegmentField;
+  field: SegmentFieldPath;
   op: SegmentOperator;
   /** Single value, or the low bound of a `between`, or a comma list for in/not_in. */
   value: string;
@@ -323,9 +396,12 @@ function newId(): string {
     : `n_${Math.random().toString(36).slice(2)}`;
 }
 
-export function newPredicate(field: SegmentField = 'customer.type'): PredNode {
-  const op = defaultOperator(field);
-  const meta = FIELD_META[field];
+export function newPredicate(
+  field: SegmentFieldPath = 'customer.type',
+  custom: CustomFieldIndex = {}
+): PredNode {
+  const op = defaultOperator(field, custom);
+  const meta = fieldMeta(field, custom);
   const value =
     meta.kind === 'enum' ? (meta.options?.[0]?.value ?? '') : meta.kind === 'boolean' ? 'true' : '';
   return { id: newId(), kind: 'predicate', field, op, value, value2: '' };
@@ -357,8 +433,8 @@ function coerceScalar(kind: ValueKind, raw: string): Literal {
   return s;
 }
 
-function serializePredicate(node: PredNode): PredicateLeaf | null {
-  const kind = FIELD_META[node.field].kind;
+function serializePredicate(node: PredNode, custom: CustomFieldIndex = {}): PredicateLeaf | null {
+  const kind = fieldMeta(node.field, custom).kind;
   if (!operatorTakesValue(node.op)) {
     return { kind: 'predicate', field: node.field, op: node.op };
   }
@@ -397,7 +473,7 @@ export function serializeNode(
   if (node.kind === 'predicate') {
     const leaf = serializePredicate(node);
     if (!leaf) {
-      return { ok: false, error: `Fill in a value for “${FIELD_META[node.field].label}”.` };
+      return { ok: false, error: `Fill in a value for “${fieldMeta(node.field).label}”.` };
     }
     return { ok: true, rule: leaf };
   }

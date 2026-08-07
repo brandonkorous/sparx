@@ -1,0 +1,104 @@
+// CRM — associations (docs/144 §6).
+//
+// A general "these two records are related, and here is HOW" graph across every
+// CRM object, built-in and custom alike.
+//
+// WHY THIS EXISTS AT ALL: a deal has one `customer_id`. Real deals are sold to
+// several people — the one who signs, the one who uses it, the one in accounts
+// who pays the invoice — and a single FK can only name one of them. Everything
+// after that follows: you cannot email "everyone on this deal", cannot see a
+// contact's deals when they are the technical evaluator rather than the buyer,
+// and cannot answer "who else is involved here?" at all.
+//
+// THE FKs STAY. `deals.customer_id`, `deals.b2b_account_id`,
+// `customers.b2b_account_id` and every column like them keep working exactly as
+// they do today, and the service keeps them in step with the association row
+// marked `is_primary`. This is a graph LAYERED OVER a fast primary pointer, not
+// a replacement for it: every existing index, report, segment field, RLS policy
+// and consumer is untouched. Replacing them would have meant rewriting the order
+// consumer, the segment projection and four reports to answer a question they
+// already answer in one indexed join.
+//
+// UNTYPED ENDPOINTS ON PURPOSE. `from_id` / `to_id` are plain uuids with no FK,
+// because the thing they point at lives in a different table depending on the
+// object key — a contact in `customers`, a deal in `deals`, an invented object
+// in `crm_records`. A polymorphic FK is not expressible in Postgres, and the
+// alternative (one nullable FK column per object type) would need a migration
+// every time a tenant invents a record type, which is exactly the thing the
+// registry exists to avoid. Deletion is handled by the services, which clean up
+// both directions when a record goes.
+
+model CrmAssociation {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  /// Object keys from `crm_object_defs` — `contact`, `company`, `deal`,
+  /// `ticket`, or a tenant-invented key.
+  fromType String @map("from_type") @db.VarChar(63)
+  fromId   String @map("from_id") @db.Uuid
+  toType   String @map("to_type") @db.VarChar(63)
+  toId     String @map("to_id") @db.Uuid
+
+  /// WHICH relationship this is: `decision_maker`, `billing_contact`,
+  /// `parent_company`. Null means "related, unlabelled" — the honest answer when
+  /// someone links two records before deciding what the link means, and the
+  /// state most associations start in.
+  labelKey String? @map("label_key") @db.VarChar(63)
+
+  /// The one that mirrors the legacy FK column. Exactly one per
+  /// (from, toType) pair, enforced by a partial unique index in the migration —
+  /// two "primary" customers on a deal would make `deals.customer_id`
+  /// ambiguous, which is the drift this whole design exists to prevent.
+  isPrimary Boolean @default(false) @map("is_primary")
+
+  /// Free-text on the RELATIONSHIP rather than on either record: "met at the
+  /// trade show", "only reachable through her assistant".
+  note String? @db.Text
+
+  createdBy String?  @map("created_by") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  /// One link per (pair, label). The same two records CAN be linked twice under
+  /// different labels — a person who both decides and pays is genuinely two
+  /// relationships, and collapsing them would lose the one you needed.
+  @@unique([tenantId, fromType, fromId, toType, toId, labelKey])
+  @@index([tenantId, fromType, fromId])
+  @@index([tenantId, toType, toId])
+  @@index([tenantId, labelKey])
+  @@map("crm_associations")
+}
+
+// What the relationships between two kinds of record are CALLED, per tenant.
+//
+// Both directions are stored, because a relationship reads differently from each
+// end: from the deal it is "Decision maker"; from the contact it is "Deal they
+// decide on". One label would force every panel on one side to read backwards.
+//
+// A tenant with no rows here still gets working associations — an unlabelled
+// link is valid — so this table is an enrichment, never a prerequisite.
+model CrmAssociationLabel {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  fromType String @map("from_type") @db.VarChar(63)
+  toType   String @map("to_type") @db.VarChar(63)
+
+  key          String @db.VarChar(63)
+  /// Read from the `from` record: "Decision maker".
+  label        String @db.VarChar(120)
+  /// Read from the `to` record: "Deal they decide on".
+  inverseLabel String @map("inverse_label") @db.VarChar(120)
+
+  /// A pack- or activation-seeded label. Tenants may rename these but the flag
+  /// is what lets a later seed know not to re-create one they deleted.
+  isBuiltin Boolean @default(false) @map("is_builtin")
+
+  sortOrder Int @default(0) @map("sort_order")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@unique([tenantId, fromType, toType, key])
+  @@index([tenantId, fromType, toType])
+  @@map("crm_association_labels")
+}
