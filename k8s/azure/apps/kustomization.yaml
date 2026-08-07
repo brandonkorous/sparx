@@ -24,7 +24,7 @@ namespace: sparx-prod
 resources:
   - ../../apps
   - ../../cronjobs
-  # The 12 workers + the NATS broker. Shared verbatim with the workstation
+  # The 14 workers + the NATS broker. Shared verbatim with the workstation
   # overlay.
   - ../../self-hosted
 
@@ -97,6 +97,12 @@ images:
     newTag: latest
   - name: sparx/dropship-worker
     newName: ghcr.io/brandonkorous/sparx/dropship-worker
+    newTag: latest
+  - name: sparx/import-worker
+    newName: ghcr.io/brandonkorous/sparx/import-worker
+    newTag: latest
+  - name: sparx/inventory-worker
+    newName: ghcr.io/brandonkorous/sparx/inventory-worker
     newTag: latest
 
 replicas:

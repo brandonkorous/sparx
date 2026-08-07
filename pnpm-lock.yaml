@@ -3063,6 +3063,9 @@ importers:
       '@sparx/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@sparx/events':
+        specifier: workspace:*
+        version: link:../../packages/events
       pino:
         specifier: ^9.5.0
         version: 9.14.0

@@ -287,6 +287,8 @@ jobs:
           - { name: platform-crm-worker, dockerfile: services/platform-crm-worker/Dockerfile }
           - { name: domain-worker, dockerfile: services/domain-worker/Dockerfile }
           - { name: dropship-worker, dockerfile: services/dropship-worker/Dockerfile }
+          - { name: import-worker, dockerfile: services/import-worker/Dockerfile }
+          - { name: inventory-worker, dockerfile: services/inventory-worker/Dockerfile }
           # The migration + seed runner. Not a Deployment — stage 2 runs it as a
           # Job, which is why it is built alongside the images it never joins.
           - { name: db, dockerfile: packages/db/Dockerfile }

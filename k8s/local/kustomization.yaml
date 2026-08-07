@@ -192,14 +192,14 @@ patches:
                 serviceAccountName: default
 
   # --- Workers read the local image store ------------------------------------
-  # The 11 workers in ../self-hosted carry no imagePullPolicy, because that base
+  # The 14 workers in ../self-hosted carry no imagePullPolicy, because that base
   # is shared with the AKS overlay where `Never` means ErrImageNeverPull on every
   # one of them. Here it is correct and required: the images are built straight
   # into Docker Desktop's store, which its Kubernetes shares.
   #
   # A JSON6902 op rather than a strategic merge, and selected by `tier: worker`
-  # rather than named 11 times: a strategic-merge patch on `containers` merges by
-  # container NAME, so one patch cannot cover eleven differently-named containers.
+  # rather than named 14 times: a strategic-merge patch on `containers` merges by
+  # container NAME, so one patch cannot cover fourteen differently-named containers.
   # `add` upserts, so this stays correct whether or not the base ever sets it.
   # A new worker carrying the same label needs no edit here.
   - target:

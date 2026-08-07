@@ -1,32 +1,23 @@
 # inventory-worker runtime image.
-# Cloud Run Pub/Sub push entrypoint — exposes :8080.
-# Handles inventory.source.sync_started events.
-
-FROM node:24-alpine
-
-RUN apk add --no-cache dumb-init
-
-RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
-
-WORKDIR /app
-
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
-COPY tsconfig.base.json ./
-COPY packages/db ./packages/db
-COPY packages/events ./packages/events
-COPY packages/crm-schemas ./packages/crm-schemas
-COPY packages/commerce-schemas ./packages/commerce-schemas
-COPY packages/inventory ./packages/inventory
-COPY services/inventory-worker ./services/inventory-worker
-
-RUN pnpm install --filter @sparx/inventory-worker... --frozen-lockfile --prod=false
-
-RUN cd packages/db && pnpm exec prisma generate
+#
+# THREE LINES OF METADATA ON A SHARED BASE. The workspace, its dependency
+# closure and the generated Prisma client all live in Dockerfile.base, which is
+# built once per release and shared by every Node service — so the node stores
+# that tree once instead of once per image. Read Dockerfile.base for why (it is
+# the difference between ~18 GB and well under 1 GB per release generation, and
+# it is what stopped the single node running out of disk mid-rollout).
+#
+# This file used to hand-list its own workspace closure, from the Cloud Run era
+# when it was built standalone. It fell ~12 packages behind while nothing built
+# it — which is the same reason to stop hand-listing that every other service
+# already acted on.
+#
+# ARG BASE is supplied by the release as the base image built from THIS commit.
+# The default keeps a local `docker build -f services/inventory-worker/Dockerfile .` working.
+ARG BASE=sparx-base:local
+FROM ${BASE}
 
 WORKDIR /app/services/inventory-worker
-
-RUN chown -R node:node /app
-USER node
 
 EXPOSE 8080
 
