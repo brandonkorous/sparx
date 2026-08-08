@@ -538,8 +538,25 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
         // Thrown so it surfaces inside silica's own send-test dialog.
         throw new Error(emailErrorMessage(error, 'Test send failed.'));
       }
+      // SUCCESS NEEDS A WORD, and it had none: the dialog simply closed, which is the
+      // same thing it does when you press Escape. The only honest read of a send that
+      // says nothing is "nothing happened", so the next move is to press it again —
+      // which is exactly what happened when this was tested, three times.
+      //
+      // It says QUEUED rather than sent, because that is what the server returned. The
+      // send goes through Pub/Sub to email-worker and then to the provider, so delivery
+      // is genuinely not known yet, and a mail that bounces after a cheerful "Sent!" is
+      // a worse lie than a slightly duller truth. It also names the address back — the
+      // dialog keeps whatever was typed last, so confirming WHERE it went is the part
+      // that catches a stale value.
+      toast.add({
+        title: `Test email queued for ${to}`,
+        description:
+          'It sends the same way a real one does, so give it a minute. If it never lands, check the spam folder before assuming it failed.',
+        type: 'success',
+      });
     },
-    [onSave, sendTest]
+    [onSave, sendTest, toast]
   );
 
   const commitName = () => {
