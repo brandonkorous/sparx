@@ -24,7 +24,7 @@
 import { useMutation, useQuery, useQueryClient } from '@sparx/query';
 import { ApiError } from '@sparx/api-client';
 import { api } from '../../lib/api/client';
-import type { StageType } from './pipelines-data';
+import { pipelineKeys, type StageType } from './pipelines-data';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -327,6 +327,23 @@ export function useInvalidateTickets() {
     // A request's timeline and the customer's are the same timeline (docs/144
     // §5.5), so anything that moves one moves the other.
     void queryClient.invalidateQueries({ queryKey: ['crm', 'activities'] });
+
+    // THE FIRST REQUEST A TENANT EVER FILES BUILDS THE SUPPORT SURFACE AROUND
+    // ITSELF. Opening it runs `ensureTicketPipeline` and `ensureDefaultPolicy`
+    // server-side, so a pipeline and a promise that did not exist when this pane
+    // mounted exist by the time it returns. Both were fetched BEFORE that and
+    // cached empty, and neither sits under `ticketKeys.all` — `policies` is
+    // ['crm','sla-policies'] and pipelines are ['crm','pipelines'], so the
+    // invalidation above misses both.
+    //
+    // Left stale, the very first request in a tenant renders a DISABLED stage
+    // picker labelled with a raw uuid (no stages to offer, so the Select falls
+    // back to the value) beside a panel stating no response promise is attached
+    // — while the row in the database has both. It comes right on reload, which
+    // nobody thinks to do, and it lands on the one request that is somebody's
+    // first impression of the whole surface.
+    void queryClient.invalidateQueries({ queryKey: ticketKeys.policies });
+    void queryClient.invalidateQueries({ queryKey: pipelineKeys.all });
   };
 }
 

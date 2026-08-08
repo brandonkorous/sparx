@@ -314,7 +314,15 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Ti
       // tenant's history that nobody was measured on — and the first one is the
       // one somebody is watching.
       if (input.slaPolicyId === undefined) {
-        await ensureDefaultPolicy(tx, ctx.tenantId);
+        // In the business's OWN hours, not UTC. "Open 9 to 5" is the only thing
+        // a person means by it, and a promise bootstrapped in UTC quietly counts
+        // those hours somewhere else — for a shop in Denver every deadline lands
+        // six hours early, and the first anyone hears of it is a request that
+        // went red overnight. The zone is already on file (the entity profile,
+        // where it is a real picker); UTC stays the fallback only when nobody
+        // has said yet.
+        const business = await tx.tenantBusiness.findFirst({ select: { timezone: true } });
+        await ensureDefaultPolicy(tx, ctx.tenantId, business?.timezone ?? undefined);
       }
     }
 
@@ -564,6 +572,16 @@ export async function update(
  * resolution clock — and a `closed` stage stamps both. Moving BACK to an open
  * stage clears them, because a reopened request is genuinely unresolved again
  * and a queue that still showed it as answered would be lying.
+ *
+ * Settling a request also settles the FIRST REPLY promise, if nothing else
+ * already did. You cannot sort something out without having got back to the
+ * person — the resolution IS the reply, at the latest. Without this the most
+ * ordinary support flow there is (they ring up, you fix it on the call, you mark
+ * it Resolved) leaves `firstRespondedAt` null, and `stillOwed('first_response')`
+ * in the sweep only excludes CLOSED requests — so days later the business is
+ * told it missed the reply deadline on a request it answered immediately. An
+ * alert that fires on work already done is worse than no alert: it teaches
+ * people to ignore the ones that are real.
  */
 export async function moveStage(
   ctx: ServiceContext,
@@ -610,6 +628,13 @@ export async function moveStage(
         // an administrative re-move would quietly improve every report.
         resolvedAt: isResolved || isClosed ? (before.resolvedAt ?? now) : null,
         closedAt: isClosed ? (before.closedAt ?? now) : null,
+        // Same `?? now` reasoning, one promise earlier: a real reply that was
+        // already recorded is the honest first-response time, and settling the
+        // request must never overwrite it with a later one. Deliberately NOT
+        // cleared when moving back to an open stage — reopening means the job is
+        // unfinished again, not that the earlier reply never happened.
+        firstRespondedAt:
+          isResolved || isClosed ? (before.firstRespondedAt ?? now) : before.firstRespondedAt,
       },
       include: ticketInclude,
     });

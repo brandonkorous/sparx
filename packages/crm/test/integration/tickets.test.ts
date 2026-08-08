@@ -210,6 +210,51 @@ describe('ticketService', () => {
     expect(filed.ticket.closedAt).not.toBeNull();
   });
 
+  it('settling a request also settles the first-reply promise', async () => {
+    const view = await ticketService.create(context.ctx, {
+      subject: 'Fixed on the call',
+      customerId,
+    });
+    expect(view.ticket.firstRespondedAt).toBeNull();
+
+    const stages = await stagesOf(context);
+    const done = await ticketService.moveStage(context.ctx, view.ticket.id, {
+      toStageId: stages.find((s) => s.stageType === 'resolved')?.id,
+    });
+
+    // They rang up, it was sorted on the call, somebody marked it Resolved. The
+    // reply plainly happened. Leaving this null is what let the sweep announce a
+    // missed reply deadline days later on a request answered immediately —
+    // `stillOwed('first_response')` only excludes CLOSED requests.
+    expect(done.ticket.firstRespondedAt).not.toBeNull();
+    expect(done.firstResponse.state).toBe('met');
+  });
+
+  it('settling never overwrites a first reply that really happened', async () => {
+    const view = await ticketService.create(context.ctx, {
+      subject: 'Replied then fixed',
+      customerId,
+    });
+    const replied = new Date(Date.now() - 60 * 60 * 1000);
+    await ticketService.recordFirstResponse(context.ctx, view.ticket.id, replied);
+
+    const stages = await stagesOf(context);
+    const done = await ticketService.moveStage(context.ctx, view.ticket.id, {
+      toStageId: stages.find((s) => s.stageType === 'resolved')?.id,
+    });
+    // The honest answer is when they were actually written to, not when the
+    // request was tidied away — overwriting it would flatter every report.
+    expect(done.ticket.firstRespondedAt?.getTime()).toBe(replied.getTime());
+
+    const reopened = await ticketService.moveStage(context.ctx, view.ticket.id, {
+      toStageId: stages.find((s) => s.stageType === 'open')?.id,
+    });
+    // Reopening means the JOB is unfinished again — not that the earlier reply
+    // never happened. Clearing this would re-run a deadline that was already met.
+    expect(reopened.ticket.firstRespondedAt?.getTime()).toBe(replied.getTime());
+    expect(reopened.ticket.resolvedAt).toBeNull();
+  });
+
   it('refuses a stage from another pipeline', async () => {
     const view = await ticketService.create(context.ctx, { subject: 'Mismatch', customerId });
     const otherStageId = await prisma.$transaction(async (tx) => {

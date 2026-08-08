@@ -23,7 +23,9 @@ import {
   Button,
   Card,
   Checkbox,
+  Combobox,
   Field,
+  FieldDescription,
   FieldLabel,
   Heading,
   Input,
@@ -34,6 +36,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { Clock } from 'lucide-react';
 import { useDirtySource } from '../../lib/workbench/dirty';
+import { timezoneOptions, type TimezoneOption } from '../../lib/timezones';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { api } from '../../lib/api/client';
@@ -225,6 +228,15 @@ function PolicyEditor({
 
   const dirty = touched && JSON.stringify(draft) !== JSON.stringify(saved);
   useDirtySource(dirty, 'Your response times have unsaved changes. Close anyway?');
+
+  // The saved zone is passed in so a policy written before this was a picker —
+  // or by the API, or by an older sparx — still finds its own value in the list
+  // and shows a city rather than looking blank and inviting a re-pick.
+  const zones = useMemo(() => timezoneOptions(draft.timezone || null), [draft.timezone]);
+  const selectedZone = useMemo(
+    () => zones.find((zone) => zone.value === draft.timezone) ?? null,
+    [zones, draft.timezone]
+  );
 
   const setDay = (index: number, patch: Partial<DayDraft>) => {
     setTouched(true);
@@ -452,17 +464,37 @@ function PolicyEditor({
                 </tbody>
               </Table>
             </Card>
+            {/* A PICKER, NOT A TEXT BOX. "America/Denver" is a developer's
+                spelling of a place, and everything downstream formats through
+                `Intl`, which takes canonical IANA identifiers and nothing else —
+                so a typed "Mountain Time" or "MST" is not a near miss, it is a
+                value that throws when the clock is next read. The list comes
+                from the same runtime that will consume it, labelled by city, so
+                choosing is the validation. Same control as the entity profile. */}
             <Field>
               <FieldLabel>Your timezone</FieldLabel>
-              <Input
+              <Combobox
                 color="module"
-                value={draft.timezone}
-                placeholder="America/Denver"
-                onChange={(event) => {
+                items={zones}
+                value={selectedZone}
+                onValueChange={(next) => {
                   setTouched(true);
-                  setDraft((cur) => ({ ...cur, timezone: event.target.value }));
+                  // Base UI hands back the ITEM, not its value; clearing gives
+                  // null, and a promise always needs a zone, so a cleared box
+                  // keeps what was there rather than saving an empty string the
+                  // server would reject.
+                  setDraft((cur) => ({
+                    ...cur,
+                    timezone: next ? (next as TimezoneOption).value : cur.timezone,
+                  }));
                 }}
+                placeholder="Search for your city…"
+                emptyMessage="No timezone matches that city."
+                aria-label="Your timezone"
               />
+              <FieldDescription>
+                The hours above are counted in this timezone — the one your team actually works in.
+              </FieldDescription>
             </Field>
           </FormSection>
 
