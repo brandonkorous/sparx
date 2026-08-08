@@ -204,6 +204,61 @@ export function get(ctx: ServiceContext, id: string): Promise<BuilderEmailDto> {
   });
 }
 
+/** The `name` column's limit (`CreateEmailInput`), so a disambiguating suffix clamps
+ *  rather than blowing up the insert. */
+const NAME_MAX = 255;
+
+/**
+ * A name no email in this tenant is already using.
+ *
+ * Emails reach a tenant from two directions that know nothing about each other:
+ * `provisionDefaultEmails` writes the keyed, tenant-wide platform set, and a blueprint
+ * install writes its own property-scoped copies. Both legitimately want to ship a
+ * "Welcome" — different words, different branding, both correct — and the switcher is
+ * one flat list of names. So a tenant who installed a single blueprint got TWO rows
+ * reading "Welcome" and no way to tell which one an automation actually sends; the
+ * tenant this was found on had FOUR.
+ *
+ * `hint` (the blueprint's name) is what the suffix says, because "which one is this?"
+ * is really the question "where did this come from?" — `Welcome (Coastal Studio)`
+ * answers it; `Welcome 2` does not. The bare counter is only the last resort for a
+ * second install of the SAME blueprint.
+ *
+ * Deliberately NOT folded into `create`: a person renaming two drafts to the same
+ * thing is their business, and silently rewriting what someone typed is worse than
+ * letting them. This is for bulk seeding, where nobody chose the collision.
+ */
+export function uniqueName(ctx: ServiceContext, desired: string, hint?: string): Promise<string> {
+  return withTenant(ctx, async (tx) => {
+    const rows = await tx.builderEmail.findMany({ select: { name: true } });
+    return nextFreeName(new Set(rows.map((r) => r.name)), desired, hint);
+  });
+}
+
+/** `uniqueName`'s decision, without the query — the whole point is the naming, and a
+ *  rule about what an author reads should not need a database to assert. */
+export function nextFreeName(taken: Set<string>, desired: string, hint?: string): string {
+  if (!taken.has(desired)) return desired;
+  const clamp = (s: string) =>
+    s.length <= NAME_MAX ? s.trimEnd() : s.slice(0, NAME_MAX).trimEnd();
+
+  if (hint) {
+    const withHint = clamp(`${desired} (${hint})`);
+    if (!taken.has(withHint)) return withHint;
+    for (let n = 2; n <= 50; n++) {
+      const numbered = clamp(`${desired} (${hint} ${String(n)})`);
+      if (!taken.has(numbered)) return numbered;
+    }
+  }
+  for (let n = 2; n <= 500; n++) {
+    const numbered = clamp(`${desired} ${String(n)}`);
+    if (!taken.has(numbered)) return numbered;
+  }
+  // 500 rows sharing one name is not a real tenant; take the collision over throwing and
+  // failing an otherwise-good install over a label.
+  return desired;
+}
+
 export async function create(ctx: ServiceContext, rawInput: unknown): Promise<BuilderEmailDto> {
   const input = CreateEmailInput.parse(rawInput);
   return withTenant(ctx, async (tx) => {

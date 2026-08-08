@@ -107,6 +107,12 @@ export const ADVISORY_LOCKS = {
   /** services/automation-worker — email-sequence enrollment drain: advances each
    *  due enrollment (send the current step, schedule the next, exit on goal). */
   EMAIL_SEQUENCE_DRAIN: 4242_4261,
+  /** services/api-rest — golden-blueprint reconcile: back-fills the default site
+   *  install onto any tenant PRIMARY property that still carries none. */
+  GOLDEN_BLUEPRINT_RECONCILE: 4242_4262,
+  /** services/api-rest — blueprint-backfill reconcile: materializes an installed
+   *  blueprint's slice for a module the tenant enabled AFTER install. */
+  BLUEPRINT_BACKFILL_RECONCILE: 4242_4263,
 } as const;
 
 export type AdvisoryLockName = keyof typeof ADVISORY_LOCKS;

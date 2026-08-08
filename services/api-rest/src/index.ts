@@ -18,6 +18,14 @@ import {
   registerModuleProvisioningConsumer,
   startModuleProvisioningReconcileLoop,
 } from './lib/module-provisioning.js';
+import {
+  registerGoldenBlueprintConsumer,
+  startGoldenBlueprintReconcileLoop,
+} from './lib/golden-blueprint-provisioning.js';
+import {
+  registerBlueprintBackfillConsumer,
+  startBlueprintBackfillReconcileLoop,
+} from './lib/blueprint-backfill.js';
 import { env } from './env.js';
 import { startScheduledPublishLoop } from './lib/scheduled-publish.js';
 import { startSocialScheduledLoop } from './lib/social-scheduled.js';
@@ -168,6 +176,26 @@ async function main(): Promise<void> {
   // Singleton across pods via its own advisory lock — see lib/module-provisioning.ts.
   const stopModuleProvisioningReconcile = startModuleProvisioningReconcileLoop(app.log);
 
+  // Install the golden `sparx` blueprint onto every new tenant's primary property, so a
+  // brand-new tenant IS the platform default site rather than a bare render-time fallback
+  // (theming-spine Phase 3). Forward path: a durable broker consumer of `tenant.created`
+  // — published by @sparx/auth's signup in the workbench process, so it reaches api-rest
+  // only via the broker, never the in-process bus. Returns null under a non-NATS
+  // transport; the reconcile loop then self-heals every un-installed primary property.
+  // Registered here (post-createApp) because it needs app.log — JetStream is durable, so
+  // nothing published during startup is lost. See lib/golden-blueprint-provisioning.ts.
+  const stopGoldenBlueprintConsumer = await registerGoldenBlueprintConsumer(app.log);
+  const stopGoldenBlueprintReconcile = startGoldenBlueprintReconcileLoop(app.log);
+
+  // When a tenant enables a module AFTER install, materialize that module's slice from
+  // their installed blueprint (theming-spine Phase 3 backfill). A new tenant starts with
+  // zero modules, so golden's per-module slices are skipped at install and wired in here
+  // as each module turns on. Forward consumer on the in-process `module.activated` bus
+  // (the same one module-provisioning rides, awaited by the toggle route) + a self-healing
+  // reconcile. See lib/blueprint-backfill.ts.
+  const stopBlueprintBackfillConsumer = registerBlueprintBackfillConsumer(app.log);
+  const stopBlueprintBackfillReconcile = startBlueprintBackfillReconcileLoop(app.log);
+
   // Live Chat WebSocket server (docs/56, docs/69 A-2). Attaches socket.io to the
   // Fastify HTTP server at /ws/chat; uses the Redis adapter when REDIS_URL is
   // set (multi-replica fan-out) and the in-memory adapter otherwise.
@@ -193,6 +221,13 @@ async function main(): Promise<void> {
     stopWaitlist();
     stopEmailProvisioningReconcile();
     stopModuleProvisioningReconcile();
+    stopGoldenBlueprintReconcile();
+    // Drain the broker consumer so an in-flight install finishes + acks; an
+    // unacknowledged tenant.created is redelivered (a redelivered install is a
+    // gated no-op), never lost.
+    void stopGoldenBlueprintConsumer?.stop();
+    stopBlueprintBackfillReconcile();
+    stopBlueprintBackfillConsumer();
     void chatWs.close().catch((err: unknown) => {
       app.log.error({ err }, 'chat websocket close failed');
     });

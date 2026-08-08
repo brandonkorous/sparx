@@ -213,7 +213,9 @@ export async function resolveSchedulingEnabled(tenantSlug: string): Promise<bool
  *  everything the root layout needs. It renders the chrome once, wrapping every page
  *  at its Outlet. Falls back to the code starter frame when the tenant has published
  *  no silica layout, so the storefront ALWAYS wears silica chrome (a fresh tenant is
- *  live, not blank); `theme` stays null so the brand-derived theme keeps rendering. */
+ *  live, not blank); `theme` stays null until published, and the layout resolves a
+ *  null theme to the base silica theme (BASE_SILICA_THEME) — there is no longer a
+ *  brand-derived compile path to fall back to. */
 export async function getPublishedSilicaFrame(
   tenantSlug: string,
   opts: { previewToken?: string } = {}

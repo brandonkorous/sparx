@@ -430,637 +430,34 @@ export async function installBlueprint(
     );
     installId = installRow.id;
 
-    // 1. Module gate — read (NEVER write) the tenant's enabled modules; each slice
-    //    below provisions only into an enabled module. No `enableModules` write:
-    //    only the user flips a flag (provisioning invariant).
+    // 1. Module gate — read (NEVER write) the tenant's enabled modules; each gated
+    //    slice below provisions only into an enabled one (provisioning invariant).
     const isOn = moduleGate(await listEnabledModules(tenantId));
 
-    // 2. Assets → MediaAsset rows (one tx). Hot-linked: key holds the absolute
-    //    URL; mediaPublicUrl() passes it through (docs/54 §6). Idempotent: an asset
-    //    whose key already exists for this tenant is reused, so a reinstall doesn't
-    //    pile up duplicate media rows (reconcile, never destroy-and-recreate).
-    if (blueprint.assets.length > 0) {
-      await withTenant(ctx, async (tx) => {
-        for (const a of blueprint.assets) {
-          const existing = await tx.mediaAsset.findFirst({
-            where: { tenantId, key: a.url },
-            select: { id: true },
-          });
-          const row =
-            existing ??
-            (await tx.mediaAsset.create({
-              data: {
-                tenantId,
-                key: a.url,
-                originalFilename: `${a.id}.${mimeFromUrl(a.url).split('/')[1] ?? 'jpg'}`,
-                mimeType: a.mimeType ?? mimeFromUrl(a.url),
-                byteSize: BigInt(0),
-                status: 'ready',
-                ...(a.width !== undefined ? { width: a.width } : {}),
-                ...(a.height !== undefined ? { height: a.height } : {}),
-                ...(a.alt !== undefined ? { altText: a.alt } : {}),
-              },
-              select: { id: true },
-            }));
-          assetMap.set(a.id, row.id);
-          result.assets[a.id] = row.id;
-        }
-      });
-    }
-    const asset = (id?: string): string | undefined => (id ? assetMap.get(id) : undefined);
-
-    // Is the target the tenant's PRIMARY site? The brand step scopes on this
-    // (docs/49 §3): the primary writes the tenant-wide brand; a SECONDARY site
-    // writes its own per-property `brand_override`, so installing onto one site
-    // never rebrands its siblings.
-    const prop = await withTenant(ctx, (tx) =>
-      tx.property.findUnique({
-        where: { id: propertyId },
-        select: { name: true, settings: true },
-      })
-    );
-
-    // 3. Brand identity — onto the TARGET SITE's own `brand_override`, whether or
-    // not it is the primary. Installing the primary's brand into TenantBrand (the
-    // default every unbranded site inherits) is what made a blueprint install on one
-    // site restyle its siblings; the base is left alone so it stays a neutral
-    // fallback. The full identity set is carried — the old secondary-site branch
-    // wrote only businessName + two colours + the light logo, silently dropping the
-    // fonts, the dark logo and the favicon, so a non-primary install inherited the
-    // tenant's type stack instead of the blueprint's.
-    const b = blueprint.brand;
-    const override: Record<string, string> = {
-      businessName: b.businessName,
-      colorPrimary: b.colors.primary,
-      fontHeading: b.fonts.heading,
-      fontBody: b.fonts.body,
+    // The shared state every slice reads/writes. Slices are extracted (below) so the
+    // module-backfill can re-run a single one against an existing install.
+    const env: SliceEnv = {
+      ctx,
+      propCtx,
+      tenantId,
+      userId,
+      propertyId,
+      blueprint,
+      result,
+      assetMap,
+      asset: (id?: string) => (id ? assetMap.get(id) : undefined),
     };
-    if (b.tagline !== undefined) override.tagline = b.tagline;
-    if (b.colors.primaryForeground) override.colorPrimaryForeground = b.colors.primaryForeground;
-    if (b.colors.accent) override.colorAccent = b.colors.accent;
-    if (b.colors.accentForeground) override.colorAccentForeground = b.colors.accentForeground;
-    if (b.colors.secondary) override.colorSecondary = b.colors.secondary;
-    if (b.colors.secondaryForeground)
-      override.colorSecondaryForeground = b.colors.secondaryForeground;
-    const logoLight = asset(b.logoLightAssetId);
-    const logoDark = asset(b.logoDarkAssetId);
-    const favicon = asset(b.faviconAssetId);
-    if (logoLight) override.logoLightMediaId = logoLight;
-    if (logoDark) override.logoDarkMediaId = logoDark;
-    if (favicon) override.faviconMediaId = favicon;
-    await withTenant(ctx, (tx) =>
-      tx.property.update({
-        where: { id: propertyId },
-        data: { brandOverride: override },
-      })
-    );
 
-    // 3b. Site name + social links on the TARGET property (docs/49). The customer-
-    // facing site name is Property.name (storefront chrome/title/OG read it), seeded
-    // from the tenant name at provisioning — so brand it from the blueprint ONLY when
-    // it's still the seed placeholder 'Default'/empty, never clobbering a name the
-    // merchant already chose (mirrors db:backfill:property-name). Seed the per-site
-    // social links the footer's SocialLinks renders, but only when the site has none
-    // (placeholder handles the tenant swaps post-install, like the placeholder imagery).
-    {
-      const update: Prisma.PropertyUpdateInput = {};
-      const currentName = (prop?.name ?? '').trim();
-      if (currentName === '' || currentName === 'Default') update.name = b.businessName;
+    // 2–4. Unconditional slices: media, brand identity + site name/socials, theme.
+    await installAssetsSlice(env);
+    await installBrandSlice(env);
+    await installThemeSlice(env);
 
-      const seedSocials = b.socials ?? [];
-      const settings =
-        prop?.settings && typeof prop.settings === 'object' && !Array.isArray(prop.settings)
-          ? (prop.settings as Record<string, unknown>)
-          : {};
-      const existingSocials = (settings as { socials?: unknown }).socials;
-      const hasSocials = Array.isArray(existingSocials) && existingSocials.length > 0;
-      if (seedSocials.length > 0 && !hasSocials) {
-        update.settings = { ...settings, socials: seedSocials };
-      }
-
-      if (Object.keys(update).length > 0) {
-        await withTenant(ctx, (tx) =>
-          tx.property.update({ where: { id: propertyId }, data: update })
-        );
-      }
-    }
-
-    // 4. Theme — create the shipped SiteTheme, apply it (working draft), and apply
-    //    its captured brand "look". (docs/54 D5)
-    const theme = await savedThemeService.create(ctx, {
-      name: blueprint.theme.name,
-      basePresetKey: blueprint.theme.basePresetKey,
-      presentation: blueprint.theme.presentation ?? {},
-      ...(blueprint.theme.brand ? { brand: blueprint.theme.brand } : {}),
-    });
-    result.theme = { id: theme.id, name: theme.name };
-    if (blueprint.theme.apply) {
-      // apply writes the target site's draft config AND applies the theme's captured
-      // brand to the right scope (primary → tenant base brand, non-primary → the
-      // site's override), so no separate brand write is needed here (docs/49 Phase 6).
-      await savedThemeService.apply(propCtx, theme.id);
-    }
-
-    // 5. Content entries (draft) — CMS module only; a non-CMS tenant gets none.
-
-    // 5a. Byline personas + taxonomy the entries reference (docs/131 §4). Seeded ONCE,
-    //     before the entries, so each entry can link its author + terms by the slug it
-    //     names. Scoped to the installed site (an Author / a term is per-publication) and
-    //     reconciled by natural key, so a reinstall reuses rather than duplicates. Only
-    //     runs when the CMS module is on AND something actually references a byline.
-    const slugify = (s: string): string =>
-      s
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
-    const authorIdBySlug = new Map<string, string>();
-    // termId keyed by `${taxonomyKey} ${termSlug}` — the two vocabularies share a
-    // slug space only within their own key, so the key is part of the map key.
-    const termIdByKey = new Map<string, string>();
-    const usesByline =
-      blueprint.authors.length > 0 ||
-      blueprint.content.some((e) => Boolean(e.categories?.length) || Boolean(e.tags?.length));
-    if (isOn('cms') && usesByline) {
-      await withTenant(ctx, async (tx) => {
-        // Authors — reconcile by (site, slug).
-        for (const a of blueprint.authors) {
-          const existing = await tx.author.findFirst({
-            where: { tenantId, propertyId, slug: a.slug },
-            select: { id: true },
-          });
-          const id =
-            existing?.id ??
-            (
-              await tx.author.create({
-                data: {
-                  tenantId,
-                  propertyId,
-                  slug: a.slug,
-                  displayName: a.displayName,
-                  bio: a.bio ?? null,
-                  avatarAssetId: asset(a.avatarAssetId) ?? null,
-                },
-                select: { id: true },
-              })
-            ).id;
-          authorIdBySlug.set(a.slug, id);
-        }
-
-        // Taxonomy — created lazily, only the standard two (categories → `blog_category`,
-        // tags → `blog_tag`), the keys the storefront byline projection splits on.
-        const taxonomyIdByKey = new Map<string, string>();
-        const ensureTaxonomy = async (
-          key: string,
-          name: string,
-          pluralName: string
-        ): Promise<string> => {
-          const cached = taxonomyIdByKey.get(key);
-          if (cached) return cached;
-          const existing = await tx.taxonomy.findFirst({
-            where: { tenantId, propertyId, key },
-            select: { id: true },
-          });
-          const id =
-            existing?.id ??
-            (
-              await tx.taxonomy.create({
-                data: { tenantId, propertyId, key, name, pluralName },
-                select: { id: true },
-              })
-            ).id;
-          taxonomyIdByKey.set(key, id);
-          return id;
-        };
-        const ensureTerm = async (
-          key: string,
-          taxName: string,
-          taxPlural: string,
-          name: string
-        ): Promise<void> => {
-          const slug = slugify(name);
-          if (!slug) return;
-          const cacheKey = `${key} ${slug}`;
-          if (termIdByKey.has(cacheKey)) return;
-          const taxonomyId = await ensureTaxonomy(key, taxName, taxPlural);
-          const existing = await tx.taxonomyTerm.findFirst({
-            where: { tenantId, propertyId, taxonomyId, slug },
-            select: { id: true },
-          });
-          const id =
-            existing?.id ??
-            (
-              await tx.taxonomyTerm.create({
-                data: { tenantId, propertyId, taxonomyId, slug, name },
-                select: { id: true },
-              })
-            ).id;
-          termIdByKey.set(cacheKey, id);
-        };
-        for (const e of blueprint.content) {
-          for (const c of e.categories ?? [])
-            await ensureTerm('blog_category', 'Category', 'Categories', c);
-          for (const t of e.tags ?? []) await ensureTerm('blog_tag', 'Tag', 'Tags', t);
-        }
-      });
-    }
-
-    for (const entry of isOn('cms') ? blueprint.content : []) {
-      await withTenant(ctx, async (tx) => {
-        const type = await resolveType(tx, entry.typeKey);
-        const schema = parseTypeSchema(type);
-        const rawBody = resolveAssetRefs(entry.body, assetMap) as Record<string, unknown>;
-        const body = validateAndNormalizeBody(schema, rawBody);
-        const seo: Record<string, unknown> = {};
-        if (entry.seo?.title) seo.title = entry.seo.title;
-        if (entry.seo?.description) seo.description = entry.seo.description;
-        if (entry.seo?.canonical) seo.canonical = entry.seo.canonical;
-        if (entry.seo?.robots) seo.robots = entry.seo.robots;
-        const ogId = asset(entry.seo?.ogImageAssetId);
-        if (ogId) seo.ogImage = ogId;
-        const row = await tx.contentEntry.create({
-          data: {
-            tenantId,
-            typeKey: entry.typeKey,
-            slug: entry.slug ?? null,
-            status: entry.status,
-            body: body as Prisma.InputJsonValue,
-            seoJson: seo as Prisma.InputJsonValue,
-            // `author_id` FKs to the CMS `authors` table, NOT `users`. The blueprint now
-            // models a byline (`entry.authorSlug` → an `Author` seeded in 5a); an entry
-            // that names no author, or names one the blueprint didn't ship, stays null.
-            // (recordRevision's authorId below is a plain audit field, not FK-bound, so
-            // the installing user is fine to record there.)
-            authorId: entry.authorSlug ? (authorIdBySlug.get(entry.authorSlug) ?? null) : null,
-          },
-        });
-        // Scope to the installed site so content doesn't bleed into other sites.
-        await tx.contentEntryProperty.create({
-          data: { entryId: row.id, propertyId },
-        });
-        // Link the entry's categories + tags to the terms seeded in 5a. Idempotent — the
-        // link's PK is (entryId, termId), so a reinstall re-asserts rather than duplicates.
-        const entryTermKeys = [
-          ...(entry.categories ?? []).map((c) => `blog_category ${slugify(c)}`),
-          ...(entry.tags ?? []).map((t) => `blog_tag ${slugify(t)}`),
-        ];
-        for (const key of entryTermKeys) {
-          const termId = termIdByKey.get(key);
-          if (!termId) continue;
-          await tx.entryTaxonomyTerm.upsert({
-            where: { entryId_termId: { entryId: row.id, termId } },
-            create: { entryId: row.id, termId, tenantId },
-            update: {},
-          });
-        }
-        await syncReferences(tx, tenantId, row.id, schema, body);
-        await recordRevision(tx, {
-          tenantId,
-          entryId: row.id,
-          body,
-          seoJson: seo,
-          status: entry.status,
-          kind: 'manual',
-          authorId: userId ?? null,
-          summary: 'Installed from template',
-        });
-        result.content.push({ typeKey: entry.typeKey, slug: entry.slug ?? null, id: row.id });
-      });
-    }
-
-    // 6. Commerce — catalog only when the Commerce module is on (else skipped).
-    const commerce = isOn('commerce') ? blueprint.commerce : undefined;
-    if (commerce) {
-      // Reconcile by natural key (see the helpers above): reuse/restore-then-create,
-      // never destroy-and-recreate. Existing rows are left alone.
-
-      // 6a. Categories — parent-first (resolve parentHandle as we go).
-      const catMap = new Map<string, string>();
-      const pending = [...commerce.categories];
-      let guard = pending.length + 1;
-      while (pending.length > 0 && guard-- > 0) {
-        for (let i = pending.length - 1; i >= 0; i--) {
-          const c = pending[i]!;
-          if (c.parentHandle && !catMap.has(c.parentHandle)) continue; // wait for parent
-          let id = await reuseOrRestoreCategory(ctx, c.handle);
-          if (!id) {
-            const created = await categoryService.create(ctx, {
-              name: c.name,
-              handle: c.handle,
-              description: c.description,
-              parentId: c.parentHandle ? catMap.get(c.parentHandle) : null,
-              position: c.position,
-              featured: c.featured,
-              iconMediaId: asset(c.iconAssetId),
-              heroMediaId: asset(c.heroAssetId),
-              seoTitle: c.seoTitle,
-              seoDescription: c.seoDescription,
-              ogImageId: asset(c.ogImageAssetId),
-            });
-            id = created.id;
-          }
-          catMap.set(c.handle, id);
-          result.categories[c.handle] = id;
-          pending.splice(i, 1);
-        }
-      }
-
-      // 6b. Collections (empty; membership set from products below).
-      const collMap = new Map<string, string>();
-      for (const c of commerce.collections) {
-        let id = await reuseOrRestoreCollection(ctx, c.handle);
-        if (!id) {
-          const created = await collectionService.create(ctx, {
-            name: c.name,
-            handle: c.handle,
-            description: c.description,
-            type: c.type,
-            ruleSet: c.ruleSet,
-            heroMediaId: asset(c.heroAssetId),
-            featured: c.featured,
-            seoTitle: c.seoTitle,
-            seoDescription: c.seoDescription,
-            ogImageId: asset(c.ogImageAssetId),
-          });
-          id = created.id;
-        }
-        collMap.set(c.handle, id);
-        result.collections[c.handle] = id;
-      }
-
-      // 6b′. Product types (docs/143) — upsert by (tenant, key) BEFORE products so a
-      //      product's `attributes` bag validates against its type. A blueprint usually
-      //      reuses a platform BUILT-IN key (apparel, cosmetics, …), which resolves via
-      //      RLS with no install; this step exists for a blueprint that ships its OWN
-      //      bespoke type. Tenant-owned (is_built_in=false) so it shadows nothing and is
-      //      the tenant's to edit. Idempotent — reinstall updates the schema in place.
-      for (const pt of blueprint.productTypes ?? []) {
-        // Its own tenant-scoped tx (like the content block above) — this section runs
-        // through commerce SERVICES with `ctx`, not a shared transaction client, so the
-        // raw `product_types` upsert must open its own `withTenant` for RLS.
-        await withTenant(ctx, async (tx) => {
-          await tx.productType.upsert({
-            where: { tenantId_key: { tenantId: ctx.tenantId, key: pt.key } },
-            create: {
-              tenantId: ctx.tenantId,
-              key: pt.key,
-              name: pt.name,
-              pluralName: pt.pluralName ?? null,
-              description: pt.description ?? null,
-              icon: pt.icon ?? null,
-              isBuiltIn: false,
-              attributeSchema: pt.attributeSchema,
-            },
-            update: {
-              name: pt.name,
-              pluralName: pt.pluralName ?? null,
-              description: pt.description ?? null,
-              icon: pt.icon ?? null,
-              attributeSchema: pt.attributeSchema,
-            },
-          });
-        });
-      }
-
-      // Precompute each product's collections (union of its collectionHandles and
-      // any collection whose productHandles names it).
-      const collsForProduct = new Map<string, Set<string>>();
-      for (const p of commerce.products)
-        collsForProduct.set(p.handle, new Set(p.collectionHandles));
-      for (const c of commerce.collections) {
-        for (const ph of c.productHandles) collsForProduct.get(ph)?.add(c.handle);
-      }
-
-      // 6c. Products → options → variants → images.
-      for (const p of commerce.products) {
-        // Reconcile first: if a product with this handle already exists (live, or a
-        // tombstone from a prior reset), reuse it and leave its content alone — only
-        // bring back any of the blueprint's variant SKUs that are tombstoned so the
-        // product is sellable. The SKU unique constraint makes reuse the ONLY way to
-        // reinstall; recreating would collide. Missing variants under an already-living
-        // product are intentionally not added (leave the existing product untouched).
-        const reusedId = await reuseOrRestoreProduct(ctx, p.handle);
-        if (reusedId) {
-          const skuToVariant = new Map<string, string>();
-          for (const v of p.variants) {
-            const vid = await reuseOrRestoreVariant(ctx, v.sku);
-            if (vid) skuToVariant.set(v.sku, vid);
-          }
-          // Wire the reused product into the blueprint's categories/collections + site
-          // so the bound grids actually render it (additive — see linkProductRelations).
-          const categoryIds = p.categoryHandles
-            .map((h) => catMap.get(h))
-            .filter((x): x is string => !!x);
-          const collectionIds = [...(collsForProduct.get(p.handle) ?? [])]
-            .map((h) => collMap.get(h))
-            .filter((x): x is string => !!x);
-          await linkProductRelations(ctx, reusedId, categoryIds, collectionIds, propertyId);
-          // Re-link images to the CURRENT assets: a reused product's stored image rows
-          // point at assets a prior reset deleted, so the storefront 404s the photo.
-          const reuseImages: Parameters<typeof relinkProductImages>[2] = [];
-          for (const img of p.images) {
-            const mediaAssetId = asset(img.assetId);
-            if (!mediaAssetId) continue;
-            reuseImages.push({
-              mediaAssetId,
-              variantId: img.variantSku ? skuToVariant.get(img.variantSku) : undefined,
-              position: img.position,
-              alt: img.alt,
-              isPrimary: img.isPrimary,
-            });
-          }
-          await relinkProductImages(ctx, reusedId, reuseImages);
-          result.products.push({ handle: p.handle, id: reusedId });
-          continue;
-        }
-
-        const created = await productService.create(ctx, {
-          title: p.title,
-          handle: p.handle,
-          description: p.description,
-          status: p.status,
-          productType: p.productType,
-          // Typed product type + attributes (docs/143). The service validates the
-          // attribute bag against the resolved type (built-in or the blueprint's own,
-          // installed above) — a bad bag fails the install, exactly like a bad content body.
-          productTypeKey: p.productTypeKey,
-          attributes: p.attributes,
-          vendor: p.vendor,
-          tags: p.tags,
-          fulfillmentType: p.fulfillmentType,
-          weight: p.weight,
-          dimensions: p.dimensions,
-          taxClass: p.taxClass,
-          requiresShipping: p.requiresShipping,
-          categoryIds: p.categoryHandles.map((h) => catMap.get(h)).filter((x): x is string => !!x),
-          collectionIds: [...(collsForProduct.get(p.handle) ?? [])]
-            .map((h) => collMap.get(h))
-            .filter((x): x is string => !!x),
-          seoTitle: p.seoTitle,
-          seoDescription: p.seoDescription,
-          ogImageId: asset(p.ogImageAssetId),
-          // Scope to the installed site so it doesn't bleed into other sites.
-          propertyIds: [propertyId],
-        });
-        result.products.push({ handle: p.handle, id: created.id });
-
-        // Options → value id map keyed by `${name}::${value}`.
-        const valueIds = new Map<string, string>();
-        if (p.options.length > 0) {
-          const rows = await variantService.setOptions(ctx, created.id, {
-            options: p.options.map((o) => ({
-              name: o.name,
-              displayType: o.displayType,
-              position: o.position,
-              values: o.values.map((v) => ({
-                value: v.value,
-                swatchHex: v.swatchHex,
-                swatchImageId: asset(v.swatchImageAssetId),
-                position: v.position,
-              })),
-            })),
-          });
-          for (const o of rows)
-            for (const v of o.values) valueIds.set(`${o.name}::${v.value}`, v.id);
-        }
-
-        // Variants.
-        const skuToVariant = new Map<string, string>();
-        for (const v of p.variants) {
-          const optionValueIds = Object.entries(v.optionValues)
-            .map(([name, val]) => valueIds.get(`${name}::${val}`))
-            .filter((x): x is string => !!x);
-          const variant = await variantService.create(ctx, created.id, {
-            sku: v.sku,
-            barcode: v.barcode,
-            title: v.title,
-            optionValueIds,
-            priceCents: v.priceCents,
-            compareAtPriceCents: v.compareAtPriceCents,
-            costCents: v.costCents,
-            currency: v.currency,
-            weight: v.weight,
-            dimensions: v.dimensions,
-            inventoryPolicy: v.inventoryPolicy,
-            requiresShipping: v.requiresShipping,
-            isDefault: v.isDefault,
-            position: v.position,
-          });
-          skuToVariant.set(v.sku, variant.id);
-        }
-
-        // Images.
-        for (const img of p.images) {
-          const mediaAssetId = asset(img.assetId);
-          if (!mediaAssetId) continue;
-          const optionValueIds = Object.entries(img.optionValues)
-            .map(([name, val]) => valueIds.get(`${name}::${val}`))
-            .filter((x): x is string => !!x);
-          const created2 = await variantService.addImage(ctx, {
-            productId: created.id,
-            variantId: img.variantSku ? skuToVariant.get(img.variantSku) : undefined,
-            mediaAssetId,
-            position: img.position,
-            alt: img.alt,
-            optionValueIds,
-          });
-          if (img.isPrimary) await variantService.setPrimaryImage(ctx, created2.id);
-        }
-      }
-    }
-
-    // 7. The authored silica site — frame + pages + theme + symbols, in ONE write.
-    //    Builder module only (a headless tenant gets no hosted site).
-    //
-    //    This replaces the old three-step legacy dance (create components, create a
-    //    layout, create pages one by one, then convert the whole lot to silica at
-    //    go-live through a best-effort bridge). The manifest already holds exactly
-    //    what the store wants, so it goes straight in through the same seam a human
-    //    author's save uses. Nothing is converted, so nothing is lost in conversion.
-    if (blueprint.site && isOn('builder')) {
-      const site = blueprint.site;
-      const installed = await siteService.installSite(propCtx, {
-        pages: site.pages.map((pg) => ({
-          name: pg.name,
-          slug: pg.slug ?? '',
-          root: resolveBindingHandles(pg.root, result),
-          kind: pg.kind,
-          recordType: pg.recordType ?? null,
-          // The product-TYPE this page designs (docs/143 Option B) — null = default page.
-          recordSubtype: pg.recordSubtype ?? null,
-          isDefault: pg.isDefault,
-          seoTitle: pg.seoTitle ?? null,
-          seoDescription: pg.seoDescription ?? null,
-          canonical: pg.canonical ?? null,
-          ogImage: pg.ogImage ?? null,
-          ...(pg.noindex !== undefined ? { noindex: pg.noindex } : {}),
-        })),
-        ...(site.frame ? { frame: { root: resolveBindingHandles(site.frame.root, result) } } : {}),
-        // An omitted theme is deliberate: the tenant's own brand-derived theme then
-        // stands, which is what lets one template re-skin per tenant.
-        ...(site.theme ? { theme: site.theme } : {}),
-        ...(site.symbols ? { symbols: site.symbols } : {}),
-      });
-      site.pages.forEach((pg, i) => {
-        result.pages.push({
-          name: pg.name,
-          id: installed.pageIds[i]!,
-          recordType: pg.recordType ?? null,
-          recordSubtype: pg.recordSubtype ?? null,
-          slug: pg.slug ?? null,
-        });
-      });
-    }
-
-    // 10. Emails (draft unless publish flagged) — Email module only.
-    for (const e of isOn('email') ? blueprint.emails : []) {
-      // The document owns subject/preheader; `syncSilica` mirrors them onto the row.
-      const email = await emailService.create(ctx, {
-        name: e.name,
-        subject: e.doc.subject,
-        preheader: e.doc.preheader,
-      });
-      await emailService.syncSilica(ctx, email.id, { doc: e.doc });
-      if (e.publish) await emailService.publishSilica(ctx, email.id);
-      result.emails.push({ name: e.name, id: email.id });
-    }
-
-    // 10a. Email sequences (docs/81 §9) — Email module only, AFTER emails so each
-    //      step can resolve its blueprint email (by name) to the just-created row id.
-    //      Scoped to the install's TARGET property (same one pages/emails install
-    //      under) so a sequence belongs to the site it shipped with. Created as draft
-    //      unless `activate`, mirroring email publish.
-    if (isOn('email') && (blueprint.sequences ?? []).length > 0) {
-      const emailIdByName = new Map(result.emails.map((e) => [e.name, e.id]));
-      for (const s of blueprint.sequences) {
-        const steps = s.steps.map((st, i) => {
-          const builderEmailId = emailIdByName.get(st.emailName);
-          if (!builderEmailId) {
-            throw new Error(
-              `Blueprint sequence "${s.name}" step ${String(i + 1)} references unknown email ` +
-                `"${st.emailName}" (no blueprint email with that name).`
-            );
-          }
-          return {
-            id: `step-${String(i)}`,
-            ...(st.name !== undefined ? { name: st.name } : {}),
-            delaySeconds: st.delaySeconds,
-            emailType: st.emailType,
-            source: { kind: 'builder' as const, builderEmailId },
-          };
-        });
-        const seq = await createSequence(ctx, {
-          name: s.name,
-          description: s.description,
-          propertyId,
-          reentryPolicy: s.reentryPolicy,
-          exitOnPurchase: s.exitOnPurchase,
-          steps,
-        });
-        if (s.activate) await updateSequence(ctx, seq.id, { status: 'active' });
-        result.sequences.push({ name: s.name, id: seq.id });
-      }
-    }
+    // 5–10. Module-gated content slices — each installs only when its module is on.
+    if (isOn('cms')) await installContentSlice(env);
+    if (isOn('commerce')) await installCommerceSlice(env);
+    if (isOn('builder')) await installSiteSlice(env);
+    if (isOn('email')) await installEmailSlice(env);
 
     result.counts = {
       assets: blueprint.assets.length,
@@ -1132,6 +529,688 @@ export async function installBlueprint(
       error: message,
     }).catch(() => undefined);
     throw err;
+  }
+}
+
+/** Shared state threaded through the install SLICE helpers below. `installBlueprint`
+ *  builds one and runs the slices in order; the module-backfill (blueprint-backfill.ts)
+ *  builds one from a stored install and runs a single module's slice against it. The
+ *  field names match the locals the slice bodies use, so each slice is the original
+ *  install block verbatim. */
+export interface SliceEnv {
+  ctx: { tenantId: string; userId: string | undefined };
+  propCtx: { tenantId: string; userId: string | undefined; propertyId: string };
+  tenantId: string;
+  userId: string | null;
+  propertyId: string;
+  blueprint: Blueprint;
+  result: InstallResult;
+  assetMap: Map<string, string>;
+  asset: (id?: string) => string | undefined;
+}
+
+/** 2. Assets → MediaAsset rows — always runs (media is tenant identity, not a module). */
+export async function installAssetsSlice(env: SliceEnv): Promise<void> {
+  const { tenantId, blueprint, result, assetMap, ctx } = env;
+
+  // 2. Assets → MediaAsset rows (one tx). Hot-linked: key holds the absolute
+  //    URL; mediaPublicUrl() passes it through (docs/54 §6). Idempotent: an asset
+  //    whose key already exists for this tenant is reused, so a reinstall doesn't
+  //    pile up duplicate media rows (reconcile, never destroy-and-recreate).
+  if (blueprint.assets.length > 0) {
+    await withTenant(ctx, async (tx) => {
+      for (const a of blueprint.assets) {
+        const existing = await tx.mediaAsset.findFirst({
+          where: { tenantId, key: a.url },
+          select: { id: true },
+        });
+        const row =
+          existing ??
+          (await tx.mediaAsset.create({
+            data: {
+              tenantId,
+              key: a.url,
+              originalFilename: `${a.id}.${mimeFromUrl(a.url).split('/')[1] ?? 'jpg'}`,
+              mimeType: a.mimeType ?? mimeFromUrl(a.url),
+              byteSize: BigInt(0),
+              status: 'ready',
+              ...(a.width !== undefined ? { width: a.width } : {}),
+              ...(a.height !== undefined ? { height: a.height } : {}),
+              ...(a.alt !== undefined ? { altText: a.alt } : {}),
+            },
+            select: { id: true },
+          }));
+        assetMap.set(a.id, row.id);
+        result.assets[a.id] = row.id;
+      }
+    });
+  }
+}
+
+/** 3. Brand identity + 3b site name/socials — always runs (tenant identity + look). */
+export async function installBrandSlice(env: SliceEnv): Promise<void> {
+  const { ctx, propertyId, blueprint, asset } = env;
+
+  // Is the target the tenant's PRIMARY site? The brand step scopes on this
+  // (docs/49 §3): the primary writes the tenant-wide brand; a SECONDARY site
+  // writes its own per-property `brand_override`, so installing onto one site
+  // never rebrands its siblings.
+  const prop = await withTenant(ctx, (tx) =>
+    tx.property.findUnique({
+      where: { id: propertyId },
+      select: { name: true, settings: true },
+    })
+  );
+
+  // 3. Brand identity — onto the TARGET SITE's own `brand_override`, whether or
+  // not it is the primary. Installing the primary's brand into TenantBrand (the
+  // default every unbranded site inherits) is what made a blueprint install on one
+  // site restyle its siblings; the base is left alone so it stays a neutral
+  // fallback. The full identity set is carried — the old secondary-site branch
+  // wrote only businessName + two colours + the light logo, silently dropping the
+  // fonts, the dark logo and the favicon, so a non-primary install inherited the
+  // tenant's type stack instead of the blueprint's.
+  const b = blueprint.brand;
+  const override: Record<string, string> = {
+    businessName: b.businessName,
+    colorPrimary: b.colors.primary,
+    fontHeading: b.fonts.heading,
+    fontBody: b.fonts.body,
+  };
+  if (b.tagline !== undefined) override.tagline = b.tagline;
+  if (b.colors.primaryForeground) override.colorPrimaryForeground = b.colors.primaryForeground;
+  if (b.colors.accent) override.colorAccent = b.colors.accent;
+  if (b.colors.accentForeground) override.colorAccentForeground = b.colors.accentForeground;
+  if (b.colors.secondary) override.colorSecondary = b.colors.secondary;
+  if (b.colors.secondaryForeground)
+    override.colorSecondaryForeground = b.colors.secondaryForeground;
+  const logoLight = asset(b.logoLightAssetId);
+  const logoDark = asset(b.logoDarkAssetId);
+  const favicon = asset(b.faviconAssetId);
+  if (logoLight) override.logoLightMediaId = logoLight;
+  if (logoDark) override.logoDarkMediaId = logoDark;
+  if (favicon) override.faviconMediaId = favicon;
+  await withTenant(ctx, (tx) =>
+    tx.property.update({
+      where: { id: propertyId },
+      data: { brandOverride: override },
+    })
+  );
+
+  // 3b. Site name + social links on the TARGET property (docs/49). The customer-
+  // facing site name is Property.name (storefront chrome/title/OG read it), seeded
+  // from the tenant name at provisioning — so brand it from the blueprint ONLY when
+  // it's still the seed placeholder 'Default'/empty, never clobbering a name the
+  // merchant already chose (mirrors db:backfill:property-name). Seed the per-site
+  // social links the footer's SocialLinks renders, but only when the site has none
+  // (placeholder handles the tenant swaps post-install, like the placeholder imagery).
+  {
+    const update: Prisma.PropertyUpdateInput = {};
+    const currentName = (prop?.name ?? '').trim();
+    if (currentName === '' || currentName === 'Default') update.name = b.businessName;
+
+    const seedSocials = b.socials ?? [];
+    const settings =
+      prop?.settings && typeof prop.settings === 'object' && !Array.isArray(prop.settings)
+        ? (prop.settings as Record<string, unknown>)
+        : {};
+    const existingSocials = (settings as { socials?: unknown }).socials;
+    const hasSocials = Array.isArray(existingSocials) && existingSocials.length > 0;
+    if (seedSocials.length > 0 && !hasSocials) {
+      update.settings = { ...settings, socials: seedSocials };
+    }
+
+    if (Object.keys(update).length > 0) {
+      await withTenant(ctx, (tx) =>
+        tx.property.update({ where: { id: propertyId }, data: update })
+      );
+    }
+  }
+}
+
+/** 4. Theme — create the shipped SiteTheme, apply it, and apply its captured look. */
+export async function installThemeSlice(env: SliceEnv): Promise<void> {
+  const { ctx, propCtx, blueprint, result } = env;
+
+  // 4. Theme — create the shipped SiteTheme, apply it (working draft), and apply
+  //    its captured brand "look". (docs/54 D5)
+  const theme = await savedThemeService.create(ctx, {
+    name: blueprint.theme.name,
+    basePresetKey: blueprint.theme.basePresetKey,
+    presentation: blueprint.theme.presentation ?? {},
+    ...(blueprint.theme.brand ? { brand: blueprint.theme.brand } : {}),
+  });
+  result.theme = { id: theme.id, name: theme.name };
+  if (blueprint.theme.apply) {
+    // apply writes the target site's draft config AND applies the theme's captured
+    // brand to the right scope (primary → tenant base brand, non-primary → the
+    // site's override), so no separate brand write is needed here (docs/49 Phase 6).
+    await savedThemeService.apply(propCtx, theme.id);
+  }
+}
+
+/** 5. Content entries (+ 5a authors/taxonomy) — CMS module only (caller gates). */
+export async function installContentSlice(env: SliceEnv): Promise<void> {
+  const { ctx, tenantId, userId, propertyId, blueprint, result, asset, assetMap } = env;
+
+  // 5. Content entries (draft) — CMS module only; a non-CMS tenant gets none.
+
+  // 5a. Byline personas + taxonomy the entries reference (docs/131 §4). Seeded ONCE,
+  //     before the entries, so each entry can link its author + terms by the slug it
+  //     names. Scoped to the installed site (an Author / a term is per-publication) and
+  //     reconciled by natural key, so a reinstall reuses rather than duplicates. Only
+  //     runs when the CMS module is on AND something actually references a byline.
+  const slugify = (s: string): string =>
+    s
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  const authorIdBySlug = new Map<string, string>();
+  // termId keyed by `${taxonomyKey} ${termSlug}` — the two vocabularies share a
+  // slug space only within their own key, so the key is part of the map key.
+  const termIdByKey = new Map<string, string>();
+  const usesByline =
+    blueprint.authors.length > 0 ||
+    blueprint.content.some((e) => Boolean(e.categories?.length) || Boolean(e.tags?.length));
+  if (usesByline) {
+    await withTenant(ctx, async (tx) => {
+      // Authors — reconcile by (site, slug).
+      for (const a of blueprint.authors) {
+        const existing = await tx.author.findFirst({
+          where: { tenantId, propertyId, slug: a.slug },
+          select: { id: true },
+        });
+        const id =
+          existing?.id ??
+          (
+            await tx.author.create({
+              data: {
+                tenantId,
+                propertyId,
+                slug: a.slug,
+                displayName: a.displayName,
+                bio: a.bio ?? null,
+                avatarAssetId: asset(a.avatarAssetId) ?? null,
+              },
+              select: { id: true },
+            })
+          ).id;
+        authorIdBySlug.set(a.slug, id);
+      }
+
+      // Taxonomy — created lazily, only the standard two (categories → `blog_category`,
+      // tags → `blog_tag`), the keys the storefront byline projection splits on.
+      const taxonomyIdByKey = new Map<string, string>();
+      const ensureTaxonomy = async (
+        key: string,
+        name: string,
+        pluralName: string
+      ): Promise<string> => {
+        const cached = taxonomyIdByKey.get(key);
+        if (cached) return cached;
+        const existing = await tx.taxonomy.findFirst({
+          where: { tenantId, propertyId, key },
+          select: { id: true },
+        });
+        const id =
+          existing?.id ??
+          (
+            await tx.taxonomy.create({
+              data: { tenantId, propertyId, key, name, pluralName },
+              select: { id: true },
+            })
+          ).id;
+        taxonomyIdByKey.set(key, id);
+        return id;
+      };
+      const ensureTerm = async (
+        key: string,
+        taxName: string,
+        taxPlural: string,
+        name: string
+      ): Promise<void> => {
+        const slug = slugify(name);
+        if (!slug) return;
+        const cacheKey = `${key} ${slug}`;
+        if (termIdByKey.has(cacheKey)) return;
+        const taxonomyId = await ensureTaxonomy(key, taxName, taxPlural);
+        const existing = await tx.taxonomyTerm.findFirst({
+          where: { tenantId, propertyId, taxonomyId, slug },
+          select: { id: true },
+        });
+        const id =
+          existing?.id ??
+          (
+            await tx.taxonomyTerm.create({
+              data: { tenantId, propertyId, taxonomyId, slug, name },
+              select: { id: true },
+            })
+          ).id;
+        termIdByKey.set(cacheKey, id);
+      };
+      for (const e of blueprint.content) {
+        for (const c of e.categories ?? [])
+          await ensureTerm('blog_category', 'Category', 'Categories', c);
+        for (const t of e.tags ?? []) await ensureTerm('blog_tag', 'Tag', 'Tags', t);
+      }
+    });
+  }
+
+  for (const entry of blueprint.content) {
+    await withTenant(ctx, async (tx) => {
+      const type = await resolveType(tx, entry.typeKey);
+      const schema = parseTypeSchema(type);
+      const rawBody = resolveAssetRefs(entry.body, assetMap) as Record<string, unknown>;
+      const body = validateAndNormalizeBody(schema, rawBody);
+      const seo: Record<string, unknown> = {};
+      if (entry.seo?.title) seo.title = entry.seo.title;
+      if (entry.seo?.description) seo.description = entry.seo.description;
+      if (entry.seo?.canonical) seo.canonical = entry.seo.canonical;
+      if (entry.seo?.robots) seo.robots = entry.seo.robots;
+      const ogId = asset(entry.seo?.ogImageAssetId);
+      if (ogId) seo.ogImage = ogId;
+      const row = await tx.contentEntry.create({
+        data: {
+          tenantId,
+          typeKey: entry.typeKey,
+          slug: entry.slug ?? null,
+          status: entry.status,
+          body: body as Prisma.InputJsonValue,
+          seoJson: seo as Prisma.InputJsonValue,
+          // `author_id` FKs to the CMS `authors` table, NOT `users`. The blueprint now
+          // models a byline (`entry.authorSlug` → an `Author` seeded in 5a); an entry
+          // that names no author, or names one the blueprint didn't ship, stays null.
+          // (recordRevision's authorId below is a plain audit field, not FK-bound, so
+          // the installing user is fine to record there.)
+          authorId: entry.authorSlug ? (authorIdBySlug.get(entry.authorSlug) ?? null) : null,
+        },
+      });
+      // Scope to the installed site so content doesn't bleed into other sites.
+      await tx.contentEntryProperty.create({
+        data: { entryId: row.id, propertyId },
+      });
+      // Link the entry's categories + tags to the terms seeded in 5a. Idempotent — the
+      // link's PK is (entryId, termId), so a reinstall re-asserts rather than duplicates.
+      // Key format MUST match `ensureTerm`'s cache key `${taxonomyKey} ${slug}` — the
+      // cache used to key on a NUL separator while this looked up with a space, so the
+      // lookup below always missed and category/tag links were NEVER created. Both use a
+      // plain space now (slugs contain none, and the two prefixes differ, so it's exact).
+      const entryTermKeys = [
+        ...(entry.categories ?? []).map((c) => `blog_category ${slugify(c)}`),
+        ...(entry.tags ?? []).map((t) => `blog_tag ${slugify(t)}`),
+      ];
+      for (const key of entryTermKeys) {
+        const termId = termIdByKey.get(key);
+        if (!termId) continue;
+        await tx.entryTaxonomyTerm.upsert({
+          where: { entryId_termId: { entryId: row.id, termId } },
+          create: { entryId: row.id, termId, tenantId },
+          update: {},
+        });
+      }
+      await syncReferences(tx, tenantId, row.id, schema, body);
+      await recordRevision(tx, {
+        tenantId,
+        entryId: row.id,
+        body,
+        seoJson: seo,
+        status: entry.status,
+        kind: 'manual',
+        authorId: userId ?? null,
+        summary: 'Installed from template',
+      });
+      result.content.push({ typeKey: entry.typeKey, slug: entry.slug ?? null, id: row.id });
+    });
+  }
+}
+
+/** 6. Commerce catalog — Commerce module only (caller gates). */
+export async function installCommerceSlice(env: SliceEnv): Promise<void> {
+  const { ctx, propertyId, blueprint, result, asset } = env;
+
+  // 6. Commerce — catalog only when the Commerce module is on (else skipped).
+  const commerce = blueprint.commerce;
+  if (!commerce) return;
+  // Reconcile by natural key (see the helpers above): reuse/restore-then-create,
+  // never destroy-and-recreate. Existing rows are left alone.
+
+  // 6a. Categories — parent-first (resolve parentHandle as we go).
+  const catMap = new Map<string, string>();
+  const pending = [...commerce.categories];
+  let guard = pending.length + 1;
+  while (pending.length > 0 && guard-- > 0) {
+    for (let i = pending.length - 1; i >= 0; i--) {
+      const c = pending[i]!;
+      if (c.parentHandle && !catMap.has(c.parentHandle)) continue; // wait for parent
+      let id = await reuseOrRestoreCategory(ctx, c.handle);
+      if (!id) {
+        const created = await categoryService.create(ctx, {
+          name: c.name,
+          handle: c.handle,
+          description: c.description,
+          parentId: c.parentHandle ? catMap.get(c.parentHandle) : null,
+          position: c.position,
+          featured: c.featured,
+          iconMediaId: asset(c.iconAssetId),
+          heroMediaId: asset(c.heroAssetId),
+          seoTitle: c.seoTitle,
+          seoDescription: c.seoDescription,
+          ogImageId: asset(c.ogImageAssetId),
+        });
+        id = created.id;
+      }
+      catMap.set(c.handle, id);
+      result.categories[c.handle] = id;
+      pending.splice(i, 1);
+    }
+  }
+
+  // 6b. Collections (empty; membership set from products below).
+  const collMap = new Map<string, string>();
+  for (const c of commerce.collections) {
+    let id = await reuseOrRestoreCollection(ctx, c.handle);
+    if (!id) {
+      const created = await collectionService.create(ctx, {
+        name: c.name,
+        handle: c.handle,
+        description: c.description,
+        type: c.type,
+        ruleSet: c.ruleSet,
+        heroMediaId: asset(c.heroAssetId),
+        featured: c.featured,
+        seoTitle: c.seoTitle,
+        seoDescription: c.seoDescription,
+        ogImageId: asset(c.ogImageAssetId),
+      });
+      id = created.id;
+    }
+    collMap.set(c.handle, id);
+    result.collections[c.handle] = id;
+  }
+
+  // 6b′. Product types (docs/143) — upsert by (tenant, key) BEFORE products so a
+  //      product's `attributes` bag validates against its type. A blueprint usually
+  //      reuses a platform BUILT-IN key (apparel, cosmetics, …), which resolves via
+  //      RLS with no install; this step exists for a blueprint that ships its OWN
+  //      bespoke type. Tenant-owned (is_built_in=false) so it shadows nothing and is
+  //      the tenant's to edit. Idempotent — reinstall updates the schema in place.
+  for (const pt of blueprint.productTypes ?? []) {
+    // Its own tenant-scoped tx (like the content block above) — this section runs
+    // through commerce SERVICES with `ctx`, not a shared transaction client, so the
+    // raw `product_types` upsert must open its own `withTenant` for RLS.
+    await withTenant(ctx, async (tx) => {
+      await tx.productType.upsert({
+        where: { tenantId_key: { tenantId: ctx.tenantId, key: pt.key } },
+        create: {
+          tenantId: ctx.tenantId,
+          key: pt.key,
+          name: pt.name,
+          pluralName: pt.pluralName ?? null,
+          description: pt.description ?? null,
+          icon: pt.icon ?? null,
+          isBuiltIn: false,
+          attributeSchema: pt.attributeSchema,
+        },
+        update: {
+          name: pt.name,
+          pluralName: pt.pluralName ?? null,
+          description: pt.description ?? null,
+          icon: pt.icon ?? null,
+          attributeSchema: pt.attributeSchema,
+        },
+      });
+    });
+  }
+
+  // Precompute each product's collections (union of its collectionHandles and
+  // any collection whose productHandles names it).
+  const collsForProduct = new Map<string, Set<string>>();
+  for (const p of commerce.products) collsForProduct.set(p.handle, new Set(p.collectionHandles));
+  for (const c of commerce.collections) {
+    for (const ph of c.productHandles) collsForProduct.get(ph)?.add(c.handle);
+  }
+
+  // 6c. Products → options → variants → images.
+  for (const p of commerce.products) {
+    // Reconcile first: if a product with this handle already exists (live, or a
+    // tombstone from a prior reset), reuse it and leave its content alone — only
+    // bring back any of the blueprint's variant SKUs that are tombstoned so the
+    // product is sellable. The SKU unique constraint makes reuse the ONLY way to
+    // reinstall; recreating would collide. Missing variants under an already-living
+    // product are intentionally not added (leave the existing product untouched).
+    const reusedId = await reuseOrRestoreProduct(ctx, p.handle);
+    if (reusedId) {
+      const skuToVariant = new Map<string, string>();
+      for (const v of p.variants) {
+        const vid = await reuseOrRestoreVariant(ctx, v.sku);
+        if (vid) skuToVariant.set(v.sku, vid);
+      }
+      // Wire the reused product into the blueprint's categories/collections + site
+      // so the bound grids actually render it (additive — see linkProductRelations).
+      const categoryIds = p.categoryHandles
+        .map((h) => catMap.get(h))
+        .filter((x): x is string => !!x);
+      const collectionIds = [...(collsForProduct.get(p.handle) ?? [])]
+        .map((h) => collMap.get(h))
+        .filter((x): x is string => !!x);
+      await linkProductRelations(ctx, reusedId, categoryIds, collectionIds, propertyId);
+      // Re-link images to the CURRENT assets: a reused product's stored image rows
+      // point at assets a prior reset deleted, so the storefront 404s the photo.
+      const reuseImages: Parameters<typeof relinkProductImages>[2] = [];
+      for (const img of p.images) {
+        const mediaAssetId = asset(img.assetId);
+        if (!mediaAssetId) continue;
+        reuseImages.push({
+          mediaAssetId,
+          variantId: img.variantSku ? skuToVariant.get(img.variantSku) : undefined,
+          position: img.position,
+          alt: img.alt,
+          isPrimary: img.isPrimary,
+        });
+      }
+      await relinkProductImages(ctx, reusedId, reuseImages);
+      result.products.push({ handle: p.handle, id: reusedId });
+      continue;
+    }
+
+    const created = await productService.create(ctx, {
+      title: p.title,
+      handle: p.handle,
+      description: p.description,
+      status: p.status,
+      productType: p.productType,
+      // Typed product type + attributes (docs/143). The service validates the
+      // attribute bag against the resolved type (built-in or the blueprint's own,
+      // installed above) — a bad bag fails the install, exactly like a bad content body.
+      productTypeKey: p.productTypeKey,
+      attributes: p.attributes,
+      vendor: p.vendor,
+      tags: p.tags,
+      fulfillmentType: p.fulfillmentType,
+      weight: p.weight,
+      dimensions: p.dimensions,
+      taxClass: p.taxClass,
+      requiresShipping: p.requiresShipping,
+      categoryIds: p.categoryHandles.map((h) => catMap.get(h)).filter((x): x is string => !!x),
+      collectionIds: [...(collsForProduct.get(p.handle) ?? [])]
+        .map((h) => collMap.get(h))
+        .filter((x): x is string => !!x),
+      seoTitle: p.seoTitle,
+      seoDescription: p.seoDescription,
+      ogImageId: asset(p.ogImageAssetId),
+      // Scope to the installed site so it doesn't bleed into other sites.
+      propertyIds: [propertyId],
+    });
+    result.products.push({ handle: p.handle, id: created.id });
+
+    // Options → value id map keyed by `${name}::${value}`.
+    const valueIds = new Map<string, string>();
+    if (p.options.length > 0) {
+      const rows = await variantService.setOptions(ctx, created.id, {
+        options: p.options.map((o) => ({
+          name: o.name,
+          displayType: o.displayType,
+          position: o.position,
+          values: o.values.map((v) => ({
+            value: v.value,
+            swatchHex: v.swatchHex,
+            swatchImageId: asset(v.swatchImageAssetId),
+            position: v.position,
+          })),
+        })),
+      });
+      for (const o of rows) for (const v of o.values) valueIds.set(`${o.name}::${v.value}`, v.id);
+    }
+
+    // Variants.
+    const skuToVariant = new Map<string, string>();
+    for (const v of p.variants) {
+      const optionValueIds = Object.entries(v.optionValues)
+        .map(([name, val]) => valueIds.get(`${name}::${val}`))
+        .filter((x): x is string => !!x);
+      const variant = await variantService.create(ctx, created.id, {
+        sku: v.sku,
+        barcode: v.barcode,
+        title: v.title,
+        optionValueIds,
+        priceCents: v.priceCents,
+        compareAtPriceCents: v.compareAtPriceCents,
+        costCents: v.costCents,
+        currency: v.currency,
+        weight: v.weight,
+        dimensions: v.dimensions,
+        inventoryPolicy: v.inventoryPolicy,
+        requiresShipping: v.requiresShipping,
+        isDefault: v.isDefault,
+        position: v.position,
+      });
+      skuToVariant.set(v.sku, variant.id);
+    }
+
+    // Images.
+    for (const img of p.images) {
+      const mediaAssetId = asset(img.assetId);
+      if (!mediaAssetId) continue;
+      const optionValueIds = Object.entries(img.optionValues)
+        .map(([name, val]) => valueIds.get(`${name}::${val}`))
+        .filter((x): x is string => !!x);
+      const created2 = await variantService.addImage(ctx, {
+        productId: created.id,
+        variantId: img.variantSku ? skuToVariant.get(img.variantSku) : undefined,
+        mediaAssetId,
+        position: img.position,
+        alt: img.alt,
+        optionValueIds,
+      });
+      if (img.isPrimary) await variantService.setPrimaryImage(ctx, created2.id);
+    }
+  }
+}
+
+/** 7. The authored silica site — frame + pages + theme + symbols. Builder module only. */
+export async function installSiteSlice(env: SliceEnv): Promise<void> {
+  const { propCtx, blueprint, result } = env;
+
+  // 7. The authored silica site — frame + pages + theme + symbols, in ONE write.
+  //    Builder module only (a headless tenant gets no hosted site).
+  //
+  //    This replaces the old three-step legacy dance (create components, create a
+  //    layout, create pages one by one, then convert the whole lot to silica at
+  //    go-live through a best-effort bridge). The manifest already holds exactly
+  //    what the store wants, so it goes straight in through the same seam a human
+  //    author's save uses. Nothing is converted, so nothing is lost in conversion.
+  if (!blueprint.site) return;
+  const site = blueprint.site;
+  const installed = await siteService.installSite(propCtx, {
+    pages: site.pages.map((pg) => ({
+      name: pg.name,
+      slug: pg.slug ?? '',
+      root: resolveBindingHandles(pg.root, result),
+      kind: pg.kind,
+      recordType: pg.recordType ?? null,
+      // The product-TYPE this page designs (docs/143 Option B) — null = default page.
+      recordSubtype: pg.recordSubtype ?? null,
+      isDefault: pg.isDefault,
+      seoTitle: pg.seoTitle ?? null,
+      seoDescription: pg.seoDescription ?? null,
+      canonical: pg.canonical ?? null,
+      ogImage: pg.ogImage ?? null,
+      ...(pg.noindex !== undefined ? { noindex: pg.noindex } : {}),
+    })),
+    ...(site.frame ? { frame: { root: resolveBindingHandles(site.frame.root, result) } } : {}),
+    // An omitted theme is deliberate: the tenant's own brand-derived theme then
+    // stands, which is what lets one template re-skin per tenant.
+    ...(site.theme ? { theme: site.theme } : {}),
+    ...(site.symbols ? { symbols: site.symbols } : {}),
+  });
+  site.pages.forEach((pg, i) => {
+    result.pages.push({
+      name: pg.name,
+      id: installed.pageIds[i]!,
+      recordType: pg.recordType ?? null,
+      recordSubtype: pg.recordSubtype ?? null,
+      slug: pg.slug ?? null,
+    });
+  });
+}
+
+/** 10. Emails + 10a sequences — Email module only (caller gates). */
+export async function installEmailSlice(env: SliceEnv): Promise<void> {
+  const { ctx, propertyId, blueprint, result } = env;
+
+  // 10. Emails (draft unless publish flagged) — Email module only.
+  for (const e of blueprint.emails) {
+    // The document owns subject/preheader; `syncSilica` mirrors them onto the row.
+    // Unique within the tenant: the platform defaults already ship a "Welcome", so a
+    // blueprint that declares one too produced two rows with the same name and no way
+    // to tell them apart. Suffixed with the blueprint's name rather than a counter,
+    // because the question an author is really asking is where the row came from.
+    const email = await emailService.create(ctx, {
+      name: await emailService.uniqueName(ctx, e.name, blueprint.name),
+      subject: e.doc.subject,
+      preheader: e.doc.preheader,
+    });
+    await emailService.syncSilica(ctx, email.id, { doc: e.doc });
+    if (e.publish) await emailService.publishSilica(ctx, email.id);
+    result.emails.push({ name: e.name, id: email.id });
+  }
+
+  // 10a. Email sequences (docs/81 §9) — Email module only, AFTER emails so each
+  //      step can resolve its blueprint email (by name) to the just-created row id.
+  //      Scoped to the install's TARGET property (same one pages/emails install
+  //      under) so a sequence belongs to the site it shipped with. Created as draft
+  //      unless `activate`, mirroring email publish.
+  if ((blueprint.sequences ?? []).length > 0) {
+    const emailIdByName = new Map(result.emails.map((e) => [e.name, e.id]));
+    for (const s of blueprint.sequences) {
+      const steps = s.steps.map((st, i) => {
+        const builderEmailId = emailIdByName.get(st.emailName);
+        if (!builderEmailId) {
+          throw new Error(
+            `Blueprint sequence "${s.name}" step ${String(i + 1)} references unknown email ` +
+              `"${st.emailName}" (no blueprint email with that name).`
+          );
+        }
+        return {
+          id: `step-${String(i)}`,
+          ...(st.name !== undefined ? { name: st.name } : {}),
+          delaySeconds: st.delaySeconds,
+          emailType: st.emailType,
+          source: { kind: 'builder' as const, builderEmailId },
+        };
+      });
+      const seq = await createSequence(ctx, {
+        name: s.name,
+        description: s.description,
+        propertyId,
+        reentryPolicy: s.reentryPolicy,
+        exitOnPurchase: s.exitOnPurchase,
+        steps,
+      });
+      if (s.activate) await updateSequence(ctx, seq.id, { status: 'active' });
+      result.sequences.push({ name: s.name, id: seq.id });
+    }
   }
 }
 
