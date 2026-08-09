@@ -1,0 +1,31 @@
+{
+  "name": "@sparx/email-worker",
+  "version": "0.0.0",
+  "private": true,
+  "description": "sparx email worker. Receives email.send events via Pub/Sub push (Cloud Run HTTP entrypoint), renders React Email templates from @sparx/email, and hands the rendered payload to that package's provider (console in dev, Postal in prod). Falls back to console transport when POSTAL_API_KEY is unset so the worker is usable end-to-end before Postal is deployed.",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "@sparx/db": "workspace:*",
+    "@sparx/email": "workspace:*",
+    "@sparx/email-platform": "workspace:*",
+    "@sparx/events": "workspace:*",
+    "pino": "^9.5.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "dotenv": "^16.4.7",
+    "tsx": "^4.19.2",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

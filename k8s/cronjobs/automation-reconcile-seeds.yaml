@@ -47,7 +47,7 @@ spec:
                   --max-time 600
                   -X POST
                   -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
-                  http://automation-worker.sparx-prod.svc.cluster.local:8080/internal/cron/reconcile-seeds
+                  http://event-worker.sparx-prod.svc.cluster.local:8080/internal/cron/reconcile-seeds
               env:
                 - name: SPARX_INTERNAL_CRON_TOKEN
                   valueFrom:

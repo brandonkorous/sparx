@@ -42,4 +42,10 @@ export {
   type Transport,
 } from './transport';
 export { NatsJetStreamPublisher, subjectFor, SUBJECT_PREFIX } from './transports/nats';
-export { startConsumer, type ConsumerOptions, type RunningConsumer } from './consumer';
+export {
+  startConsumer,
+  createBrokerHandler,
+  type ConsumerOptions,
+  type RunningConsumer,
+  type WorkerSubscription,
+} from './consumer';

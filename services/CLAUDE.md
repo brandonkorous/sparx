@@ -16,6 +16,14 @@ Business events (`order.placed`, `order.paid`, `email.send`, `search.entity.chan
 
 **Why this is stated so firmly.** The selector used to be `GCP_PROJECT_ID`, read directly in nine domain packages. Set → Pub/Sub; unset → a fire-and-forget HTTP path written as a _dev convenience_. Migrating to Azure unset it and silently moved production onto that path: no queue, no retry, no dead-letter, and every `publishEvent` still returning success. An unset broker now **throws at boot** under `NODE_ENV=production`. Never reintroduce a default that degrades — a config mistake must fail a rollout, not become silent data loss.
 
+### The fleet is THREE Deployments, and handlers are libraries
+
+`services/event-worker` is the one process that runs the broker subscriptions. A new handler is a **package** under `packages/<name>-worker` exporting `createSubscription(logger)`, registered in that service's `src/index.ts` — **not** a new service, a new Dockerfile, a new Deployment and a new release-matrix entry.
+
+There were fourteen worker Deployments. That was inherited from Cloud Run, where one service per handler was free at idle; on a fixed node it cost 2.15 GiB of Node runtimes (37% of it) to do 14 millicores of work, and on 2026-08-08 the node ran out of memory and took production down. Twelve are now handlers in one process. **`media-worker` and `import-worker` stay separate** — sharp over image buffers plus the media PVC, and bulk file parsing, are the two things whose leak or crash should not reach the rest.
+
+Each handler keeps its own JetStream `durable` name. Changing one restarts its cursor, which replays or skips the stream — so a durable is effectively permanent once shipped.
+
 Workers run as plain Deployments in-cluster on every provider. (`email-worker` + `media-worker` ran on **Cloud Run** under the GCP deployment; the `cloud-run-worker` Terraform module applies only there.)
 
 ## Email path

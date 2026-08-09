@@ -21,10 +21,8 @@
 //     the consumer forever — the failure mode that turns one bad event into an
 //     outage for every event behind it.
 //
-// The worker's existing `handle()` is reused verbatim. This is deliberately not
-// a second code path: the HTTP entrypoint each worker still exposes (used by
-// local dev and by a Pub/Sub push deployment) calls the same function, so there
-// is one implementation of what an event DOES and two ways to deliver it.
+// The worker's existing `handle()` is reused verbatim — there is one
+// implementation of what an event DOES, and the broker is how it is delivered.
 
 import { ensureStream, subjectFor } from './transports/nats';
 import type { PublisherLogger } from './publisher';
@@ -44,6 +42,63 @@ export interface ConsumerOptions {
 
 export interface RunningConsumer {
   stop(): Promise<void>;
+}
+
+/**
+ * What one handler subscribes to. Declared by each worker package and registered
+ * by `services/event-worker`, which is the single process that runs them.
+ *
+ * `durable` is JetStream's cursor key and MUST stay stable across the move from
+ * "one pod per handler" to one shared pod — a renamed durable is a brand-new
+ * consumer, which replays or skips depending on the stream's deliver policy.
+ */
+export interface WorkerSubscription {
+  durable: string;
+  events: string[];
+  handle: (raw: string) => Promise<void>;
+}
+
+/**
+ * The parse-and-ack wrapper every worker had its own copy of.
+ *
+ * All twelve were the same twenty-five lines with a different name in the log
+ * message: JSON.parse, schema-check, then call `handle`. The two ack decisions
+ * are the part worth stating once rather than twelve times:
+ *
+ *   • Unparseable JSON and off-schema payloads are ACKED, not retried. Both are
+ *     permanent — redelivering something that can never parse only burns the
+ *     retry budget before dead-lettering it anyway.
+ *   • Anything `handle` throws propagates, so `startConsumer` naks and the
+ *     broker redelivers. That is the transient-failure path and it must stay a
+ *     throw; swallowing it here would silently drop real work.
+ */
+export function createBrokerHandler<E, L extends PublisherLogger>(opts: {
+  /** Worker name, used only to make the log lines attributable. */
+  name: string;
+  logger: L;
+  parseEvent: (raw: unknown) => E | null;
+  handle: (event: E, logger: L) => Promise<unknown>;
+}): (raw: string) => Promise<void> {
+  return async function handleFromBroker(raw: string): Promise<void> {
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (err) {
+      opts.logger.error({ err }, `${opts.name}: broker message not valid JSON; acking`);
+      return;
+    }
+
+    const event = opts.parseEvent(parsed);
+    if (!event) {
+      opts.logger.warn(
+        { raw: parsed },
+        `${opts.name}: broker message did not match schema; acking`
+      );
+      return;
+    }
+
+    await opts.handle(event, opts.logger);
+  };
 }
 
 /**

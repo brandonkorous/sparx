@@ -1,8 +1,8 @@
 # sparx Platform — Monorepo Structure
 
-**Version:** 1.2  
+**Version:** 1.3  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-08-08
 
 ---
 
@@ -44,12 +44,18 @@ sparx/
 │   ├── config/               # @sparx/config — shared ESLint, Prettier, TS, Tailwind configs
 │   └── types/                # @sparx/types — shared TypeScript types
 │
-├── workers/
-│   ├── email/                # @sparx/email-worker — Pub/Sub → Postal
-│   ├── domain/               # @sparx/domain-worker — CNAME validation + SSL
-│   ├── dropship/             # @sparx/dropship-worker — supplier catalog sync
-│   ├── billing/              # @sparx/billing-worker — Stripe webhooks + renewals
-│   └── search/               # @sparx/worker-search — Typesense sync
+│   # There is NO top-level workers/ directory. Event handlers are ordinary
+│   # packages, and ONE service runs them:
+│   #
+│   #   services/event-worker      the only process that holds subscriptions
+│   #   packages/email-worker      @sparx/email-worker      — email.send
+│   #   packages/domain-worker     @sparx/domain-worker     — domain.purchased
+│   #   packages/dropship-worker   @sparx/dropship-worker   — supplier sync
+│   #   packages/commerce-indexer  @sparx/commerce-indexer  — Typesense sync
+│   #   …and eight more, each exporting createSubscription(logger)
+│   #
+│   # services/media-worker and services/import-worker are the two handlers
+│   # that still get their own pod. See services/CLAUDE.md.
 │
 ├── k8s/
 │   ├── sparx-prod/           # Kubernetes manifests (namespace, redis, typesense, postal, caddy, api, dashboard, site, web, workers)
@@ -239,7 +245,7 @@ NEXT_PUBLIC_APP_URL | NEXT_PUBLIC_API_URL | NEXT_PUBLIC_SITE_URL
 9. `apps/web` (ui, types)
 10. `apps/dashboard` (ui, auth, db, types)
 11. `apps/site` (ui, sdk, types)
-12. `workers/*` (db, email, types)
+12. `packages/*-worker` (db, email, events, types) → run by `services/event-worker`
 
 ---
 
@@ -255,5 +261,5 @@ NEXT_PUBLIC_APP_URL | NEXT_PUBLIC_API_URL | NEXT_PUBLIC_SITE_URL
 8. `apps/dashboard` — Next.js App Router, `tokens.css` in root layout, `ModuleProvider` per module section
 9. `apps/web` — Next.js marketing site, `@sparx/ui` components
 10. `apps/site` — Next.js, tenant resolution middleware, theme CSS vars
-11. `workers/` — five Node.js Pub/Sub consumer processes
+11. `packages/*-worker` — event handlers, each exporting `createSubscription(logger)`; `services/event-worker` is the one process that runs them
 12. `k8s/` and `infrastructure/` — manifests and Terraform

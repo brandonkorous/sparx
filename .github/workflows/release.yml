@@ -271,24 +271,14 @@ jobs:
           - { name: site, dockerfile: apps/site/Dockerfile }
           - { name: market, dockerfile: apps/market/Dockerfile }
           - { name: admin, dockerfile: apps/admin/Dockerfile }
-          # Workers (k8s/self-hosted/workers.yaml)
-          - { name: automation-worker, dockerfile: services/automation-worker/Dockerfile }
-          - { name: email-worker, dockerfile: services/email-worker/Dockerfile }
-          - { name: push-worker, dockerfile: services/push-worker/Dockerfile }
-          - {
-              name: markup-recompute-worker,
-              dockerfile: services/markup-recompute-worker/Dockerfile,
-            }
+          # Workers (k8s/self-hosted/workers.yaml). THREE images, not fourteen:
+          # twelve of them were the same container with a different WORKDIR, and
+          # are now handler libraries under packages/*-worker running inside
+          # event-worker. media-worker and import-worker stay separate — see the
+          # header of that manifest for which isolation was worth keeping.
+          - { name: event-worker, dockerfile: services/event-worker/Dockerfile }
           - { name: media-worker, dockerfile: services/media-worker/Dockerfile }
-          - { name: commerce-indexer, dockerfile: services/commerce-indexer/Dockerfile }
-          - { name: channel-sync-worker, dockerfile: services/channel-sync-worker/Dockerfile }
-          - { name: social-worker, dockerfile: services/social-worker/Dockerfile }
-          - { name: legal-seed-worker, dockerfile: services/legal-seed-worker/Dockerfile }
-          - { name: platform-crm-worker, dockerfile: services/platform-crm-worker/Dockerfile }
-          - { name: domain-worker, dockerfile: services/domain-worker/Dockerfile }
-          - { name: dropship-worker, dockerfile: services/dropship-worker/Dockerfile }
           - { name: import-worker, dockerfile: services/import-worker/Dockerfile }
-          - { name: inventory-worker, dockerfile: services/inventory-worker/Dockerfile }
           # The migration + seed runner. Not a Deployment — stage 2 runs it as a
           # Job, which is why it is built alongside the images it never joins.
           - { name: db, dockerfile: packages/db/Dockerfile }

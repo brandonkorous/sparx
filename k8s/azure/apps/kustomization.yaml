@@ -24,7 +24,7 @@ namespace: sparx-prod
 resources:
   - ../../apps
   - ../../cronjobs
-  # The 14 workers + the NATS broker. Shared verbatim with the workstation
+  # The 3 workers + the NATS broker. Shared verbatim with the workstation
   # overlay.
   - ../../self-hosted
 
@@ -62,47 +62,19 @@ images:
     newTag: latest
   # The workers carry `sparx/<name>:local` in the shared base, since that base
   # is written for the workstation case. Rewrite them the same way.
-  - name: sparx/automation-worker
-    newName: ghcr.io/brandonkorous/sparx/automation-worker
-    newTag: latest
-  - name: sparx/email-worker
-    newName: ghcr.io/brandonkorous/sparx/email-worker
-    newTag: latest
-  - name: sparx/push-worker
-    newName: ghcr.io/brandonkorous/sparx/push-worker
-    newTag: latest
-  - name: sparx/markup-recompute-worker
-    newName: ghcr.io/brandonkorous/sparx/markup-recompute-worker
+  #
+  # THREE, not fourteen: twelve worker images collapsed into `event-worker` when
+  # the fleet was consolidated (see ../../self-hosted/workers.yaml). Their GHCR
+  # packages still exist and are still pullable, which is what makes rolling
+  # back to a pre-consolidation SHA work — nothing here references them.
+  - name: sparx/event-worker
+    newName: ghcr.io/brandonkorous/sparx/event-worker
     newTag: latest
   - name: sparx/media-worker
     newName: ghcr.io/brandonkorous/sparx/media-worker
     newTag: latest
-  - name: sparx/commerce-indexer
-    newName: ghcr.io/brandonkorous/sparx/commerce-indexer
-    newTag: latest
-  - name: sparx/channel-sync-worker
-    newName: ghcr.io/brandonkorous/sparx/channel-sync-worker
-    newTag: latest
-  - name: sparx/social-worker
-    newName: ghcr.io/brandonkorous/sparx/social-worker
-    newTag: latest
-  - name: sparx/legal-seed-worker
-    newName: ghcr.io/brandonkorous/sparx/legal-seed-worker
-    newTag: latest
-  - name: sparx/platform-crm-worker
-    newName: ghcr.io/brandonkorous/sparx/platform-crm-worker
-    newTag: latest
-  - name: sparx/domain-worker
-    newName: ghcr.io/brandonkorous/sparx/domain-worker
-    newTag: latest
-  - name: sparx/dropship-worker
-    newName: ghcr.io/brandonkorous/sparx/dropship-worker
-    newTag: latest
   - name: sparx/import-worker
     newName: ghcr.io/brandonkorous/sparx/import-worker
-    newTag: latest
-  - name: sparx/inventory-worker
-    newName: ghcr.io/brandonkorous/sparx/inventory-worker
     newTag: latest
 
 replicas:

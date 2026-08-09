@@ -31,7 +31,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  # The 11 workers that ran on Cloud Run. Plain Deployments, no cloud coupling.
+  # The worker fleet: event-worker + media-worker + import-worker. Plain
+  # Deployments, no cloud coupling. It was fourteen — see workers.yaml.
   - workers.yaml
   # The event broker. Belongs in the shared base for the same reason the workers
   # do: it is byte-identical on every provider, which is precisely why NATS was

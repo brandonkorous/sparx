@@ -16,7 +16,7 @@
 #   2. HPA + PDB   → deleted (meaningless on a single node)
 #   3. replicas    → 1 (the base pins api-rest at 2 for rolling-update HA)
 #   4. ConfigMap   → app-env-configmap.yaml (local origins, no GCP)
-#   5. adds        → Postgres/Redis/Typesense, the 11 ex-Cloud Run workers,
+#   5. adds        → Postgres/Redis/Typesense, the worker fleet,
 #                    an HTTP-only Caddy, and cloudflared
 #
 # Apply: kubectl apply -k k8s/local
@@ -35,7 +35,7 @@ resources:
   # http://api-rest.sparx-prod.svc.cluster.local:3000/internal/* — no per-service
   # image to build, and nothing GKE-specific in them.
   - ../cronjobs
-  # The 11 workers — shared verbatim with k8s/azure.
+  # The workers — shared verbatim with k8s/azure.
   - ../self-hosted
   # Caddy + THE routing table, shared verbatim with every cloud overlay. The
   # workstation delta is three things and nothing else: mode.caddy below, the
@@ -192,16 +192,16 @@ patches:
                 serviceAccountName: default
 
   # --- Workers read the local image store ------------------------------------
-  # The 14 workers in ../self-hosted carry no imagePullPolicy, because that base
-  # is shared with the AKS overlay where `Never` means ErrImageNeverPull on every
+  # The workers in ../self-hosted carry no imagePullPolicy, because that base is
+  # shared with the AKS overlay where `Never` means ErrImageNeverPull on every
   # one of them. Here it is correct and required: the images are built straight
   # into Docker Desktop's store, which its Kubernetes shares.
   #
   # A JSON6902 op rather than a strategic merge, and selected by `tier: worker`
-  # rather than named 14 times: a strategic-merge patch on `containers` merges by
-  # container NAME, so one patch cannot cover fourteen differently-named containers.
+  # rather than named one by one: a strategic-merge patch on `containers` merges
+  # by container NAME, so one patch cannot cover differently-named containers.
   # `add` upserts, so this stays correct whether or not the base ever sets it.
-  # A new worker carrying the same label needs no edit here.
+  # This is what made the fourteen-to-three consolidation a no-op here.
   - target:
       kind: Deployment
       labelSelector: tier=worker

@@ -1,0 +1,30 @@
+{
+  "name": "@sparx/markup-recompute-worker",
+  "version": "0.0.0",
+  "private": true,
+  "description": "sparx markup recompute worker (docs/48 Phase 4). Receives variant.cost.updated events via Pub/Sub push (Cloud Run HTTP entrypoint) and re-derives the list price for variants bound to a markup rule — auto-applying within the rule's tolerance band, or staging the change for human approval beyond it.",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "@sparx/commerce-schemas": "workspace:*",
+    "@sparx/db": "workspace:*",
+    "@sparx/events": "workspace:*",
+    "pino": "^9.5.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "dotenv": "^16.4.7",
+    "tsx": "^4.19.2",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

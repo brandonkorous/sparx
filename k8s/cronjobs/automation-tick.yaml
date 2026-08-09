@@ -51,7 +51,7 @@ spec:
                   --max-time 60
                   -X POST
                   -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
-                  http://automation-worker.sparx-prod.svc.cluster.local:8080/internal/cron/tick
+                  http://event-worker.sparx-prod.svc.cluster.local:8080/internal/cron/tick
               env:
                 - name: SPARX_INTERNAL_CRON_TOKEN
                   valueFrom:
