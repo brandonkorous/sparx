@@ -45,8 +45,8 @@ spec:
     spec:
       restartPolicy: Never
       enableServiceLinks: false
-      imagePullSecrets:
-        - name: ghcr
+      # No imagePullSecret: the GHCR packages are public, so the pull is
+      # anonymous. See k8s/azure/apps/kustomization.yaml "Registry pull".
       containers:
         - name: seed
           image: ${IMAGE}

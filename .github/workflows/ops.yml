@@ -207,28 +207,17 @@ jobs:
           az aks get-credentials --resource-group "$RESOURCE_GROUP" \
             --name "$CLUSTER" --overwrite-existing
 
-      # Refresh the GHCR pull secret with THIS run's token.
+      # There is no pull secret to refresh: the GHCR packages are public, so an
+      # ops task pod pulls anonymously and is runnable whenever it is needed.
       #
-      # The cluster's `ghcr` secret is minted by the release from its own
-      # GITHUB_TOKEN, which is scoped to that run and expires with it. Running pods
-      # never notice — their images are already on the node — so the credential can
-      # be dead for days while the platform looks perfectly healthy. An ops task is
-      # the thing that finds out, because it starts a NEW pod and has to pull:
-      # `403 Forbidden` from ghcr.io/token, then ImagePullBackOff, on a task whose
-      # own code and inputs were fine.
-      #
-      # That made ops tasks quietly release-scoped — runnable in the window after a
-      # deploy and not otherwise. Minting the secret here instead makes them
-      # runnable whenever they are needed, which is the entire point of a manual
-      # workflow.
-      - name: Refresh the image pull secret
-        run: |
-          set -euo pipefail
-          kubectl create secret docker-registry ghcr -n "$NAMESPACE" \
-            --docker-server=ghcr.io \
-            --docker-username='${{ github.actor }}' \
-            --docker-password='${{ secrets.GITHUB_TOKEN }}' \
-            --dry-run=client -o yaml | kubectl apply -f -
+      # This step used to mint a `ghcr` Secret from the run's GITHUB_TOKEN,
+      # because the release minted one that expired with ITS run — so an ops task
+      # started days later hit `403 Forbidden` and ImagePullBackOff on a task
+      # whose own code and inputs were fine. That symptom was real; the diagnosis
+      # was half right. The expiry was the problem, and the credential itself was
+      # never required. Removing it fixes the same class of failure for every pod
+      # in the cluster, not just for ops tasks — see
+      # k8s/azure/apps/kustomization.yaml.
 
       # ---------------------------------------------------------------------
       # Which image, and what to run inside it.
@@ -449,8 +438,7 @@ jobs:
             template:
               spec:
                 restartPolicy: Never
-                enableServiceLinks: false
-                imagePullSecrets: [{ name: ghcr }]${MEDIA_SECURITY}
+                enableServiceLinks: false${MEDIA_SECURITY}
                 containers:
                   - name: task
                     image: ${IMAGE}

@@ -135,27 +135,16 @@ patches:
 
   # --- Registry pull -----------------------------------------------------------
   # Nothing in THIS overlay pulls from a private registry — Caddy is
-  # `caddy:2-alpine` and Typesense is `typesense/typesense`, both public. The
-  # secret is carried anyway because the running cluster already has it on
-  # `caddy`, from the era when one overlay patched every Deployment at once.
+  # `caddy:2-alpine` and Typesense is `typesense/typesense`, both public — and
+  # nothing anywhere else does either, so there is no pull secret to carry.
   #
-  # Dropping it would be a spec change, and `caddy` is a SINGLE REPLICA with a
-  # `Recreate` strategy — so the pod would roll and every hostname on the
-  # platform would blip for ~10-30s, to remove a field that is ignored. Keeping
-  # it makes stage 1 a genuine no-op against the live cluster, which is the
-  # property that lets it run unattended on every release.
+  # It used to patch `ghcr` onto these Deployments, kept on the argument that
+  # the field was ignored here and removing it would roll a single-replica
+  # `Recreate` Caddy for no gain. That argument held right up until the same
+  # Secret took the platform down from the apps overlay — see the "Registry
+  # pull" note in ../apps/kustomization.yaml for the failure. A reference to a
+  # credential nothing mints is worse than the one-time blip: it is the next
+  # person's evidence that the credential still matters.
   #
-  # It is also not dead weight: the moment anything here is served from a
-  # private image, the pull already works.
-  - target:
-      kind: Deployment
-    patch: |-
-      apiVersion: apps/v1
-      kind: Deployment
-      metadata:
-        name: placeholder
-      spec:
-        template:
-          spec:
-            imagePullSecrets:
-              - name: ghcr
+  # Removing it rolls Caddy once, so every hostname blips for ~10-30s on the
+  # release that lands this. That is the whole cost, paid once.

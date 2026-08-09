@@ -852,13 +852,11 @@ jobs:
             --from-literal=api-key="$TYPESENSE_API_KEY" \
             --dry-run=client -o yaml | kubectl apply -f -
 
-          # Pull secret for the GHCR namespace. GITHUB_TOKEN is scoped to this
-          # run, so it is refreshed on every release by construction.
-          kubectl create secret docker-registry ghcr -n "$NAMESPACE" \
-            --docker-server=ghcr.io \
-            --docker-username='${{ github.actor }}' \
-            --docker-password='${{ secrets.GITHUB_TOKEN }}' \
-            --dry-run=client -o yaml | kubectl apply -f -
+          # There is no registry pull secret. See the "Registry pull" note in
+          # k8s/azure/apps/kustomization.yaml: this repository and its GHCR
+          # packages are public, and the run-scoped GITHUB_TOKEN that used to be
+          # written here expired minutes after each release — which is fine
+          # until a pod restarts on its own, and then is a twelve-hour outage.
 
       # -----------------------------------------------------------------------
       # The cluster's long-lived resources: namespace, `sparx-app-env`, the
@@ -972,27 +970,27 @@ jobs:
             --name "$CLUSTER" --overwrite-existing
 
       # -----------------------------------------------------------------------
-      # Refresh the registry pull secret WITH THIS JOB'S TOKEN.
+      # NO registry pull secret is written here, and none is needed.
       #
-      # `GITHUB_TOKEN` expires when the job that minted it finishes. Stage 1
-      # writes this Secret, so by the time stage 2 creates a Job the credential
-      # in the cluster is already dead — the kubelet presents it and GHCR
-      # answers `403 Forbidden` on the token endpoint. The pod then sits in
-      # ImagePullBackOff until await-job.sh gives up twenty minutes later, and
-      # the symptom reads like a slow migration rather than an auth failure.
+      # This block used to refresh a `ghcr` Secret from the job's own
+      # GITHUB_TOKEN, on the stated reasoning that "the packages are PRIVATE (an
+      # anonymous manifest fetch 404s)". They are not private. That 404 is
+      # GHCR's Accept-header trap: ask for an OCI manifest without
+      # `application/vnd.oci.image.index.v1+json` and
+      # `application/vnd.oci.image.manifest.v1+json` in `Accept` and the
+      # registry answers `404 MANIFEST_UNKNOWN — OCI manifest found, but Accept
+      # header does not support OCI manifests`. Send the right Accept and all 23
+      # packages return 200 to an anonymous token.
       #
-      # The packages are PRIVATE (an anonymous manifest fetch 404s), so this is
-      # not optional. Every job that causes a pull refreshes the secret first;
-      # the token is only ever valid inside the job that asked for it.
+      # So the credential was never load-bearing for the pull — only for the
+      # failure. It expires with the run that mints it, which made every pod
+      # that restarts outside a release unstartable. See
+      # k8s/azure/apps/kustomization.yaml.
+      #
+      # Before concluding a package is private, check with:
+      #   curl -H "Accept: application/vnd.oci.image.index.v1+json, \
+      #     application/vnd.oci.image.manifest.v1+json" ...
       # -----------------------------------------------------------------------
-      - name: Refresh the registry pull secret
-        run: |
-          kubectl create secret docker-registry ghcr -n "$NAMESPACE" \
-            --docker-server=ghcr.io \
-            --docker-username='${{ github.actor }}' \
-            --docker-password='${{ secrets.GITHUB_TOKEN }}' \
-            --dry-run=client -o yaml | kubectl apply -f -
-
       - name: Ensure database roles
         run: |
           set -euo pipefail
@@ -1060,7 +1058,6 @@ jobs:
               spec:
                 restartPolicy: Never
                 enableServiceLinks: false
-                imagePullSecrets: [{ name: ghcr }]
                 containers:
                   - name: migrate
                     image: ghcr.io/${{ github.repository }}/db:${{ github.sha }}
@@ -1150,16 +1147,8 @@ jobs:
           az aks get-credentials --resource-group "$RESOURCE_GROUP" \
             --name "$CLUSTER" --overwrite-existing
 
-      # Same reason as the data stage: `GITHUB_TOKEN` expires with the job that
-      # minted it, and every pod rolled below pulls a private image. See the
-      # comment there.
-      - name: Refresh the registry pull secret
-        run: |
-          kubectl create secret docker-registry ghcr -n "$NAMESPACE" \
-            --docker-server=ghcr.io \
-            --docker-username='${{ github.actor }}' \
-            --docker-password='${{ secrets.GITHUB_TOKEN }}' \
-            --dry-run=client -o yaml | kubectl apply -f -
+      # No pull secret is refreshed here either — the images are public and the
+      # pods carry no credential. Same reason as the data stage above.
 
       # -----------------------------------------------------------------------
       # Does anything the CONTAINERS run actually differ from what is deployed?

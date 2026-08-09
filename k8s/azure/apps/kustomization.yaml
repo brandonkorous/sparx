@@ -195,26 +195,35 @@ patches:
                 serviceAccountName: default
 
   # --- Registry pull ----------------------------------------------------------
-  # The images live in a GHCR namespace, so every pod carries the pull secret.
-  # Created by the release from the run's GITHUB_TOKEN, not committed.
+  # There is deliberately NO imagePullSecret here. This repository is public and
+  # so are its 23 GHCR packages — an anonymous token pulls every one of them —
+  # so the kubelet needs no credential to start a pod.
+  #
+  # It used to carry `ghcr`, a Secret minted from the release run's
+  # GITHUB_TOKEN, and that took production down. A `ghs_` Actions token expires
+  # with the run that minted it, so the credential sitting in the cluster is
+  # dead within minutes of a release finishing. That is invisible while every
+  # pull happens DURING a release — and fatal the moment one does not. On
+  # 2026-08-08 the node hit memory pressure, evicted api-rest, and the
+  # replacement pod presented the expired token; GHCR answered 403, the pod sat
+  # in ImagePullBackOff for twelve hours, and api.sparx.works served Cloudflare
+  # 502s (which browsers report as a CORS failure, because an error page carries
+  # no Access-Control-Allow-Origin). Every pod restart between releases —
+  # eviction, OOMKill, node reboot, scale-up — had the same fate.
+  #
+  # A credential that expires faster than the pods it serves cannot be the thing
+  # standing between a restart and a running platform. Anonymous pull has no
+  # expiry to get wrong.
+  #
+  # If a package is ever made private, do NOT reintroduce the run token: mint a
+  # long-lived credential (a PAT or GitHub App installation) so the secret
+  # outlives the release that wrote it.
   #
   # imagePullPolicy is left at the base's `Always`: unlike the workstation
   # overlay (which pins `Never` because images are read straight out of the
   # local Docker daemon), here the tag is rewritten to an immutable SHA by the
   # release, so `Always` costs one registry HEAD request and guarantees the node
   # never serves a stale cached layer.
-  - target:
-      kind: Deployment
-    patch: |-
-      apiVersion: apps/v1
-      kind: Deployment
-      metadata:
-        name: placeholder
-      spec:
-        template:
-          spec:
-            imagePullSecrets:
-              - name: ghcr
 
   # --- Requests have to fit ONE 2-vCPU node -----------------------------------
   # The base numbers are tuned for Autopilot, where every request is billed and
