@@ -46,6 +46,21 @@ ok "format clean"
 # script directly. We rely on whatever generated artifacts (Prisma client etc.)
 # are already on disk — CI runs the full turbo graph as the source of truth.
 # Avoids EPERM on locked Prisma DLLs when `next dev` is running locally.
+# NODE_OPTIONS raises the V8 old-space cap for both steps below.
+#
+# `@sparx/api-rest` is one `tsc` program over 469 files and type-checks just
+# under V8's DEFAULT ceiling (~4 GB), so it is permanently on the edge: it
+# finishes on a good run and dies on a bad one. When it dies here it does NOT
+# look like a memory problem — on Windows it is a bare `Segmentation fault` and
+# `Exit status 3221225477` from whichever package happened to be running when
+# the box ran short, so the hook blames an innocent workspace and the same push
+# succeeds on retry. CI hit the identical wall as
+# `FATAL ERROR: Ineffective mark-compacts near heap limit`.
+#
+# 8192 rather than CI's 6144 because a dev machine has the headroom and this
+# runs at workspace-concurrency=4.
+export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=8192}"
+
 step "pnpm -r run lint"
 pnpm -r --workspace-concurrency=4 run lint || fail "eslint failed — fix errors above and commit"
 ok "lint clean"

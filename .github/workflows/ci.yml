@@ -75,15 +75,20 @@ jobs:
       # cut both peak memory and wall time, and `fail-fast: false` keeps one
       # shard's failure from hiding the other two.
       #
-      # `--concurrency=2` matches the runner's 2 vCPUs — turbo otherwise fans
-      # out to the core count with no memory awareness, and several typed-ESLint
-      # processes each holding a TypeScript program is the peak that does not
-      # fit. The heap cap is per worker and deliberately below the box's RAM, so
-      # a runaway worker throws a catchable JS heap error naming its package
-      # instead of the kernel taking the runner out silently.
+      # `--concurrency=2` bounds how many typed-ESLint processes hold a
+      # TypeScript program at once — turbo otherwise fans out to the core count
+      # with no memory awareness, and that peak is what does not fit. The heap
+      # cap is per worker and deliberately below the box's RAM, so a runaway
+      # worker throws a catchable JS heap error naming its package instead of the
+      # kernel taking the runner out silently.
       #
-      # Same failure the pre-push hook hits locally, where the workaround is
-      # NODE_OPTIONS=--max-old-space-size=8192.
+      # THE RUNNER IS 4 vCPU / 16 GB, not the 2 vCPU / 7 GB these notes used to
+      # assume. This repository is PUBLIC, and GitHub-hosted `ubuntu-latest` on a
+      # public repo has been the larger class for a while. The old numbers are
+      # why the cap is 5120 rather than something chosen against the real box,
+      # and why `--concurrency=2` is set against a core count that is now 4.
+      # Neither is wrong — both are simply more conservative than they need to
+      # be. Re-tune against 16 GB before assuming either number is a floor.
       #
       # NOTE ON THE CACHE: turbo hashes every file in a package directory, so a
       # commit that touches all 17 service Dockerfiles invalidates all 17 lint
@@ -114,7 +119,24 @@ jobs:
       - uses: ./.github/actions/setup-workspace
         with:
           turbo-cache-key: typecheck
+      # The heap cap the lint job has had all along, and this job needed just as
+      # much. `@sparx/api-rest` is one `tsc` program over 469 files, and it sits
+      # RIGHT ON V8's default old-space ceiling (~4 GB): it type-checks in a
+      # shade under 4 GB, so it passes whenever turbo replays it from cache and
+      # dies with `FATAL ERROR: Ineffective mark-compacts near heap limit` on the
+      # runs that actually execute it. That is why this job looked intermittent
+      # rather than broken — a green CI usually meant api-rest was cached, not
+      # that it fit.
+      #
+      # 6144 was measured, not guessed: api-rest completes under it with room,
+      # and at `--concurrency=2` the worst case is 12 GB against the runner's 16,
+      # which leaves the cap low enough that a runaway throws a catchable JS heap
+      # error naming its package instead of the kernel killing the runner
+      # silently with exit 137. Do not raise it to 8192 without also dropping
+      # concurrency — two workers at 8 GB is the whole box.
       - run: pnpm exec turbo run typecheck --concurrency=2
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
 
   test:
     name: Test
