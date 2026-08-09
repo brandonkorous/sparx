@@ -102,7 +102,10 @@ const STARTERS: IndustryStarter[] = [
         'collection-new-arrivals',
         'payments-stripe-byo'
       ),
-      ...refs('crm', 'support'),
+      // No CRM ref: this used to install `crm:support`, a preset that no longer
+      // exists. A support queue is not something a starter installs — the first
+      // request a tenant files creates the real one, with a response promise
+      // attached. See the note in packages/crm/src/presets/crm.ts.
       ...refs('cms', 'content-faq', 'nav-starter'),
       ...refs('email', 'newsletter-campaign'),
       ...refs('ai', 'ai-prompt-library-core'),
@@ -125,7 +128,7 @@ const STARTERS: IndustryStarter[] = [
         'markup-keystone',
         'payments-stripe-byo'
       ),
-      ...refs('crm', 'support'),
+      // No CRM ref — same reason as electronics above.
       ...refs('invoicing', 'retail-quote'),
       ...refs('cms', 'content-faq', 'nav-starter'),
       ...refs('email', 'newsletter-campaign'),

@@ -24,6 +24,7 @@ import * as associationService from '../services/association-service';
 import * as pipelineService from '../services/pipeline-service';
 import * as segmentService from '../services/segment-service';
 import { captureFormLead } from '../services/lead-service';
+import { seedBuiltinReports } from '../services/report-builtins';
 import { bootstrapB2bQuoteWorkflow } from '../services/b2b-quote-service';
 import { bootstrapCustomerEstimateWorkflow } from '../services/customer-estimate-service';
 import type { ConsumerContext } from './registry';
@@ -56,6 +57,11 @@ export function registerModuleActivationConsumers(ctx: ConsumerContext): (() => 
       await associationService.ensureBuiltinLabels(serviceCtx);
       await pipelineService.bootstrapDefaultPipeline(serviceCtx);
       await segmentService.bootstrapBuiltInSegments(serviceCtx);
+      // The report builder's worked examples (docs/144 §8). Seeded rather than
+      // rendered from a constant so they can be OPENED, read and duplicated —
+      // an empty canvas plus a field picker teaches a non-technical person
+      // nothing. Create-only, so a tenant who shared one keeps their version.
+      await seedBuiltinReports(serviceCtx);
 
       // Backfill site-form leads captured while CRM was off (docs/115): the rows
       // were stored regardless of modules, so turning CRM on imports them —

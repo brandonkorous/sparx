@@ -34,6 +34,8 @@ export const CUSTOMER_MCP_SCOPES = [
   'orders:read', // order history + order detail
   'bookings:read', // my appointments
   'bookings:write', // book / reschedule / cancel my appointments
+  'requests:read', // my support requests + where each one stands
+  'requests:write', // raise a request / add to one I already raised
   'b2b:read', // B2B portal: my companies, invoices, quotes, orders
 ] as const;
 
@@ -78,6 +80,18 @@ export const CUSTOMER_MCP_SCOPE_CATALOG: readonly CustomerScopeMeta[] = [
     kind: 'write',
     label: 'Manage your appointments',
     description: 'Book, reschedule, and cancel your appointments.',
+  },
+  {
+    scope: 'requests:read',
+    kind: 'read',
+    label: 'View your support requests',
+    description: 'See the requests you have raised and where each one stands.',
+  },
+  {
+    scope: 'requests:write',
+    kind: 'write',
+    label: 'Raise support requests',
+    description: 'Ask for help and add to a request you have already raised.',
   },
   {
     scope: 'b2b:read',

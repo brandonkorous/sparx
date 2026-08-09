@@ -178,6 +178,12 @@ model Tenant {
   // are leaf config and reach the tenant through a database FK only, per the
   // convention 33-crm-objects sets out.
   tickets              Ticket[]
+  // CRM module — the report builder (docs/144 §8). Widgets reach the tenant
+  // directly as well as through their dashboard, so a tenant delete cascades
+  // cleanly regardless of which side is walked.
+  crmReports           CrmReport[]
+  crmDashboards        CrmDashboard[]
+  crmDashboardWidgets  CrmDashboardWidget[]
   dealOrders           DealOrder[]
   dealBillingDocuments DealBillingDocument[]
 

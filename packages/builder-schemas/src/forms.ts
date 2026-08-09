@@ -47,6 +47,16 @@ export interface ContactFormConfig {
    *  module). Implies capturing the contact — a deal needs someone to attach to.
    *  This is what turns a plain contact form into a quote/lead-request form. */
   openDeal: boolean;
+  /** Open a SUPPORT REQUEST for the submitter, with a reply deadline attached
+   *  (needs the `crm` module). Implies capturing the contact, same as a deal.
+   *  This is what turns a plain contact form into a help/support form.
+   *
+   *  Deliberately separate from `openDeal` rather than a one-of: they are
+   *  different jobs — a deal is money you hope to make, a request is an answer
+   *  you already owe — and a form can legitimately be both (an existing customer
+   *  asking about an upgrade). Both default off, so no existing form starts
+   *  behaving differently after this shipped. */
+  openRequest: boolean;
   /** Send the submitter a confirmation reply. */
   autoresponder: boolean;
   /** Autoresponder subject + body (non-sensitive copy). */
@@ -66,6 +76,7 @@ export const DEFAULT_CONTACT_FORM_PROPS: Record<string, unknown> = {
   notify: true,
   addToCrm: false,
   openDeal: false,
+  openRequest: false,
   autoresponder: false,
   autoresponderSubject: 'We received your message',
   autoresponderMessage:
@@ -144,6 +155,7 @@ export function readContactFormConfig(
     notify: asBool(p.notify, true),
     addToCrm: asBool(p.addToCrm, false),
     openDeal: asBool(p.openDeal, false),
+    openRequest: asBool(p.openRequest, false),
     autoresponder: asBool(p.autoresponder, false),
     autoresponderSubject: asStr(p.autoresponderSubject, 'We received your message'),
     autoresponderMessage: asStr(
@@ -166,6 +178,7 @@ export interface FormRoutingConfig {
   notify: boolean;
   addToCrm: boolean;
   openDeal: boolean;
+  openRequest: boolean;
   autoresponder: boolean;
   autoresponderSubject: string;
   autoresponderMessage: string;
@@ -177,6 +190,7 @@ export function formRoutingConfig(cfg: ContactFormConfig): FormRoutingConfig {
     notify: cfg.notify,
     addToCrm: cfg.addToCrm,
     openDeal: cfg.openDeal,
+    openRequest: cfg.openRequest,
     autoresponder: cfg.autoresponder,
     autoresponderSubject: cfg.autoresponderSubject,
     autoresponderMessage: cfg.autoresponderMessage,

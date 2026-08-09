@@ -25,6 +25,7 @@
     "clean": "rm -rf .turbo dist *.tsbuildinfo"
   },
   "dependencies": {
+    "@sparx/automation-schemas": "workspace:*",
     "@sparx/field-schema": "workspace:*",
     "zod": "^4.4.3"
   },

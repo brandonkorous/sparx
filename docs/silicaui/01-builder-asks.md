@@ -1,8 +1,8 @@
-# silicaui-builder — the asks (1–22, ALL ANSWERED AND ADOPTED)
+# silicaui-builder — the asks (1–22 answered; 23 OPEN)
 
-**Version:** 4.3.0
+**Version:** 4.4.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-07
+**Last Updated:** 2026-08-08
 
 > ## ⚑ §20, §21 AND §22 — FILED AGAINST `0.50.0` AND CLOSED IN `0.51.0`, SAME DAY (2026-08-07)
 >
@@ -1298,6 +1298,56 @@ ask proposed: the category still degrades gracefully instead of vanishing at a b
 and the row keeps its shape at every width. The icon also gained `shrink-0`, which the ask
 missed — without it the glyph would have been the next thing to collapse. Nothing to adopt;
 it is engine-internal.
+
+---
+
+## 23 — `<EmailBuilder>`'s Export HTML cannot be turned off, and names itself in developer words
+
+**The ask:** give `onExport` the same omission semantics `onSendTest` already has — omit the
+callback, lose the button — and let the label be the host's.
+
+**Verified against `0.51.0`** (`dist/email/react/index.d.ts`). The two sibling callbacks are
+documented asymmetrically, and the asymmetry is the whole issue:
+
+```ts
+/** Fires when the user sends a test email … Omit it and the "Send test" button is disabled. */
+onSendTest?: (…) => void | Promise<void>;
+
+/** Fires (in addition to the built-in client-side download) when the user
+ *  clicks Export HTML, with the projected HTML string. */
+onExport?: (html: string) => void;
+```
+
+sparx wires `onSendTest` and **not** `onExport`. Send test therefore appears because we opted
+in. Export HTML appears anyway, because the engine performs the download itself and the
+callback is only a notification. `toolbarSlot` does not help — it documents itself as
+rendering "immediately before the Send test/Export HTML buttons", i.e. alongside them, and
+there is no suppression prop.
+
+The result is a feature in a shipped product that its owner never chose, cannot remove, and
+does not control the output of.
+
+**Two things, and they are separable.**
+
+1. **Opt-in, like its sibling.** A host that has not wired `onExport` has said nothing about
+   whether exporting is appropriate for its users; shipping it anyway decides for them. The
+   fix is one line of consistency with the prop directly above it.
+2. **The label.** "Export HTML" is developer vocabulary. sparx's users are non-technical
+   business owners — a salon, a distributor, a bakery — and the word HTML means nothing to
+   them except that this button is not for them. Worse for the one who does press it: a
+   `.html` file lands in Downloads and there is nothing they can do with it. "Download a
+   copy" says the same thing in words that survive the audience.
+
+**Which sparx wants.** Keep the capability, fix the words. Being able to take your design
+elsewhere is a good property for a platform to have and a good thing to be seen to offer — it
+is the export button's presence that is right and its vocabulary that is wrong. But that is a
+sparx judgement, and (1) is what lets any host make it: another host may serve developers, for
+whom "Export HTML" is exactly correct.
+
+**Generic?** Yes, and (1) more so than (2). Two adjacent props with opposite omission
+semantics is a coin-flip for every host that reads one and assumes the other. A host that
+deliberately omits a callback has expressed an intent; performing the action regardless is the
+engine overriding it.
 
 ---
 

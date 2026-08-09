@@ -156,6 +156,14 @@ export {
 // CRM reporting — read-only metrics for the dashboard reports page and
 // the MCP get_crm_metrics tool. Live queries today; nightly rollup later.
 export * as reportingService from './reporting-service';
+// The report BUILDER (docs/144 §8) — definitions a tenant authors, distinct
+// from `reportingService` above, which is the seven sparx wrote by hand.
+export * as reportService from './report-service';
+export * as dashboardService from './dashboard-service';
+export * as reportCompiler from './report-compiler';
+export { seedBuiltinReports, BUILTIN_REPORTS } from './report-builtins';
+export type { ReportDefinition, ReportResult } from './report-compiler';
+export type { DashboardWithWidgets } from './dashboard-service';
 
 // Invoicing reporting (docs/87 §8, docs/97 §5) — collected/billed timeseries
 // from the `rollup_invoicing_daily_collected` rollup, with the same nightly

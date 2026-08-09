@@ -628,27 +628,40 @@ re-read eleven sections to find out. **Read this before picking the work up agai
 | **1**   | ✅    | ✅                               | `20270207000000_crm_custom_properties`                                                              |
 | **2**   | ✅    | ❌ **never driven in a browser** | `20270208000000_crm_associations`                                                                   |
 | **3**   | ✅    | ❌ **never driven in a browser** | `20270209000000_crm_engagement`, `20270210000000_crm_mailbox_imap_only`, `20270211000000_crm_calls` |
-| **4**   | ✅    | ❌ **never driven in a browser** | `20270212000000_crm_tickets`                                                                        |
-| **5–7** | ❌    | —                                | —                                                                                                   |
+| **4**   | ✅    | ✅ (prod, 2026-08-07)            | `20270212000000_crm_tickets`                                                                        |
+| **5**   | ✅    | ❌ **never driven in a browser** | `20270214000000_crm_reporting`                                                                      |
+| **6–7** | ❌    | —                                | —                                                                                                   |
 
 **THE BROWSER COLUMN IS THE MOST IMPORTANT ONE HERE.** The phase 0/1 browser pass found **six bugs
 with typecheck and the full test suite green the whole time** — one of which left Save permanently
-disabled and made the headline feature of phase 1 completely unusable. Phases 2, 3 and 4 have tests
-and have never been driven by hand: associations, the mailbox connect flow, click-to-call, the
-support queue, the request pane and the response-times editor are all unverified that way. Treat
-their scores below as provisional.
+disabled and made the headline feature of phase 1 completely unusable. The phase 4 pass on
+PRODUCTION (2026-08-07) then found three more, again with everything green:
 
-**THE AGREED NEXT STEP IS THAT BROWSER PASS, BEFORE PHASE 5** (decided 2026-08-07). Load sample data
-into the demo tenant first: the support slice writes five requests deliberately spread across
-breached / amber / unclaimed / waiting-on-customer / resolved, so the queue's colour logic and the
-`due_asc` ordering have something real to show. An empty queue verifies nothing, and the whole point
-of that surface is the spread.
+- **The first request a tenant ever files rendered broken.** Opening one bootstraps the ticket
+  pipeline and the default promise server-side, but `ticketKeys.policies` is `['crm','sla-policies']`
+  and pipelines are `['crm','pipelines']` — neither under `ticketKeys.all`, so invalidating that
+  missed both. The request showed a DISABLED stage picker labelled with a raw uuid beside a panel
+  claiming no response promise was attached, while the row had both. Self-heals on reload.
+- **Resolving a request produced a false breach days later.** `moveStage` stamped `resolvedAt` but
+  never `firstRespondedAt`, and the sweep's `stillOwed('first_response')` only excludes CLOSED
+  requests — so the commonest support flow there is (they ring, you fix it, you mark it Resolved)
+  was later announced as a missed reply deadline. Settling now settles the reply promise too.
+- **Every deadline was computed in UTC.** Bootstrap never passed a timezone and the editor's zone was
+  a bare text box, so a shop in Denver had every deadline land six hours early. Now the business's
+  own zone, chosen from the same city-labelled picker the entity profile uses.
 
-Worth checking specifically, because tests cannot see any of it: that the queue's colour reads
-correctly across a room; that the stage picker on a request offers the SUPPORT stages and not the
-sales ones; that moving to Resolved stops the clock in the toolbar; that the response-times editor
-round-trips a weekly pattern without losing a day; and that replying from a request marks it as
-answered rather than leaving it going red.
+Phases 2 and 3 still have tests and have never been driven by hand — associations, the mailbox
+connect flow and click-to-call are unverified that way. **Phase 5 has never been driven by hand
+at all**: the report builder, the live preview, the library and the dashboard grid all need a pass.
+Treat their scores below as provisional.
+
+**WHAT A PHASE 5 BROWSER PASS SHOULD LOOK FOR**, because tests cannot see any of it: that the
+builder reads down the left column as an English sentence rather than a form; that the preview keeps
+the last good numbers on screen instead of blanking on every keystroke; that changing the object
+resets the breakdown rather than leaving a field that belongs to something else; that the
+visualization list narrows honestly as the definition changes (a pie chart offered for an ungrouped
+count is the bug); that a built-in opens read-only with a visible way to copy it; and that a
+dashboard collapses to one readable column on a phone rather than two unreadable ones.
 
 ### Where the score actually sits
 

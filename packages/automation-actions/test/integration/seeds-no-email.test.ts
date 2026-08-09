@@ -113,23 +113,36 @@ describe('per-module seed install', () => {
   it('installs only the activated module’s seeds', async () => {
     const { tenantId } = await seedTenant(['crm']);
     const installed = await seedSystemAutomations({ tenantId }, { module: 'crm' });
-    // The full CRM catalog — three no-email defaults (tag + tasks) + the two
-    // email-sending defaults (welcome, win-back) that reference Builder templates —
-    // PLUS every always-on (`module: null`) seed, which installs on any module pass
-    // by design: form handling isn't owned by a feature module.
+    // The full CRM catalog — three no-email defaults (tag + tasks), the two
+    // email-sending defaults (welcome, win-back) that reference Builder templates,
+    // and the two support-intake defaults (docs/144 §7) that turn inbound mail and
+    // live chat into requests — PLUS every always-on (`module: null`) seed, which
+    // installs on any module pass by design: form handling isn't owned by a
+    // feature module.
     expect(installed.map((a) => a.name).sort()).toEqual([
       'Deal won — create invoice task',
+      'Email opens a support request',
       'Handle form submissions',
+      'Live chat opens a support request',
       'New lead follow-up task',
       'Tag VIP customers',
       'Welcome new customers',
       'Win back inactive customers',
     ]);
+    // Chat intake ships BUILT BUT OFF (docs/144 §7): a chat message is not
+    // self-evidently a request, and on-by-default would fill a busy site's queue
+    // with small talk from the moment CRM was switched on. Asserted here because
+    // it is a product decision, and flipping it should have to break a test.
+    const chat = installed.find((a) => a.name === 'Live chat opens a support request');
+    expect(chat?.status).toBe('paused');
+    const mail = installed.find((a) => a.name === 'Email opens a support request');
+    expect(mail?.status).toBe('active');
+
     // Re-seed is idempotent (upsert by origin+name) — no duplicates.
     const again = await seedSystemAutomations({ tenantId }, { module: 'crm' });
-    expect(again).toHaveLength(6);
+    expect(again).toHaveLength(8);
     const count = await ownerDb.automation.count({ where: { tenantId, origin: 'system' } });
-    expect(count).toBe(6);
+    expect(count).toBe(8);
   });
 
   it('keeps the B2B dunning ladder locked', async () => {

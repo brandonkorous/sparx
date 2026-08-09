@@ -557,6 +557,10 @@ async function hydrateFormSubmission(
     // Open a pipeline deal for the submitter (the quote/lead-form path) — implies
     // capturing the contact, so crm.capture_lead gates on `addToCrm || openDeal`.
     'form.openDeal': cfgBool(cfg, 'openDeal', false),
+    // Open a support request for the submitter (the help/contact-form path), with
+    // a reply deadline attached. Implies capturing the contact for the same
+    // reason a deal does; independent of openDeal, since one form can be both.
+    'form.openRequest': cfgBool(cfg, 'openRequest', false),
     'form.autoresponder': cfgBool(cfg, 'autoresponder', false),
     'form.autoresponderSubject': cfgStr(cfg, 'autoresponderSubject', 'We received your message'),
     'form.autoresponderMessage': cfgStr(

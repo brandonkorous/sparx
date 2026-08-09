@@ -63,7 +63,18 @@
 
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import Image from 'next/image';
-import { Badge, Button, Input, NativeSelect, Switch, Textarea } from '@wizeworks/silicaui-react';
+import {
+  Alert,
+  AlertContent,
+  AlertDescription,
+  AlertTitle,
+  Badge,
+  Button,
+  Input,
+  NativeSelect,
+  Switch,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 import { ChevronDown, ImageOff, ImagePlus, Trash2 } from 'lucide-react';
 import { FRAME_NONE } from '@sparx/builder-schemas';
 import { useMediaPicker } from '../../cms/media-picker';
@@ -243,6 +254,33 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
     stored.data?.recordType === 'commerce.product' && stored.data?.kind === 'collection';
   const productTypes = useProductTypeChoices(isProductPage);
 
+  // A RECORD page designs MANY records — one product page serves the whole catalog —
+  // so its search wording cannot live here, and does not: `generateMetadata` on
+  // `/products/[handle]` reads `product.seoTitle ?? product.title`, and `/blog/[slug]`
+  // reads `post.seo.title ?? body.title`. The page's own columns are never consulted.
+  //
+  // Which made this panel a TRAP: it offered Page title, Description, a sharing picture
+  // and a search-engine switch on a product page, an author filled them in, saved, and
+  // nothing whatsoever happened — no error, no hint, and every product still carrying
+  // its own title. Worse is the version where it DID work: one description stamped
+  // across a thousand products is duplicate metadata on the whole catalog.
+  //
+  // So on a record page those controls are replaced by a sentence naming where the
+  // words actually come from. What stays is what genuinely still applies: the
+  // header/footer choice (`findPageFrameId` resolves the frame for `/products/x` from
+  // this row) and the product-type target above.
+  const recordWording: Record<string, { each: string; where: string }> = {
+    'commerce.product': { each: 'product', where: 'the product itself, under Selling' },
+    'commerce.collection': { each: 'collection', where: 'the collection itself, under Selling' },
+    'commerce.category': { each: 'category', where: 'the category itself, under Selling' },
+    'scheduling.service': { each: 'service', where: 'the service itself, under Scheduling' },
+    'cms.blog_post': { each: 'post', where: 'the post itself, under Content' },
+  };
+  const record =
+    stored.data?.kind === 'collection' && stored.data.recordType
+      ? recordWording[stored.data.recordType]
+      : undefined;
+
   return (
     <div className="flex flex-col gap-4">
       {!saved ? (
@@ -290,120 +328,143 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
         </PanelField>
       ) : null}
 
+      {record ? (
+        /* Not a disabled copy of the real controls — an explanation instead of them.
+           A greyed-out Page title still reads as "this is where it goes, someday". */
+        <Alert color="info" variant="soft">
+          <AlertContent>
+            <AlertTitle>Each {record.each} writes its own</AlertTitle>
+            <AlertDescription>
+              This one page designs every {record.each} you have, so it cannot carry the words a
+              search result shows — those come from {record.where}, which is where you set them.
+              Anything you typed here would be the same on all of them, and search engines treat a
+              thousand pages sharing one description as a thousand copies of nothing. Leave a{' '}
+              {record.each}’s own fields empty and its name and description are used.
+            </AlertDescription>
+          </AlertContent>
+        </Alert>
+      ) : null}
+
       {/* The point of the whole section, made concrete: what a person actually sees
           before they decide to click. Abstract field labels do not teach this. */}
-      <div className="border-base-300 flex flex-col gap-1 rounded-lg border p-3">
-        <span className="text-sm font-medium">In a search result</span>
-        <p className="text-primary mt-1 leading-snug">{previewTitle}</p>
-        <p className="text-sm leading-snug">
-          {previewDescription || 'Add a description below and it will show up here.'}
-        </p>
-      </div>
-
-      <PanelField
-        label="Page title"
-        help="The headline in search results and the browser tab. Say what the page is, in your customers’ words."
-      >
-        <Input
-          size="sm"
-          value={draft.seoTitle}
-          placeholder={pageName || siteName}
-          onChange={(event) => {
-            set('seoTitle', event.target.value);
-          }}
-        />
-        {titleHint ? (
-          <p className={`text-sm ${titleHint.over ? 'text-warning' : ''}`}>{titleHint.text}</p>
-        ) : null}
-      </PanelField>
-
-      <PanelField
-        label="Description"
-        help="The couple of lines under the title. This is your pitch — it is often what decides whether someone clicks."
-      >
-        <Textarea
-          size="sm"
-          rows={3}
-          value={draft.seoDescription}
-          onChange={(event) => {
-            set('seoDescription', event.target.value);
-          }}
-        />
-        {descHint ? (
-          <p className={`text-sm ${descHint.over ? 'text-warning' : ''}`}>{descHint.text}</p>
-        ) : null}
-      </PanelField>
-
-      <PanelField
-        label="Sharing picture"
-        help="Shown when this page is posted to social media or sent in a message. Without one, a plain link is all anyone sees."
-      >
-        <div className="bg-base-200 relative h-24 w-full overflow-hidden rounded-md">
-          {draft.ogImage ? (
-            <Image
-              src={draft.ogImage}
-              alt=""
-              fill
-              sizes="360px"
-              className="object-cover"
-              // Cross-origin tenant media — the optimizer's host allow-list is
-              // environment-fragile, same call the media browser makes.
-              unoptimized
-            />
-          ) : (
-            <span className="flex h-full items-center justify-center">
-              <ImageOff className="size-5" aria-hidden />
-            </span>
-          )}
+      {record ? null : (
+        <div className="border-base-300 flex flex-col gap-1 rounded-lg border p-3">
+          <span className="text-sm font-medium">In a search result</span>
+          <p className="text-primary mt-1 leading-snug">{previewTitle}</p>
+          <p className="text-sm leading-snug">
+            {previewDescription || 'Add a description below and it will show up here.'}
+          </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            color="module"
-            onClick={() => {
-              void chooseImage();
-            }}
+      )}
+
+      {record ? null : (
+        <>
+          <PanelField
+            label="Page title"
+            help="The headline in search results and the browser tab. Say what the page is, in your customers’ words."
           >
-            <ImagePlus className="size-4" aria-hidden />
-            {draft.ogImage ? 'Change' : 'Choose a picture'}
-          </Button>
-          {draft.ogImage ? (
-            <Button
+            <Input
               size="sm"
-              variant="ghost"
-              color="neutral"
-              onClick={() => {
-                set('ogImage', '');
+              value={draft.seoTitle}
+              placeholder={pageName || siteName}
+              onChange={(event) => {
+                set('seoTitle', event.target.value);
               }}
-            >
-              <Trash2 className="size-4" aria-hidden />
-              Remove
-            </Button>
-          ) : null}
-        </div>
-      </PanelField>
+            />
+            {titleHint ? (
+              <p className={`text-sm ${titleHint.over ? 'text-warning' : ''}`}>{titleHint.text}</p>
+            ) : null}
+          </PanelField>
 
-      <PanelField
-        label="Show this page in search engines"
-        help="Turn this off for a page you only want people to reach by link — a thank-you page, or something not ready yet."
-      >
-        <div className="flex items-center gap-2">
-          <Switch
-            color="module"
-            checked={!draft.noindex}
-            aria-label="Show this page in search engines"
-            onCheckedChange={(next: boolean) => {
-              set('noindex', !next);
-            }}
-          />
-          {draft.noindex ? (
-            <Badge color="warning" variant="soft" size="sm">
-              Hidden
-            </Badge>
-          ) : null}
-        </div>
-      </PanelField>
+          <PanelField
+            label="Description"
+            help="The couple of lines under the title. This is your pitch — it is often what decides whether someone clicks."
+          >
+            <Textarea
+              size="sm"
+              rows={3}
+              value={draft.seoDescription}
+              onChange={(event) => {
+                set('seoDescription', event.target.value);
+              }}
+            />
+            {descHint ? (
+              <p className={`text-sm ${descHint.over ? 'text-warning' : ''}`}>{descHint.text}</p>
+            ) : null}
+          </PanelField>
+
+          <PanelField
+            label="Sharing picture"
+            help="Shown when this page is posted to social media or sent in a message. Without one, a plain link is all anyone sees."
+          >
+            <div className="bg-base-200 relative h-24 w-full overflow-hidden rounded-md">
+              {draft.ogImage ? (
+                <Image
+                  src={draft.ogImage}
+                  alt=""
+                  fill
+                  sizes="360px"
+                  className="object-cover"
+                  // Cross-origin tenant media — the optimizer's host allow-list is
+                  // environment-fragile, same call the media browser makes.
+                  unoptimized
+                />
+              ) : (
+                <span className="flex h-full items-center justify-center">
+                  <ImageOff className="size-5" aria-hidden />
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                color="module"
+                onClick={() => {
+                  void chooseImage();
+                }}
+              >
+                <ImagePlus className="size-4" aria-hidden />
+                {draft.ogImage ? 'Change' : 'Choose a picture'}
+              </Button>
+              {draft.ogImage ? (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  color="neutral"
+                  onClick={() => {
+                    set('ogImage', '');
+                  }}
+                >
+                  <Trash2 className="size-4" aria-hidden />
+                  Remove
+                </Button>
+              ) : null}
+            </div>
+          </PanelField>
+
+          <PanelField
+            label="Show this page in search engines"
+            help="Turn this off for a page you only want people to reach by link — a thank-you page, or something not ready yet."
+          >
+            <div className="flex items-center gap-2">
+              <Switch
+                color="module"
+                checked={!draft.noindex}
+                aria-label="Show this page in search engines"
+                onCheckedChange={(next: boolean) => {
+                  set('noindex', !next);
+                }}
+              />
+              {draft.noindex ? (
+                <Badge color="warning" variant="soft" size="sm">
+                  Hidden
+                </Badge>
+              ) : null}
+            </div>
+          </PanelField>
+        </>
+      )}
 
       {/* The landing-page case, and the whole reason `frame_id` exists: a page you send
           an advert to usually should NOT carry the site's navigation, because every link
@@ -438,38 +499,43 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
 
       {/* Canonical is a genuinely technical concept and almost nobody needs it, so it
           sits behind a disclosure rather than in the main flow — present for the
-          person who needs it, invisible to the person who does not. */}
-      <div className="border-base-300 flex flex-col gap-3 border-t pt-3">
-        <button
-          type="button"
-          className="flex items-center gap-1 text-sm font-medium"
-          aria-expanded={showAdvanced}
-          onClick={() => {
-            setShowAdvanced((v) => !v);
-          }}
-        >
-          <ChevronDown
-            className={`size-4 transition-transform ${showAdvanced ? '' : '-rotate-90'}`}
-            aria-hidden
-          />
-          Advanced
-        </button>
-        {showAdvanced ? (
-          <PanelField
-            label="Preferred web address"
-            help="If this same content also lives at another address, put that address here so search engines count them as one page instead of two. Leave it empty unless you know you need it."
+          person who needs it, invisible to the person who does not.
+          Hidden entirely on a record page: it is the same story as the title and the
+          description — one address typed here could only ever be wrong for every record
+          but one, and the record's own SEO fields are what the site reads. */}
+      {record ? null : (
+        <div className="border-base-300 flex flex-col gap-3 border-t pt-3">
+          <button
+            type="button"
+            className="flex items-center gap-1 text-sm font-medium"
+            aria-expanded={showAdvanced}
+            onClick={() => {
+              setShowAdvanced((v) => !v);
+            }}
           >
-            <Input
-              size="sm"
-              value={draft.canonical}
-              placeholder="https://example.com/the-original-page"
-              onChange={(event) => {
-                set('canonical', event.target.value);
-              }}
+            <ChevronDown
+              className={`size-4 transition-transform ${showAdvanced ? '' : '-rotate-90'}`}
+              aria-hidden
             />
-          </PanelField>
-        ) : null}
-      </div>
+            Advanced
+          </button>
+          {showAdvanced ? (
+            <PanelField
+              label="Preferred web address"
+              help="If this same content also lives at another address, put that address here so search engines count them as one page instead of two. Leave it empty unless you know you need it."
+            >
+              <Input
+                size="sm"
+                value={draft.canonical}
+                placeholder="https://example.com/the-original-page"
+                onChange={(event) => {
+                  set('canonical', event.target.value);
+                }}
+              />
+            </PanelField>
+          ) : null}
+        </div>
+      )}
     </div>
   );
 }

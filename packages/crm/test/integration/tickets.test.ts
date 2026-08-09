@@ -22,6 +22,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { prisma } from '@sparx/db';
 import {
   customerService,
+  leadService,
   slaPolicyService,
   ticketService,
   ticketSlaSweep,
@@ -167,6 +168,113 @@ describe('ticketService', () => {
       sourceRecordId: 'shared-id',
     });
     expect(fromForm.ticket.subject).toBe('From a form');
+  });
+
+  /* ── Form intake (the "open a request" toggle) ────────────────────────── */
+
+  it('opens a request from a site-form submission, once however often it retries', async () => {
+    const submissionId = await prisma.$transaction(async (tx) => {
+      await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${context.tenant.tenantId}'`);
+      const row = await tx.formSubmission.create({
+        data: {
+          tenantId: context.tenant.tenantId,
+          formNodeId: 'node-support-form',
+          formName: 'Get help',
+          name: 'Dana Reyes',
+          email: 'dana@example.test',
+          message: 'The replacement part arrived bent.',
+          // Already captured — openFormRequest is a no-op without the contact,
+          // exactly like the deal path.
+          customerId,
+        },
+        select: { id: true },
+      });
+      return row.id;
+    });
+
+    await leadService.openFormRequest(context.ctx, { submissionId });
+    // Automations retry. The submission id is the intake key, so a second run
+    // must find the first request rather than open a twin.
+    await leadService.openFormRequest(context.ctx, { submissionId });
+
+    const { items } = await ticketService.list(context.ctx, {
+      query: { customerId, state: 'all' },
+    });
+    const fromForm = items.filter((t) => t.ticket.sourceRecordId === submissionId);
+    expect(fromForm).toHaveLength(1);
+    expect(fromForm[0]?.ticket.source).toBe('form');
+    // Their actual words, not just which form it came from — otherwise the queue
+    // shows rows nobody can triage without going and digging.
+    expect(fromForm[0]?.ticket.description).toBe('The replacement part arrived bent.');
+    expect(fromForm[0]?.ticket.subject).toContain('Get help');
+    // And it arrived with a promise attached, like every other request.
+    expect(fromForm[0]?.ticket.firstResponseDueAt).not.toBeNull();
+  });
+
+  it('opens no request for a form submission that was never captured', async () => {
+    const submissionId = await prisma.$transaction(async (tx) => {
+      await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${context.tenant.tenantId}'`);
+      const row = await tx.formSubmission.create({
+        data: {
+          tenantId: context.tenant.tenantId,
+          formNodeId: 'node-spam',
+          formName: 'Get help',
+          message: 'buy followers',
+          status: 'spam',
+        },
+        select: { id: true },
+      });
+      return row.id;
+    });
+
+    await leadService.openFormRequest(context.ctx, { submissionId });
+
+    const { items } = await ticketService.list(context.ctx, { query: { state: 'all' } });
+    // A request with nobody to reply to is not a request — and spam must never
+    // start a clock somebody is measured against.
+    expect(items.some((t) => t.ticket.sourceRecordId === submissionId)).toBe(false);
+  });
+
+  /* ── The customer's own voice (the portal) ────────────────────────────── */
+
+  it('a customer message lands on the timeline WITHOUT settling the reply promise', async () => {
+    const view = await ticketService.create(context.ctx, { subject: 'Still broken', customerId });
+
+    await ticketService.recordCustomerMessage(context.ctx, view.ticket.id, {
+      customerId,
+      body: 'Any update on this?',
+    });
+
+    const after = await ticketService.get(context.ctx, view.ticket.id);
+    // THE WHOLE POINT. A customer chasing their own unanswered request must not
+    // be what marks it answered — that would make the queue look best exactly
+    // when it was performing worst.
+    expect(after.ticket.firstRespondedAt).toBeNull();
+    expect(after.firstResponse.state).toBe('ok');
+
+    const activities = await activitiesFor(context.tenant.tenantId, customerId);
+    const replied = activities.filter((a) => a.type === 'ticket.customer_replied');
+    expect(replied).toHaveLength(1);
+    // Attributed to them, not to a member of staff who never touched it.
+    expect(replied[0]?.actorType).toBe('customer');
+    expect(replied[0]?.description).toContain('Any update on this?');
+  });
+
+  it('refuses a customer message on somebody else’s request', async () => {
+    const mine = await ticketService.create(context.ctx, { subject: 'Mine', customerId });
+    const stranger = await customerService.create(context.ctx, {
+      email: `stranger-${Math.random().toString(36).slice(2, 8)}@example.test`,
+      firstName: 'Sam',
+    });
+
+    // A public route means the id in the URL is the customer's to edit, so the
+    // ownership fence has to be INSIDE the service, not only at the boundary.
+    await expect(
+      ticketService.recordCustomerMessage(context.ctx, mine.ticket.id, {
+        customerId: stranger.id,
+        body: 'Let me see that',
+      })
+    ).rejects.toThrow();
   });
 
   /* ── The stage IS the status ──────────────────────────────────────────── */

@@ -29,6 +29,8 @@ import {
 } from './b2b.js';
 import {
   CRM_AUTO_TAG_VIP,
+  CRM_CHAT_OPENS_REQUEST,
+  CRM_EMAIL_OPENS_REQUEST,
   CRM_DEAL_WON_INVOICE_TASK,
   CRM_NEW_LEAD_FOLLOW_UP_TASK,
   CRM_WELCOME_NEW_CUSTOMER,
@@ -98,6 +100,8 @@ export interface SystemAutomationSeed {
 export const SYSTEM_AUTOMATIONS: readonly SystemAutomationSeed[] = [
   // CRM
   { module: 'crm', spec: CRM_AUTO_TAG_VIP },
+  { module: 'crm', spec: CRM_EMAIL_OPENS_REQUEST },
+  { module: 'crm', spec: CRM_CHAT_OPENS_REQUEST },
   { module: 'crm', spec: CRM_NEW_LEAD_FOLLOW_UP_TASK },
   { module: 'crm', spec: CRM_DEAL_WON_INVOICE_TASK },
   { module: 'crm', spec: CRM_WELCOME_NEW_CUSTOMER },

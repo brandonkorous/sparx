@@ -246,6 +246,84 @@ const listMyB2bInvoices: SiteTool = {
   },
 };
 
+// ── Support requests ─────────────────────────────────────────────────────────
+//
+// The customer tier of the support queue (docs/144 §7): a shopper's own LLM
+// client can ask what happened to the thing they reported, and chase it, without
+// them having to find the account page. Same ownership fence as every other
+// customer tool — the backing route scopes to the signed-in membership, so there
+// is no request id a client could pass to read somebody else's.
+
+const listMyRequests: SiteTool = {
+  name: 'list_my_requests',
+  description:
+    'List the signed-in customer’s support requests and where each one stands (scope: open | settled | all). Requires requests:read.',
+  kind: 'customer',
+  module: 'crm',
+  input: z.object({
+    scope: z.enum(['open', 'settled', 'all']).optional(),
+    page: z.number().int().min(1).optional(),
+    pageSize: z.number().int().min(1).max(50).optional(),
+  }),
+  call: (client, _ctx, input) =>
+    client.request({
+      method: 'GET',
+      path: '/v1/public/crm/account/requests',
+      query: input as Record<string, string | number>,
+    }),
+};
+
+const getMyRequest: SiteTool = {
+  name: 'get_my_request',
+  description:
+    'Get one of the signed-in customer’s support requests in full. Requires requests:read.',
+  kind: 'customer',
+  module: 'crm',
+  input: z.object({ requestId: uuid }),
+  call: (client, _ctx, input) => {
+    const { requestId } = input as { requestId: string };
+    return client.request({
+      method: 'GET',
+      path: `/v1/public/crm/account/requests/${encodeURIComponent(requestId)}`,
+    });
+  },
+};
+
+const openMyRequest: SiteTool = {
+  name: 'open_my_request',
+  description:
+    'Raise a new support request for the signed-in customer. Use when they are reporting a problem or asking for help. Requires requests:write.',
+  kind: 'customer',
+  module: 'crm',
+  input: z.object({
+    subject: z.string().min(1).max(255),
+    message: z.string().min(1).max(10_000),
+  }),
+  call: (client, _ctx, input) =>
+    client.request({
+      method: 'POST',
+      path: '/v1/public/crm/account/requests',
+      body: input,
+    }),
+};
+
+const replyToMyRequest: SiteTool = {
+  name: 'reply_to_my_request',
+  description:
+    'Add a message to one of the signed-in customer’s existing support requests. Does not count as the business replying. Requires requests:write.',
+  kind: 'customer',
+  module: 'crm',
+  input: z.object({ requestId: uuid, message: z.string().min(1).max(10_000) }),
+  call: (client, _ctx, input) => {
+    const { requestId, message } = input as { requestId: string; message: string };
+    return client.request({
+      method: 'POST',
+      path: `/v1/public/crm/account/requests/${encodeURIComponent(requestId)}/replies`,
+      body: { message },
+    });
+  },
+};
+
 export const accountTools: SiteTool[] = [
   getMyProfile,
   listMyOrders,
@@ -259,6 +337,10 @@ export const accountTools: SiteTool[] = [
   getMyBooking,
   rescheduleMyBooking,
   cancelMyBooking,
+  listMyRequests,
+  getMyRequest,
+  openMyRequest,
+  replyToMyRequest,
   listMyB2bAccounts,
   getMyB2bAccount,
   listMyB2bInvoices,

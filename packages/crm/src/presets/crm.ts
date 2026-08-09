@@ -99,20 +99,23 @@ const pipelinePresets: ModulePreset[] = [
       { name: 'Lost', probability: 0, stageType: 'lost', color: '#EF4444' },
     ],
   }),
-  pipelinePreset({
-    slug: 'support',
-    name: 'Support pipeline',
-    description:
-      'A customer-issue board from new ticket to resolution — triage, work, wait on the customer, and close.',
-    iconKey: 'life-buoy',
-    tags: ['support', 'success'],
-    stages: [
-      { name: 'New', probability: 10, stageType: 'open', color: '#EF4444' },
-      { name: 'In progress', probability: 50, stageType: 'open', color: '#F59E0B' },
-      { name: 'Awaiting customer', probability: 40, stageType: 'open', color: '#06B6D4' },
-      { name: 'Resolved', probability: 100, stageType: 'won', color: '#10B981' },
-    ],
-  }),
+  // There is deliberately NO 'support' preset here any more.
+  //
+  // There used to be one — "Support pipeline", stages New / In progress /
+  // Awaiting customer / Resolved — and every preset in this file builds a DEAL
+  // pipeline (`objectKey: 'deal'`, stated in `pipelinePreset`). Before service
+  // requests existed that was merely a sales board with support-shaped stage
+  // names. Now that they do, it is a trap: a tenant looking for support installs
+  // the thing called "Support pipeline", gets a deal board that looks right, and
+  // works it for weeks wondering why no reply deadlines are ever measured and
+  // why the Requests queue stays empty.
+  //
+  // The real support queue is not a preset and must not become one. It is
+  // created automatically, with a response promise attached, by the first
+  // request a tenant ever files (`ensureTicketPipeline` + `ensureDefaultPolicy`)
+  // — so there is nothing here to install, and a second ticket pipeline offered
+  // from a picker would only split the queue.
+
   pipelinePreset({
     slug: 'recruiting',
     name: 'Recruiting pipeline',

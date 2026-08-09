@@ -778,6 +778,72 @@ export async function recordFirstResponse(
 }
 
 /**
+ * Record something the CUSTOMER said on their own request — the portal reply.
+ *
+ * The important thing this does is what it does NOT do: it never touches
+ * `firstRespondedAt`. That column means "the business got back to them", and a
+ * customer chasing their own unanswered request must not be what settles the
+ * promise to answer it. Getting that backwards would make the queue read best
+ * exactly when it was performing worst — the more a customer had to chase, the
+ * more requests would look replied-to.
+ *
+ * It deliberately does not reopen a resolved request either. Whether "thanks,
+ * that fixed it" should reopen a request is the tenant's call, not ours, and the
+ * event published here is what lets them decide it in an automation. What the
+ * message always does is land on the timeline, which is shared with the
+ * customer's record — so whoever picks the request up next sees it.
+ */
+export async function recordCustomerMessage(
+  ctx: ServiceContext,
+  ticketId: string,
+  args: { customerId: string; body: string }
+): Promise<void> {
+  const ticket = await withTenant(ctx, async (tx) => {
+    // Re-assert ownership inside the transaction rather than trusting the
+    // caller's check: this is reachable from a public route, and the id in the
+    // URL is a customer's to edit.
+    const row = await tx.ticket.findFirst({
+      where: { id: ticketId, customerId: args.customerId, deletedAt: null },
+      select: { id: true, number: true, customerId: true, b2bAccountId: true },
+    });
+    if (!row) throw new CrmNotFoundError('Ticket', ticketId);
+
+    await tx.crmActivity.create({
+      data: {
+        tenantId: ctx.tenantId,
+        customerId: row.customerId,
+        b2bAccountId: row.b2bAccountId,
+        type: 'ticket.customer_replied',
+        description: `Request #${String(row.number)}: ${args.body}`,
+        // The customer, not a member of staff — so the timeline attributes it to
+        // them and no audit trail claims an employee wrote it.
+        actorId: null,
+        actorType: 'customer',
+        occurredAt: new Date(),
+        linkedEntityType: 'Ticket',
+        linkedEntityId: row.id,
+        metadata: {},
+      },
+    });
+    return row;
+  });
+
+  await publishCrmEvent({
+    tenantId: ctx.tenantId,
+    topic: 'crm.ticket.updated',
+    payload: {
+      ticketId: ticket.id,
+      number: ticket.number,
+      customerId: ticket.customerId,
+      customerReplied: true,
+    },
+    // Time-based rather than id-based: unlike opening a request, a customer may
+    // legitimately say several things, and each one has to get through.
+    dedupeKey: `crm.ticket.customer_replied:${ticket.id}:${Date.now().toString()}`,
+  });
+}
+
+/**
  * Point a conversation at a request.
  *
  * Called by the intake when an inbound email opens a ticket, so the words the

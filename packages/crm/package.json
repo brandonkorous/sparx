@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "@google-cloud/pubsub": "^5.3.0",
+    "@sparx/automation-schemas": "workspace:*",
     "@sparx/commerce-schemas": "workspace:*",
     "@sparx/crm-schemas": "workspace:*",
     "@sparx/db": "workspace:*",

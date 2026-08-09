@@ -1228,6 +1228,9 @@ importers:
       '@google-cloud/pubsub':
         specifier: ^5.3.0
         version: 5.3.0
+      '@sparx/automation-schemas':
+        specifier: workspace:*
+        version: link:../automation-schemas
       '@sparx/commerce-schemas':
         specifier: workspace:*
         version: link:../commerce-schemas
@@ -1265,6 +1268,9 @@ importers:
 
   packages/crm-schemas:
     dependencies:
+      '@sparx/automation-schemas':
+        specifier: workspace:*
+        version: link:../automation-schemas
       '@sparx/field-schema':
         specifier: workspace:*
         version: link:../field-schema

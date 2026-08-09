@@ -15,6 +15,7 @@ export * from './calls';
 export * from './pipelines';
 export * from './deals';
 export * from './tickets';
+export * from './reports';
 export * from './activities';
 export * from './tasks';
 export * from './segments';

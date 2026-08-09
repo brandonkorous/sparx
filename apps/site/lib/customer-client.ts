@@ -879,3 +879,84 @@ export async function setSubscriptionCard(
     }
   );
 }
+
+/* ── Support requests (docs/144 §7) ─────────────────────────────────────────
+ *
+ * What a customer is allowed to know about their own request. Deliberately
+ * narrower than the staff view: no reply deadline, no warn/breach stamps, no
+ * assignee, no internal notes, no tags. `answered` and `settledAt` are the two
+ * facts a person actually wants — has anyone got back to me, and is it done.
+ * The API decides that boundary (see `toRequestDto`); this type just matches it.
+ */
+export interface MyRequest {
+  id: string;
+  number: number;
+  subject: string;
+  description: string | null;
+  /** The business's OWN word for where it stands ("New", "Waiting on you"). */
+  stage: string | null;
+  /** Derived from the stage TYPE, because stage names are the tenant's words
+   *  and the UI cannot branch on those. */
+  state: 'open' | 'settled';
+  openedAt: string;
+  answered: boolean;
+  settledAt: string | null;
+}
+
+export async function getMyRequests(
+  tenantSlug: string,
+  scope: 'open' | 'settled' | 'all' = 'open',
+  page = 1,
+  pageSize = 20
+): Promise<{ items: MyRequest[]; total: number; totalPages: number }> {
+  const res = await fetch(
+    `${url('/v1/public/crm/account/requests', tenantSlug)}&scope=${scope}&page=${String(page)}&pageSize=${String(pageSize)}`,
+    { cache: 'no-store' }
+  );
+  const json = (await res.json().catch(() => null)) as {
+    success: boolean;
+    data?: MyRequest[];
+    meta?: { total?: number; total_pages?: number };
+  } | null;
+  if (!res.ok || !json || json.success === false) {
+    throw new AccountError('Could not load your requests.', res.status);
+  }
+  return {
+    items: json.data ?? [],
+    total: json.meta?.total ?? 0,
+    totalPages: json.meta?.total_pages ?? 1,
+  };
+}
+
+export async function openMyRequest(
+  tenantSlug: string,
+  input: { subject: string; message: string }
+): Promise<MyRequest> {
+  const res = await fetch(url('/v1/public/crm/account/requests', tenantSlug), {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(input),
+    cache: 'no-store',
+  });
+  return parse<MyRequest>(res);
+}
+
+/** Add to a request already raised. Never counts as the business replying — the
+ *  service is explicit about that, so chasing an unanswered request cannot make
+ *  it look answered. */
+export async function replyToMyRequest(
+  tenantSlug: string,
+  requestId: string,
+  message: string
+): Promise<void> {
+  const res = await fetch(
+    url(`/v1/public/crm/account/requests/${encodeURIComponent(requestId)}/replies`, tenantSlug),
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ message }),
+      cache: 'no-store',
+    }
+  );
+  await parse<{ recorded: boolean }>(res);
+}

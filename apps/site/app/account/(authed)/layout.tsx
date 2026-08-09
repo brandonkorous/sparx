@@ -23,6 +23,7 @@ const NAV: AccountNavItem[] = [
   { label: 'Orders', href: '/account/orders' },
   { label: 'Estimates', href: '/account/estimates' },
   { label: 'Bookings', href: '/account/bookings' },
+  { label: 'Requests', href: '/account/requests' },
   { label: 'Wishlist', href: '/account/wishlist' },
   { label: 'Addresses', href: '/account/addresses' },
   { label: 'Payment methods', href: '/account/payment-methods' },

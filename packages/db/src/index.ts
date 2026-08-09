@@ -105,6 +105,11 @@ export type {
   Ticket,
   TicketSlaPolicy,
   TicketSlaTarget,
+  // CRM — the report builder (docs/144 §8): a saved definition, a board of
+  // them, and one report's placement on one board.
+  CrmReport,
+  CrmDashboard,
+  CrmDashboardWidget,
   // CRM — orders + child tables
   Order,
   OrderItem,

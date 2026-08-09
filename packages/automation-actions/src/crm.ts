@@ -256,25 +256,31 @@ export function installCrmActions(): void {
     module: 'crm',
     gates: [],
     manifestNote:
-      'internal CRM write (upsert a site-form submitter as a prospect + log the message, optionally opening a pipeline deal); no external effect — global gates suffice',
+      'internal CRM write (upsert a site-form submitter as a prospect + log the message, optionally opening a pipeline deal and/or a support request); no external effect — global gates suffice',
     async execute(ctx: TenantCtx, effect: EffectInput): Promise<ActionOutput> {
       // Self-gate on the form's own toggles (resolved from the server-only
-      // FormDefinition). Either "add to CRM" OR "open a deal" opts the submission
-      // in — opening a deal implies capturing the contact (a deal needs someone to
-      // attach to). A form with neither on — or any non-form trigger without a
-      // submission — is a clean no-op, not an error.
+      // FormDefinition). "Add to CRM", "open a deal" OR "open a request" opts the
+      // submission in — either of the latter two implies capturing the contact,
+      // because both need someone to attach to. A form with none on — or any
+      // non-form trigger without a submission — is a clean no-op, not an error.
       const addToCrm = effect.fields['form.addToCrm'] === true;
       const openDeal = effect.fields['form.openDeal'] === true;
-      if (!addToCrm && !openDeal) return { skipped: 'crm_off' };
+      const openRequest = effect.fields['form.openRequest'] === true;
+      if (!addToCrm && !openDeal && !openRequest) return { skipped: 'crm_off' };
       const submissionId = optionalEntityId(effect.fields, 'form.submissionId');
       if (!submissionId) return { skipped: 'no_submission' };
-      // captureFormLead upserts the prospect + logs the message; openFormDeal then
-      // attaches a pipeline deal. Both load the row and are idempotent, so a retry
-      // is safe. Capture ALWAYS runs first (the deal needs the customer).
+      // captureFormLead upserts the prospect + logs the message; the two openers
+      // then attach a deal and/or a request. All three load the row and are
+      // idempotent, so a retry is safe. Capture ALWAYS runs first — both openers
+      // no-op without the customer it links.
+      //
+      // A form may legitimately do both: an existing customer asking about an
+      // upgrade is a question you owe an answer to AND a sale you might make.
       const svcCtx = { tenantId: ctx.tenantId, tx: ctx.tx };
       await leadService.captureFormLead(svcCtx, { submissionId });
       if (openDeal) await leadService.openFormDeal(svcCtx, { submissionId });
-      return { submissionId, openedDeal: openDeal };
+      if (openRequest) await leadService.openFormRequest(svcCtx, { submissionId });
+      return { submissionId, openedDeal: openDeal, openedRequest: openRequest };
     },
   });
 

@@ -408,6 +408,82 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
     ),
   }),
 
+  // ── Support request — a Form preset that opens a CRM request (docs/144 §7) ──
+  // The sibling of `quote_form`, and the reason the Requests queue has anything in
+  // it on a site that has never connected a mailbox. Same wired `ContactForm`
+  // block; the difference is entirely in the saved routing — `openRequest` files
+  // the submission as a support request with a reply deadline attached, counted in
+  // the hours the business actually works.
+  //
+  // `addToCrm` is set alongside it rather than left to the normalizer's implication
+  // so the saved tree states its own intent plainly: there is somebody to reply to.
+  // The autoresponder is ON, unlike the plain contact form — when a person has
+  // asked for help, silence is the failure mode, and the confirmation is the first
+  // half of the promise the request's clock is now measuring.
+  //
+  // The answer to "What went wrong?" is named `message`, so it lands on the
+  // submission, on the customer's timeline, and as the request's description —
+  // which is what stops the queue showing rows nobody can triage without digging.
+  entry({
+    key: 'support_form',
+    name: 'Support request',
+    category: 'data-input',
+    kind: 'comprehensive',
+    icon: 'life-buoy',
+    description:
+      'A help form — collects what went wrong, adds the person to your CRM, and opens a support request with a reply deadline so nothing waits longer than you promised. Edit or restyle any field.',
+    surfaces: ['page', 'site'],
+    tags: ['form', 'support', 'help', 'service', 'request', 'ticket', 'contact', 'crm'],
+    tree: atom(
+      'ContactForm',
+      'flex w-full max-w-2xl flex-col gap-5 rounded-box border border-base-200 bg-base-100 p-6 shadow-sm @container',
+      {
+        ...DEFAULT_CONTACT_FORM_PROPS,
+        submitLabel: 'Send request',
+        successMessage:
+          "Thanks — we've got your request and someone will get back to you. Check your email for a copy.",
+        addToCrm: true,
+        openRequest: true,
+        autoresponder: true,
+        autoresponderSubject: 'We got your request',
+        autoresponderMessage:
+          "Thanks for getting in touch — we've received your request and someone will get back to you shortly. There is nothing else you need to do.",
+      },
+      [
+        el('div', 'flex flex-col gap-1', {
+          children: [
+            atom('Heading', 'text-lg font-semibold text-base-content', {
+              level: 'h3',
+              text: 'Need a hand?',
+            }),
+            el('p', 'text-sm text-base-content', {
+              text: "Tell us what is going on and we'll sort it out.",
+            }),
+          ],
+        }),
+        el('div', 'grid grid-cols-1 gap-4 @lg:grid-cols-2', {
+          children: [
+            field('Name', input('text', 'name', 'Jordan Avery'), { cls: 'w-full' }),
+            field('Email', input('email', 'email', 'you@example.com'), { cls: 'w-full' }),
+          ],
+        }),
+        field('What do you need help with?', input('text', 'subject', 'Order arrived damaged'), {
+          cls: 'w-full',
+        }),
+        field(
+          'What went wrong?',
+          atom('Textarea', 'input-primary', {
+            name: 'message',
+            placeholder:
+              'What happened, and what you expected instead. Order numbers and dates help.',
+            rows: '4',
+          }),
+          { cls: 'w-full' }
+        ),
+      ]
+    ),
+  }),
+
   // ── Login form — Field + Input atoms in a card ───────────────────────────────
   entry({
     key: 'login_form',

@@ -232,6 +232,28 @@ export const ROUTES: readonly AppRoute[] = [
     entityLabel: 'Requests',
   },
   { path: '/crm/response-times', surface: 'crm.sla-policies' },
+
+  // The report builder (docs/144 §8). `/crm/reports` is already the fixed set
+  // sparx computes, so the builder gets its own address rather than shadowing it.
+  { path: '/crm/report-builder', surface: 'crm.report.library' },
+  {
+    path: '/crm/report-builder/:id',
+    surface: 'crm.report.builder',
+    entity: 'report',
+    entityLabel: 'Reports',
+  },
+  // One board is its own address, so a link to it opens THAT board rather than
+  // whichever one the recipient landed on last. Same component either way — the
+  // surface reads `params.id` and falls back to the landing board — but the two
+  // addresses need two surface keys, because one surface may hold exactly one
+  // route (see AppRoute.surface, enforced by scripts/check-surface-routes.mjs).
+  { path: '/crm/dashboards', surface: 'crm.dashboards' },
+  {
+    path: '/crm/dashboards/:id',
+    surface: 'crm.dashboard.detail',
+    entity: 'dashboard',
+    entityLabel: 'Dashboards',
+  },
   { path: '/crm/tasks', surface: 'crm.tasks.list' },
   { path: '/crm/tasks/:id', surface: 'crm.task.detail', entity: 'task', entityLabel: 'Tasks' },
   { path: '/crm/orders', surface: 'crm.orders.list' },

@@ -59,6 +59,10 @@ export interface SilicaFormConfig {
   /** Open a sales deal for the submitter in the default pipeline (needs `crm`).
    *  Implies capturing the contact — a deal needs someone to attach to. */
   openDeal: boolean;
+  /** Open a support request for the submitter, with a reply deadline attached
+   *  (needs `crm`). Implies capturing the contact, for the same reason a deal
+   *  does. Not mutually exclusive with `openDeal` — see the note in forms.ts. */
+  openRequest: boolean;
   /** Send the submitter a confirmation reply. */
   autoresponder: boolean;
   autoresponderSubject: string;
@@ -71,6 +75,7 @@ export const DEFAULT_SILICA_FORM_CONFIG: SilicaFormConfig = {
   notify: true,
   addToCrm: false,
   openDeal: false,
+  openRequest: false,
   autoresponder: false,
   autoresponderSubject: 'We received your message',
   autoresponderMessage:
@@ -89,15 +94,19 @@ export function readSilicaFormConfig(raw: unknown): SilicaFormConfig {
   const d = DEFAULT_SILICA_FORM_CONFIG;
   const addToCrm = bool(c.addToCrm, d.addToCrm);
   const openDeal = bool(c.openDeal, d.openDeal);
+  const openRequest = bool(c.openRequest, d.openRequest);
   return {
     name: typeof c.name === 'string' ? c.name : d.name,
     successMessage: str(c.successMessage, d.successMessage),
     notify: bool(c.notify, d.notify),
     // A deal needs a contact to hang off, so opening one implies capturing them —
     // enforced here rather than trusted from the stored blob, so a row that says
-    // `{openDeal: true, addToCrm: false}` can't produce an orphan deal.
-    addToCrm: addToCrm || openDeal,
+    // `{openDeal: true, addToCrm: false}` can't produce an orphan deal. A request
+    // is the same shape of problem: it is somebody asking for help, so there has
+    // to be a somebody.
+    addToCrm: addToCrm || openDeal || openRequest,
     openDeal,
+    openRequest,
     autoresponder: bool(c.autoresponder, d.autoresponder),
     autoresponderSubject: str(c.autoresponderSubject, d.autoresponderSubject),
     autoresponderMessage: str(c.autoresponderMessage, d.autoresponderMessage),

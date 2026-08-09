@@ -15,6 +15,7 @@ import * as customerService from './customer-service';
 import * as activityService from './activity-service';
 import * as dealService from './deal-service';
 import * as pipelineService from './pipeline-service';
+import * as ticketService from './ticket-service';
 
 export interface FormLeadInput {
   submissionId: string;
@@ -128,6 +129,63 @@ export async function openFormDeal(ctx: ServiceContext, input: OpenFormDealInput
     title: `${formLabel} — ${who}`,
     source: 'form',
     metadata: { formSubmissionId: input.submissionId },
+  });
+}
+
+export interface OpenFormRequestInput {
+  submissionId: string;
+}
+
+// Open a SUPPORT REQUEST from a site-form submission — the help/contact path
+// (docs/144 §7). The sibling of `openFormDeal`, and deliberately its own function
+// rather than a flag on it: a deal is money you hope to make, a request is an
+// answer you already owe, and the two have different homes, different clocks and
+// different people working them.
+//
+// The reply deadline is NOT set here. `ticketService.create` attaches the
+// tenant's default promise itself — and computes it from the hours the business
+// actually works — so this passes only what the form knows and lets the one
+// place that understands business-hours arithmetic do that job.
+//
+// Idempotency is the SUBMISSION ID, carried as `sourceRecordId` under source
+// 'form'. `ticketService.create` treats (source, sourceRecordId) as a unique
+// intake key and returns the existing request rather than opening a second one,
+// so an automation retry — which is normal, not exceptional — cannot produce two
+// requests for one submission. No metadata re-query needed, unlike the deal path.
+// A no-op when the lead wasn't captured (spam / no email): a request with nobody
+// to reply to is not a request. Composes into `ctx.tx` when passed.
+export async function openFormRequest(
+  ctx: ServiceContext,
+  input: OpenFormRequestInput
+): Promise<void> {
+  const sub = await withTenant(ctx, (tx) =>
+    tx.formSubmission.findUnique({
+      where: { id: input.submissionId },
+      select: {
+        customerId: true,
+        status: true,
+        propertyId: true,
+        name: true,
+        email: true,
+        message: true,
+        formName: true,
+      },
+    })
+  );
+  if (!sub || sub.status === 'spam' || !sub.customerId) return;
+
+  const who = firstNonBlank([sub.name, sub.email], 'Someone on your site');
+  const formLabel = firstNonBlank([sub.formName], 'Website enquiry');
+
+  await ticketService.create(ctx, {
+    subject: `${formLabel} — ${who}`,
+    // Their actual words. Without this the queue shows a row that says only
+    // which form it came from, and somebody has to go and find what was asked.
+    description: sub.message?.trim() ? sub.message.trim() : null,
+    source: 'form',
+    sourceRecordId: input.submissionId,
+    customerId: sub.customerId,
+    ...(sub.propertyId ? { propertyId: sub.propertyId } : {}),
   });
 }
 

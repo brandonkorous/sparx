@@ -12,6 +12,7 @@ import {
   Mailbox as MailboxIcon,
   PhoneCall,
   Receipt,
+  LayoutDashboard,
   Target,
   Users,
   Workflow,
@@ -32,6 +33,9 @@ import { TasksListSurface } from '../../../surfaces/crm/tasks-list';
 import { TaskDetailSurface } from '../../../surfaces/crm/task-detail';
 import { CustomerOrdersSurface } from '../../../surfaces/crm/customer-orders';
 import { CrmReportsSurface } from '../../../surfaces/crm/reports';
+import { ReportsLibrarySurface } from '../../../surfaces/crm/reports-library';
+import { ReportBuilderSurface } from '../../../surfaces/crm/report-builder';
+import { DashboardsSurface } from '../../../surfaces/crm/dashboards';
 import { ObjectTypesListSurface } from '../../../surfaces/crm/object-types-list';
 import { ObjectTypeDetailSurface } from '../../../surfaces/crm/object-type-detail';
 import { MailboxesListSurface } from '../../../surfaces/crm/mailboxes-list';
@@ -320,5 +324,63 @@ export const CRM_SURFACES: SurfaceDefinition[] = [
     keywords: ['analytics', 'retention', 'value'],
     // Each instance owns its own pipeline selection, so it is not a singleton.
     component: CrmReportsSurface,
+  },
+
+  // The report BUILDER (docs/144 §8) — distinct from "Reports" above, which is
+  // the fixed set sparx computes. This is where a business answers the question
+  // we did not think of.
+  {
+    key: 'crm.report.library',
+    title: 'Build a report',
+    module: 'crm',
+    icon: BarChart3,
+    section: 'Reporting',
+    order: 31,
+    keywords: [
+      'report',
+      'build',
+      'custom report',
+      'chart',
+      'graph',
+      'breakdown',
+      'count',
+      'total',
+      'how many',
+    ],
+    component: ReportsLibrarySurface,
+    createSurface: 'crm.report.builder',
+    createLabel: 'New report',
+  },
+  {
+    key: 'crm.report.builder',
+    title: 'Report',
+    module: 'crm',
+    icon: BarChart3,
+    component: ReportBuilderSurface,
+    // Building one and editing one are the same surface ({id:'new'} -> {id}),
+    // so it is a pane rather than a launcher entry.
+    listed: false,
+  },
+  {
+    key: 'crm.dashboards',
+    title: 'Dashboards',
+    module: 'crm',
+    icon: LayoutDashboard,
+    section: 'Reporting',
+    order: 32,
+    keywords: ['dashboard', 'board', 'overview', 'kpi', 'at a glance', 'home'],
+    component: DashboardsSurface,
+  },
+  {
+    key: 'crm.dashboard.detail',
+    title: 'Dashboard',
+    module: 'crm',
+    icon: LayoutDashboard,
+    // The same surface as above — it already reads `params.id` and falls back to
+    // the landing board. This key exists so ONE board has its own address
+    // (/crm/dashboards/:id) without two routes claiming one surface, which the
+    // route table forbids. Unlisted: the launcher entry is "Dashboards".
+    component: DashboardsSurface,
+    listed: false,
   },
 ];

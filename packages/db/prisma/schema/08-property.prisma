@@ -250,6 +250,12 @@ model Property {
   // Same reasoning as Deal: a service request is a record of something a real
   // person asked for, so it survives the site closing (SetNull).
   tickets   Ticket[]
+  // Reports and dashboards are per-site when a business runs more than one:
+  // "how are we doing" means a different thing for each shopfront. Cascade,
+  // unlike the records above — a report about a site that is gone is not a
+  // record of anything that happened, just a query with no subject.
+  crmReports    CrmReport[]
+  crmDashboards CrmDashboard[]
 
   // CRM tasks (docs/131 §5) — a work queue item, denormalized from its
   // customer/deal so a site-scoped member sees only their business's tasks.

@@ -827,7 +827,23 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
         >
           {emails.map((email) => (
             <option key={email.id} value={email.id}>
+              {/* WHICH ONE ACTUALLY SENDS. A `key` means sparx's automations reach this
+                  row by name — `welcome-customer` IS the welcome mail a new customer
+                  gets. Every other row called "Welcome" is a copy somebody made, and
+                  the list gave them all the identical label.
+
+                  That is not hypothetical: this tenant holds FOUR rows named "Welcome",
+                  and the one at the top of this list is an unpublished draft of demo
+                  salon copy. It was sent as a test, arrived saying "Welcome to Maren &
+                  Wilde" to a WizeWorks account, and read exactly like a platform bug —
+                  by the person who wrote this file. The real default was three rows
+                  down, correct, and invisible.
+
+                  A native <option> renders text and nothing else — no badge, no colour —
+                  so the marker has to BE text. It goes after the name so the names still
+                  align and the list stays scannable. */}
               {email.name}
+              {email.key ? ' — sent automatically' : ''}
             </option>
           ))}
         </NativeSelect>
