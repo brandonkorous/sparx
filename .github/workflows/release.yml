@@ -862,7 +862,13 @@ jobs:
       - name: Apply cluster infrastructure
         run: |
           set -euo pipefail
-          kubectl apply -k "$OVERLAY/infra"
+          # --prune, scoped to THIS overlay's own label. See the long note on the
+          # containers stage's apply for why `apply` alone cannot delete and why
+          # the two overlays must never share a label value: they target the same
+          # namespace, so a shared value would let each stage prune the other's
+          # entire output.
+          kubectl apply -k "$OVERLAY/infra" \
+            --prune --selector app.kubernetes.io/managed-by=sparx-release-infra
           kubectl -n "$NAMESPACE" rollout status deployment/caddy --timeout=10m
           kubectl -n "$NAMESPACE" rollout status statefulset/typesense --timeout=10m
 
@@ -1252,7 +1258,40 @@ jobs:
             exit 1
           fi
 
-          kubectl apply -k "$OVERLAY/apps"
+          # --prune, because `apply` ALONE CANNOT DELETE.
+          #
+          # Removing a Deployment from the overlay is a silent no-op against a
+          # live cluster: `apply` reconciles what it is given and never asks what
+          # it used to manage. Consolidating fourteen worker Deployments into
+          # three shipped green and left all twelve old ones running — pinned to
+          # the previous SHA, and each still bound to the JetStream durable the
+          # new pod had just bound. Two consumers on one durable split the
+          # stream, so half of every event was handled by the superseded code
+          # while the node sat at 104% memory. Nothing alerted, because from
+          # `apply`'s point of view the release had succeeded.
+          #
+          # SCOPED BY LABEL, and the scope is the whole safety argument. `--prune`
+          # deletes everything matching the selector that was not in THIS apply,
+          # so an unscoped prune in a namespace holding Secrets, PVCs and the
+          # NATS/Typesense StatefulSets would be catastrophic. Only resources
+          # this overlay emits carry the label, so only they are candidates.
+          #
+          # THE LABEL VALUE IS PER-OVERLAY AND MUST STAY THAT WAY. The infra
+          # stage applies a DIFFERENT overlay to the SAME namespace. If both
+          # stamped one shared value, applying infra would find every app
+          # Deployment labelled-but-absent from its apply set and delete the
+          # entire platform. `sparx-release-apps` vs `sparx-release-infra` is
+          # what makes the two stages unable to prune each other.
+          #
+          # Labels are added with `includeSelectors: false` (see the overlay):
+          # `spec.selector` is immutable on a live Deployment, so stamping it
+          # there would make every apply fail outright.
+          #
+          # A resource removed from the overlay is pruned on the NEXT release
+          # after the one that first labelled it — the label has to exist on the
+          # live object before a selector can match it.
+          kubectl apply -k "$OVERLAY/apps" \
+            --prune --selector app.kubernetes.io/managed-by=sparx-release-apps
 
       - name: Wait for rollout
         if: steps.changed.outputs.value == 'true'

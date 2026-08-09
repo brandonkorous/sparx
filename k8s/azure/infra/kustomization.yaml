@@ -34,6 +34,19 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: sparx-prod
 
+# The prune scope for THIS overlay. See ../apps/kustomization.yaml for the full
+# reasoning; the one thing that must never change is the VALUE. It differs from
+# the apps overlay on purpose — both stages apply into `sparx-prod`, so a shared
+# value would mean applying infra prunes every app Deployment and applying apps
+# prunes Caddy, Typesense and the media volume.
+#
+# `includeSelectors: false` because `spec.selector` is immutable on live
+# workloads.
+labels:
+  - pairs:
+      app.kubernetes.io/managed-by: sparx-release-infra
+    includeSelectors: false
+
 resources:
   - namespace.yaml
   # Typesense + the sparx-media volume. NOT Postgres (managed, psql-sparx-prod-cus)
