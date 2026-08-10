@@ -8,16 +8,16 @@
 // never via a deal_id column on orders/quotes (locked decision #5).
 
 model Pipeline {
-  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId   String    @map("tenant_id") @db.Uuid
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
   // The business whose sales process this is (docs/131 §5); null = tenant-wide.
   // The doc's own header cites "Fleet Contract Renewals" — a pipeline is one
   // business's way of working a deal, and a machine shop's stages ("Quote →
   // Approved → Fabricating → Invoiced") mean nothing on a donut wholesaler.
   // Nullable because a shared process is a legitimate default.
-  propertyId String?   @map("property_id") @db.Uuid
-  name       String    @db.VarChar(120)
-  slug       String    @db.VarChar(63)
+  propertyId String? @map("property_id") @db.Uuid
+  name       String  @db.VarChar(120)
+  slug       String  @db.VarChar(63)
 
   /// WHAT this process moves through its stages (docs/144 §7.2): `deal` today,
   /// `ticket` since phase 4, and a tenant-invented object key after that.
@@ -27,7 +27,7 @@ model Pipeline {
   /// the thing that lets a support queue reuse every one of them unchanged —
   /// rather than a second board, a second funnel and a second stage editor that
   /// drift apart the week after they ship.
-  objectKey  String    @default("deal") @map("object_key") @db.VarChar(63)
+  objectKey String @default("deal") @map("object_key") @db.VarChar(63)
 
   isDefault  Boolean   @default(false) @map("is_default")
   sortOrder  Int       @default(0) @map("sort_order")
@@ -93,7 +93,7 @@ model Deal {
   pipelineId    String  @map("pipeline_id") @db.Uuid
   stageId       String  @map("stage_id") @db.Uuid
   customerId    String? @map("customer_id") @db.Uuid
-  b2bAccountId  String? @map("b2b_account_id") @db.Uuid
+  companyId  String? @map("company_id") @db.Uuid
   assignedRepId String? @map("assigned_rep_id") @db.Uuid
 
   title             String    @db.VarChar(255)
@@ -107,11 +107,19 @@ model Deal {
   tags              String[]  @default([]) @db.VarChar(63)
   metadata          Json      @default("{}")
 
+  // DEAL HEALTH, 0–100 (docs/144 §10) — the same machinery as contact scoring
+  // pointed at a different question. A contact's score asks "how interested are
+  // they"; a deal's asks "is this one actually going to close", which is what
+  // makes a pipeline sortable by something other than value. Zero until the
+  // tenant writes a `deal` scoring model.
+  score    Int       @default(0)
+  scoredAt DateTime? @map("scored_at") @db.Timestamptz
+
   // Tenant-declared extra fields on a deal (docs/144 §3) — "contract length",
   // "competitor", "renewal date". Validated against the `deal` row in
   // crm_object_defs. See the note on customers.custom_properties for why this
   // is not `metadata`.
-  customProperties  Json      @default("{}") @map("custom_properties")
+  customProperties Json @default("{}") @map("custom_properties")
 
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
@@ -124,7 +132,7 @@ model Deal {
   pipeline    Pipeline      @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
   stage       PipelineStage @relation(fields: [stageId], references: [id])
   customer    Customer?     @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  b2bAccount  B2BAccount?   @relation(fields: [b2bAccountId], references: [id], onDelete: SetNull)
+  company  Company?   @relation(fields: [companyId], references: [id], onDelete: SetNull)
   assignedRep User?         @relation("DealAssignedRep", fields: [assignedRepId], references: [id], onDelete: SetNull)
 
   activities    CrmActivity[]
@@ -136,7 +144,7 @@ model Deal {
   @@index([tenantId, pipelineId, stageId])
   @@index([tenantId, assignedRepId, stageId])
   @@index([tenantId, customerId])
-  @@index([tenantId, b2bAccountId])
+  @@index([tenantId, companyId])
   @@index([tenantId, expectedCloseDate])
   @@index([tenantId, closedAt])
   @@index([tenantId, updatedAt(sort: Desc)])

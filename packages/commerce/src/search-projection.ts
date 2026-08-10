@@ -289,7 +289,7 @@ export async function projectCustomer(
     // full_name is required + non-empty in the Typesense schema; fall back
     // through company → email → placeholder. `??` won't do — these are
     // empty-string-or-null, and an empty string must fall through.
-    const fullName = firstNonEmpty(name, customer.company, customer.email) ?? '(no name)';
+    const fullName = firstNonEmpty(name, customer.companyName, customer.email) ?? '(no name)';
 
     const doc: CustomerSearchDocument = {
       id: `${ctx.tenantId}:${customer.id}`,
@@ -301,11 +301,11 @@ export async function projectCustomer(
       full_name: fullName,
       email: customer.email ?? '',
       phone: customer.phone ?? undefined,
-      company: customer.company ?? undefined,
+      company: customer.companyName ?? undefined,
       type: customer.type as CustomerType,
       lifecycle_stage: customer.lifecycleStage,
       lead_status: customer.leadStatus ?? undefined,
-      b2b_account_id: customer.b2bAccountId ?? undefined,
+      b2b_account_id: customer.companyId ?? undefined,
       tags: customer.tags.length > 0 ? customer.tags : undefined,
       total_spent_cents: Math.round(Number(customer.totalSpent) * 100),
       order_count: customer.orderCount,
@@ -367,7 +367,7 @@ export async function projectOrder(
       include: {
         items: { select: { name: true, sku: true } },
         customer: {
-          select: { firstName: true, lastName: true, email: true, b2bAccountId: true },
+          select: { firstName: true, lastName: true, email: true, companyId: true },
         },
       },
     });
@@ -391,7 +391,7 @@ export async function projectOrder(
       customer_id: order.customerId,
       customer_name: customerName || undefined,
       customer_email: order.customer?.email ?? undefined,
-      b2b_account_id: order.customer?.b2bAccountId ?? undefined,
+      b2b_account_id: order.customer?.companyId ?? undefined,
       channel: order.channel ?? 'admin',
       status: order.status,
       payment_status: order.paymentStatus,

@@ -67,7 +67,7 @@ interface IndexerEnvelope {
 // `<entity>Id` field. Topics whose entity has no universal projector
 // (customer → rich collection, activity) map to nothing. (docs/39 §6.1)
 const CRM_UNIVERSAL_BY_ENTITY: Record<string, { entityType: string; idField: string }> = {
-  b2b_account: { entityType: 'b2b_account', idField: 'b2bAccountId' },
+  b2b_account: { entityType: 'b2b_account', idField: 'companyId' },
   quote: { entityType: 'quote', idField: 'quoteId' },
   pipeline: { entityType: 'pipeline', idField: 'pipelineId' },
   deal: { entityType: 'deal', idField: 'dealId' },

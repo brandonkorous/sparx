@@ -89,13 +89,13 @@ export const ListOrdersInput = z.object({
   // Order.propertyId is SetNull), not "shared", so a restricted member has no
   // claim to it — unlike a tenant-wide deal or task, where null means shared.
   propertyIds: z.array(Uuid).optional(),
-  // B2B scoping. An Order has no b2bAccountId of its own — the link runs
-  // through its customer (Customer.b2bAccountId), so both of these resolve as
-  // relation filters. `b2bAccountId` narrows to one account; `b2bOnly` is the
+  // B2B scoping. An Order has no companyId of its own — the link runs
+  // through its customer (Customer.companyId), so both of these resolve as
+  // relation filters. `companyId` narrows to one account; `b2bOnly` is the
   // /b2b/orders lens: every order placed by a customer who belongs to ANY B2B
   // account, regardless of which channel it came in through (a rep placing an
   // order via admin for a fleet account is still a B2B order).
-  b2bAccountId: Uuid.optional(),
+  companyId: Uuid.optional(),
   b2bOnly: z.boolean().optional(),
   placedSince: z.string().datetime().optional(),
   placedUntil: z.string().datetime().optional(),

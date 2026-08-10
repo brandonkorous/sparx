@@ -14,7 +14,7 @@ model PriceList {
   channel           String?   @db.VarChar(20) // null = any | storefront | b2b_portal | subscription
   // Targeting — at most one of these is set; both null = default for channel.
   customerSegmentId String?   @map("customer_segment_id") @db.Uuid
-  b2bAccountId      String?   @map("b2b_account_id") @db.Uuid
+  companyId      String?   @map("company_id") @db.Uuid
   collectionId      String?   @map("collection_id") @db.Uuid // restrict to one collection
   priority          Int       @default(0)
   validFrom         DateTime? @map("valid_from") @db.Timestamptz
@@ -26,7 +26,7 @@ model PriceList {
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz
 
   tenant        Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  b2bAccount    B2BAccount?         @relation(fields: [b2bAccountId], references: [id], onDelete: Cascade)
+  company    Company?         @relation(fields: [companyId], references: [id], onDelete: Cascade)
   collection    ProductCollection?  @relation(fields: [collectionId], references: [id], onDelete: SetNull)
   entries       PriceListEntry[]
   bulkTiers     BulkPriceTier[]
@@ -34,7 +34,7 @@ model PriceList {
 
   @@index([tenantId, status])
   @@index([tenantId, channel])
-  @@index([tenantId, b2bAccountId])
+  @@index([tenantId, companyId])
   @@map("commerce_price_lists")
 }
 
@@ -111,7 +111,7 @@ model BulkPriceTier {
 model ContractPrice {
   id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId               String    @map("tenant_id") @db.Uuid
-  b2bAccountId           String    @map("b2b_account_id") @db.Uuid
+  companyId           String    @map("company_id") @db.Uuid
   variantId              String    @map("variant_id") @db.Uuid
   priceCents             Int       @map("price_cents")
   validFrom              DateTime  @map("valid_from") @db.Timestamptz
@@ -123,11 +123,11 @@ model ContractPrice {
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant     Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  b2bAccount B2BAccount     @relation(fields: [b2bAccountId], references: [id], onDelete: Cascade)
+  company Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
   variant    ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
 
-  @@unique([b2bAccountId, variantId, validFrom], map: "contract_prices_unique")
-  @@index([tenantId, b2bAccountId])
+  @@unique([companyId, variantId, validFrom], map: "contract_prices_unique")
+  @@index([tenantId, companyId])
   @@index([tenantId, variantId])
   @@map("commerce_contract_prices")
 }

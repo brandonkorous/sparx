@@ -19,12 +19,16 @@ import {
   Hourglass,
   LifeBuoy,
   ListChecks,
+  ListPlus,
   Mail,
   MailPlus,
   PencilLine,
+  PhoneCall,
   Repeat,
   Settings2,
   ShoppingCart,
+  Shuffle,
+  Split,
   StickyNote,
   Tag,
   Webhook,
@@ -34,6 +38,7 @@ import {
 import {
   Action as ActionSchema,
   ConditionGroup as ConditionGroupSchema,
+  IfElseConfig,
   isConditionGroup,
   triggerFromColumns,
 } from '@sparx/automation-schemas';
@@ -167,6 +172,14 @@ export function runState(status: RunStatus): State {
   switch (status) {
     case 'completed':
       return { label: 'Finished', tone: 'success', detail: 'Every step ran to the end.' };
+    case 'converted':
+      // The best outcome a run has, so it gets the module hue rather than
+      // sharing plain green with "ran to the end and nothing happened".
+      return {
+        label: 'Worked',
+        tone: 'module',
+        detail: 'What you were aiming for happened, so the rest of the steps were skipped.',
+      };
     case 'failed':
       return { label: 'Failed', tone: 'danger', detail: 'A step could not complete.' };
     case 'running':
@@ -327,9 +340,36 @@ export function actionSummaryText(action: Action): string {
     }
     case 'email.send_internal':
       return `Email ${typeof cfg.to === 'string' ? cfg.to : 'staff'}`;
+    case 'platform.if_else': {
+      // The author's own note wins, because "did they book a call?" is a better
+      // headline than any rendering of the condition tree behind it.
+      const branch = IfElseConfig.safeParse(cfg);
+      if (!branch.success) return 'Go one way or the other';
+      if (branch.data.label) return branch.data.label;
+      const chips = conditionChips(branch.data.condition);
+      return chips.length > 0 ? `If ${chips[0]}` : 'Go one way or the other';
+    }
     default:
       return actionLabel(action.type);
   }
+}
+
+/** How many steps sit on each side of a branch — what the canvas shows on the
+ *  collapsed card so an author can see the shape without opening it. */
+export function branchCounts(action: Action): { then: number; otherwise: number } | null {
+  if (action.type !== 'platform.if_else') return null;
+  const branch = IfElseConfig.safeParse(action.config);
+  if (!branch.success) return { then: 0, otherwise: 0 };
+  return { then: branch.data.then.length, otherwise: branch.data.otherwise.length };
+}
+
+/** The two arms of a branch, parsed. Returns empty lists for an unparseable
+ *  config rather than throwing — a rule with one bad step should still render,
+ *  so somebody can see it and fix it. */
+export function branchArms(action: Action): { then: Action[]; otherwise: Action[] } {
+  const branch = IfElseConfig.safeParse(action.config);
+  if (!branch.success) return { then: [], otherwise: [] };
+  return { then: branch.data.then, otherwise: branch.data.otherwise };
 }
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -346,6 +386,10 @@ export function actionSummaryText(action: Action): string {
 export const SETTINGS_NODE = 'settings';
 export const TRIGGER_NODE = 'trigger';
 export const CONDITIONS_NODE = 'conditions';
+/** What the rule is aiming to cause (docs/144 §9). A node of its own rather than
+ *  a setting, because it is the same kind of statement as the trigger and the
+ *  conditions — and because it is what makes the run history worth reading. */
+export const GOAL_NODE = 'goal';
 
 /** A selectable node id: a fixed node above, or an action's stable id. */
 export type NodeId = string;
@@ -371,6 +415,10 @@ export type NodeIconKey =
   | 'sequence'
   | 'b2b'
   | 'commerce'
+  | 'branch'
+  | 'rotate'
+  | 'list'
+  | 'phone'
   | 'action';
 
 export const NODE_ICONS: Record<NodeIconKey, LucideIcon> = {
@@ -392,6 +440,12 @@ export const NODE_ICONS: Record<NodeIconKey, LucideIcon> = {
   sequence: Repeat,
   b2b: Building2,
   commerce: ShoppingCart,
+  // Split, not GitBranch: `deal` already wears GitBranch, and two different
+  // things sharing a glyph on the same canvas is how a map stops being one.
+  branch: Split,
+  rotate: Shuffle,
+  list: ListPlus,
+  phone: PhoneCall,
   action: Zap,
 };
 
@@ -473,6 +527,13 @@ const ACTION_ICONS: Record<string, NodeIconKey> = {
   'crm.create_ticket': 'support',
   'crm.update_deal_stage': 'deal',
   'crm.capture_lead': 'task',
+  'platform.if_else': 'branch',
+  'crm.create_record': 'field',
+  'crm.set_property': 'field',
+  'crm.rotate_owner': 'rotate',
+  'crm.add_to_list': 'list',
+  'engagement.send_email': 'mail',
+  'voice.log_call_task': 'phone',
   'form.notify': 'mail-plus',
   'form.autoreply': 'mail',
   'email.send_campaign': 'mail',

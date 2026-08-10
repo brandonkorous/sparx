@@ -5,7 +5,7 @@
 import { customerMutationResolvers, customerQueryResolvers } from './resolvers/customers.js';
 import { dealMutationResolvers, dealQueryResolvers } from './resolvers/deals.js';
 import { pipelineMutationResolvers, pipelineQueryResolvers } from './resolvers/pipelines.js';
-import { b2bAccountMutationResolvers, b2bAccountQueryResolvers } from './resolvers/b2b-accounts.js';
+import { companyMutationResolvers, companyQueryResolvers } from './resolvers/companies.js';
 import { activityMutationResolvers, activityQueryResolvers } from './resolvers/activities.js';
 import { taskMutationResolvers, taskQueryResolvers } from './resolvers/tasks.js';
 import { segmentMutationResolvers, segmentQueryResolvers } from './resolvers/segments.js';
@@ -18,7 +18,7 @@ export const crmResolvers = {
     ...customerQueryResolvers,
     ...dealQueryResolvers,
     ...pipelineQueryResolvers,
-    ...b2bAccountQueryResolvers,
+    ...companyQueryResolvers,
     ...activityQueryResolvers,
     ...taskQueryResolvers,
     ...segmentQueryResolvers,
@@ -28,7 +28,7 @@ export const crmResolvers = {
     ...customerMutationResolvers,
     ...dealMutationResolvers,
     ...pipelineMutationResolvers,
-    ...b2bAccountMutationResolvers,
+    ...companyMutationResolvers,
     ...activityMutationResolvers,
     ...taskMutationResolvers,
     ...segmentMutationResolvers,

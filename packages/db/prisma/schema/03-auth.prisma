@@ -62,7 +62,7 @@ model User {
 
   // CRM module — staff acting as sales rep / task owner / activity actor
   assignedCustomers        Customer[]                @relation("CustomerAssignedRep")
-  assignedB2bAccounts      B2BAccount[]              @relation("B2BAccountAssignedRep")
+  assignedCompanies      Company[]              @relation("CompanyAssignedRep")
   assignedDeals            Deal[]                    @relation("DealAssignedRep")
   assignedTickets          Ticket[]                  @relation("TicketAssignedTo")
   assignedTasks            Task[]                    @relation("TaskAssignedTo")
@@ -72,6 +72,9 @@ model User {
   billingDocumentsAssigned BillingDocument[]         @relation("BillingDocumentAssignee")
   billingLinesAsTechnician BillingDocumentLine[]     @relation("BillingLineTechnician")
   billingSnapshotsAuthored BillingDocumentSnapshot[] @relation("BillingSnapshotAuthor")
+  crmSavedViews            CrmSavedView[]            @relation("CrmSavedViewAuthor")
+  crmMeetingLinks          CrmMeetingLink[]          @relation("CrmMeetingLinkOwner")
+  signatureRequests        BillingDocumentSignature[] @relation("BillingSignatureRequester")
   billingPaymentsRecorded  BillingDocumentPayment[]  @relation("BillingPaymentRecordedBy")
   approvalRulesAsApprover  PurchaseApprovalRule[]    @relation("ApprovalRuleApprover")
 

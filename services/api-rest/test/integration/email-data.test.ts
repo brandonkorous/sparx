@@ -221,7 +221,7 @@ describe('resolveSilicaEmailData — invoice template', () => {
     });
     expect(data.order).toBeUndefined();
     expect(data.cart).toBeUndefined();
-    expect(data.b2bAccount).toBeUndefined();
+    expect(data.company).toBeUndefined();
   });
 
   it('applyEntitySnapshot fills a scalar token when the live entity is gone', () => {

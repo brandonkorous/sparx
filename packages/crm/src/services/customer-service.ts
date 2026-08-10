@@ -34,8 +34,8 @@ import type { ServiceContext } from '../errors';
 import { CrmNotFoundError } from '../errors';
 import { ensureBuiltInSegment } from './segment-service';
 
-export { merge, findLikelyDuplicates } from './merge-service';
-export type { MergeResult, DuplicateGroup } from './merge-service';
+export { merge, findLikelyDuplicates, bulkMerge } from './merge-service';
+export type { MergeResult, DuplicateGroup, BulkMergeResult } from './merge-service';
 
 // ─────────────────────────────────────────────────────────────────────────
 // Reads
@@ -46,7 +46,7 @@ export interface ListCustomersFilter {
   lifecycleStage?: LifecycleStage;
   leadStatus?: LeadStatus;
   assignedRepId?: string | null;
-  b2bAccountId?: string | null;
+  companyId?: string | null;
   // Membership site filter (docs/58 D2) — customers belonging to one site.
   propertyId?: string;
   tag?: string;
@@ -69,7 +69,7 @@ export async function list(
       ...(filter.lifecycleStage ? { lifecycleStage: filter.lifecycleStage } : {}),
       ...(filter.leadStatus ? { leadStatus: filter.leadStatus } : {}),
       ...(filter.assignedRepId !== undefined ? { assignedRepId: filter.assignedRepId } : {}),
-      ...(filter.b2bAccountId !== undefined ? { b2bAccountId: filter.b2bAccountId } : {}),
+      ...(filter.companyId !== undefined ? { companyId: filter.companyId } : {}),
       // docs/58 D2: a site-scoped list shows customers belonging to THAT site
       // PLUS global (null-property) customers — null is treated as visible
       // everywhere. Composed as `AND: [{ OR }]` so it never key-collides with the
@@ -84,7 +84,7 @@ export async function list(
               { email: { contains: filter.q, mode: 'insensitive' } },
               { firstName: { contains: filter.q, mode: 'insensitive' } },
               { lastName: { contains: filter.q, mode: 'insensitive' } },
-              { company: { contains: filter.q, mode: 'insensitive' } },
+              { companyName: { contains: filter.q, mode: 'insensitive' } },
             ],
           }
         : {}),
@@ -185,9 +185,9 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Cu
         phone: input.phone ?? null,
         firstName: input.firstName ?? null,
         lastName: input.lastName ?? null,
-        company: input.company ?? null,
+        companyName: input.company ?? null,
         jobTitle: input.jobTitle ?? null,
-        b2bAccountId: input.b2bAccountId ?? null,
+        companyId: input.companyId ?? null,
         assignedRepId: input.assignedRepId ?? null,
         preferredContactMethod: input.preferredContactMethod ?? null,
         doNotContact: input.doNotContact,
@@ -422,9 +422,9 @@ export async function update(
         ...(input.phone !== undefined ? { phone: input.phone } : {}),
         ...(input.firstName !== undefined ? { firstName: input.firstName } : {}),
         ...(input.lastName !== undefined ? { lastName: input.lastName } : {}),
-        ...(input.company !== undefined ? { company: input.company } : {}),
+        ...(input.company !== undefined ? { companyName: input.company } : {}),
         ...(input.jobTitle !== undefined ? { jobTitle: input.jobTitle } : {}),
-        ...(input.b2bAccountId !== undefined ? { b2bAccountId: input.b2bAccountId } : {}),
+        ...(input.companyId !== undefined ? { companyId: input.companyId } : {}),
         // Site (re)assignment (docs/58 D2): a uuid moves the customer to that
         // site; `null` clears it → global (visible from every site). `undefined`
         // (absent) leaves the assignment untouched.
@@ -863,7 +863,7 @@ export async function captureLead(
       if (!existing.firstName && firstName) data.firstName = firstName;
       if (!existing.lastName && lastName) data.lastName = lastName;
       if (!existing.phone && input.phone) data.phone = input.phone;
-      if (!existing.company && input.company) data.company = input.company;
+      if (!existing.companyName && input.company) data.companyName = input.company;
       if (existing.deletedAt) data.deletedAt = null;
       // Caller metadata is merged (its keys win) rather than replacing the object,
       // so a re-capture never drops what an earlier capture or a human recorded.
@@ -902,7 +902,7 @@ export async function captureLead(
           firstName,
           lastName,
           phone: input.phone ?? null,
-          company: input.company ?? null,
+          companyName: input.company ?? null,
           tags: input.tags ?? [],
           metadata: { source: input.source ?? 'form', ...input.metadata },
         },
@@ -964,13 +964,13 @@ function serializeCustomer(c: Customer): Record<string, unknown> {
     lifecycleStage: c.lifecycleStage,
     leadStatus: c.leadStatus,
     authUserId: c.authUserId,
-    b2bAccountId: c.b2bAccountId,
+    companyId: c.companyId,
     assignedRepId: c.assignedRepId,
     email: c.email,
     phone: c.phone,
     firstName: c.firstName,
     lastName: c.lastName,
-    company: c.company,
+    company: c.companyName,
     jobTitle: c.jobTitle,
     preferredContactMethod: c.preferredContactMethod,
     doNotContact: c.doNotContact,

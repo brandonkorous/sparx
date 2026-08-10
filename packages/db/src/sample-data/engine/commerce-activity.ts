@@ -196,7 +196,7 @@ export async function applyCustomers(ctx: ApplyCtx, pack: SampleDataPack): Promi
         email,
         firstName,
         lastName,
-        company: persona.company ?? null,
+        companyName: persona.company ?? null,
         phone: persona.phone ?? null,
         metadata: withSampleMeta(),
         // The extra details this pack declares on `contact` (docs/144 §3). Only

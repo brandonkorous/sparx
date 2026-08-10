@@ -43,16 +43,21 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Plus } from 'lucide-react';
+import { GripVertical, Plus, Target } from 'lucide-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import type { Action, ConditionGroup, Trigger } from '@sparx/automation-schemas';
 import {
   CONDITIONS_NODE,
+  GOAL_NODE,
   NODE_ICONS,
   SETTINGS_NODE,
   TRIGGER_NODE,
   actionDetail,
   actionHeadline,
+  actionIcon,
   automationState,
+  branchArms,
+  branchCounts,
   conditionChips,
   conditionsHeadline,
   conditionsOverflow,
@@ -62,6 +67,7 @@ import {
   triggerIcon,
   type NodeId,
 } from './automations-presentation';
+import { nestedNodeId } from './branch-tree';
 
 // Lock dragging to the vertical axis — the spine is a single column, so sideways
 // drift would only ever be noise. Inline so we don't add @dnd-kit/modifiers.
@@ -307,12 +313,17 @@ function ActionNode({
   index,
   selected,
   onSelect,
+  selectedId,
+  onInsertIntoArm,
 }: {
   id: string;
   action: Action;
   index: number;
   selected: boolean;
   onSelect: (id: NodeId) => void;
+  /** The whole selection, so nested cards can highlight themselves. */
+  selectedId: NodeId | null;
+  onInsertIntoArm: (branchNodeId: string, arm: 'then' | 'otherwise', atIndex: number) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
@@ -336,6 +347,10 @@ function ActionNode({
     }
   }
 
+  const isBranch = action.type === 'platform.if_else';
+  const arms = isBranch ? branchArms(action) : null;
+  const counts = branchCounts(action);
+
   return (
     <div ref={setNodeRef} style={style}>
       <StepRow marker={<Marker selected={selected}>{index + 1}</Marker>}>
@@ -352,9 +367,185 @@ function ActionNode({
           <NodeBody title={actionHeadline(action)}>
             <span className="truncate font-mono text-xs">{actionDetail(action)}</span>
           </NodeBody>
+          {counts ? (
+            <span className="ml-auto flex shrink-0 items-center gap-1">
+              <Badge color="success" variant="soft" size="sm">
+                {counts.then} if yes
+              </Badge>
+              <Badge color="neutral" variant="soft" size="sm">
+                {counts.otherwise} if no
+              </Badge>
+            </span>
+          ) : null}
           <GripVertical className="text-base-content/40 ml-auto size-4 shrink-0" aria-hidden />
         </div>
       </StepRow>
+
+      {arms ? (
+        // Outside the drag surface, so grabbing a nested step never lifts the
+        // whole branch — and indented past the spine so the two sides read as
+        // belonging to the card above rather than as steps of their own.
+        <div className="mt-1.5 ml-11 flex flex-col gap-2">
+          <BranchArmList
+            branchNodeId={id}
+            arm="then"
+            label="If yes"
+            steps={arms.then}
+            selectedId={selectedId}
+            onSelect={onSelect}
+            onInsert={onInsertIntoArm}
+            depth={1}
+          />
+          <BranchArmList
+            branchNodeId={id}
+            arm="otherwise"
+            label="If no"
+            steps={arms.otherwise}
+            selectedId={selectedId}
+            onSelect={onSelect}
+            onInsert={onInsertIntoArm}
+            depth={1}
+          />
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+/* ── Branch arms (docs/144 §9) ─────────────────────────────────────────────── */
+
+/**
+ * The steps inside one side of a branch, drawn indented under a labelled rail.
+ *
+ * Nested steps are SELECTABLE and INSERTABLE but not draggable, and the asymmetry
+ * is deliberate rather than unfinished. Dragging across arms would mean a step
+ * could be picked up in "yes" and dropped in "no" — a change of meaning disguised
+ * as a change of order — and dnd-kit would need a sortable context per arm plus
+ * cross-container collision handling to do it. Reordering within an arm is
+ * delete-and-re-add, which is rare enough on a two-or-three-step branch to be
+ * worth the honesty.
+ */
+function BranchArmList({
+  branchNodeId,
+  arm,
+  label,
+  steps,
+  selectedId,
+  onSelect,
+  onInsert,
+  depth,
+}: {
+  branchNodeId: string;
+  arm: 'then' | 'otherwise';
+  label: string;
+  steps: Action[];
+  selectedId: NodeId | null;
+  onSelect: (id: NodeId) => void;
+  onInsert: (branchNodeId: string, arm: 'then' | 'otherwise', atIndex: number) => void;
+  depth: number;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center gap-2">
+        <Badge color={arm === 'then' ? 'success' : 'neutral'} variant="soft" size="sm">
+          {label}
+        </Badge>
+        {steps.length === 0 ? <span className="text-sm">Nothing happens</span> : null}
+      </div>
+
+      <div className="border-base-300 ml-2 flex flex-col gap-1.5 border-l pl-3">
+        {steps.map((step, i) => {
+          const id = nestedNodeId(branchNodeId, [{ arm, index: i }]);
+          return (
+            <BranchStep
+              key={id}
+              id={id}
+              action={step}
+              selected={selectedId === id}
+              onSelect={onSelect}
+              onInsert={onInsert}
+              selectedIdForChildren={selectedId}
+              depth={depth}
+            />
+          );
+        })}
+
+        <button
+          type="button"
+          className="border-base-300 hover:border-module hover:text-module flex w-full items-center gap-2 rounded-lg border border-dashed px-2.5 py-1.5 text-left"
+          onClick={() => onInsert(branchNodeId, arm, steps.length)}
+        >
+          <Plus className="size-3.5 shrink-0" aria-hidden />
+          <span className="text-sm font-medium">Add a step here</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/** One step inside a branch — a compact card, and its own arms when it is itself
+ *  a branch. */
+function BranchStep({
+  id,
+  action,
+  selected,
+  onSelect,
+  onInsert,
+  selectedIdForChildren,
+  depth,
+}: {
+  id: string;
+  action: Action;
+  selected: boolean;
+  onSelect: (id: NodeId) => void;
+  onInsert: (branchNodeId: string, arm: 'then' | 'otherwise', atIndex: number) => void;
+  selectedIdForChildren: NodeId | null;
+  depth: number;
+}) {
+  const isBranch = action.type === 'platform.if_else';
+  const arms = isBranch ? branchArms(action) : null;
+  const Glyph = NODE_ICONS[actionIcon(action)];
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div
+        role="button"
+        tabIndex={0}
+        aria-label={actionHeadline(action)}
+        className={`${nodeCardClass(selected)} cursor-pointer`}
+        onClick={() => onSelect(id)}
+        onKeyDown={keySelect(() => onSelect(id))}
+      >
+        <Glyph className="size-4 shrink-0" aria-hidden />
+        <NodeBody title={actionHeadline(action)}>
+          <span className="truncate font-mono text-xs">{actionDetail(action)}</span>
+        </NodeBody>
+      </div>
+
+      {arms ? (
+        <div className="ml-2 flex flex-col gap-2 pl-3">
+          <BranchArmList
+            branchNodeId={id}
+            arm="then"
+            label="If yes"
+            steps={arms.then}
+            selectedId={selectedIdForChildren}
+            onSelect={onSelect}
+            onInsert={onInsert}
+            depth={depth + 1}
+          />
+          <BranchArmList
+            branchNodeId={id}
+            arm="otherwise"
+            label="If no"
+            steps={arms.otherwise}
+            selectedId={selectedIdForChildren}
+            onSelect={onSelect}
+            onInsert={onInsert}
+            depth={depth + 1}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -443,6 +634,8 @@ export interface FlowCanvasProps {
   trigger: Trigger;
   conditions: ConditionGroup;
   actions: Action[];
+  /** What the rule is aiming to cause (docs/144 §9); null = no goal. */
+  goal: ConditionGroup | null;
   /** Stable ids parallel to `actions` (owned by the editor), for dnd-kit + keys. */
   actionIds: string[];
   selectedId: NodeId | null;
@@ -450,6 +643,8 @@ export interface FlowCanvasProps {
   /** Insert a fresh action at `atIndex` (0..actions.length); the editor selects it. */
   onInsertAction: (atIndex: number) => void;
   onMoveAction: (fromIndex: number, toIndex: number) => void;
+  /** Insert a fresh action into one side of a branch (docs/144 §9). */
+  onInsertIntoArm: (branchNodeId: string, arm: 'then' | 'otherwise', atIndex: number) => void;
 }
 
 export function FlowCanvas({
@@ -459,11 +654,13 @@ export function FlowCanvas({
   trigger,
   conditions,
   actions,
+  goal,
   actionIds,
   selectedId,
   onSelect,
   onInsertAction,
   onMoveAction,
+  onInsertIntoArm,
 }: FlowCanvasProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const dndId = useId();
@@ -536,6 +733,8 @@ export function FlowCanvas({
                     index={i}
                     selected={selectedId === actionIds[i]}
                     onSelect={onSelect}
+                    selectedId={selectedId}
+                    onInsertIntoArm={onInsertIntoArm}
                   />
                 </Fragment>
               ))}
@@ -549,7 +748,56 @@ export function FlowCanvas({
           onClick={() => onInsertAction(actions.length)}
           hasActions={actions.length > 0}
         />
+
+        <GoalNode goal={goal} selected={selectedId === GOAL_NODE} onSelect={onSelect} />
       </div>
     </div>
+  );
+}
+
+/** The goal sits at the BOTTOM of the pipeline, after the steps — because it is
+ *  what the steps are for, and reading it there is reading the rule's ending. */
+function GoalNode({
+  goal,
+  selected,
+  onSelect,
+}: {
+  goal: ConditionGroup | null;
+  selected: boolean;
+  onSelect: (id: NodeId) => void;
+}) {
+  const chips = goal ? conditionChips(goal) : [];
+  return (
+    <StepRow
+      rail="last"
+      marker={
+        <Marker selected={selected} tone={goal ? 'module' : 'neutral'}>
+          <Target className="size-4" aria-hidden />
+        </Marker>
+      }
+    >
+      <div
+        role="button"
+        tabIndex={0}
+        aria-label="What you’re aiming for"
+        className={`${nodeCardClass(selected)} cursor-pointer`}
+        onClick={() => onSelect(GOAL_NODE)}
+        onKeyDown={keySelect(() => onSelect(GOAL_NODE))}
+      >
+        <NodeBody title={goal ? 'What you’re aiming for' : 'No goal set'}>
+          {goal ? (
+            <span className="flex flex-wrap items-center gap-1">
+              {chips.map((c, i) => (
+                <span key={i} className="bg-base-200 rounded px-1.5 py-0.5 font-mono text-xs">
+                  {c}
+                </span>
+              ))}
+            </span>
+          ) : (
+            <span className="text-sm">Add one to find out how often this actually works</span>
+          )}
+        </NodeBody>
+      </div>
+    </StepRow>
   );
 }

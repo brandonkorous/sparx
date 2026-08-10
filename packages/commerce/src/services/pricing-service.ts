@@ -45,7 +45,7 @@ export interface PriceListRow {
   currency: string;
   channel: string | null;
   customerSegmentId: string | null;
-  b2bAccountId: string | null;
+  companyId: string | null;
   collectionId: string | null;
   priority: number;
   validFrom: string | null;
@@ -60,7 +60,7 @@ export async function listPriceLists(
   filter: {
     status?: string;
     channel?: string;
-    b2bAccountId?: string;
+    companyId?: string;
     q?: string;
     take?: number;
     skip?: number;
@@ -71,7 +71,7 @@ export async function listPriceLists(
       deletedAt: null,
       ...(filter.status ? { status: filter.status } : {}),
       ...(filter.channel ? { channel: filter.channel } : {}),
-      ...(filter.b2bAccountId ? { b2bAccountId: filter.b2bAccountId } : {}),
+      ...(filter.companyId ? { companyId: filter.companyId } : {}),
       // Free-text search over the operator-facing fields (name + description),
       // case-insensitive — mirrors the discount list's `q` handling.
       ...(filter.q
@@ -113,9 +113,9 @@ export async function createPriceList(
   rawInput: unknown
 ): Promise<{ id: string }> {
   const input = CreatePriceListInput.parse(rawInput);
-  if (input.customerSegmentId && input.b2bAccountId) {
+  if (input.customerSegmentId && input.companyId) {
     throw new CommerceValidationError(
-      'Set at most one of customerSegmentId or b2bAccountId; not both'
+      'Set at most one of customerSegmentId or companyId; not both'
     );
   }
   const result = await withTenant(ctx, async (tx) => {
@@ -127,7 +127,7 @@ export async function createPriceList(
         currency: input.currency,
         channel: input.channel ?? null,
         customerSegmentId: input.customerSegmentId ?? null,
-        b2bAccountId: input.b2bAccountId ?? null,
+        companyId: input.companyId ?? null,
         priority: input.priority,
         validFrom: input.validFrom ? new Date(input.validFrom) : null,
         validTo: input.validTo ? new Date(input.validTo) : null,
@@ -161,11 +161,10 @@ export async function updatePriceList(
 
     const nextCustomerSegmentId =
       input.customerSegmentId !== undefined ? input.customerSegmentId : before.customerSegmentId;
-    const nextB2bAccountId =
-      input.b2bAccountId !== undefined ? input.b2bAccountId : before.b2bAccountId;
+    const nextB2bAccountId = input.companyId !== undefined ? input.companyId : before.companyId;
     if (nextCustomerSegmentId && nextB2bAccountId) {
       throw new CommerceValidationError(
-        'Set at most one of customerSegmentId or b2bAccountId; not both'
+        'Set at most one of customerSegmentId or companyId; not both'
       );
     }
 
@@ -179,7 +178,7 @@ export async function updatePriceList(
         ...(input.customerSegmentId !== undefined
           ? { customerSegmentId: nextCustomerSegmentId }
           : {}),
-        ...(input.b2bAccountId !== undefined ? { b2bAccountId: nextB2bAccountId } : {}),
+        ...(input.companyId !== undefined ? { companyId: nextB2bAccountId } : {}),
         ...(input.priority !== undefined ? { priority: input.priority } : {}),
         ...(input.validFrom !== undefined
           ? { validFrom: input.validFrom ? new Date(input.validFrom) : null }
@@ -525,7 +524,7 @@ export async function deleteBulkTier(ctx: ServiceContext, tierId: string): Promi
 
 export interface ContractPriceRow {
   id: string;
-  b2bAccountId: string;
+  companyId: string;
   variantId: string;
   variantSku: string;
   productTitle: string;
@@ -545,7 +544,7 @@ export async function createContractPrice(
 
     const collision = await tx.contractPrice.findFirst({
       where: {
-        b2bAccountId: input.b2bAccountId,
+        companyId: input.companyId,
         variantId: input.variantId,
         validFrom: new Date(input.validFrom),
       },
@@ -560,7 +559,7 @@ export async function createContractPrice(
     const created = await tx.contractPrice.create({
       data: {
         tenantId: ctx.tenantId,
-        b2bAccountId: input.b2bAccountId,
+        companyId: input.companyId,
         variantId: input.variantId,
         priceCents: input.priceCents,
         validFrom: new Date(input.validFrom),
@@ -579,7 +578,7 @@ export async function createContractPrice(
       entityId: created.id,
       diff: {
         after: {
-          b2bAccountId: created.b2bAccountId,
+          companyId: created.companyId,
           variantId: created.variantId,
           priceCents: created.priceCents,
         },
@@ -592,11 +591,11 @@ export async function createContractPrice(
 
 export async function listContractPricesForAccount(
   ctx: ServiceContext,
-  b2bAccountId: string
+  companyId: string
 ): Promise<ContractPriceRow[]> {
   return withTenant(ctx, async (tx) => {
     const rows = await tx.contractPrice.findMany({
-      where: { b2bAccountId },
+      where: { companyId },
       include: {
         variant: { select: { sku: true, product: { select: { title: true } } } },
       },
@@ -605,7 +604,7 @@ export async function listContractPricesForAccount(
     });
     return rows.map((r) => ({
       id: r.id,
-      b2bAccountId: r.b2bAccountId,
+      companyId: r.companyId,
       variantId: r.variantId,
       variantSku: r.variant.sku,
       productTitle: r.variant.product.title,
@@ -629,13 +628,13 @@ export async function deleteContractPrice(ctx: ServiceContext, id: string): Prom
 
 /**
  * True B2B pricing/payment eligibility requires more than a customer's
- * primary-account pointer (`Customer.b2bAccountId`) — it requires an ACTIVE
+ * primary-account pointer (`Customer.companyId`) — it requires an ACTIVE
  * `B2bAccountContact` row on record (packages/db/prisma/schema/62-b2b-contacts.
  * prisma). Without this check, deactivating a contact (an employee who left,
  * an account put on hold) would silently leave their wholesale pricing and
  * net-terms eligibility intact forever, since nothing else re-validates the
  * pointer. Callers (cart, checkout, the storefront PDP) should resolve
- * through this rather than trusting `Customer.b2bAccountId` directly.
+ * through this rather than trusting `Customer.companyId` directly.
  */
 export async function resolveActiveB2bAccountId(
   tx: TxClient,
@@ -684,10 +683,10 @@ export async function resolve(ctx: ServiceContext, rawInput: unknown): Promise<P
     });
 
     // 1. Contract price (B2B-only, highest priority)
-    if (input.b2bAccountId) {
+    if (input.companyId) {
       const contract = await tx.contractPrice.findFirst({
         where: {
-          b2bAccountId: input.b2bAccountId,
+          companyId: input.companyId,
           variantId: input.variantId,
           validFrom: { lte: asOf },
           OR: [{ validTo: null }, { validTo: { gte: asOf } }],
@@ -718,16 +717,16 @@ export async function resolve(ctx: ServiceContext, rawInput: unknown): Promise<P
     // tier discount, assign it to an account, and see it saved in the
     // dashboard while every real storefront/checkout price stayed at list.
     // Only applied when it beats the running price, same as bulk_tier below.
-    if (input.b2bAccountId) {
+    if (input.companyId) {
       const [row] = await tx.$queryRaw<{ price: number | null }[]>`
-        SELECT resolve_b2b_price(${input.variantId}::uuid, ${input.b2bAccountId}::uuid) AS price
+        SELECT resolve_b2b_price(${input.variantId}::uuid, ${input.companyId}::uuid) AS price
       `;
       if (row?.price != null && row.price < unitPriceCents) {
         const delta = row.price - unitPriceCents;
         unitPriceCents = row.price;
         trace.push({
           source: 'b2b_pricing_tier',
-          sourceId: input.b2bAccountId,
+          sourceId: input.companyId,
           deltaCents: delta,
           resultingUnitPriceCents: unitPriceCents,
           note: 'B2B account pricing tier',
@@ -741,7 +740,7 @@ export async function resolve(ctx: ServiceContext, rawInput: unknown): Promise<P
       channel: input.channel,
       currency: input.currency,
       customerSegmentIds: input.customerSegmentIds,
-      b2bAccountId: input.b2bAccountId,
+      companyId: input.companyId,
       propertyId: input.propertyId,
       asOf,
     });
@@ -828,7 +827,7 @@ export async function resolveCart(
     channel: 'storefront' | 'b2b_portal' | 'admin' | 'subscription';
     currency: string;
     customerId?: string;
-    b2bAccountId?: string;
+    companyId?: string;
     customerSegmentIds?: string[];
     /** The site the cart is on (docs/131 §4), threaded to every line's price. */
     propertyId?: string;
@@ -843,7 +842,7 @@ export async function resolveCart(
         channel: input.channel,
         currency: input.currency,
         customerId: input.customerId,
-        b2bAccountId: input.b2bAccountId,
+        companyId: input.companyId,
         customerSegmentIds: input.customerSegmentIds ?? [],
         ...(input.propertyId ? { propertyId: input.propertyId } : {}),
       })
@@ -860,7 +859,7 @@ async function pickEligiblePriceList(
     channel: string;
     currency: string;
     customerSegmentIds: string[];
-    b2bAccountId?: string;
+    companyId?: string;
     /** The site this price is for (docs/131 §4). A list is eligible when it has no
      *  site links (all sites) OR is linked to this one. Undefined = no site filter
      *  (admin/preview). */
@@ -879,11 +878,11 @@ async function pickEligiblePriceList(
         { OR: [{ validTo: null }, { validTo: { gte: filter.asOf } }] },
         {
           OR: [
-            ...(filter.b2bAccountId ? [{ b2bAccountId: filter.b2bAccountId }] : []),
+            ...(filter.companyId ? [{ companyId: filter.companyId }] : []),
             ...(filter.customerSegmentIds.length > 0
               ? [{ customerSegmentId: { in: filter.customerSegmentIds } }]
               : []),
-            { customerSegmentId: null, b2bAccountId: null },
+            { customerSegmentId: null, companyId: null },
           ],
         },
         // Site scoping (docs/131 §4): empty links = every site, else only this site.
@@ -927,7 +926,7 @@ function serializePriceList(row: PriceList & { _count: { entries: number } }): P
     currency: row.currency,
     channel: row.channel,
     customerSegmentId: row.customerSegmentId,
-    b2bAccountId: row.b2bAccountId,
+    companyId: row.companyId,
     collectionId: row.collectionId,
     priority: row.priority,
     validFrom: row.validFrom?.toISOString() ?? null,

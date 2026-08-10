@@ -50,7 +50,7 @@ const dealRoutes: FastifyPluginAsync = async (app) => {
       pipelineId: q.pipeline_id,
       stageId: q.stage_id,
       customerId: q.customer_id,
-      b2bAccountId: q.b2b_account_id,
+      companyId: q.b2b_account_id,
       assignedRepId: q.assigned_rep_id ?? undefined,
       // A site-restricted member sees only their businesses' deals (docs/131
       // §3.3); an unrestricted member sees all (reachableSiteIds → undefined).

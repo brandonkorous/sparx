@@ -157,7 +157,7 @@ const crmImportExportRoutes: FastifyPluginAsync = async (app) => {
         email: c.email ?? '',
         first_name: c.firstName ?? '',
         last_name: c.lastName ?? '',
-        company: c.company ?? '',
+        company: c.companyName ?? '',
         phone: c.phone ?? '',
         job_title: c.jobTitle ?? '',
         tags: c.tags.join(','),

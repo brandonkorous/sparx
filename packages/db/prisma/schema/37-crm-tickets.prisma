@@ -37,7 +37,7 @@ model Ticket {
   /// we know, from a trade account, or from an address we have never seen (in
   /// which case the intake creates the contact first — see leadService).
   customerId   String? @map("customer_id") @db.Uuid
-  b2bAccountId String? @map("b2b_account_id") @db.Uuid
+  companyId String? @map("company_id") @db.Uuid
 
   assignedToUserId String? @map("assigned_to_user_id") @db.Uuid
 
@@ -114,7 +114,7 @@ model Ticket {
   pipeline     Pipeline      @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
   stage        PipelineStage @relation(fields: [stageId], references: [id])
   customer     Customer?     @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  b2bAccount   B2BAccount?   @relation(fields: [b2bAccountId], references: [id], onDelete: SetNull)
+  company   Company?   @relation(fields: [companyId], references: [id], onDelete: SetNull)
   assignedTo   User?         @relation("TicketAssignedTo", fields: [assignedToUserId], references: [id], onDelete: SetNull)
   slaPolicy    TicketSlaPolicy? @relation(fields: [slaPolicyId], references: [id], onDelete: SetNull)
 
@@ -125,7 +125,7 @@ model Ticket {
   @@index([tenantId, pipelineId, stageId])
   @@index([tenantId, assignedToUserId, stageId])
   @@index([tenantId, customerId])
-  @@index([tenantId, b2bAccountId])
+  @@index([tenantId, companyId])
   @@index([tenantId, priority, stageId])
   // The sweep's own index: it looks for tickets that are still owed something.
   @@index([tenantId, firstResponseDueAt])

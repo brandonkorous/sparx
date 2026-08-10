@@ -85,7 +85,7 @@ const financePaymentRoutes: FastifyPluginAsync = (app) => {
                   OR: [
                     { firstName: { contains: needle, mode: 'insensitive' } },
                     { lastName: { contains: needle, mode: 'insensitive' } },
-                    { company: { contains: needle, mode: 'insensitive' } },
+                    { companyName: { contains: needle, mode: 'insensitive' } },
                     { email: { contains: needle, mode: 'insensitive' } },
                   ],
                 },
@@ -128,7 +128,7 @@ const financePaymentRoutes: FastifyPluginAsync = (app) => {
                 channel: true,
                 source: true,
                 customer: {
-                  select: { firstName: true, lastName: true, company: true, email: true },
+                  select: { firstName: true, lastName: true, companyName: true, email: true },
                 },
               },
             },
@@ -158,7 +158,7 @@ const financePaymentRoutes: FastifyPluginAsync = (app) => {
       const c = r.order?.customer;
       const name = firstNonEmpty(
         [c?.firstName, c?.lastName].filter(Boolean).join(' '),
-        c?.company,
+        c?.companyName,
         c?.email
       );
       return {

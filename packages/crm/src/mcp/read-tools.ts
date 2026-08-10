@@ -7,7 +7,7 @@ import { z } from 'zod';
 
 import {
   customerService,
-  b2bAccountService,
+  companyService,
   dealService,
   pipelineService,
   taskService,
@@ -88,9 +88,10 @@ export const getInactiveCustomers: McpToolDefinition = {
   },
 };
 
-export const getB2bAccounts: McpToolDefinition = {
-  name: 'get_b2b_accounts',
-  description: 'List B2B accounts with credit limits, utilization, pricing tier.',
+export const getCompanies: McpToolDefinition = {
+  name: 'get_companies',
+  description:
+    'List the companies this business works with — the organisations its contacts belong to. Returns each one with its trade terms (credit limit, what is used, pricing tier) when the b2b module is on; those read as zero for a business that does not sell on account.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({
@@ -98,8 +99,7 @@ export const getB2bAccounts: McpToolDefinition = {
     status: z.enum(['active', 'credit_hold', 'suspended', 'inactive']).optional(),
     ...PaginationArgs,
   }),
-  run: (ctx, input) =>
-    b2bAccountService.list(ctx, input as Parameters<typeof b2bAccountService.list>[1]),
+  run: (ctx, input) => companyService.list(ctx, input as Parameters<typeof companyService.list>[1]),
 };
 
 export const getPipeline: McpToolDefinition = {
@@ -283,7 +283,7 @@ export const readTools = [
   getCustomer,
   getTopCustomers,
   getInactiveCustomers,
-  getB2bAccounts,
+  getCompanies,
   getPipeline,
   getDeal,
   getForecast,

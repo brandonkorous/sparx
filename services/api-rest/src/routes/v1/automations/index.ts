@@ -23,6 +23,7 @@
 //   POST   /v1/automations/:id/discard-draft→ throw away the staged draft
 //   GET    /v1/automations/:id/runs         → recent run history
 //   GET    /v1/automations/:id/runs/:runId  → one run + its steps (gate_log audit)
+//   GET    /v1/automations/:id/enrollment   → the funnel + per-step drop-off (docs/144 §9)
 
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
@@ -33,6 +34,7 @@ import {
   createAutomation,
   deleteAutomation,
   discardDraft,
+  enrollmentAnalytics,
   getAutomation,
   getAutomationRun,
   listAutomationRuns,
@@ -224,6 +226,16 @@ const automationRoutes: FastifyPluginAsync = (app) => {
     // confused with a bad id.
     if (!(await getAutomation(ctx, id))) throw new AutomationNotFoundError(id);
     return ok(await listAutomationRuns(ctx, id, filter));
+  });
+
+  // How this rule is actually doing (docs/144 §9) — entered / active / converted
+  // / completed / exited / failed, plus per-step drop-off. Distinct from
+  // `/:id/runs`, which lists what happened: this says whether it WORKED.
+  app.get('/v1/automations/:id/enrollment', async (request) => {
+    const ctx = ctxFor(request, 'viewer');
+    const { id } = IdParam.parse(request.params);
+    if (!(await getAutomation(ctx, id))) throw new AutomationNotFoundError(id);
+    return ok(await enrollmentAnalytics(ctx, id));
   });
 
   app.get('/v1/automations/:id/runs/:runId', async (request) => {

@@ -31,7 +31,7 @@ import { nextOrderNumber } from './record-numbers';
 
 export interface ConvertDocumentToOrderInput {
   /** Override the document's own customerId — required when the document is
-   *  billed only to a B2BAccount with no linked customer. */
+   *  billed only to a Company with no linked customer. */
   customerId?: string;
   channel?: string;
   orderNumber?: string;

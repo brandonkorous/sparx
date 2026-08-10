@@ -196,7 +196,7 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
                 { firstName: { contains: q.q, mode: 'insensitive' } },
                 { lastName: { contains: q.q, mode: 'insensitive' } },
                 { email: { contains: q.q, mode: 'insensitive' } },
-                { company: { contains: q.q, mode: 'insensitive' } },
+                { companyName: { contains: q.q, mode: 'insensitive' } },
               ],
             },
           }
@@ -217,7 +217,7 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
             currency: true,
             updatedAt: true,
             customer: {
-              select: { id: true, firstName: true, lastName: true, email: true, company: true },
+              select: { id: true, firstName: true, lastName: true, email: true, companyName: true },
             },
           },
         }),
@@ -238,7 +238,7 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
               firstName: r.customer.firstName,
               lastName: r.customer.lastName,
               email: r.customer.email,
-              company: r.customer.company,
+              company: r.customer.companyName,
             }
           : null,
       })),
@@ -281,7 +281,7 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
             expiresAt: true,
             updatedAt: true,
             customer: {
-              select: { id: true, firstName: true, lastName: true, email: true, company: true },
+              select: { id: true, firstName: true, lastName: true, email: true, companyName: true },
             },
             _count: { select: { items: true } },
           },
@@ -310,7 +310,7 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
               firstName: r.customer.firstName,
               lastName: r.customer.lastName,
               email: r.customer.email,
-              company: r.customer.company,
+              company: r.customer.companyName,
             }
           : null,
       })),

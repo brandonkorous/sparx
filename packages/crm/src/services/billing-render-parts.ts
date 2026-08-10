@@ -52,14 +52,14 @@ export async function resolveBillTo(
   tx: Prisma.TransactionClient,
   billToJson: unknown,
   customerId: string | null,
-  b2bAccountId: string | null
+  companyId: string | null
 ): Promise<BillingRenderParty | null> {
   const fromJson = partyFromJson(billToJson, 'Bill to');
   if (fromJson) return fromJson;
 
-  if (b2bAccountId) {
-    const account = await tx.b2BAccount.findUnique({
-      where: { id: b2bAccountId },
+  if (companyId) {
+    const account = await tx.company.findUnique({
+      where: { id: companyId },
       select: { companyName: true, website: true },
     });
     if (account) {
@@ -70,11 +70,16 @@ export async function resolveBillTo(
   if (customerId) {
     const c = await tx.customer.findUnique({
       where: { id: customerId },
-      select: { firstName: true, lastName: true, company: true, email: true, phone: true },
+      select: { firstName: true, lastName: true, companyName: true, email: true, phone: true },
     });
     if (c) {
-      const name = [c.firstName, c.lastName].filter(Boolean).join(' ').trim() || (c.company ?? '');
-      const lines = [c.company && c.company !== name ? c.company : '', c.email ?? '', c.phone ?? '']
+      const name =
+        [c.firstName, c.lastName].filter(Boolean).join(' ').trim() || (c.companyName ?? '');
+      const lines = [
+        c.companyName && c.companyName !== name ? c.companyName : '',
+        c.email ?? '',
+        c.phone ?? '',
+      ]
         .filter(Boolean)
         .map(String);
       return { heading: 'Bill to', name, lines };

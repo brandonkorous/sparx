@@ -95,7 +95,7 @@ async function seedAccountWithInvoice(opts: {
     select: { id: true },
   });
 
-  const account = await ownerDb.b2BAccount.create({
+  const account = await ownerDb.company.create({
     data: {
       tenantId: tenant.id,
       companyName: `Fleet ${slug}`,
@@ -137,7 +137,7 @@ async function seedAccountWithInvoice(opts: {
       propertyId: property.id,
       workflowId: workflow.id,
       stageId: stage.id,
-      b2bAccountId: account.id,
+      companyId: account.id,
       number: `INV-${slug}`,
       numberSeq: 1,
       currency: 'USD',
@@ -177,7 +177,7 @@ describe('b2b dunning ladder on the automation engine', () => {
     await runScheduleTick(deps, appDb);
     await runAutomationTick(deps, appDb);
 
-    const account = await ownerDb.b2BAccount.findUniqueOrThrow({ where: { id: accountId } });
+    const account = await ownerDb.company.findUniqueOrThrow({ where: { id: accountId } });
     expect(account.status).toBe('credit_hold');
 
     const invoice = await ownerDb.billingDocument.findUniqueOrThrow({ where: { id: invoiceId } });
@@ -198,7 +198,7 @@ describe('b2b dunning ladder on the automation engine', () => {
     await runScheduleTick(deps, appDb);
     await runAutomationTick(deps, appDb);
 
-    const account = await ownerDb.b2BAccount.findUniqueOrThrow({ where: { id: accountId } });
+    const account = await ownerDb.company.findUniqueOrThrow({ where: { id: accountId } });
     expect(account.status).toBe('suspended');
     expect(pub.forAccount('b2b.account.suspended', accountId)).toHaveLength(1);
     expect(pub.forAccount('b2b.account.credit_hold', accountId)).toHaveLength(0);
@@ -213,7 +213,7 @@ describe('b2b dunning ladder on the automation engine', () => {
     await runScheduleTick(deps, appDb);
     await runAutomationTick(deps, appDb);
 
-    const account = await ownerDb.b2BAccount.findUniqueOrThrow({ where: { id: accountId } });
+    const account = await ownerDb.company.findUniqueOrThrow({ where: { id: accountId } });
     expect(account.status).toBe('active');
 
     // The invoice is still flagged overdue (5 days) — the reminder path — but no
@@ -230,7 +230,7 @@ describe('b2b dunning ladder on the automation engine', () => {
     await seedSystemAutomations({ tenantId });
     await runScheduleTick(makeDeps(new CapturingPublisher()), appDb);
     await runAutomationTick(makeDeps(new CapturingPublisher()), appDb);
-    const afterFirst = await ownerDb.b2BAccount.findUniqueOrThrow({ where: { id: accountId } });
+    const afterFirst = await ownerDb.company.findUniqueOrThrow({ where: { id: accountId } });
     expect(afterFirst.status).toBe('suspended');
 
     // A new daily window (different dedupe key) re-enqueues the run; the escalation
@@ -240,7 +240,7 @@ describe('b2b dunning ladder on the automation engine', () => {
     await runScheduleTick(deps2, appDb, new Date(Date.now() + DAY));
     await runAutomationTick(deps2, appDb);
 
-    const afterSecond = await ownerDb.b2BAccount.findUniqueOrThrow({ where: { id: accountId } });
+    const afterSecond = await ownerDb.company.findUniqueOrThrow({ where: { id: accountId } });
     expect(afterSecond.status).toBe('suspended');
     expect(pub2.forAccount('b2b.account.credit_hold', accountId)).toHaveLength(0);
     expect(pub2.forAccount('b2b.account.suspended', accountId)).toHaveLength(0);

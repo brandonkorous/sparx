@@ -107,7 +107,7 @@ export async function start(
     });
     if (existing) return existing.id;
 
-    // customerId/b2bAccountId are resolved server-side from the cart — never
+    // customerId/companyId are resolved server-side from the cart — never
     // trusted from the client. A cart already carries the right customerId
     // once the shopper is logged in (claimGuestCart() on login/signup), so
     // this is the same signal cart-service's pricing resolution already
@@ -116,13 +116,13 @@ export async function start(
     const customer = cart.customerId
       ? await tx.customer.findFirst({
           where: { id: cart.customerId },
-          select: { b2bAccountId: true },
+          select: { companyId: true },
         })
       : null;
-    const b2bAccountId = await pricingService.resolveActiveB2bAccountId(
+    const companyId = await pricingService.resolveActiveB2bAccountId(
       tx,
       cart.customerId ?? undefined,
-      customer?.b2bAccountId
+      customer?.companyId
     );
 
     const expiresAt = new Date(Date.now() + DEFAULT_SESSION_TTL_MIN * 60_000);
@@ -134,7 +134,7 @@ export async function start(
         channel: input.channel,
         currency: input.currency,
         customerId: cart.customerId ?? null,
-        b2bAccountId: b2bAccountId ?? null,
+        companyId: companyId ?? null,
         customerEmail: input.customerEmail ?? null,
         subtotalCents: cart.subtotalCents,
         discountTotalCents: cart.discountTotalCents,
@@ -198,9 +198,9 @@ export async function get(
     const surchargeTotalCents = terminal ? row.surchargeTotalCents : surcharge.totalCents;
     const totalCents = terminal ? row.totalCents : row.totalCents + surcharge.totalCents;
 
-    const account = row.b2bAccountId
-      ? await tx.b2BAccount.findFirst({
-          where: { id: row.b2bAccountId },
+    const account = row.companyId
+      ? await tx.company.findFirst({
+          where: { id: row.companyId },
           select: { paymentTerms: true },
         })
       : null;
@@ -345,14 +345,14 @@ export async function submitPayment(ctx: ServiceContext, rawInput: unknown): Pro
     // orders on the same checkout everyone uses, per docs/10 §11). Exactly
     // one of "bill to account" or "pay by card" must be present.
     const billToAccount = Boolean(input.poNumber ?? input.paymentTermsRequested);
-    if (billToAccount && !session.b2bAccountId) {
+    if (billToAccount && !session.companyId) {
       throw new CommerceValidationError(
         'PO numbers and net terms are only available to B2B accounts'
       );
     }
-    if (billToAccount && session.b2bAccountId) {
-      const account = await tx.b2BAccount.findFirst({
-        where: { id: session.b2bAccountId },
+    if (billToAccount && session.companyId) {
+      const account = await tx.company.findFirst({
+        where: { id: session.companyId },
         select: { paymentTerms: true },
       });
       if (account?.paymentTerms === 'prepay') {
@@ -621,13 +621,13 @@ export async function complete(
       throw new CommerceValidationError('Cannot complete checkout without a shipping address');
     }
     // Re-verify B2B membership is still ACTIVE right now — the session's
-    // b2bAccountId is a snapshot from start(); a long-lived session (or one
+    // companyId is a snapshot from start(); a long-lived session (or one
     // whose contact was deactivated mid-checkout) must not slip through on
     // a stale value for a money-committing step.
     const activeB2bAccountId = await pricingService.resolveActiveB2bAccountId(
       tx,
       session.customerId ?? undefined,
-      session.b2bAccountId
+      session.companyId
     );
 
     if (!session.paymentProviderSlug && !activeB2bAccountId) {
@@ -638,7 +638,7 @@ export async function complete(
 
     // B2B credit enforcement: net-terms checkouts require available credit.
     if (activeB2bAccountId && session.paymentTermsRequested) {
-      const account = await tx.b2BAccount.findFirst({
+      const account = await tx.company.findFirst({
         where: { id: activeB2bAccountId, tenantId: ctx.tenantId },
         select: { status: true, creditLimit: true, creditUsed: true, paymentTerms: true },
       });
@@ -866,7 +866,7 @@ export async function complete(
     // account's credit_used via the billing money authority.
     let b2bInvoiceId: string | null = null;
     if (!pendingApproval && activeB2bAccountId && session.paymentTermsRequested) {
-      const account = await tx.b2BAccount.findFirst({
+      const account = await tx.company.findFirst({
         where: { id: activeB2bAccountId, tenantId: ctx.tenantId },
         select: { paymentTerms: true },
       });
@@ -894,7 +894,7 @@ export async function complete(
       const arDoc = await b2bArService.createOrderArDocument(
         { tenantId: ctx.tenantId, userId: ctx.userId ?? undefined, tx },
         {
-          b2bAccountId: activeB2bAccountId,
+          companyId: activeB2bAccountId,
           propertyId: issuingPropertyId,
           orderId: order.id,
           amount: session.totalCents / 100,
@@ -986,7 +986,7 @@ export async function complete(
       orderId: order.id,
       orderNumber: order.orderNumber,
       b2bInvoiceId,
-      b2bAccountId: session.b2bAccountId ?? null,
+      companyId: session.companyId ?? null,
       pendingApproval,
       committedSales,
       paymentRef: session.paymentRef ?? undefined,
@@ -1007,7 +1007,7 @@ export async function complete(
       topic: 'b2b.invoice.created',
       data: {
         invoiceId: result.b2bInvoiceId,
-        accountId: result.b2bAccountId,
+        accountId: result.companyId,
         orderId: result.orderId,
         orderNumber: result.orderNumber,
       },
@@ -1036,7 +1036,7 @@ export async function complete(
       data: {
         orderId: result.orderId,
         orderNumber: result.orderNumber,
-        b2bAccountId: result.b2bAccountId,
+        companyId: result.companyId,
       },
     });
   } else {
@@ -1192,11 +1192,11 @@ function assertCanAdvance(from: string, to: string): void {
 function surchargeMethodForSession(row: {
   paymentTermsRequested: string | null;
   paymentProviderSlug: string | null;
-  b2bAccountId: string | null;
+  companyId: string | null;
 }): SurchargePaymentMethod {
   if (row.paymentTermsRequested) return 'account';
   if (row.paymentProviderSlug) return 'card';
-  return row.b2bAccountId ? 'account' : 'card';
+  return row.companyId ? 'account' : 'card';
 }
 
 /** One human label for the disclosed surcharge: the single rule's label, or a
@@ -1220,7 +1220,7 @@ function serializeSession(
     currency: row.currency,
     customerEmail: row.customerEmail ?? undefined,
     customerId: row.customerId ?? undefined,
-    b2bAccountId: row.b2bAccountId ?? undefined,
+    companyId: row.companyId ?? undefined,
     b2bAccountPaymentTerms: b2bAccountPaymentTerms ?? undefined,
     shippingAddress: (row.shippingAddress ??
       undefined) as CheckoutSessionSnapshot['shippingAddress'],

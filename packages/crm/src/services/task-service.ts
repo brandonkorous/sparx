@@ -35,7 +35,7 @@ export interface ListTasksFilter {
 // a per-row fetch. Only the identity fields a caller renders — additive, so a
 // consumer that ignores them is unaffected.
 const taskSubjectInclude = {
-  customer: { select: { firstName: true, lastName: true, company: true, email: true } },
+  customer: { select: { firstName: true, lastName: true, companyName: true, email: true } },
   deal: { select: { title: true } },
 } satisfies Prisma.TaskInclude;
 

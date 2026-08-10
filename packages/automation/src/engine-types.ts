@@ -5,7 +5,7 @@
 // gate contract (`GateResult` / `Gate`) and the dispatch outcome are the
 // keystones of the mandatory policy layer.
 
-import type { ActionType, GateLogEntry } from '@sparx/automation-schemas';
+import type { ActionType, GateLogEntry, ResolvedFields } from '@sparx/automation-schemas';
 import type { TxClient } from '@sparx/db';
 import type { Publisher } from '@sparx/events';
 
@@ -43,8 +43,12 @@ export interface EngineDeps {
  * Flat, resolver-exposed field map keyed by dotted path (e.g. `customer.type`,
  * `order.total`). Conditions reference these resolved fields, never raw
  * trigger-payload keys (docs/81 §5.3).
+ *
+ * Defined alongside the evaluator in `@sparx/automation-schemas` and re-exported
+ * here: the map's shape is half of the evaluator's contract, and a second local
+ * definition is how the two would drift.
  */
-export type ResolvedFields = Record<string, unknown>;
+export type { ResolvedFields } from '@sparx/automation-schemas';
 
 /**
  * Per-dispatch context threaded through resolve → gate → execute. `tx` is the

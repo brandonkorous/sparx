@@ -101,8 +101,8 @@ const financeReceivablesRoutes: FastifyPluginAsync = (app) => {
           currency: true,
           dueAt: true,
           billTo: true,
-          customer: { select: { firstName: true, lastName: true, company: true, email: true } },
-          b2bAccount: { select: { companyName: true } },
+          customer: { select: { firstName: true, lastName: true, companyName: true, email: true } },
+          company: { select: { companyName: true } },
         },
       })
     );
@@ -120,9 +120,9 @@ const financeReceivablesRoutes: FastifyPluginAsync = (app) => {
       const name =
         firstNonEmpty(
           partyName(d.billTo),
-          d.b2bAccount?.companyName,
+          d.company?.companyName,
           [c?.firstName, c?.lastName].filter(Boolean).join(' '),
-          c?.company,
+          c?.companyName,
           c?.email
         ) ?? 'Customer';
       const daysPast = d.dueAt ? Math.floor((now - d.dueAt.getTime()) / DAY) : 0;

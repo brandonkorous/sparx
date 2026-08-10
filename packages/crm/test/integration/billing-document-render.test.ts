@@ -10,7 +10,7 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
-  b2bAccountService,
+  companyService,
   billingDocumentService,
   billingDocumentStageService,
   billingLineService,
@@ -131,10 +131,10 @@ describe('billing document render', () => {
   });
 
   it('derives the party from the B2B account when billed to one', async () => {
-    const account = await b2bAccountService.create(test.ctx, { companyName: 'Gillett Diesel' });
+    const account = await companyService.create(test.ctx, { companyName: 'Gillett Diesel' });
     const doc = await billingDocumentService.create(test.ctx, {
       workflowId: invoiceWorkflowId,
-      b2bAccountId: account.id,
+      companyId: account.id,
       taxRate: 0,
     });
     const data = await billingRenderService.buildRenderData(test.ctx, doc.id);

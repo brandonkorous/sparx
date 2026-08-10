@@ -5,9 +5,9 @@
 //
 // Generalizes the narrow B2B fleet tables (service_types / service_appointments),
 // retired 2026-07-14 (docs/79 §15.7) — B2B fleet context now rides on Booking's
-// b2bAccountId/assetRef/partsLinked/workOrderId fields below.
+// companyId/assetRef/partsLinked/workOrderId fields below.
 //
-// Cross-module references (customerId, b2bAccountId, userId, workOrderId,
+// Cross-module references (customerId, companyId, userId, workOrderId,
 // paymentIntentId) are stored as plain indexed UUIDs WITHOUT a Prisma relation —
 // matching payment_intents.order_id / .customer_id — to keep the module loosely
 // coupled. Intra-module relations ARE defined for integrity + query ergonomics.
@@ -106,6 +106,10 @@ model SchedulingService {
   bookings      Booking[]
   bookingSeries BookingSeries[]
   waitlist      WaitlistEntry[]
+  // A rep's personal booking link points at ONE service (docs/144 §12) — the
+  // link owns the slug and whose it is; everything about the appointment itself
+  // stays here, so there is one place to change a duration.
+  meetingLinks  CrmMeetingLink[]
 
   @@index([tenantId, bookingType, isActive])
   @@index([tenantId, policyId])
@@ -136,14 +140,20 @@ model Booking {
   capacity  Int      @default(1) // class session capacity
   partySize Int?     @map("party_size") // reservations
 
-  // who — appointment: customerId/b2bAccountId on the row; class: see BookingAttendee
+  // who — appointment: customerId/companyId on the row; class: see BookingAttendee
   customerId   String? @map("customer_id") @db.Uuid
-  b2bAccountId String? @map("b2b_account_id") @db.Uuid
+  companyId String? @map("company_id") @db.Uuid
   assetRef     Json?   @map("asset_ref") // vehicle snapshot { year, make, model, vin, ... }
   partsLinked  Json    @default("[]") @map("parts_linked") // [{ productId?, sku?, qty }]
   workOrderId  String? @map("work_order_id") @db.Uuid
 
-  source String @default("dashboard") @db.VarChar(20) // site|portal|dashboard|mcp|phone|marketplace|api
+  source String @default("dashboard") @db.VarChar(20) // site|portal|dashboard|mcp|phone|marketplace|api|meeting_link
+
+  // Which CRM meeting link took this booking (docs/144 §12), if any. A plain
+  // indexed UUID with no Prisma relation, following this file's own convention
+  // for cross-module references — scheduling stays unaware that CRM exists, and
+  // the CRM side reads it to put the meeting on a contact's timeline.
+  meetingLinkId String? @map("meeting_link_id") @db.Uuid
 
   // payment / policy
   policyId           String? @map("policy_id") @db.Uuid
@@ -184,7 +194,7 @@ model Booking {
   @@index([tenantId, status])
   @@index([tenantId, startAt])
   @@index([tenantId, customerId])
-  @@index([tenantId, b2bAccountId])
+  @@index([tenantId, companyId])
   @@index([tenantId, serviceId])
   @@index([tenantId, seriesId])
   @@map("bookings")

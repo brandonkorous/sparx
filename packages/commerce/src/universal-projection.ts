@@ -50,14 +50,14 @@ function snippet(s: string | null | undefined, max = 2000): string | undefined {
 function customerName(c: {
   firstName: string | null;
   lastName: string | null;
-  company: string | null;
+  companyName: string | null;
   email: string | null;
 }): string | undefined {
   // An explicit empty-string check (not `??`) so a blank full name falls
   // through to company / email rather than winning as ''.
   const full = [c.firstName, c.lastName].filter(Boolean).join(' ').trim();
   if (full) return full;
-  return c.company ?? c.email ?? undefined;
+  return c.companyName ?? c.email ?? undefined;
 }
 
 /** Read a trimmed non-empty string out of an untyped JSON value, else undefined. */
@@ -299,7 +299,7 @@ const subscriptionProjector: EntityProjector = {
       const s = await tx.subscription.findFirst({
         where: { id },
         include: {
-          customer: { select: { firstName: true, lastName: true, company: true, email: true } },
+          customer: { select: { firstName: true, lastName: true, companyName: true, email: true } },
         },
       });
       if (!s) return null;
@@ -407,7 +407,7 @@ const b2bAccountProjector: EntityProjector = {
   module: 'crm',
   listIdsForTenant: (ctx: ProjectorContext) =>
     withTenant(ctx, async (tx) => {
-      const rows = await tx.b2BAccount.findMany({
+      const rows = await tx.company.findMany({
         where: { deletedAt: null },
         select: { id: true },
       });
@@ -415,7 +415,7 @@ const b2bAccountProjector: EntityProjector = {
     }),
   project: (ctx: ProjectorContext, id: string) =>
     withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
-      const a = await tx.b2BAccount.findFirst({ where: { id, deletedAt: null } });
+      const a = await tx.company.findFirst({ where: { id, deletedAt: null } });
       if (!a) return null;
       return {
         id: universalId(ctx.tenantId, 'b2b_account', a.id),
@@ -455,13 +455,13 @@ const billingDocumentProjector: EntityProjector = {
       const doc = await tx.billingDocument.findFirst({
         where: { id, deletedAt: null },
         include: {
-          customer: { select: { firstName: true, lastName: true, company: true, email: true } },
-          b2bAccount: { select: { companyName: true } },
+          customer: { select: { firstName: true, lastName: true, companyName: true, email: true } },
+          company: { select: { companyName: true } },
         },
       });
       if (!doc) return null;
       const who =
-        doc.b2bAccount?.companyName ?? (doc.customer ? customerName(doc.customer) : undefined);
+        doc.company?.companyName ?? (doc.customer ? customerName(doc.customer) : undefined);
       return {
         id: universalId(ctx.tenantId, 'billing_document', doc.id),
         tenant_id: ctx.tenantId,
@@ -560,13 +560,13 @@ const dealProjector: EntityProjector = {
       const d = await tx.deal.findFirst({
         where: { id, deletedAt: null },
         include: {
-          customer: { select: { firstName: true, lastName: true, company: true, email: true } },
-          b2bAccount: { select: { companyName: true } },
+          customer: { select: { firstName: true, lastName: true, companyName: true, email: true } },
+          company: { select: { companyName: true } },
           stage: { select: { name: true, stageType: true } },
         },
       });
       if (!d) return null;
-      const who = d.b2bAccount?.companyName ?? (d.customer ? customerName(d.customer) : undefined);
+      const who = d.company?.companyName ?? (d.customer ? customerName(d.customer) : undefined);
       return {
         id: universalId(ctx.tenantId, 'deal', d.id),
         tenant_id: ctx.tenantId,

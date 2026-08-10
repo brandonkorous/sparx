@@ -22,7 +22,7 @@ export async function list(ctx: ServiceContext, rawFilter: unknown = {}): Promis
       where: {
         ...(filter.customerId ? { customerId: filter.customerId } : {}),
         ...(filter.dealId ? { dealId: filter.dealId } : {}),
-        ...(filter.b2bAccountId ? { b2bAccountId: filter.b2bAccountId } : {}),
+        ...(filter.companyId ? { companyId: filter.companyId } : {}),
         ...(filter.type ? { type: filter.type } : {}),
         ...(filter.since || filter.until
           ? {
@@ -49,7 +49,7 @@ export async function record(ctx: ServiceContext, rawInput: unknown): Promise<Cr
         tenantId: ctx.tenantId,
         customerId: input.customerId ?? null,
         dealId: input.dealId ?? null,
-        b2bAccountId: input.b2bAccountId ?? null,
+        companyId: input.companyId ?? null,
         type: input.type,
         description: input.description ?? null,
         actorId: input.actorId ?? ctx.userId ?? null,
@@ -91,7 +91,7 @@ export async function record(ctx: ServiceContext, rawInput: unknown): Promise<Cr
       type: activity.type,
       customerId: activity.customerId,
       dealId: activity.dealId,
-      b2bAccountId: activity.b2bAccountId,
+      companyId: activity.companyId,
     },
     dedupeKey: `crm.activity.recorded:${activity.id}`,
     occurredAt,

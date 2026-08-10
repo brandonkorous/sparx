@@ -1,12 +1,12 @@
 'use client';
 
-// One wholesale account — create it, then manage it.
+// One company — create it, then manage it.
 //
 // Create and manage are the same surface: `{ id: 'new' }` builds it, `{ id }`
 // manages it. An account is the BUSINESS you trade with — its credit limit, its
 // discount, its payment terms. Its people are customers of the `b2b` kind linked
 // to it from their own records. This is an editable entity, so its name is a
-// field at the top, not a repeated read-only heading. Removing an account is
+// field at the top, not a repeated read-only heading. Removing a company is
 // rare, irreversible and admin-only, so it sits in a quiet row after the work.
 
 import { useEffect, useMemo, useState } from 'react';
@@ -36,6 +36,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { useModuleStates } from '../../lib/api/shell-data';
 import { CustomPropertiesPanel } from './custom-properties-panel';
 import { AssociationsPanel } from './associations-panel';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -52,10 +53,10 @@ import {
   useDeleteAccount,
   useUpdateAccount,
   type AccountInput,
-  type B2BAccount,
-  type B2BAccountStatus,
+  type Company,
+  type CompanyStatus,
   type PaymentTerms,
-} from './accounts-data';
+} from './companies-data';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -64,8 +65,12 @@ const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 interface Draft {
   companyName: string;
   website: string;
+  /** Comma- or newline-separated while being typed; split on save. Kept as raw
+   *  text rather than a chip list so someone pasting three domains out of a
+   *  spreadsheet gets what they expect instead of one chip with commas in it. */
+  domains: string;
   taxId: string;
-  status: B2BAccountStatus;
+  status: CompanyStatus;
   creditLimit: string;
   paymentTerms: string;
   discountPercent: string;
@@ -82,6 +87,7 @@ function emptyDraft(): Draft {
   return {
     companyName: '',
     website: '',
+    domains: '',
     taxId: '',
     status: 'active',
     creditLimit: '',
@@ -96,18 +102,47 @@ function emptyDraft(): Draft {
   };
 }
 
+/** Split what somebody typed into domains, tolerantly. Commas, spaces and
+ *  newlines all separate, an `@` prefix and a `www.` are dropped, and a pasted
+ *  URL keeps only its host — because all four of those are what people actually
+ *  type, and rejecting them would be a form arguing with someone who told it
+ *  exactly what it needed to know. */
+export function splitDomains(raw: string): string[] {
+  const seen = new Set<string>();
+  for (const piece of raw.split(/[\s,;]+/)) {
+    const cleaned = piece
+      .trim()
+      .toLowerCase()
+      .replace(/^https?:\/\//, '')
+      .replace(/^@/, '')
+      .replace(/^www\./, '')
+      .replace(/\/.*$/, '');
+    if (cleaned) seen.add(cleaned);
+  }
+  return [...seen];
+}
+
+const DOMAIN_RE = /^[a-z0-9-]+(\.[a-z0-9-]+)+$/;
+
+/** The first thing typed that is not a domain, said in words rather than a regex. */
+function firstBadDomain(raw: string): string | null {
+  const bad = splitDomains(raw).find((d) => !DOMAIN_RE.test(d));
+  return bad ? `"${bad}" does not look like a domain — try something like acme.com` : null;
+}
+
 function numberOrEmpty(value: string): string {
   return value.trim();
 }
 
-function toDraft(a: B2BAccount): Draft {
+function toDraft(a: Company): Draft {
   const credit = Number(a.creditLimit);
   const discount = Number(a.discountPercent);
   return {
     companyName: a.companyName,
     website: a.website ?? '',
+    domains: (a.domains ?? []).join(', '),
     taxId: a.taxId ?? '',
-    status: (a.status as B2BAccountStatus) ?? 'active',
+    status: (a.status as CompanyStatus) ?? 'active',
     creditLimit: credit > 0 ? String(credit) : '',
     paymentTerms: a.paymentTerms ?? '',
     discountPercent: discount > 0 ? String(discount) : '',
@@ -125,12 +160,12 @@ const URL_RE = /^https?:\/\/.+\..+/i;
 
 /* ── Surface ────────────────────────────────────────────────────────────── */
 
-export function AccountDetailSurface({ ctx }: { ctx: SurfaceContext }) {
+export function CompanyDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
-  return id === 'new' ? <AccountEditor ctx={ctx} id="new" /> : <AccountLoader ctx={ctx} id={id} />;
+  return id === 'new' ? <CompanyEditor ctx={ctx} id="new" /> : <CompanyLoader ctx={ctx} id={id} />;
 }
 
-function AccountLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
+function CompanyLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const { data: account, isPending, isError, refetch } = useAccount(id);
 
   if (isError) {
@@ -138,7 +173,7 @@ function AccountLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       <div className="flex h-full items-center justify-center p-8">
         <Alert color="error" variant="soft" className="max-w-md">
           <AlertContent>
-            <AlertTitle>Could not load this account</AlertTitle>
+            <AlertTitle>Could not load this company</AlertTitle>
             <AlertDescription>
               This is a problem reaching the server, or the account has been removed. Nothing has
               been changed.
@@ -167,17 +202,17 @@ function AccountLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     );
   }
 
-  return <AccountEditor ctx={ctx} id={id} account={account} />;
+  return <CompanyEditor ctx={ctx} id={id} account={account} />;
 }
 
-function AccountEditor({
+function CompanyEditor({
   ctx,
   id,
   account,
 }: {
   ctx: SurfaceContext;
   id: string;
-  account?: B2BAccount;
+  account?: Company;
 }) {
   const isNew = id === 'new';
   const toast = useToast();
@@ -199,7 +234,7 @@ function AccountEditor({
   }, [saved, touched]);
 
   useEffect(() => {
-    ctx.setTitle(isNew ? 'New account' : account ? account.companyName : 'Account');
+    ctx.setTitle(isNew ? 'New company' : account ? account.companyName : 'Company');
   }, [ctx, isNew, account]);
 
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) => {
@@ -213,8 +248,8 @@ function AccountEditor({
   useDirtySource(
     dirty && !create.isSuccess,
     isNew
-      ? 'This account has not been created yet. Close anyway?'
-      : 'This account has unsaved changes. Close anyway?'
+      ? 'This company has not been created yet. Close anyway?'
+      : 'This company has unsaved changes. Close anyway?'
   );
 
   const repItems = useMemo(() => {
@@ -242,13 +277,25 @@ function AccountEditor({
     !(Number(draft.discountPercent) >= 0 && Number(draft.discountPercent) <= 100)
       ? 'Enter a discount between 0 and 100.'
       : null;
-  const blocked = nameError ?? websiteError ?? creditError ?? discountError;
+  // Trade terms — credit, payment days, discount, price tier, fleet — render
+  // ONLY for a business that sells on account (docs/144 §11). A design agency
+  // tracking the firms it works with should never meet a credit limit, and a
+  // form that shows one teaches them this is a wholesale tool.
+  //
+  // The fields keep their values while hidden. That is deliberate: turning the
+  // module on next month should reveal whatever an import already wrote, not a
+  // form that quietly dropped it.
+  const modules = useModuleStates();
+  const tradeEnabled = (modules.data ?? []).some((m) => m.slug === 'b2b' && m.enabled);
+
+  const domainError = firstBadDomain(draft.domains);
+  const blocked = nameError ?? websiteError ?? domainError ?? creditError ?? discountError;
 
   const failure =
     create.isError || update.isError
       ? accountErrorMessage(
           create.error ?? update.error,
-          'Could not save this account. Nothing was changed.'
+          'Could not save this company. Nothing was changed.'
         )
       : null;
 
@@ -257,6 +304,7 @@ function AccountEditor({
   const buildInput = (): AccountInput => ({
     companyName: draft.companyName.trim(),
     website: trimOrNull(draft.website),
+    domains: splitDomains(draft.domains),
     taxId: trimOrNull(draft.taxId),
     pricingTier: trimOrNull(draft.pricingTier),
     status: draft.status,
@@ -289,7 +337,7 @@ function AccountEditor({
     update.mutate(input, {
       onSuccess: () => {
         setTouched(false);
-        toast.add({ title: 'Account saved', type: 'success' });
+        toast.add({ title: 'Company saved', type: 'success' });
       },
     });
   };
@@ -299,8 +347,8 @@ function AccountEditor({
     const ok = await confirm({
       title: `Remove ${account.companyName}?`,
       description:
-        'This takes the account out of your lists. Its past orders and history are kept for your records, and the people linked to it stay as customers. You can add it again later.',
-      confirmLabel: 'Remove this account',
+        'This takes the company out of your lists. Its past orders and history are kept for your records, and the people who work there stay as customers. You can add it again later.',
+      confirmLabel: 'Remove this company',
       cancelLabel: 'Keep it',
       color: 'danger',
     });
@@ -314,7 +362,7 @@ function AccountEditor({
       },
       onError: (error) => {
         toast.add({
-          title: 'Could not remove this account',
+          title: 'Could not remove this company',
           description: accountErrorMessage(error, 'Nothing was changed.'),
           type: 'error',
         });
@@ -326,11 +374,11 @@ function AccountEditor({
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Wholesale account actions">
+      <PaneToolbar label="Company actions">
         <Badge color={meta.tone} variant="soft" size="sm">
           {meta.label}
         </Badge>
-        {account && Number(account.creditUsed) > 0 ? (
+        {tradeEnabled && account && Number(account.creditUsed) > 0 ? (
           <Text as="span" className="hidden shrink-0 text-sm @md:inline">
             {formatMoney(account.creditUsed)} of {formatMoney(account.creditLimit)} used
           </Text>
@@ -343,7 +391,7 @@ function AccountEditor({
           disabled={Boolean(blocked) || (!isNew && !dirty)}
           onClick={submit}
         >
-          {isNew ? 'Add account' : 'Save'}
+          {isNew ? 'Add company' : 'Save'}
         </Button>
       </PaneToolbar>
 
@@ -352,7 +400,7 @@ function AccountEditor({
           {isNew ? (
             <div className="flex flex-col gap-1">
               <Heading level={1} className="text-2xl font-semibold">
-                Add a wholesale account
+                Add a company
               </Heading>
               <Text>
                 Set up a business that buys from you at agreed prices. You can add its buyers as
@@ -364,7 +412,7 @@ function AccountEditor({
           {failure ? (
             <Alert color="error" variant="soft">
               <AlertContent>
-                <AlertTitle>Could not save this account</AlertTitle>
+                <AlertTitle>Could not save this company</AlertTitle>
                 <AlertDescription>{failure}</AlertDescription>
               </AlertContent>
             </Alert>
@@ -429,139 +477,167 @@ function AccountEditor({
                 </FieldDescription>
               </Field>
             </div>
+
+            <Field>
+              <FieldLabel>Their email domains</FieldLabel>
+              <FieldControl
+                render={
+                  <Input
+                    color={domainError && touched ? 'error' : 'module'}
+                    value={draft.domains}
+                    placeholder="rivera.example, rivera-group.example"
+                    autoComplete="off"
+                    spellCheck={false}
+                    onChange={(event) => {
+                      set('domains', event.target.value);
+                    }}
+                  />
+                }
+              />
+              {domainError && touched ? (
+                <FieldStatus status="error">{domainError}</FieldStatus>
+              ) : null}
+              <FieldDescription>
+                When someone new is added with an email address at one of these, we&rsquo;ll suggest
+                putting them under this company — we never do it for you. Separate several with
+                commas. Leave it blank if their people use personal addresses.
+              </FieldDescription>
+            </Field>
           </FormSection>
 
-          <FormSection
-            title="Trading terms"
-            description="What this business is allowed and what it pays."
-          >
-            <Field>
-              <FieldLabel>Status</FieldLabel>
-              <Select
-                color="module"
-                aria-label="Account status"
-                value={draft.status}
-                items={Object.fromEntries(
-                  ACCOUNT_STATUSES.map((s) => [s, accountStatusMeta(s).label])
-                )}
-                onValueChange={(next) => {
-                  set('status', next as B2BAccountStatus);
-                }}
-              />
-              <FieldDescription>{meta.description}</FieldDescription>
-            </Field>
-
-            <div className="grid gap-3 @md:grid-cols-2">
+          {tradeEnabled ? (
+            <FormSection
+              title="Trade terms"
+              description="What this business is allowed to order on account, and what it pays."
+            >
               <Field>
-                <FieldLabel>Credit limit</FieldLabel>
-                <FieldControl
-                  render={
-                    <div className="flex max-w-[12rem] items-center gap-2">
-                      <Text as="span" className="text-lg">
-                        $
-                      </Text>
-                      <Input
-                        color={creditError && touched ? 'error' : 'module'}
-                        type="number"
-                        min={0}
-                        step="0.01"
-                        inputMode="decimal"
-                        value={draft.creditLimit}
-                        placeholder="0.00"
-                        onChange={(event) => {
-                          set('creditLimit', numberOrEmpty(event.target.value));
-                        }}
-                      />
-                    </div>
-                  }
-                />
-                {creditError && touched ? (
-                  <FieldStatus status="error">{creditError}</FieldStatus>
-                ) : (
-                  <FieldDescription>
-                    The most they can owe you on account at once. Leave blank for none.
-                  </FieldDescription>
-                )}
-              </Field>
-              <Field>
-                <FieldLabel>Discount</FieldLabel>
-                <FieldControl
-                  render={
-                    <div className="flex max-w-[10rem] items-center gap-2">
-                      <Input
-                        color={discountError && touched ? 'error' : 'module'}
-                        type="number"
-                        min={0}
-                        max={100}
-                        inputMode="decimal"
-                        value={draft.discountPercent}
-                        placeholder="0"
-                        onChange={(event) => {
-                          set('discountPercent', numberOrEmpty(event.target.value));
-                        }}
-                      />
-                      <Text as="span" className="text-lg">
-                        %
-                      </Text>
-                    </div>
-                  }
-                />
-                {discountError && touched ? (
-                  <FieldStatus status="error">{discountError}</FieldStatus>
-                ) : (
-                  <FieldDescription>
-                    Taken off your normal prices for this account.
-                  </FieldDescription>
-                )}
-              </Field>
-            </div>
-
-            <div className="grid gap-3 @md:grid-cols-2">
-              <Field>
-                <FieldLabel>Payment terms</FieldLabel>
+                <FieldLabel>Status</FieldLabel>
                 <Select
                   color="module"
-                  aria-label="Payment terms"
-                  value={draft.paymentTerms}
-                  items={{
-                    '': 'No agreed terms',
-                    ...Object.fromEntries(PAYMENT_TERMS.map((t) => [t.value, t.label])),
-                  }}
+                  aria-label="Company status"
+                  value={draft.status}
+                  items={Object.fromEntries(
+                    ACCOUNT_STATUSES.map((s) => [s, accountStatusMeta(s).label])
+                  )}
                   onValueChange={(next) => {
-                    set('paymentTerms', next as string);
+                    set('status', next as CompanyStatus);
                   }}
                 />
-                <FieldDescription>
-                  How long they have to pay after you invoice them.
-                </FieldDescription>
+                <FieldDescription>{meta.description}</FieldDescription>
               </Field>
-              <Field>
-                <FieldLabel>Price tier</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={draft.pricingTier}
-                      placeholder="Optional"
-                      onChange={(event) => {
-                        set('pricingTier', event.target.value);
-                      }}
-                    />
-                  }
-                />
-                <FieldDescription>
-                  A named group your price lists can point at, if you use them.
-                </FieldDescription>
-              </Field>
-            </div>
-          </FormSection>
+
+              <div className="grid gap-3 @md:grid-cols-2">
+                <Field>
+                  <FieldLabel>Credit limit</FieldLabel>
+                  <FieldControl
+                    render={
+                      <div className="flex max-w-[12rem] items-center gap-2">
+                        <Text as="span" className="text-lg">
+                          $
+                        </Text>
+                        <Input
+                          color={creditError && touched ? 'error' : 'module'}
+                          type="number"
+                          min={0}
+                          step="0.01"
+                          inputMode="decimal"
+                          value={draft.creditLimit}
+                          placeholder="0.00"
+                          onChange={(event) => {
+                            set('creditLimit', numberOrEmpty(event.target.value));
+                          }}
+                        />
+                      </div>
+                    }
+                  />
+                  {creditError && touched ? (
+                    <FieldStatus status="error">{creditError}</FieldStatus>
+                  ) : (
+                    <FieldDescription>
+                      The most they can owe you on account at once. Leave blank for none.
+                    </FieldDescription>
+                  )}
+                </Field>
+                <Field>
+                  <FieldLabel>Discount</FieldLabel>
+                  <FieldControl
+                    render={
+                      <div className="flex max-w-[10rem] items-center gap-2">
+                        <Input
+                          color={discountError && touched ? 'error' : 'module'}
+                          type="number"
+                          min={0}
+                          max={100}
+                          inputMode="decimal"
+                          value={draft.discountPercent}
+                          placeholder="0"
+                          onChange={(event) => {
+                            set('discountPercent', numberOrEmpty(event.target.value));
+                          }}
+                        />
+                        <Text as="span" className="text-lg">
+                          %
+                        </Text>
+                      </div>
+                    }
+                  />
+                  {discountError && touched ? (
+                    <FieldStatus status="error">{discountError}</FieldStatus>
+                  ) : (
+                    <FieldDescription>
+                      Taken off your normal prices for this company.
+                    </FieldDescription>
+                  )}
+                </Field>
+              </div>
+
+              <div className="grid gap-3 @md:grid-cols-2">
+                <Field>
+                  <FieldLabel>Payment terms</FieldLabel>
+                  <Select
+                    color="module"
+                    aria-label="Payment terms"
+                    value={draft.paymentTerms}
+                    items={{
+                      '': 'No agreed terms',
+                      ...Object.fromEntries(PAYMENT_TERMS.map((t) => [t.value, t.label])),
+                    }}
+                    onValueChange={(next) => {
+                      set('paymentTerms', next as string);
+                    }}
+                  />
+                  <FieldDescription>
+                    How long they have to pay after you invoice them.
+                  </FieldDescription>
+                </Field>
+                <Field>
+                  <FieldLabel>Price tier</FieldLabel>
+                  <FieldControl
+                    render={
+                      <Input
+                        color="module"
+                        value={draft.pricingTier}
+                        placeholder="Optional"
+                        onChange={(event) => {
+                          set('pricingTier', event.target.value);
+                        }}
+                      />
+                    }
+                  />
+                  <FieldDescription>
+                    A named group your price lists can point at, if you use them.
+                  </FieldDescription>
+                </Field>
+              </div>
+            </FormSection>
+          ) : null}
 
           <FormSection title="Your side of it">
             <Field>
               <FieldLabel>Looked after by</FieldLabel>
               <Select
                 color="module"
-                aria-label="Which team member looks after this account"
+                aria-label="Which team member looks after this company"
                 value={draft.assignedRepId}
                 items={repItems}
                 onValueChange={(next) => {
@@ -626,7 +702,7 @@ function AccountEditor({
                     color="module"
                     rows={3}
                     value={draft.notes}
-                    placeholder="Anything worth remembering about this account — only your team sees it."
+                    placeholder="Anything worth remembering about this company — only your team sees it."
                     onChange={(event) => {
                       set('notes', event.target.value);
                     }}
@@ -662,8 +738,8 @@ function AccountEditor({
             <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
               <Text className="text-sm">
                 {canDelete
-                  ? 'Removing takes this account out of your lists. Its history is kept.'
-                  : 'Only an owner or admin can remove an account.'}
+                  ? 'Removing takes this company out of your lists. Its history is kept.'
+                  : 'Only an owner or admin can remove a company.'}
               </Text>
               {canDelete ? (
                 <Button
@@ -676,7 +752,7 @@ function AccountEditor({
                   }}
                 >
                   <Trash2 className="size-4" aria-hidden />
-                  Remove this account
+                  Remove this company
                 </Button>
               ) : null}
             </div>

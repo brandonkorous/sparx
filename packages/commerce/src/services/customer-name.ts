@@ -10,14 +10,15 @@ import type { Prisma } from '@sparx/db';
 export const CUSTOMER_NAME_SELECT = {
   firstName: true,
   lastName: true,
-  company: true,
+  companyName: true,
   email: true,
 } satisfies Prisma.CustomerSelect;
 
 export interface CustomerNameParts {
   firstName: string | null;
   lastName: string | null;
-  company: string | null;
+  /** The employer they typed — the Prisma field, renamed in docs/144 §11. */
+  companyName: string | null;
   email: string | null;
 }
 
@@ -27,7 +28,7 @@ export function customerDisplayName(c: CustomerNameParts | null): string | null 
   if (!c) return null;
   // First non-empty of: full name → company → email. (`??` won't do — an empty
   // string must fall through to the next candidate, which nullish-coalescing skips.)
-  const candidates = [[c.firstName, c.lastName].filter(Boolean).join(' '), c.company, c.email];
+  const candidates = [[c.firstName, c.lastName].filter(Boolean).join(' '), c.companyName, c.email];
   for (const candidate of candidates) {
     const trimmed = candidate?.trim();
     if (trimmed) return trimmed;

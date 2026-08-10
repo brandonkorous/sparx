@@ -3,7 +3,7 @@
 // Document header CRUD + total recomputation. Line add/update/remove (and the
 // per-line pricing that feeds totals) live in billing-line-service.ts so each
 // file stays focused; both share `recomputeTotals` here. A document bills a
-// retail Customer OR a B2BAccount (the Deal pattern) and sits on a workflow at a
+// retail Customer OR a Company (the Deal pattern) and sits on a workflow at a
 // stage. Totals derive from the lines + the document's taxRate/shipping/surcharge.
 
 import {
@@ -76,7 +76,7 @@ export async function list(
       ...(filter.workflowId ? { workflowId: filter.workflowId } : {}),
       ...(filter.stageId ? { stageId: filter.stageId } : {}),
       ...(filter.customerId ? { customerId: filter.customerId } : {}),
-      ...(filter.b2bAccountId ? { b2bAccountId: filter.b2bAccountId } : {}),
+      ...(filter.companyId ? { companyId: filter.companyId } : {}),
       ...(filter.status ? { status: filter.status } : {}),
       // No denormalized customer/account name column (bill-to/ship-to are
       // frozen JSON, not queryable) — search the document number directly and
@@ -88,7 +88,7 @@ export async function list(
               { customer: { firstName: { contains: filter.q, mode: 'insensitive' } } },
               { customer: { lastName: { contains: filter.q, mode: 'insensitive' } } },
               { customer: { email: { contains: filter.q, mode: 'insensitive' } } },
-              { b2bAccount: { companyName: { contains: filter.q, mode: 'insensitive' } } },
+              { company: { companyName: { contains: filter.q, mode: 'insensitive' } } },
             ],
           }
         : {}),
@@ -108,16 +108,16 @@ export async function list(
         // row anyone can act on; identifying who owes you is the entire job of
         // a receivables list.
         include: {
-          customer: { select: { firstName: true, lastName: true, company: true, email: true } },
-          b2bAccount: { select: { companyName: true } },
+          customer: { select: { firstName: true, lastName: true, companyName: true, email: true } },
+          company: { select: { companyName: true } },
         },
       }),
       tx.billingDocument.count({ where }),
     ]);
 
-    const items = rows.map(({ customer, b2bAccount, ...document }) => ({
+    const items = rows.map(({ customer, company, ...document }) => ({
       ...document,
-      billedToName: billedToName(document.billTo, customer, b2bAccount),
+      billedToName: billedToName(document.billTo, customer, company),
     }));
     return { items, total };
   });
@@ -127,7 +127,7 @@ export async function list(
 type BilledCustomer = {
   firstName: string | null;
   lastName: string | null;
-  company: string | null;
+  companyName: string | null;
   email: string | null;
 } | null;
 type BilledAccount = { companyName: string } | null;
@@ -154,7 +154,7 @@ function billedToName(
   if (account?.companyName) return account.companyName;
   if (customer) {
     const person = [customer.firstName, customer.lastName].filter(Boolean).join(' ').trim();
-    return customer.company ?? (person || customer.email) ?? null;
+    return customer.companyName ?? (person || customer.email) ?? null;
   }
   return null;
 }
@@ -193,8 +193,8 @@ function orderByFor(
     // name; the two groups therefore cluster rather than interleave.
     case 'customer':
       return [
-        { b2bAccount: { companyName: order } },
-        { customer: { company: order } },
+        { company: { companyName: order } },
+        { customer: { companyName: order } },
         { customer: { lastName: order } },
         { id: order },
       ];
@@ -236,18 +236,18 @@ export interface AgingReport {
 
 /** AR aging report (docs/87 §8): open billing documents bucketed by days past
  *  due. Lives on the invoicing surface but is the canonical AR view that B2B /
- *  Commerce dashboards pull from. Scope it to one B2B account (`b2bAccountId`) or
+ *  Commerce dashboards pull from. Scope it to one B2B account (`companyId`) or
  *  to all B2B AR (`b2bOnly`, e.g. the B2B Invoices page) — otherwise it spans every
  *  open document. Reads only `unpaid | partial | overdue` — `paid`/`void` carry no
  *  balance. */
 export async function aging(
   ctx: ServiceContext,
-  filter: { b2bAccountId?: string; b2bOnly?: boolean } = {}
+  filter: { companyId?: string; b2bOnly?: boolean } = {}
 ): Promise<AgingReport> {
-  const scope: Prisma.BillingDocumentWhereInput = filter.b2bAccountId
-    ? { b2bAccountId: filter.b2bAccountId }
+  const scope: Prisma.BillingDocumentWhereInput = filter.companyId
+    ? { companyId: filter.companyId }
     : filter.b2bOnly
-      ? { b2bAccountId: { not: null } }
+      ? { companyId: { not: null } }
       : {};
   return withTenant(ctx, async (tx) => {
     const rows = await tx.billingDocument.findMany({
@@ -315,7 +315,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Do
       : workflow.stages[0];
     if (!stage) throw new CrmNotFoundError('DocumentStage', input.stageId ?? '(first)');
 
-    await assertPartyExists(tx, input.customerId ?? null, input.b2bAccountId ?? null);
+    await assertPartyExists(tx, input.customerId ?? null, input.companyId ?? null);
 
     // The ISSUING site (docs/131 §3.6) — set once at create and never changed,
     // because it is what `numberSeq` is allocated against. Re-homing a document
@@ -330,7 +330,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Do
         workflowId: workflow.id,
         stageId: stage.id,
         customerId: input.customerId ?? null,
-        b2bAccountId: input.b2bAccountId ?? null,
+        companyId: input.companyId ?? null,
         assignedUserId: input.assignedUserId ?? null,
         currency: input.currency,
         taxRate: input.taxRate,
@@ -371,7 +371,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Do
         documentId: withLines.id,
         number: withLines.number,
         customerId: withLines.customerId,
-        b2bAccountId: withLines.b2bAccountId,
+        companyId: withLines.companyId,
         workflowId: withLines.workflowId,
         stageId: withLines.stageId,
         currency: withLines.currency,
@@ -410,21 +410,20 @@ export async function update(
       throw new CrmValidationError('This document is locked for editing at its current stage.');
     }
 
-    if (input.customerId !== undefined || input.b2bAccountId !== undefined) {
+    if (input.customerId !== undefined || input.companyId !== undefined) {
       const customerId = input.customerId !== undefined ? input.customerId : before.customerId;
-      const b2bAccountId =
-        input.b2bAccountId !== undefined ? input.b2bAccountId : before.b2bAccountId;
-      if (!customerId && !b2bAccountId) {
+      const companyId = input.companyId !== undefined ? input.companyId : before.companyId;
+      if (!customerId && !companyId) {
         throw new CrmValidationError('A billing document must bill a customer or a B2B account.');
       }
-      await assertPartyExists(tx, customerId, b2bAccountId);
+      await assertPartyExists(tx, customerId, companyId);
     }
 
     await tx.billingDocument.update({
       where: { id: documentId },
       data: {
         ...(input.customerId !== undefined ? { customerId: input.customerId } : {}),
-        ...(input.b2bAccountId !== undefined ? { b2bAccountId: input.b2bAccountId } : {}),
+        ...(input.companyId !== undefined ? { companyId: input.companyId } : {}),
         ...(input.assignedUserId !== undefined ? { assignedUserId: input.assignedUserId } : {}),
         ...(input.currency !== undefined ? { currency: input.currency } : {}),
         ...(input.taxRate !== undefined ? { taxRate: input.taxRate } : {}),
@@ -554,8 +553,8 @@ export async function recomputeTotals(
   // drift from open AR regardless of which surface mutated the document. Retail
   // documents (no account) skip it. The function sums open `billing_documents`
   // balances and is RLS-safe (runs under the caller's tenant GUC).
-  if (updated.b2bAccountId) {
-    await tx.$executeRaw`SELECT sync_b2b_credit_used(${updated.b2bAccountId}::uuid)`;
+  if (updated.companyId) {
+    await tx.$executeRaw`SELECT sync_b2b_credit_used(${updated.companyId}::uuid)`;
   }
 
   return updated;
@@ -566,15 +565,15 @@ export async function recomputeTotals(
 async function assertPartyExists(
   tx: Prisma.TransactionClient,
   customerId: string | null,
-  b2bAccountId: string | null
+  companyId: string | null
 ): Promise<void> {
   if (customerId) {
     const customer = await tx.customer.findUnique({ where: { id: customerId } });
     if (customer?.deletedAt !== null) throw new CrmNotFoundError('Customer', customerId);
   }
-  if (b2bAccountId) {
-    const account = await tx.b2BAccount.findUnique({ where: { id: b2bAccountId } });
-    if (!account) throw new CrmNotFoundError('B2BAccount', b2bAccountId);
+  if (companyId) {
+    const account = await tx.company.findUnique({ where: { id: companyId } });
+    if (!account) throw new CrmNotFoundError('Company', companyId);
   }
 }
 

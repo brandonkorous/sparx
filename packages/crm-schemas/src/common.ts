@@ -81,8 +81,8 @@ export type LeadStatus = z.infer<typeof LeadStatus>;
 export const PreferredContactMethod = z.enum(['email', 'phone', 'sms']);
 export type PreferredContactMethod = z.infer<typeof PreferredContactMethod>;
 
-export const B2BAccountStatus = z.enum(['active', 'credit_hold', 'suspended', 'inactive']);
-export type B2BAccountStatus = z.infer<typeof B2BAccountStatus>;
+export const CompanyStatus = z.enum(['active', 'credit_hold', 'suspended', 'inactive']);
+export type CompanyStatus = z.infer<typeof CompanyStatus>;
 
 export const PaymentTerms = z.enum(['prepay', 'net15', 'net30', 'net60', 'net90']);
 export type PaymentTerms = z.infer<typeof PaymentTerms>;

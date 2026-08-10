@@ -18,8 +18,8 @@
 //     duplicates retain a pointer to the surviving primary.
 
 model Customer {
-  id            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId      String  @map("tenant_id") @db.Uuid
+  id             String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String  @map("tenant_id") @db.Uuid
   // Classification is three orthogonal axes (docs/137). `type` = RELATIONSHIP
   // (how they transact); only `b2b` carries pricing/A-R behaviour.
   type           String  @default("retail") @db.VarChar(20) // retail | b2b | partner | vendor
@@ -30,20 +30,30 @@ model Customer {
   leadStatus     String? @map("lead_status") @db.VarChar(30)
   // The Better Auth customer user (Layer 2 login, docs/27 v2) behind this
   // membership. null = a guest / CRM-imported contact with no storefront login.
-  authUserId    String? @map("auth_user_id") @db.Uuid
+  authUserId     String? @map("auth_user_id") @db.Uuid
   // Membership scoping (docs/58 D2): the SITE this customer belongs to. A
   // person who shops more than one of the tenant's sites is one CustomerUser
   // (auth_user_id) linked to a per-site membership each. property_id null = a
   // tenant-level CRM contact not tied to a site.
-  propertyId    String? @map("property_id") @db.Uuid
-  b2bAccountId  String? @map("b2b_account_id") @db.Uuid
-  assignedRepId String? @map("assigned_rep_id") @db.Uuid
+  propertyId     String? @map("property_id") @db.Uuid
+  companyId   String? @map("company_id") @db.Uuid
+  assignedRepId  String? @map("assigned_rep_id") @db.Uuid
 
   email                  String?  @db.VarChar(255)
   phone                  String?  @db.VarChar(50)
   firstName              String?  @map("first_name") @db.VarChar(255)
   lastName               String?  @map("last_name") @db.VarChar(255)
-  company                String?  @db.VarChar(255)
+  // The employer they TYPED, which is not the same fact as `companyId` below
+  // (docs/144 §11). A guest checkout writes this and nothing else; a contact
+  // imported from a spreadsheet has it and no company record; and the two
+  // routinely disagree, because people write "Acme" and the record says "Acme
+  // Industrial Supply Ltd". Keeping both is what lets the company be OFFERED
+  // rather than guessed.
+  //
+  // The API field, the segment source (`customer.company`), the scoring path and
+  // the CSV import header all still use the key `company` — that is a tenant's
+  // stored vocabulary, and renaming it would rewrite saved segments.
+  companyName            String?  @map("company_name") @db.VarChar(255)
   jobTitle               String?  @map("job_title") @db.VarChar(255)
   preferredContactMethod String?  @map("preferred_contact_method") @db.VarChar(20) // email | phone | sms
   doNotContact           Boolean  @default(false) @map("do_not_contact")
@@ -57,13 +67,22 @@ model Customer {
   // FieldSchema. Distinct from `metadata`, which is an untyped internal bag no
   // UI renders and no segment can filter: these are declared, typed, editable,
   // filterable and reportable — that is the whole difference.
-  customProperties       Json     @default("{}") @map("custom_properties")
+  customProperties Json @default("{}") @map("custom_properties")
 
   // Optional profile photo — a SOFT reference to a MediaAsset (cms module), no
   // FK by design (mirrors CrmActivity.linkedEntityId's cross-module soft ref).
   // The client resolves the id to a URL and falls back to initials if the asset
   // is gone. A customer is never a staff user, so this is always editable.
   avatarMediaAssetId String? @map("avatar_media_asset_id") @db.Uuid
+
+  // How interested this person looks, 0–100 (docs/144 §10). Maintained by the
+  // scoring evaluator from the tenant's own ScoringModel; `score_events` records
+  // every change so the number is explainable rather than oracular.
+  //
+  // Zero for every contact until a tenant writes a model — a default-scored CRM
+  // would rank people by a rule nobody chose.
+  score    Int       @default(0)
+  scoredAt DateTime? @map("scored_at") @db.Timestamptz
 
   totalSpent   Decimal   @default(0) @map("total_spent") @db.Decimal(12, 2)
   orderCount   Int       @default(0) @map("order_count")
@@ -76,10 +95,12 @@ model Customer {
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz
 
+  listHistory SegmentMembershipEvent[]
+
   tenant      Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   property    Property?     @relation(fields: [propertyId], references: [id], onDelete: SetNull)
   authUser    CustomerUser? @relation(fields: [authUserId], references: [id], onDelete: SetNull)
-  b2bAccount  B2BAccount?   @relation(fields: [b2bAccountId], references: [id], onDelete: SetNull)
+  company  Company?   @relation(fields: [companyId], references: [id], onDelete: SetNull)
   assignedRep User?         @relation("CustomerAssignedRep", fields: [assignedRepId], references: [id], onDelete: SetNull)
   mergedInto  Customer?     @relation("CustomerMerge", fields: [mergedIntoCustomerId], references: [id], onDelete: SetNull)
   mergedFrom  Customer[]    @relation("CustomerMerge")
@@ -126,7 +147,7 @@ model Customer {
   @@index([tenantId, propertyId])
   @@index([tenantId, type])
   @@index([tenantId, assignedRepId])
-  @@index([tenantId, b2bAccountId])
+  @@index([tenantId, companyId])
   @@index([tenantId, lastOrderAt(sort: Desc)])
   @@index([tenantId, totalSpent(sort: Desc)])
   @@index([tenantId, updatedAt(sort: Desc)])

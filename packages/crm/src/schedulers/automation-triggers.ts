@@ -140,7 +140,7 @@ async function emitDealsClosingSoon(ctx: ServiceContext, daysAhead: number): Pro
 
 async function emitB2bCreditNearLimit(ctx: ServiceContext, threshold: number): Promise<number> {
   return withTenant(ctx, async (tx) => {
-    const accounts = await tx.b2BAccount.findMany({
+    const accounts = await tx.company.findMany({
       where: { deletedAt: null, status: 'active', creditLimit: { gt: 0 } },
       select: { id: true, creditLimit: true, creditUsed: true },
       take: 5000,
@@ -153,7 +153,7 @@ async function emitB2bCreditNearLimit(ctx: ServiceContext, threshold: number): P
       await publishCrmEvent({
         tenantId: ctx.tenantId,
         topic: 'crm.b2b_account.updated',
-        payload: { b2bAccountId: a.id, reason: 'credit_near_limit', utilization: util },
+        payload: { companyId: a.id, reason: 'credit_near_limit', utilization: util },
         dedupeKey: `crm.b2b.credit_near_limit:${a.id}:${new Date().toISOString().slice(0, 10)}`,
       });
     }

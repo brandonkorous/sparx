@@ -7,7 +7,7 @@
 // `sync_b2b_credit_used()` to sum open billing-document balances. Migration
 // 20260929000000 drops the empty table (expand/contract "contract" step).
 //
-// A B2B receivable is now a BillingDocument scoped to a `b2bAccountId`; the
+// A B2B receivable is now a BillingDocument scoped to a `companyId`; the
 // `/v1/b2b/invoices` routes project it. See:
 //   • packages/crm/src/services/b2b-ar-service.ts   (createOrderArDocument)
 //   • services/api-rest/src/routes/v1/b2b/invoices.ts

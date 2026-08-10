@@ -40,8 +40,10 @@ import { CrmNotFoundError, CrmValidationError } from '../errors';
 const ticketInclude = {
   stage: { select: { id: true, name: true, stageType: true, color: true } },
   pipeline: { select: { id: true, name: true } },
-  customer: { select: { id: true, firstName: true, lastName: true, company: true, email: true } },
-  b2bAccount: { select: { id: true, companyName: true } },
+  customer: {
+    select: { id: true, firstName: true, lastName: true, companyName: true, email: true },
+  },
+  company: { select: { id: true, companyName: true } },
   assignedTo: { select: { id: true, name: true, email: true } },
 } satisfies Prisma.TicketInclude;
 
@@ -170,7 +172,7 @@ export async function list(
       ...(q.priority ? { priority: q.priority } : {}),
       ...(q.source ? { source: q.source } : {}),
       ...(q.customerId ? { customerId: q.customerId } : {}),
-      ...(q.b2bAccountId ? { b2bAccountId: q.b2bAccountId } : {}),
+      ...(q.companyId ? { companyId: q.companyId } : {}),
       ...(q.unassigned ? { assignedToUserId: null } : {}),
       ...(q.assignedToUserId ? { assignedToUserId: q.assignedToUserId } : {}),
       ...(q.tags && q.tags.length > 0 ? { tags: { hasSome: q.tags } } : {}),
@@ -278,7 +280,7 @@ async function syncTicketAssociations(
   ticket: Ticket
 ): Promise<void> {
   await syncPrimaryFromColumn(tx, tenantId, 'ticket', ticket.id, 'contact', ticket.customerId);
-  await syncPrimaryFromColumn(tx, tenantId, 'ticket', ticket.id, 'company', ticket.b2bAccountId);
+  await syncPrimaryFromColumn(tx, tenantId, 'ticket', ticket.id, 'company', ticket.companyId);
 }
 
 export async function create(ctx: ServiceContext, rawInput: unknown): Promise<TicketView> {
@@ -371,7 +373,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Ti
         pipelineId,
         stageId,
         customerId: input.customerId ?? null,
-        b2bAccountId: input.b2bAccountId ?? null,
+        companyId: input.companyId ?? null,
         assignedToUserId: input.assignedToUserId ?? null,
         subject: input.subject,
         description: input.description ?? null,
@@ -396,7 +398,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Ti
       data: {
         tenantId: ctx.tenantId,
         customerId: row.customerId,
-        b2bAccountId: row.b2bAccountId,
+        companyId: row.companyId,
         type: 'ticket.opened',
         description: `Request #${String(row.number)} opened: ${row.subject}`,
         actorId: ctx.userId ?? null,
@@ -493,7 +495,7 @@ export async function update(
         ...(input.description !== undefined ? { description: input.description } : {}),
         ...(input.priority !== undefined ? { priority: input.priority } : {}),
         ...(input.customerId !== undefined ? { customerId: input.customerId } : {}),
-        ...(input.b2bAccountId !== undefined ? { b2bAccountId: input.b2bAccountId } : {}),
+        ...(input.companyId !== undefined ? { companyId: input.companyId } : {}),
         ...(input.assignedToUserId !== undefined
           ? { assignedToUserId: input.assignedToUserId }
           : {}),
@@ -523,7 +525,7 @@ export async function update(
       include: ticketInclude,
     });
 
-    if (input.customerId !== undefined || input.b2bAccountId !== undefined) {
+    if (input.customerId !== undefined || input.companyId !== undefined) {
       await syncTicketAssociations(tx, ctx.tenantId, updated);
     }
 
@@ -643,7 +645,7 @@ export async function moveStage(
       data: {
         tenantId: ctx.tenantId,
         customerId: updated.customerId,
-        b2bAccountId: updated.b2bAccountId,
+        companyId: updated.companyId,
         type: isResolved || isClosed ? 'ticket.resolved' : 'ticket.replied',
         description: input.note
           ? `Request #${String(updated.number)}: ${before.stage.name} → ${toStage.name} — ${input.note}`
@@ -804,7 +806,7 @@ export async function recordCustomerMessage(
     // URL is a customer's to edit.
     const row = await tx.ticket.findFirst({
       where: { id: ticketId, customerId: args.customerId, deletedAt: null },
-      select: { id: true, number: true, customerId: true, b2bAccountId: true },
+      select: { id: true, number: true, customerId: true, companyId: true },
     });
     if (!row) throw new CrmNotFoundError('Ticket', ticketId);
 
@@ -812,7 +814,7 @@ export async function recordCustomerMessage(
       data: {
         tenantId: ctx.tenantId,
         customerId: row.customerId,
-        b2bAccountId: row.b2bAccountId,
+        companyId: row.companyId,
         type: 'ticket.customer_replied',
         description: `Request #${String(row.number)}: ${args.body}`,
         // The customer, not a member of staff — so the timeline attributes it to

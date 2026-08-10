@@ -84,7 +84,7 @@ export interface EnqueueSendSpec {
   /**
    * For a `defer` (Builder email) send: the entity ids the deferred render
    * resolves the email's DataSources against (docs/91 §3) — `{ customerId,
-   * orderId, cartId, quoteId, billingDocumentId, b2bAccountId }`.
+   * orderId, cartId, quoteId, billingDocumentId, companyId }`.
    */
   entityRefs?: Record<string, string | null> | null;
   /** The automation's flat, trigger-time resolved field map — a scalar fallback at

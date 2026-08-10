@@ -22,6 +22,7 @@ import { registerOrderEventConsumers } from './order-events';
 import { registerEmailEventConsumers } from './email-events';
 import { registerAuthEventConsumers } from './auth-events';
 import { registerSegmentEvaluatorConsumers } from './segment-evaluator';
+import { registerScoringConsumers } from './scoring-evaluator';
 import { registerModuleActivationConsumers } from './module-activation';
 
 export interface RegisterOptions {
@@ -53,6 +54,10 @@ export function registerCrmConsumers(opts: RegisterOptions = {}): ConsumerRegist
   teardowns.push(...registerEmailEventConsumers(ctx));
   teardowns.push(...registerAuthEventConsumers(ctx));
   teardowns.push(...registerSegmentEvaluatorConsumers(ctx));
+  // Scoring watches the same events as the segment evaluator plus the deal-side
+  // ones, and no-ops entirely for a tenant that has written no scoring model —
+  // which is every tenant until someone asks for one (docs/144 §10).
+  teardowns.push(...registerScoringConsumers(ctx));
   // Site-form lead capture (docs/115) is no longer an in-process consumer: it moved
   // to the platform automation engine (the seeded "Handle form submissions"
   // automation → crm.capture_lead action), so a form.submitted lead flows through

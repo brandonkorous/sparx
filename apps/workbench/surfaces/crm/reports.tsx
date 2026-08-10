@@ -231,10 +231,7 @@ export function CrmReportsSurface(_props: { ctx: SurfaceContext }) {
           ) : (
             <div className="grid grid-cols-2 gap-3 @md:grid-cols-3 @2xl:grid-cols-4">
               <KpiTile label="Customers" value={s ? s.customers.toLocaleString() : '—'} />
-              <KpiTile
-                label="Wholesale accounts"
-                value={s ? s.b2bAccounts.toLocaleString() : '—'}
-              />
+              <KpiTile label="Wholesale accounts" value={s ? s.companies.toLocaleString() : '—'} />
               <KpiTile label="Open deals" value={s ? s.openDeals.toLocaleString() : '—'} />
               <KpiTile label="Pipeline value" value={s ? formatMoney(s.pipelineValue) : '—'} />
               <KpiTile label="Open tasks" value={s ? s.openTasks.toLocaleString() : '—'} />

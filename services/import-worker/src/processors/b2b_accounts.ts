@@ -15,7 +15,7 @@
 
 import type { Logger } from 'pino';
 import {
-  b2bAccountService,
+  companyService,
   describeColumnProblems,
   objectDefService,
   propertiesFromRow,
@@ -114,7 +114,7 @@ export async function processB2bAccountRows(
 
     try {
       const existing = await withTenant(ctx, (tx) =>
-        tx.b2BAccount.findFirst({
+        tx.company.findFirst({
           where: { tenantId: ctx.tenantId, companyName, deletedAt: null },
           select: { id: true },
         })
@@ -144,7 +144,7 @@ export async function processB2bAccountRows(
         Object.keys(extra.values).length > 0 ? { customProperties: extra.values } : {};
 
       if (existing && opts.upsert) {
-        await b2bAccountService.update(ctx, existing.id, {
+        await companyService.update(ctx, existing.id, {
           companyName,
           ...(row.tax_id !== undefined ? { taxId: row.tax_id.trim() || null } : {}),
           ...(row.website !== undefined ? { website: row.website.trim() || null } : {}),
@@ -167,7 +167,7 @@ export async function processB2bAccountRows(
         results.push({ rowIndex: i, status: 'skipped', naturalKey: companyName });
         log.debug('skipped (upsert off)');
       } else {
-        await b2bAccountService.create(ctx, {
+        await companyService.create(ctx, {
           companyName,
           taxId: blank(row.tax_id) ?? null,
           website: blank(row.website) ?? null,

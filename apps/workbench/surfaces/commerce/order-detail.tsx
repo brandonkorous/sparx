@@ -471,11 +471,11 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                     {order.customer.email}
                   </a>
                 ) : null}
-                {order.customer?.b2bAccount ? (
+                {order.customer?.company ? (
                   <Text className="text-base">
-                    Trade account: {order.customer.b2bAccount.companyName}
-                    {order.customer.b2bAccount.paymentTerms
-                      ? ` · pays on ${order.customer.b2bAccount.paymentTerms} terms`
+                    Trade account: {order.customer.company.companyName}
+                    {order.customer.company.paymentTerms
+                      ? ` · pays on ${order.customer.company.paymentTerms} terms`
                       : ''}
                   </Text>
                 ) : null}

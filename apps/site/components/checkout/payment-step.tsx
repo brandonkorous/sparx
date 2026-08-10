@@ -36,7 +36,7 @@ export interface PaymentStepProps {
   onPaid: (orderNumber: string) => void;
 }
 
-// Top-level payment step. A signed-in B2B customer (session.b2bAccountId
+// Top-level payment step. A signed-in B2B customer (session.companyId
 // present — resolved server-side from their ACTIVE contact membership, never
 // client-supplied) gets a choice between paying now by card and billing to
 // their account on net terms; everyone else goes straight to card, unchanged
@@ -47,7 +47,7 @@ export function PaymentStep(props: PaymentStepProps) {
   // to card, same as a non-B2B shopper (server-side submitPayment() also
   // rejects a net-terms request from a prepay account either way).
   const netTermsEligible =
-    Boolean(session.b2bAccountId) && session.b2bAccountPaymentTerms !== 'prepay';
+    Boolean(session.companyId) && session.b2bAccountPaymentTerms !== 'prepay';
   const [method, setMethod] = useState<'choose' | 'card' | 'account'>(
     netTermsEligible ? 'choose' : 'card'
   );

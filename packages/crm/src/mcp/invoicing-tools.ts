@@ -58,7 +58,7 @@ const CreateInput = z.object({
   workflowId: z.string().uuid(),
   stageId: z.string().uuid().optional(),
   customerId: z.string().uuid().optional(),
-  b2bAccountId: z.string().uuid().optional(),
+  companyId: z.string().uuid().optional(),
   currency: z.string().length(3).optional(),
   taxRate: z.number().min(0).max(1).optional(),
   shippingTotal: z.number().min(0).optional(),

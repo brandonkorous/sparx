@@ -104,7 +104,7 @@ export interface Booking {
   capacity: number;
   partySize: number | null;
   customerId: string | null;
-  b2bAccountId: string | null;
+  companyId: string | null;
   assetRef: Record<string, unknown> | null;
   partsLinked: unknown[];
   workOrderId: string | null;

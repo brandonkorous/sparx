@@ -12,7 +12,7 @@ import { requireRole } from '@sparx/api-core/auth';
 import { publish } from '@sparx/api-core/pubsub';
 import { notFound } from '@sparx/api-core/errors';
 import { requireB2bModule } from '../../../lib/b2b-context.js';
-import { b2bAccountService } from '@sparx/crm';
+import { companyService } from '@sparx/crm';
 import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
 
 const PathJobId = z.object({ jobId: z.string().uuid() });
@@ -112,7 +112,7 @@ const b2bImportExportRoutes: FastifyPluginAsync = async (app) => {
     const q = ExportQuery.parse(request.query);
     const ctx = toCrmContext(request);
 
-    const { items } = await b2bAccountService.list(ctx, {
+    const { items } = await companyService.list(ctx, {
       status: q.status,
       q: q.q,
       take: q.take ?? 5_000,

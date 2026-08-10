@@ -1,13 +1,16 @@
 'use client';
 
 // ══════════════════════════════════════════════════════════════════════════
-// THE WHOLESALE-ACCOUNT DATA LAYER
+// THE COMPANY DATA LAYER
 //
-// A wholesale account is a BUSINESS that buys from you at agreed terms — a
-// credit limit, a discount, net payment terms. Its individual people are
-// customers of type `b2b` linked to it; this record is the company itself.
-// The write shapes mirror the CRM's own `CreateB2BAccountInput` /
-// `UpdateB2BAccountInput` (Zod in `@sparx/crm-schemas`), named locally because
+// A company is the ORGANISATION a contact belongs to (docs/144 §11). For a
+// business that sells on account it ALSO carries the trading relationship — a
+// credit limit, a discount, net payment terms — and that half of the record only
+// renders when the `b2b` module is on. A design agency tracking the firms it
+// works with sees a company; a parts wholesaler sees the same record with trade
+// terms on it.
+// The write shapes mirror the CRM's own `CreateCompanyInput` /
+// `UpdateCompanyInput` (Zod in `@sparx/crm-schemas`), named locally because
 // that package is not a dependency of this app; the server runs that Zod and has
 // the final say on anything malformed.
 //
@@ -18,26 +21,29 @@
 
 import { useMutation, useQuery, useQueryClient } from '@sparx/query';
 import { ApiError } from '@sparx/api-client';
-import type { B2BAccountStatus, PaymentTerms } from '@sparx/crm-schemas';
+import type { CompanyStatus, PaymentTerms } from '@sparx/crm-schemas';
 import { api } from '../../lib/api/client';
 
 // The status + payment-terms enums come straight from `@sparx/crm-schemas` (the
 // server's Zod), so they can't drift. `AccountInput` below stays a local, narrow
 // write PAYLOAD on purpose (the `DiscountInput` house pattern): the full
-// `CreateB2BAccountInput` requires a defaulted `engineProfiles: []`, and because
+// `CreateCompanyInput` requires a defaulted `engineProfiles: []`, and because
 // this pane's create and update share one build path, sending it would wipe a
 // fleet's engine profiles on every save — so the pane sends only what it manages.
-export type { B2BAccountStatus, PaymentTerms };
+export type { CompanyStatus, PaymentTerms };
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
 /** One wholesale account in full. Money and percentages arrive as serialized
  *  Decimals (STRINGS); coerce with `Number`. */
-export interface B2BAccount {
+export interface Company {
   id: string;
   companyName: string;
   taxId: string | null;
   website: string | null;
+  /** The email domains that belong to this company (docs/144 §11) — what the
+   *  association offer matches a new contact's address against. */
+  domains: string[];
   pricingTier: string | null;
   creditLimit: string;
   creditUsed: string;
@@ -56,7 +62,7 @@ export interface B2BAccount {
 
 export interface AccountListParams {
   q?: string;
-  status?: B2BAccountStatus;
+  status?: CompanyStatus;
 }
 
 export const accountKeys = {
@@ -67,12 +73,7 @@ export const accountKeys = {
 
 /* ── Presentation ───────────────────────────────────────────────────────── */
 
-export const ACCOUNT_STATUSES: B2BAccountStatus[] = [
-  'active',
-  'credit_hold',
-  'suspended',
-  'inactive',
-];
+export const ACCOUNT_STATUSES: CompanyStatus[] = ['active', 'credit_hold', 'suspended', 'inactive'];
 
 /** How an account's state reads — plain label, tone for the badge, and a
  *  sentence. These carry a genuine good/needs-attention/bad meaning, so the
@@ -135,7 +136,7 @@ export function useAccounts(params: AccountListParams = {}) {
   return useQuery({
     queryKey: accountKeys.list(params),
     queryFn: () =>
-      api.list<B2BAccount>('/v1/crm/b2b-accounts', {
+      api.list<Company>('/v1/crm/companies', {
         ...(params.q?.trim() ? { q: params.q.trim() } : {}),
         ...(params.status ? { status: params.status } : {}),
         take: 100,
@@ -147,7 +148,7 @@ export function useAccounts(params: AccountListParams = {}) {
 export function useAccount(id: string) {
   return useQuery({
     queryKey: accountKeys.detail(id),
-    queryFn: () => api.get<B2BAccount>(`/v1/crm/b2b-accounts/${id}`),
+    queryFn: () => api.get<Company>(`/v1/crm/companies/${id}`),
     enabled: id !== 'new',
     retry: (failureCount, error) =>
       error instanceof ApiError && error.status === 404 ? false : failureCount < 2,
@@ -169,16 +170,17 @@ export function useInvalidateAccounts() {
 
 /* ── Mutations ──────────────────────────────────────────────────────────── */
 
-/** The write payload — a subset of `CreateB2BAccountInput`. */
+/** The write payload — a subset of `CreateCompanyInput`. */
 export interface AccountInput {
   companyName: string;
   taxId?: string | null;
   website?: string | null;
+  domains?: string[];
   pricingTier?: string | null;
   creditLimit?: number;
   paymentTerms?: PaymentTerms | null;
   discountPercent?: number;
-  status?: B2BAccountStatus;
+  status?: CompanyStatus;
   assignedRepId?: string | null;
   fleetSize?: number | null;
   notes?: string | null;
@@ -189,7 +191,7 @@ export interface AccountInput {
 export function useCreateAccount() {
   const invalidate = useInvalidateAccounts();
   return useMutation({
-    mutationFn: (input: AccountInput) => api.post<B2BAccount>('/v1/crm/b2b-accounts', input),
+    mutationFn: (input: AccountInput) => api.post<Company>('/v1/crm/companies', input),
     onSuccess: (created) => {
       invalidate(created.id);
     },
@@ -200,7 +202,7 @@ export function useUpdateAccount(id: string) {
   const invalidate = useInvalidateAccounts();
   return useMutation({
     mutationFn: (patch: Partial<AccountInput>) =>
-      api.patch<B2BAccount>(`/v1/crm/b2b-accounts/${id}`, patch),
+      api.patch<Company>(`/v1/crm/companies/${id}`, patch),
     onSuccess: () => {
       invalidate(id);
     },
@@ -213,10 +215,41 @@ export function useUpdateAccount(id: string) {
 export function useDeleteAccount(id: string) {
   const invalidate = useInvalidateAccounts();
   return useMutation({
-    mutationFn: () => api.delete(`/v1/crm/b2b-accounts/${id}`),
+    mutationFn: () => api.delete(`/v1/crm/companies/${id}`),
     onSuccess: () => {
       invalidate();
     },
+  });
+}
+
+/* ── The association offer (docs/144 §11) ───────────────────────────────── */
+
+/** What the server made of an email address. `company` null with a `reason` is
+ *  the ordinary case, not an error — most addresses match nothing. */
+export interface DomainMatch {
+  company: Company | null;
+  domain: string | null;
+  reason?: 'no-domain' | 'public-domain' | 'disabled' | 'no-match';
+}
+
+/**
+ * Which company owns this email address.
+ *
+ * Debounced by TanStack's own staleness rather than a timer: the key IS the
+ * email, so typing produces one cached lookup per distinct address and going
+ * back to one already tried costs nothing.
+ *
+ * Disabled below an @ and a dot, because there is no address to match yet and a
+ * request per keystroke into an empty field is a request per keystroke.
+ */
+export function useCompanyDomainMatch(email: string, enabled = true) {
+  const trimmed = email.trim().toLowerCase();
+  const looksLikeAddress = /@[^@\s]+\.[^@\s]+$/.test(trimmed);
+  return useQuery({
+    queryKey: [...accountKeys.all, 'domain-match', trimmed],
+    queryFn: () => api.get<DomainMatch>('/v1/crm/companies/match-domain', { email: trimmed }),
+    enabled: enabled && looksLikeAddress,
+    staleTime: 300_000,
   });
 }
 

@@ -116,7 +116,7 @@ export async function processCustomerRows(
         await customerService.update(ctx, existing.id, {
           ...(row.first_name !== undefined ? { firstName: row.first_name } : {}),
           ...(row.last_name !== undefined ? { lastName: row.last_name } : {}),
-          ...(row.company !== undefined ? { company: row.company } : {}),
+          ...(row.company !== undefined ? { companyName: row.company } : {}),
           ...(row.phone !== undefined ? { phone: row.phone } : {}),
           ...(row.job_title !== undefined ? { jobTitle: row.job_title } : {}),
           ...(row.type ? { type: normalizeType(row.type) } : {}),
@@ -141,7 +141,7 @@ export async function processCustomerRows(
           email: email ?? null,
           firstName: row.first_name ?? null,
           lastName: row.last_name ?? null,
-          company: row.company ?? null,
+          companyName: row.company ?? null,
           phone: row.phone ?? null,
           jobTitle: row.job_title ?? null,
           tags: row.tags

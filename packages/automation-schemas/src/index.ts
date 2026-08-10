@@ -6,6 +6,7 @@
 // validate against these before touching Prisma.
 
 export * from './condition';
+export * from './evaluate';
 export * from './trigger';
 export * from './action';
 export * from './run';

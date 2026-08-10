@@ -836,7 +836,7 @@ export const EMAIL_SOURCES: DataSource[] = [
   {
     // The Scheduling module's booking (docs/79) — the industry-agnostic
     // appointment/class/reservation/rental record. B2B fleet appointments are
-    // Bookings too (Booking.b2bAccountId/assetRef) — the legacy B2B-only
+    // Bookings too (Booking.companyId/assetRef) — the legacy B2B-only
     // `appointment` source (service_appointments) was retired 2026-07-14.
     key: 'booking',
     label: 'Booking',

@@ -13,7 +13,7 @@ export const CreateDealInput = z.object({
   pipelineId: Uuid,
   stageId: Uuid,
   customerId: Uuid.nullable().optional(),
-  b2bAccountId: Uuid.nullable().optional(),
+  companyId: Uuid.nullable().optional(),
   assignedRepId: Uuid.nullable().optional(),
   title: z.string().min(1).max(255),
   value: z.number().min(0).max(999_999_999_999.99).default(0),

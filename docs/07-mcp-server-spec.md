@@ -55,7 +55,7 @@ The MCP server runs as a dedicated Kubernetes deployment. Access is gated by the
 | `get_customers`          | List customers with search and filters          |
 | `get_customer`           | Full customer profile, order history, CRM notes |
 | `get_inactive_customers` | Customers with no orders in N days              |
-| `get_b2b_accounts`       | List B2B/wholesale accounts with credit status  |
+| `get_companies`          | List companies, with trade terms when b2b is on |
 | `add_crm_note`           | Add a note to a customer record                 |
 | `get_pipeline`           | Current deals in CRM pipeline                   |
 

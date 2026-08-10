@@ -21,7 +21,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { withTenant } from '@sparx/db';
 
 import * as customerService from '../../src/services/customer-service';
-import { b2bAccountService, dealService, pipelineService } from '../../src/services/index.js';
+import { companyService, dealService, pipelineService } from '../../src/services/index.js';
 import { runDailyAutomationTriggers } from '../../src/schedulers/automation-triggers';
 import { disposeTestContext, makeTestContext, type TestContext } from '../helpers.js';
 
@@ -65,7 +65,7 @@ describe('scheduled automation triggers — inactivity (outcome-level)', () => {
   }
 
   // Generic: the entity ids carried on signals with a given `reason`, read from
-  // `idKey` (customerId / dealId / b2bAccountId / quoteId depending on trigger).
+  // `idKey` (customerId / dealId / companyId / quoteId depending on trigger).
   function emittedIds(reason: string, idKey: string): string[] {
     return t.publisher.events
       .filter((e) => (e.payload as { reason?: string }).reason === reason)
@@ -169,18 +169,18 @@ describe('scheduled automation triggers — inactivity (outcome-level)', () => {
   });
 
   it('flags a B2B account whose credit utilization is near its limit', async () => {
-    const account = await b2bAccountService.create(t.ctx, {
+    const account = await companyService.create(t.ctx, {
       companyName: 'Near Limit LLC',
       creditLimit: 1000,
     });
     // creditUsed is normally synced from unpaid invoices; set it directly to
     // push utilization past the 0.85 default without standing up an invoice.
     await withTenant(t.ctx, (tx) =>
-      tx.b2BAccount.update({ where: { id: account.id }, data: { creditUsed: 900 } })
+      tx.company.update({ where: { id: account.id }, data: { creditUsed: 900 } })
     );
 
     await runDailyAutomationTriggers(t.ctx); // default creditUtilizationThreshold = 0.85
-    expect(emittedIds('credit_near_limit', 'b2bAccountId')).toContain(account.id);
+    expect(emittedIds('credit_near_limit', 'companyId')).toContain(account.id);
   });
 
   // Quote-expiry moved out of this legacy cron entirely — quotes are now

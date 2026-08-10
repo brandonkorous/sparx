@@ -115,7 +115,7 @@ async function loadCaptured(
             channel: true,
             source: true,
             customer: {
-              select: { firstName: true, lastName: true, company: true, email: true },
+              select: { firstName: true, lastName: true, companyName: true, email: true },
             },
           },
         },
@@ -127,7 +127,7 @@ async function loadCaptured(
     const c = r.order?.customer;
     const name = firstNonEmpty(
       [c?.firstName, c?.lastName].filter(Boolean).join(' '),
-      c?.company,
+      c?.companyName,
       c?.email
     );
     return {

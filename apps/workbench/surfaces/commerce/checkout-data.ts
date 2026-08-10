@@ -65,7 +65,7 @@ export interface CheckoutDetail {
   currency: string;
   customerEmail?: string;
   customerId?: string;
-  b2bAccountId?: string;
+  companyId?: string;
   b2bAccountPaymentTerms?: string;
   shippingAddress?: OrderAddress;
   billingAddress?: OrderAddress;

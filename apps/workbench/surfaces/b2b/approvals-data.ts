@@ -30,7 +30,7 @@ export interface QueueItem {
   customerId: string;
   customerName: string | null;
   customerEmail: string | null;
-  b2bAccountId: string | null;
+  companyId: string | null;
   companyName: string | null;
 }
 

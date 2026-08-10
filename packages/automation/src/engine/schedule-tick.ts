@@ -22,6 +22,7 @@ import { withTenant } from '@sparx/db';
 import { evaluateConditions } from '../conditions/evaluate';
 import type { EngineDeps, TenantCtx, TriggerEnvelope } from '../engine-types';
 import { getScanner, propertyOf } from '../resolvers/registry';
+import { countAuthoredActions } from './handle-trigger';
 import { installBuiltins } from './install';
 
 export interface ScheduleTickResult {
@@ -83,7 +84,7 @@ export async function runScheduleTick(
     result.automations += 1;
     const windowKey = scheduleWindowKey(trigger.schedule, now);
     const conditions = ConditionGroup.safeParse(a.conditions);
-    const actionsTotal = Array.isArray(a.actions) ? a.actions.length : 0;
+    const actionsTotal = countAuthoredActions(a.actions);
 
     await withTenant(
       { tenantId: a.tenantId },

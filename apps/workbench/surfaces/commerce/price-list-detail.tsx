@@ -118,7 +118,7 @@ interface Draft {
   currency: string;
   audience: Audience;
   customerSegmentId: string | null;
-  b2bAccountId: string | null;
+  companyId: string | null;
   /** `all` means every channel (null on the wire). */
   channel: string;
   /** Live (status `active`) vs a draft nobody sees yet. */
@@ -136,7 +136,7 @@ function emptyDraft(): Draft {
     currency: 'USD',
     audience: 'everyone',
     customerSegmentId: null,
-    b2bAccountId: null,
+    companyId: null,
     channel: 'all',
     live: false,
     startDate: '',
@@ -168,9 +168,9 @@ function toDraft(row: PriceListRow, entries: PriceListEntryRow[]): Draft {
     name: row.name,
     description: row.description ?? '',
     currency: row.currency,
-    audience: row.b2bAccountId ? 'account' : row.customerSegmentId ? 'segment' : 'everyone',
+    audience: row.companyId ? 'account' : row.customerSegmentId ? 'segment' : 'everyone',
     customerSegmentId: row.customerSegmentId,
-    b2bAccountId: row.b2bAccountId,
+    companyId: row.companyId,
     channel: row.channel ?? 'all',
     live: row.status === 'active',
     startDate: isoDate(row.validFrom),
@@ -304,7 +304,7 @@ function PriceListEditor({
   const audienceError =
     draft.audience === 'segment' && !draft.customerSegmentId
       ? 'Choose which customer group gets these prices.'
-      : draft.audience === 'account' && !draft.b2bAccountId
+      : draft.audience === 'account' && !draft.companyId
         ? 'Choose which trade account gets these prices.'
         : null;
 
@@ -340,7 +340,7 @@ function PriceListEditor({
       draft.currency !== saved.currency ||
       draft.audience !== saved.audience ||
       draft.customerSegmentId !== saved.customerSegmentId ||
-      draft.b2bAccountId !== saved.b2bAccountId ||
+      draft.companyId !== saved.companyId ||
       draft.channel !== saved.channel ||
       draft.live !== saved.live ||
       draft.startDate !== saved.startDate ||
@@ -368,7 +368,7 @@ function PriceListEditor({
     currency: draft.currency,
     channel: draft.channel === 'all' ? null : draft.channel,
     customerSegmentId: draft.audience === 'segment' ? draft.customerSegmentId : null,
-    b2bAccountId: draft.audience === 'account' ? draft.b2bAccountId : null,
+    companyId: draft.audience === 'account' ? draft.companyId : null,
     validFrom: toIsoStart(draft.startDate),
     validTo: toIsoEnd(draft.endDate),
     status: draft.live ? 'active' : 'draft',
@@ -715,13 +715,13 @@ function PriceListEditor({
                         color={audienceError && touched ? 'error' : 'module'}
                         aria-label="Which trade account"
                         placeholder="Choose a trade account"
-                        value={draft.b2bAccountId ?? ''}
+                        value={draft.companyId ?? ''}
                         items={(accountsQuery.data?.items ?? []).map((option) => ({
                           value: option.id,
                           label: option.name,
                         }))}
                         onValueChange={(next) => {
-                          set('b2bAccountId', String(next) || null);
+                          set('companyId', String(next) || null);
                         }}
                       />
                     </div>

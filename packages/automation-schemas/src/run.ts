@@ -15,8 +15,23 @@ export type AutomationOrigin = z.infer<typeof AutomationOrigin>;
 export const AutomationStatus = z.enum(['draft', 'active', 'paused', 'error']);
 export type AutomationStatus = z.infer<typeof AutomationStatus>;
 
-/** `automation_runs.status` — `waiting` = parked on a durable delay (§7). */
-export const RunStatus = z.enum(['running', 'waiting', 'completed', 'failed', 'skipped']);
+/**
+ * `automation_runs.status` — `waiting` = parked on a durable delay (§7).
+ *
+ * `converted` is a TERMINAL SUCCESS distinct from `completed` (docs/144 §9): the
+ * run stopped because the automation's goal was met, not because it ran out of
+ * steps. Kept apart because collapsing the two would make a rule that succeeds on
+ * step one indistinguishable from one that sent every email and achieved nothing
+ * — which is the exact comparison enrollment analytics exists to draw.
+ */
+export const RunStatus = z.enum([
+  'running',
+  'waiting',
+  'completed',
+  'converted',
+  'failed',
+  'skipped',
+]);
 export type RunStatus = z.infer<typeof RunStatus>;
 
 /** `automation_run_steps.status` — `gated` = blocked by a policy gate, NOT a failure (§7.1). */

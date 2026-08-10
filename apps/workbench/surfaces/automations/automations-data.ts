@@ -59,7 +59,10 @@ import { api } from '../../lib/api/client';
 
 /* ── Semantic tone (shared with the Badge/Button colour axis) ────────────── */
 
-export type Tone = 'success' | 'warning' | 'danger' | 'info' | 'neutral';
+/** `module` is the active module's own hue — reserved for the ONE state that is
+ *  better than plain success (a run that met the rule's goal), so it does not
+ *  share green with "ran to the end and nothing happened". */
+export type Tone = 'success' | 'warning' | 'danger' | 'info' | 'neutral' | 'module';
 
 /* ── The automation rule (the raw wire row, dates as ISO strings) ────────── */
 
@@ -80,6 +83,8 @@ export interface Automation {
   triggerConfig: unknown;
   conditions: unknown;
   actions: unknown;
+  /** What this rule is aiming to cause (docs/144 §9); null = no goal. */
+  goal: unknown;
   /** The live published version number (1 on create). */
   version: number;
   publishedAt: string | null;
@@ -114,6 +119,7 @@ export interface AutomationVersionRow {
   triggerConfig: unknown;
   conditions: unknown;
   actions: unknown;
+  goal: unknown;
   maxDepth: number;
   note: string | null;
   publishedAt: string;
@@ -224,7 +230,45 @@ export const automationKeys = {
   run: (id: string, runId: string) => ['automations', 'run', id, runId] as const,
   summary: ['automations', 'reports', 'summary'] as const,
   reportRuns: (range: ReportRange) => ['automations', 'reports', 'runs', range] as const,
+  // Under `['automations']` deliberately, so the shared invalidator reaches it:
+  // publishing a rule changes what its funnel means, and a stale funnel beside a
+  // freshly-edited rule is the kind of wrong that looks right.
+  enrollment: (id: string) => ['automations', 'enrollment', id] as const,
 };
+
+/* ── Enrollment analytics (docs/144 §9) ─────────────────────────────────── */
+
+export interface EnrollmentFunnel {
+  entered: number;
+  active: number;
+  converted: number;
+  completed: number;
+  exited: number;
+  failed: number;
+  /** Null when the rule declares no goal — 0% would read as "this never works"
+   *  rather than "nothing was measured". */
+  conversionRate: number | null;
+  medianSecondsToGoal: number | null;
+}
+
+export interface StepDropOff {
+  index: number;
+  /** Where the step sits in the authored rule (`2`, `2.then.0`). */
+  path: string | null;
+  actionType: string;
+  reached: number;
+  completed: number;
+  gated: number;
+  failed: number;
+  dropOffRate: number;
+}
+
+export interface EnrollmentAnalytics {
+  automationId: string;
+  hasGoal: boolean;
+  funnel: EnrollmentFunnel;
+  steps: StepDropOff[];
+}
 
 /* ── Reads ──────────────────────────────────────────────────────────────── */
 
@@ -281,6 +325,17 @@ export function useAutomationRun(id: string, runId: string) {
   });
 }
 
+/** How this rule is actually doing (docs/144 §9) — the funnel plus per-step
+ *  drop-off. Not `placeholderData`: an unchanged funnel from another rule would
+ *  be the wrong numbers under the right heading. */
+export function useEnrollment(id: string) {
+  return useQuery({
+    queryKey: automationKeys.enrollment(id),
+    queryFn: () => api.get<EnrollmentAnalytics>(`/v1/automations/${id}/enrollment`),
+    enabled: id !== 'new' && id !== '',
+  });
+}
+
 export function useAutomationsSummary() {
   return useQuery({
     queryKey: automationKeys.summary,
@@ -331,6 +386,7 @@ export interface AutomationCreateInput {
   trigger: Trigger;
   conditions: ConditionGroup;
   actions: Action[];
+  goal?: ConditionGroup | null;
   maxDepth: number;
 }
 
@@ -341,6 +397,7 @@ export interface AutomationUpdateInput {
   trigger?: Trigger;
   conditions?: ConditionGroup;
   actions?: Action[];
+  goal?: ConditionGroup | null;
   maxDepth?: number;
 }
 

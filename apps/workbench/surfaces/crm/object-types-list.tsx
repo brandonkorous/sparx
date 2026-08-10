@@ -115,6 +115,9 @@ export function ObjectTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <th>Kind</th>
                 <th className="text-right">Extra details</th>
                 <th className="hidden @lg:table-cell">What it is</th>
+                <th className="text-right">
+                  <span className="sr-only">Open its records</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -159,6 +162,30 @@ export function ObjectTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
                       {count === 0 ? '—' : count}
                     </td>
                     <td className="hidden text-sm @lg:table-cell">{row.description ?? '—'}</td>
+                    <td className="text-right">
+                      {row.kind === 'custom' && !row.archivedAt ? (
+                        <Button
+                          color="module"
+                          variant="soft"
+                          size="sm"
+                          aria-label={`Open the ${row.labelPlural.toLowerCase()}`}
+                          title="Open these records"
+                          onClick={(event) => {
+                            // Stop the row's own click — this opens the ROWS, the
+                            // row opens the TYPE, and landing on the wrong one is
+                            // the sort of thing somebody stops trusting a table for.
+                            event.stopPropagation();
+                            ctx.open(
+                              'crm.records.list',
+                              { objectKey: row.key },
+                              { target: targetFor(event) }
+                            );
+                          }}
+                        >
+                          Open
+                        </Button>
+                      ) : null}
+                    </td>
                   </tr>
                 );
               })}

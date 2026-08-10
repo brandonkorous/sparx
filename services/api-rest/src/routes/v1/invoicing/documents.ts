@@ -49,7 +49,7 @@ const ListDocumentsQuery = z.object({
   workflowId: z.string().uuid().optional(),
   stageId: z.string().uuid().optional(),
   customerId: z.string().uuid().optional(),
-  b2bAccountId: z.string().uuid().optional(),
+  companyId: z.string().uuid().optional(),
   status: z.string().max(20).optional(),
   includeDeleted: z.coerce.boolean().optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
@@ -87,7 +87,7 @@ const DraftPreviewBody = z.object({
   status: z.string().nullish(),
   currency: z.string().nullish(),
   customerId: z.string().uuid().nullish(),
-  b2bAccountId: z.string().uuid().nullish(),
+  companyId: z.string().uuid().nullish(),
   billTo: z.unknown().nullish(),
   shipTo: z.unknown().nullish(),
   issuedAt: z.string().nullish(),
@@ -116,7 +116,7 @@ const documentRoutes: FastifyPluginAsync = (app) => {
       workflowId: q.workflowId,
       stageId: q.stageId,
       customerId: q.customerId,
-      b2bAccountId: q.b2bAccountId,
+      companyId: q.companyId,
       // Bound to the member's reachable sites (docs/131 §3.3) — invoices are
       // among the most sensitive per-business records.
       propertyIds: reachableSiteIds(auth),

@@ -35,10 +35,11 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { ListMembership } from './list-membership';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useTeamRoster } from '../../lib/api/team';
 import { customerName, customerTypeMeta } from './customers-data';
-import { useAccounts } from './accounts-data';
+import { useAccounts } from './companies-data';
 import {
   segmentErrorMessage,
   segmentMembership,
@@ -158,18 +159,27 @@ function SegmentEditor({
     [segment]
   );
 
+  const savedKind: 'dynamic' | 'static' = segment?.kind ?? 'dynamic';
+
   const [identity, setIdentity] = useState<Identity>(savedIdentity);
   const [root, setRoot] = useState<GroupNode>(savedRoot);
+  const [kind, setKindState] = useState<'dynamic' | 'static'>(savedKind);
   const [slugTouched, setSlugTouched] = useState(!isNew);
   const [touched, setTouched] = useState(false);
+
+  const setKind = (next: 'dynamic' | 'static') => {
+    setTouched(true);
+    setKindState(next);
+  };
 
   // Reset from the server copy until the operator has started editing.
   useEffect(() => {
     if (!touched) {
       setIdentity(savedIdentity);
       setRoot(savedRoot);
+      setKindState(savedKind);
     }
-  }, [savedIdentity, savedRoot, touched]);
+  }, [savedIdentity, savedRoot, savedKind, touched]);
 
   useEffect(() => {
     ctx.setTitle(isNew ? 'New segment' : segment ? segment.name : 'Segment');
@@ -241,17 +251,21 @@ function SegmentEditor({
       : !SLUG_RE.test(identity.slug.trim())
         ? 'The id can use lowercase letters, numbers and dashes, and must start with a letter.'
         : null;
-  const rulesError = serialized.ok ? null : serialized.error;
+  // A HAND-PICKED list has no rules to get wrong, so an incomplete rule tree is
+  // not an error there — it is just the rules somebody wrote before switching,
+  // kept in case they switch back (docs/144 §10).
+  const rulesError = kind === 'static' || serialized.ok ? null : serialized.error;
   const blocked = nameError ?? slugError ?? rulesError;
 
   const savedKey = useMemo(() => {
     const savedRule = serializeNode(savedRoot);
     return JSON.stringify({
       ...savedIdentity,
+      kind: savedKind,
       rule: savedRule.ok ? savedRule.rule : null,
     });
-  }, [savedIdentity, savedRoot]);
-  const currentKey = JSON.stringify({ ...identity, rule: ruleForPreview });
+  }, [savedIdentity, savedRoot, savedKind]);
+  const currentKey = JSON.stringify({ ...identity, kind, rule: ruleForPreview });
   const dirty = isNew ? touched : currentKey !== savedKey;
   const saving = create.isPending || update.isPending;
   const isArchived = segment?.archivedAt != null;
@@ -274,11 +288,17 @@ function SegmentEditor({
   /* ── Submit ───────────────────────────────────────────────────────────── */
 
   const submit = () => {
+    // `serialized.ok` is still required: even a hand-picked list stores SOME
+    // rule document, and an unserializable tree has nothing to store.
     if (blocked || !serialized.ok) return;
     const input: SegmentInput = {
       name: identity.name.trim(),
       slug: identity.slug.trim(),
       description: identity.description.trim() === '' ? null : identity.description.trim(),
+      kind,
+      // The rules are sent even for a hand-picked list, and KEPT rather than
+      // cleared — switching to hand-picked and back should not throw away work
+      // somebody did on the conditions.
       rules: serialized.rule,
     };
 
@@ -461,27 +481,77 @@ function SegmentEditor({
                 }
               />
             </Field>
+
+            {/* How membership is decided (docs/144 §10). Asked HERE, alongside
+                the name, because it changes what the rest of the screen even is
+                — and because switching it later is a real decision, not a
+                setting somebody flips by accident further down. */}
+            <Field>
+              <FieldLabel>Who belongs in it</FieldLabel>
+              <div className="flex flex-wrap gap-2">
+                {(
+                  [
+                    ['dynamic', 'Work it out from rules', 'Membership keeps itself up to date.'],
+                    ['static', 'I’ll pick people myself', 'Nobody joins or leaves unless you say.'],
+                  ] as const
+                ).map(([value, label, hint]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    aria-pressed={kind === value}
+                    className={`flex min-w-0 flex-1 flex-col gap-0.5 rounded-lg border px-3 py-2.5 text-left ${
+                      kind === value
+                        ? 'border-module bg-module/10'
+                        : 'border-base-300 hover:border-base-content/20'
+                    }`}
+                    onClick={() => {
+                      setKind(value);
+                    }}
+                  >
+                    <span className="text-base font-semibold">{label}</span>
+                    <span className="text-sm">{hint}</span>
+                  </button>
+                ))}
+              </div>
+              <FieldDescription>
+                {kind === 'static'
+                  ? 'Your rules are kept, so you can switch back without losing them.'
+                  : 'Anyone who matches is added automatically, and anyone who stops matching drops out.'}
+              </FieldDescription>
+            </Field>
           </FormSection>
 
-          <FormSection
-            title="Conditions"
-            description="Build up who belongs in this segment. A customer is in it when they match the rules below."
-          >
-            {rulesError && touched ? (
-              <Alert color="warning" variant="soft">
-                <AlertContent>
-                  <AlertDescription>{rulesError}</AlertDescription>
-                </AlertContent>
-              </Alert>
-            ) : null}
+          {kind === 'dynamic' ? (
+            <FormSection
+              title="Conditions"
+              description="Build up who belongs in this segment. A customer is in it when they match the rules below."
+            >
+              {rulesError && touched ? (
+                <Alert color="warning" variant="soft">
+                  <AlertContent>
+                    <AlertDescription>{rulesError}</AlertDescription>
+                  </AlertContent>
+                </Alert>
+              ) : null}
 
-            <RuleGroupEditor
-              node={root}
-              repItems={repItems}
-              accountItems={accountItems}
-              onChange={changeRoot}
-            />
-          </FormSection>
+              <RuleGroupEditor
+                node={root}
+                repItems={repItems}
+                accountItems={accountItems}
+                onChange={changeRoot}
+              />
+            </FormSection>
+          ) : isNew ? (
+            <FormSection title="Who is on it">
+              <Text className="text-base">
+                Create the list first, then you can start putting people on it.
+              </Text>
+            </FormSection>
+          ) : (
+            // Membership saves on the spot, so it sits OUTSIDE the form's own
+            // Save — see the note at the top of list-membership.
+            <ListMembership segmentId={id} segmentName={identity.name || 'this list'} />
+          )}
 
           {!isNew && segment && !isArchived ? (
             <FormSection

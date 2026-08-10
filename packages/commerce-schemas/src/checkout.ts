@@ -19,7 +19,7 @@ export const CheckoutStep = z.enum([
 ]);
 export type CheckoutStep = z.infer<typeof CheckoutStep>;
 
-// `customerId` / `b2bAccountId` are deliberately NOT accepted here — both are
+// `customerId` / `companyId` are deliberately NOT accepted here — both are
 // resolved server-side from the cart's own `customerId` (never trusted from
 // the client, which would otherwise let any caller claim someone else's B2B
 // pricing). `channel` stays purely an analytics/origin tag.
@@ -91,7 +91,7 @@ export const CheckoutSessionSnapshot = z.object({
   currency: Currency,
   customerEmail: z.string().email().optional(),
   customerId: Uuid.optional(),
-  b2bAccountId: Uuid.optional(),
+  companyId: Uuid.optional(),
   // The linked B2B account's payment-terms designation (e.g. 'prepay',
   // 'net30') — lets the storefront hide "bill to account" for a prepay
   // account instead of offering net terms it isn't entitled to.

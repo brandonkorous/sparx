@@ -358,11 +358,15 @@ export interface ChatActivityItem {
 function contactName(conv: {
   visitorName: string | null;
   visitorEmail: string | null;
-  customer: { firstName: string | null; lastName: string | null; company: string | null } | null;
+  customer: {
+    firstName: string | null;
+    lastName: string | null;
+    companyName: string | null;
+  } | null;
 }): string {
   if (conv.customer) {
     const full = [conv.customer.firstName, conv.customer.lastName].filter(Boolean).join(' ').trim();
-    return firstNonEmpty(full, conv.customer.company) ?? 'Anonymous visitor';
+    return firstNonEmpty(full, conv.customer.companyName) ?? 'Anonymous visitor';
   }
   return firstNonEmpty(conv.visitorName, conv.visitorEmail) ?? 'Anonymous visitor';
 }
@@ -384,7 +388,7 @@ export async function activity(ctx: TenantContext, limit = 12): Promise<ChatActi
           select: {
             visitorName: true,
             visitorEmail: true,
-            customer: { select: { firstName: true, lastName: true, company: true } },
+            customer: { select: { firstName: true, lastName: true, companyName: true } },
           },
         },
       },

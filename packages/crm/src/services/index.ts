@@ -3,7 +3,7 @@
 // etc. — symmetric with how the MCP tool registry will surface them.
 
 export * as customerService from './customer-service';
-export * as b2bAccountService from './b2b-account-service';
+export * as companyService from './company-service';
 export * as b2bAccountContactService from './b2b-account-contact-service';
 export * as b2bEscalationService from './b2b-escalation-service';
 // Order-derived B2B net-terms AR, materialised as BillingDocuments (docs/87 §15).
@@ -13,6 +13,23 @@ export * as b2bQuoteService from './b2b-quote-service';
 // The direct-customer (non-B2B) counterpart — estimate requests on the system
 // `customer-estimates` workflow.
 export * as customerEstimateService from './customer-estimate-service';
+// The CRM workspace layer (docs/144 §11 + §12) — how a business WORKS its CRM
+// rather than anything about a customer: what it has decided, how each person
+// looks at a list, how a rep hands out their calendar, and how a customer says
+// yes to a quote.
+export * as crmSettingsService from './crm-settings-service';
+// Duplicate detection + merge. Also re-exported through customerService, which
+// is where callers found it before it grew a bulk path — both names reach the
+// same functions rather than two implementations drifting apart.
+export * as mergeService from './merge-service';
+export * as savedViewService from './saved-view-service';
+export * as meetingLinkService from './meeting-link-service';
+export * as signatureService from './signature-service';
+export type { ResolvedCrmSettings } from './crm-settings-service';
+export type { DomainMatch } from './company-service';
+export type { PublicSigningView, SignatureRequest, SignResult } from './signature-service';
+export type { PublicMeetingLink } from './meeting-link-service';
+export type { BulkMergeResult, DuplicateGroup } from './merge-service';
 export * as pipelineService from './pipeline-service';
 export * as dealService from './deal-service';
 export * as activityService from './activity-service';
@@ -160,6 +177,12 @@ export * as reportingService from './reporting-service';
 // from `reportingService` above, which is the seven sparx wrote by hand.
 export * as reportService from './report-service';
 export * as dashboardService from './dashboard-service';
+// Lead + deal scoring (docs/144 §10). `scoringFields` is exported alongside the
+// service because the rule editor needs the field catalog to offer choices, and
+// api-rest serves it from the same allowlist the evaluator reads — so a person
+// cannot build a rule that references something scoring cannot see.
+export * as scoringService from './scoring-service';
+export * as scoringFields from './scoring-fields';
 export * as reportCompiler from './report-compiler';
 export { seedBuiltinReports, BUILTIN_REPORTS } from './report-builtins';
 export type { ReportDefinition, ReportResult } from './report-compiler';

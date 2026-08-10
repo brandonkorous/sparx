@@ -186,7 +186,7 @@ export async function addItem(
         currency: true,
         customerId: true,
         propertyId: true,
-        customer: { select: { b2bAccountId: true } },
+        customer: { select: { companyId: true } },
       },
     });
     if (!cart) throw new CommerceNotFoundError('Cart', input.cartId);
@@ -223,10 +223,10 @@ export async function addItem(
       };
     }
 
-    const b2bAccountId = await pricingService.resolveActiveB2bAccountId(
+    const companyId = await pricingService.resolveActiveB2bAccountId(
       tx,
       cart.customerId ?? undefined,
-      cart.customer?.b2bAccountId
+      cart.customer?.companyId
     );
     const priced = await pricingService.resolve(ctx, {
       variantId,
@@ -234,7 +234,7 @@ export async function addItem(
       channel: cart.channel as 'storefront' | 'b2b_portal' | 'admin' | 'subscription',
       currency: cart.currency,
       customerId: cart.customerId ?? undefined,
-      b2bAccountId,
+      companyId,
       customerSegmentIds: [],
       // Site the cart is on (docs/131 §4) — so a sibling business's price list can't
       // price this line.
@@ -817,13 +817,13 @@ async function repriceItems(
   const customer = cart.customerId
     ? await tx.customer.findFirst({
         where: { id: cart.customerId },
-        select: { b2bAccountId: true },
+        select: { companyId: true },
       })
     : null;
-  const b2bAccountId = await pricingService.resolveActiveB2bAccountId(
+  const companyId = await pricingService.resolveActiveB2bAccountId(
     tx,
     cart.customerId ?? undefined,
-    customer?.b2bAccountId
+    customer?.companyId
   );
 
   for (const item of items) {
@@ -833,7 +833,7 @@ async function repriceItems(
       channel: cart.channel as 'storefront' | 'b2b_portal' | 'admin' | 'subscription',
       currency: cart.currency,
       customerId: cart.customerId ?? undefined,
-      b2bAccountId,
+      companyId,
       customerSegmentIds: [],
       // Site the cart is on (docs/131 §4) — scopes the eligible price lists.
       ...(cart.propertyId ? { propertyId: cart.propertyId } : {}),

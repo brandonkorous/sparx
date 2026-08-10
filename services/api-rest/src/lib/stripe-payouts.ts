@@ -166,7 +166,7 @@ export async function getConnectedPayout(
                 channel: true,
                 source: true,
                 customer: {
-                  select: { firstName: true, lastName: true, company: true, email: true },
+                  select: { firstName: true, lastName: true, companyName: true, email: true },
                 },
               },
             },
@@ -177,7 +177,7 @@ export async function getConnectedPayout(
           // First non-blank of person name → company → email. A customer row can carry
           // an empty string as readily as a null, so blank-after-trim has to lose too.
           const name =
-            [[c?.firstName, c?.lastName].filter(Boolean).join(' '), c?.company, c?.email]
+            [[c?.firstName, c?.lastName].filter(Boolean).join(' '), c?.companyName, c?.email]
               .map((v) => v?.trim())
               .find((v) => v) ?? null;
           return {

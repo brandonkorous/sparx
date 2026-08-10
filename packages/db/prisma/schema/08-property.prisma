@@ -219,8 +219,8 @@ model Property {
   // Social posting (docs/133 §5) — a connected account speaks for one business, so
   // the connection is per-site (like a sales channel); SocialPost is per-site too.
   // SocialTarget/SocialPostTarget inherit their site from the connection/post.
-  socialConnections SocialConnection[]
-  socialPosts       SocialPost[]
+  socialConnections  SocialConnection[]
+  socialPosts        SocialPost[]
   // Hashtag sets, posting slots and the engagement inbox are per-site too: they are
   // this business's voice, its cadence, and its conversations.
   socialHashtagSets  SocialHashtagSet[]
@@ -245,17 +245,26 @@ model Property {
   // CRM sales pipelines (docs/131 §5). Pipeline is the authored process
   // (Cascade); Deal is the record, denormalized from its pipeline (SetNull,
   // outlives the site). PipelineStage inherits and has no relation here.
-  pipelines Pipeline[]
-  deals     Deal[]
+  pipelines     Pipeline[]
+  deals         Deal[]
   // Same reasoning as Deal: a service request is a record of something a real
   // person asked for, so it survives the site closing (SetNull).
-  tickets   Ticket[]
+  tickets       Ticket[]
   // Reports and dashboards are per-site when a business runs more than one:
   // "how are we doing" means a different thing for each shopfront. Cascade,
   // unlike the records above — a report about a site that is gone is not a
   // record of anything that happened, just a query with no subject.
   crmReports    CrmReport[]
   crmDashboards CrmDashboard[]
+  scoringModels ScoringModel[]
+
+  // The CRM workspace layer (docs/144 §11/§12) — settings, saved views and
+  // meeting links are all per-BUSINESS, because two unrelated businesses under
+  // one owner do not agree on what a duplicate is, which columns matter, or
+  // whose calendar `/meet/discovery-call` opens.
+  crmSettings     CrmSettings[]
+  crmSavedViews   CrmSavedView[]
+  crmMeetingLinks CrmMeetingLink[]
 
   // CRM tasks (docs/131 §5) — a work queue item, denormalized from its
   // customer/deal so a site-scoped member sees only their business's tasks.

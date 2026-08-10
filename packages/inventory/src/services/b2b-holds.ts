@@ -18,7 +18,7 @@ import { reserveOnTx, releaseOnTx, pickWarehouseFor } from './reservations';
 
 export interface FleetHoldRow {
   id: string;
-  b2bAccountId: string;
+  companyId: string;
   variantId: string;
   sku: string | null;
   title: string | null;
@@ -48,7 +48,7 @@ export interface AccountAvailabilityRow {
 
 interface HoldWithJoins {
   id: string;
-  b2bAccountId: string;
+  companyId: string;
   variantId: string;
   warehouseId: string;
   quantity: number;
@@ -66,7 +66,7 @@ interface HoldWithJoins {
 function serializeHold(h: HoldWithJoins): FleetHoldRow {
   return {
     id: h.id,
-    b2bAccountId: h.b2bAccountId,
+    companyId: h.companyId,
     variantId: h.variantId,
     sku: h.variant?.sku ?? null,
     title: h.variant?.product?.title ?? null,
@@ -89,11 +89,11 @@ const HOLD_INCLUDE = {
 } as const;
 
 async function ensureAccount(tx: TxClient, ctx: ServiceContext, accountId: string): Promise<void> {
-  const account = await tx.b2BAccount.findFirst({
+  const account = await tx.company.findFirst({
     where: { id: accountId, tenantId: ctx.tenantId, deletedAt: null },
     select: { id: true },
   });
-  if (!account) throw new InventoryNotFoundError('B2BAccount', accountId);
+  if (!account) throw new InventoryNotFoundError('Company', accountId);
 }
 
 async function loadOverride(
@@ -155,7 +155,7 @@ export async function accountAvailability(
       }),
       tx.b2bFleetHold.groupBy({
         by: ['variantId'],
-        where: { tenantId: ctx.tenantId, b2bAccountId: input.accountId, status: 'active' },
+        where: { tenantId: ctx.tenantId, companyId: input.accountId, status: 'active' },
         _sum: { quantity: true },
       }),
       tx.b2bAccountProductOverride.findMany({
@@ -221,7 +221,7 @@ export async function createFleetHold(
     const hold = await tx.b2bFleetHold.create({
       data: {
         tenantId: ctx.tenantId,
-        b2bAccountId: input.accountId,
+        companyId: input.accountId,
         variantId: input.variantId,
         warehouseId,
         quantity: input.quantity,
@@ -357,7 +357,7 @@ export async function listFleetHolds(
   const skip = filter.skip ?? 0;
   const where = {
     tenantId: ctx.tenantId,
-    ...(filter.accountId ? { b2bAccountId: filter.accountId } : {}),
+    ...(filter.accountId ? { companyId: filter.accountId } : {}),
     ...(filter.variantId ? { variantId: filter.variantId } : {}),
     ...(filter.status ? { status: filter.status } : {}),
   };

@@ -86,7 +86,7 @@ export async function recordPayment(
         documentId: result.document.id,
         number: result.document.number,
         customerId: result.document.customerId,
-        b2bAccountId: result.document.b2bAccountId,
+        companyId: result.document.companyId,
         total: Number(result.document.total),
         currency: result.document.currency,
       },

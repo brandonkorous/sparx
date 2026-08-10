@@ -49,7 +49,7 @@ function entityRefsFromFields(fields: EffectInput['fields']): Record<string, str
     cartId: optionalEntityId(fields, 'cart.id') ?? null,
     quoteId: optionalEntityId(fields, 'quote.id') ?? null,
     billingDocumentId: optionalEntityId(fields, 'invoice.id') ?? null,
-    b2bAccountId: optionalEntityId(fields, 'b2bAccount.id') ?? null,
+    companyId: optionalEntityId(fields, 'b2bAccount.id') ?? null,
     subscriptionId: optionalEntityId(fields, 'subscription.id') ?? null,
     returnId: optionalEntityId(fields, 'return.id') ?? null,
   };

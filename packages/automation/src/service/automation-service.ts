@@ -95,6 +95,7 @@ function liveDocument(a: Automation): AutomationDraft {
     triggerConfig: a.triggerConfig,
     conditions: a.conditions,
     actions: a.actions,
+    goal: a.goal,
     maxDepth: a.maxDepth,
   };
 }
@@ -123,6 +124,8 @@ function snapshotVersion(
       triggerConfig: json(args.doc.triggerConfig),
       conditions: json(args.doc.conditions),
       actions: json(args.doc.actions),
+      goal:
+        args.doc.goal === undefined || args.doc.goal === null ? Prisma.DbNull : json(args.doc.goal),
       maxDepth: args.doc.maxDepth,
       note: args.note ?? null,
       publishedBy: args.publishedBy ?? null,
@@ -178,6 +181,7 @@ export async function createAutomation(
         triggerConfig: json(triggerConfig),
         conditions: json(data.conditions),
         actions: json(data.actions),
+        goal: data.goal ? json(data.goal) : Prisma.DbNull,
         maxDepth: data.maxDepth,
         origin: 'user',
         locked: false,
@@ -223,6 +227,7 @@ export async function updateAutomation(
       data.trigger !== undefined ||
       data.conditions !== undefined ||
       data.actions !== undefined ||
+      data.goal !== undefined ||
       data.maxDepth !== undefined;
 
     const patch: Prisma.AutomationUpdateInput = {};
@@ -241,6 +246,9 @@ export async function updateAutomation(
       }
       if (data.conditions !== undefined) next.conditions = data.conditions;
       if (data.actions !== undefined) next.actions = data.actions;
+      // `null` is meaningful here — "remove the goal" — so this tests against
+      // undefined, not falsiness.
+      if (data.goal !== undefined) next.goal = data.goal;
       if (data.maxDepth !== undefined) next.maxDepth = data.maxDepth;
       patch.draft = json(next);
     }
@@ -296,6 +304,11 @@ export async function publishAutomation(
         triggerConfig: json(draft.triggerConfig),
         conditions: json(draft.conditions),
         actions: json(draft.actions),
+        // A draft written before goals existed has no `goal` key at all.
+        // `undefined` would leave the live column alone, which is right; an
+        // explicit null clears it, which is also right. Only the missing-key case
+        // needs the distinction spelled out.
+        goal: draft.goal === undefined || draft.goal === null ? Prisma.DbNull : json(draft.goal),
         maxDepth: draft.maxDepth,
         version,
         publishedAt: new Date(),
@@ -347,6 +360,7 @@ export async function restoreAutomationVersion(
       triggerConfig: snap.triggerConfig,
       conditions: snap.conditions,
       actions: snap.actions,
+      goal: snap.goal,
       maxDepth: snap.maxDepth,
     };
     return tx.automation.update({ where: { id }, data: { draft: json(draft) } });
@@ -413,6 +427,7 @@ export async function cloneAutomation(
         triggerConfig: json(source.triggerConfig),
         conditions: json(source.conditions),
         actions: json(source.actions),
+        goal: source.goal === null ? Prisma.DbNull : json(source.goal),
         maxDepth: source.maxDepth,
         origin: 'user',
         locked: false,
@@ -487,6 +502,10 @@ export interface SystemAutomationSpec {
   trigger: Trigger;
   conditions: ConditionGroup;
   actions: Action[];
+  /** The outcome the seeded rule is trying to cause (docs/144 §9). Most system
+   *  rules have none — a receipt email is not trying to cause anything — but a
+   *  seeded nurture sequence does, and it is what makes its history readable. */
+  goal?: ConditionGroup | null;
   maxDepth?: number;
   /** Locked = the tenant cannot edit/disable it (the "Locked" tier). */
   locked?: boolean;
@@ -517,6 +536,7 @@ export async function upsertSystemAutomation(
       triggerConfig: json(triggerConfig),
       conditions: json(spec.conditions),
       actions: json(spec.actions),
+      goal: spec.goal ? json(spec.goal) : Prisma.DbNull,
       maxDepth: spec.maxDepth ?? 3,
       origin: 'system',
       locked: spec.locked ?? false,

@@ -49,6 +49,15 @@ import {
 } from './automations-presentation';
 import { actionDef, availableActions } from './automations-catalog';
 import {
+  actionAt,
+  insertIntoBranch,
+  nestedNodeId,
+  parseNestedId,
+  setActionAt,
+  setBranchCondition,
+  type BranchArm,
+} from './branch-tree';
+import {
   automationErrorMessage,
   useCreateAutomation,
   useDeleteAutomation,
@@ -74,6 +83,9 @@ interface DocFields {
   trigger: Trigger;
   conditions: ConditionGroup;
   actions: Action[];
+  /** What this rule is trying to cause (docs/144 §9). Null = no goal, which is
+   *  most rules — a receipt email is not trying to cause anything. */
+  goal: ConditionGroup | null;
   maxDepth: number;
 }
 
@@ -83,6 +95,7 @@ const EMPTY_FIELDS: DocFields = {
   trigger: { kind: 'event', eventType: 'order.placed' },
   conditions: { logic: 'AND', conditions: [] },
   actions: [],
+  goal: null,
   maxDepth: 3,
 };
 
@@ -99,6 +112,7 @@ function docFieldsFrom(a: Automation, source: 'draft' | 'live'): DocFields {
           triggerConfig: a.triggerConfig,
           conditions: a.conditions,
           actions: a.actions,
+          goal: a.goal,
           maxDepth: a.maxDepth,
         };
   return {
@@ -110,8 +124,19 @@ function docFieldsFrom(a: Automation, source: 'draft' | 'live'): DocFields {
     },
     conditions: parseConditions(src.conditions),
     actions: parseActions(src.actions),
+    // An EMPTY group is not a goal — it passes for everything, so storing one
+    // would convert every run the moment it enrolled. A draft written before
+    // goals existed has no key at all, which lands here as null either way.
+    goal: parseGoal(src.goal),
     maxDepth: src.maxDepth,
   };
+}
+
+/** A stored goal, or null when there isn't a meaningful one. */
+function parseGoal(stored: unknown): ConditionGroup | null {
+  if (stored === null || stored === undefined) return null;
+  const parsed = parseConditions(stored);
+  return parsed.conditions.length === 0 ? null : parsed;
 }
 
 /** Canonical serialization of the authoring document — drives dirty detection.
@@ -124,6 +149,7 @@ function serializeDoc(f: DocFields): string {
     trigger: f.trigger,
     conditions: f.conditions,
     actions: f.actions,
+    goal: f.goal,
     maxDepth: f.maxDepth,
   });
 }
@@ -187,6 +213,7 @@ export function AutomationEditor({
   const [actionIds, setActionIds] = useState<string[]>(() =>
     initial.actions.map(() => newActionId())
   );
+  const [goal, setGoal] = useState<ConditionGroup | null>(initial.goal);
   const [maxDepth, setMaxDepth] = useState(initial.maxDepth);
 
   const [status, setStatus] = useState(automation?.status ?? 'draft');
@@ -214,8 +241,8 @@ export function AutomationEditor({
   const [error, setError] = useState<string | null>(null);
 
   const currentDoc = useMemo(
-    () => serializeDoc({ name, description, trigger, conditions, actions, maxDepth }),
-    [name, description, trigger, conditions, actions, maxDepth]
+    () => serializeDoc({ name, description, trigger, conditions, actions, goal, maxDepth }),
+    [name, description, trigger, conditions, actions, goal, maxDepth]
   );
   const dirty = currentDoc !== baseline;
   const hasUnpublished = dirty || serverHasDraft;
@@ -273,18 +300,97 @@ export function AutomationEditor({
     setActionIds((prev) => arrayMove(prev, from, to));
   }
 
+  // ── editing a step, wherever it sits ──
+  //
+  // A node id is either a top-level action id (`act-…`) or a PATH into a branch
+  // (`act-…::then.0`). Both arrive through the same two functions, so the
+  // inspector never has to know whether the step it is editing is nested — which
+  // is what stops branch support leaking into every editor form.
+
   function updateAction(id: string, next: Action) {
+    const nested = parseNestedId(id);
+    if (nested) {
+      const rootIndex = actionIds.indexOf(nested.rootId);
+      if (rootIndex < 0) return;
+      setActions((prev) =>
+        prev.map((a, idx) => (idx === rootIndex ? setActionAt(a, nested.path, next) : a))
+      );
+      return;
+    }
     const i = actionIds.indexOf(id);
     if (i < 0) return;
     setActions((prev) => prev.map((a, idx) => (idx === i ? next : a)));
   }
 
   function removeAction(id: string) {
+    const nested = parseNestedId(id);
+    if (nested) {
+      const rootIndex = actionIds.indexOf(nested.rootId);
+      if (rootIndex < 0) return;
+      setActions((prev) =>
+        prev.map((a, idx) => (idx === rootIndex ? setActionAt(a, nested.path, null) : a))
+      );
+      // Select the branch that held it. Selecting a sibling would need the path
+      // arithmetic for "the step before this one in this arm", and a deleted
+      // step's neighbour is not obviously what somebody wants to look at next.
+      if (selectedId === id) setSelectedId(nested.rootId);
+      return;
+    }
     const i = actionIds.indexOf(id);
     if (i < 0) return;
     setActions((prev) => prev.filter((_, idx) => idx !== i));
     setActionIds((prev) => prev.filter((_, idx) => idx !== i));
     if (selectedId === id) setSelectedId(actionIds[i - 1] ?? actionIds[i + 1] ?? TRIGGER_NODE);
+  }
+
+  /** Add a step inside one arm of a branch. `branchNodeId` is the branch's own
+   *  node id — top-level or itself nested. */
+  function insertIntoArm(branchNodeId: string, arm: BranchArm, atIndex: number) {
+    const first = availableActions(enabledModules)[0];
+    const action: Action = {
+      type: first?.type ?? 'platform.stop',
+      config: first?.jsonTemplate ?? {},
+    };
+
+    const nested = parseNestedId(branchNodeId);
+    const rootId = nested?.rootId ?? branchNodeId;
+    const branchPath = nested?.path ?? [];
+    const rootIndex = actionIds.indexOf(rootId);
+    if (rootIndex < 0) return;
+
+    setActions((prev) =>
+      prev.map((a, idx) =>
+        idx === rootIndex ? insertIntoBranch(a, branchPath, arm, atIndex, action) : a
+      )
+    );
+    selectNode(nestedNodeId(rootId, [...branchPath, { arm, index: atIndex }]));
+  }
+
+  /** Change the question a branch asks (and the note shown on its card). */
+  function setBranchQuestion(branchNodeId: string, condition: ConditionGroup, label?: string) {
+    const nested = parseNestedId(branchNodeId);
+    const rootId = nested?.rootId ?? branchNodeId;
+    const branchPath = nested?.path ?? [];
+    const rootIndex = actionIds.indexOf(rootId);
+    if (rootIndex < 0) return;
+    setActions((prev) =>
+      prev.map((a, idx) =>
+        idx === rootIndex ? setBranchCondition(a, branchPath, condition, label) : a
+      )
+    );
+  }
+
+  /** The action a node id points at, top-level or nested. */
+  function actionForNode(id: string): Action | null {
+    const nested = parseNestedId(id);
+    if (!nested) {
+      const i = actionIds.indexOf(id);
+      return i >= 0 ? (actions[i] ?? null) : null;
+    }
+    const rootIndex = actionIds.indexOf(nested.rootId);
+    if (rootIndex < 0) return null;
+    const root = actions[rootIndex];
+    return root ? actionAt(root, nested.path) : null;
   }
 
   // Replace the whole document (after discard → live, or restore → draft).
@@ -295,6 +401,7 @@ export function AutomationEditor({
     setConditions(f.conditions);
     setActions(f.actions);
     setActionIds(f.actions.map(() => newActionId()));
+    setGoal(f.goal);
     setMaxDepth(f.maxDepth);
     setSelectedId(SETTINGS_NODE);
     setBaseline(serializeDoc(f));
@@ -356,6 +463,7 @@ export function AutomationEditor({
       trigger,
       conditions,
       actions,
+      goal,
       maxDepth,
     };
   }
@@ -697,11 +805,13 @@ export function AutomationEditor({
             trigger={trigger}
             conditions={conditions}
             actions={actions}
+            goal={goal}
             actionIds={actionIds}
             selectedId={selectedId}
             onSelect={selectNode}
             onInsertAction={insertAction}
             onMoveAction={moveAction}
+            onInsertIntoArm={insertIntoArm}
           />
         </div>
 
@@ -739,6 +849,10 @@ export function AutomationEditor({
               actionIds={actionIds}
               onAction={updateAction}
               onRemoveAction={removeAction}
+              goal={goal}
+              onGoal={setGoal}
+              actionForNode={actionForNode}
+              onBranchQuestion={setBranchQuestion}
             />
           )}
         </aside>

@@ -190,7 +190,11 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             cartId: strOrNull(refs.cartId),
             quoteId: strOrNull(refs.quoteId),
             billingDocumentId: strOrNull(refs.billingDocumentId),
-            b2bAccountId: strOrNull(refs.b2bAccountId),
+            // `b2bAccountId` is the pre-rename key (docs/144 §11). Sends queued
+            // before the rename still carry it, and a queued email that silently
+            // loses its account is one whose credit line and portal link go
+            // blank — so both are read, new name first.
+            companyId: strOrNull(refs.companyId) ?? strOrNull(refs.b2bAccountId),
             subscriptionId: strOrNull(refs.subscriptionId),
             returnId: strOrNull(refs.returnId),
           };

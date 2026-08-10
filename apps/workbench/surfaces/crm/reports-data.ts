@@ -24,7 +24,7 @@ import { api } from '../../lib/api/client';
 
 export interface CrmSnapshot {
   customers: number;
-  b2bAccounts: number;
+  companies: number;
   openDeals: number;
   pipelineValue: number;
   openTasks: number;

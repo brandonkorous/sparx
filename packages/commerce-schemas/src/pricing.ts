@@ -26,7 +26,7 @@ export const CreatePriceListInput = z.object({
   // Targeting — at most one of these is set; both null means "default
   // for the channel".
   customerSegmentId: Uuid.nullable().optional(),
-  b2bAccountId: Uuid.nullable().optional(),
+  companyId: Uuid.nullable().optional(),
   priority: z.number().int().nonnegative().default(0),
   // Nullable so an update can clear a previously-set go-live window. The service
   // treats a falsy value as "no date" (writes null).
@@ -98,7 +98,7 @@ export type CreateBulkPriceTierInput = z.infer<typeof CreateBulkPriceTierInput>;
 // ─── Contract prices (B2B-specific, signed agreement) ─────────────────
 
 export const CreateContractPriceInput = z.object({
-  b2bAccountId: Uuid,
+  companyId: Uuid,
   variantId: Uuid,
   priceCents: MoneyCents,
   validFrom: z.string().datetime(),
@@ -120,7 +120,7 @@ export const PriceResolutionRequest = z.object({
   channel: Channel,
   currency: Currency,
   customerId: Uuid.optional(),
-  b2bAccountId: Uuid.optional(),
+  companyId: Uuid.optional(),
   customerSegmentIds: z.array(Uuid).default([]),
   // The site this price is for (docs/131 §4). A price list applies on a site when it
   // has no site links (all sites) OR is linked to this one; absent = no site filter

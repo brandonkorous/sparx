@@ -11,7 +11,7 @@
 // Two tiers of source, both selected by what the tree actually references
 // (`collectEmailSourceKeys` over bindings AND `{{token}}` paths, so a static email
 // costs nothing):
-//   · entity-scoped — customer / order / cart / quote / invoice / b2bAccount:
+//   · entity-scoped — customer / order / cart / quote / invoice / company:
 //     resolved from the send's `entityRefs` (the specific entity an automation
 //     fired on), falling back to the recipient's most-recent for a broadcast.
 //   · per-send      — tenant / commerce.product / promotion / cms.<type>: resolved
@@ -43,7 +43,7 @@ export interface EmailRecipientRef {
   cartId?: string | null;
   quoteId?: string | null;
   billingDocumentId?: string | null;
-  b2bAccountId?: string | null;
+  companyId?: string | null;
   /** The fulfillment a shipping-confirmation send is about (docs/93 §3). */
   fulfillmentId?: string | null;
   /** The Scheduling-module booking a booking-* send is about (docs/79 §10). */
@@ -234,14 +234,14 @@ const CUSTOMER_SELECT = {
   firstName: true,
   lastName: true,
   email: true,
-  company: true,
+  companyName: true,
 } as const;
 
 interface CustomerRow {
   firstName: string | null;
   lastName: string | null;
   email: string | null;
-  company: string | null;
+  companyName: string | null;
 }
 
 function customerFields(c: CustomerRow | null, fallbackEmail: string): Record<string, string> {
@@ -251,7 +251,7 @@ function customerFields(c: CustomerRow | null, fallbackEmail: string): Record<st
     lastName: c?.lastName ?? '',
     fullName,
     email: c?.email ?? fallbackEmail,
-    company: c?.company ?? '',
+    company: c?.companyName ?? '',
   };
 }
 
@@ -259,18 +259,18 @@ function customerFields(c: CustomerRow | null, fallbackEmail: string): Record<st
  *  active contact (mirrors the automation resolver's `resolveContact`). */
 async function b2bPrimaryCustomer(
   ctx: ServiceContext,
-  b2bAccountId: string
+  companyId: string
 ): Promise<CustomerRow | null> {
   const primary = await withTenant(ctx, (tx) =>
     tx.b2bAccountContact.findFirst({
-      where: { accountId: b2bAccountId, isActive: true, role: 'primary_contact' },
+      where: { accountId: companyId, isActive: true, role: 'primary_contact' },
       select: { customer: { select: CUSTOMER_SELECT } },
     })
   );
   if (primary?.customer) return primary.customer;
   const any = await withTenant(ctx, (tx) =>
     tx.b2bAccountContact.findFirst({
-      where: { accountId: b2bAccountId, isActive: true },
+      where: { accountId: companyId, isActive: true },
       select: { customer: { select: CUSTOMER_SELECT } },
     })
   );
@@ -290,8 +290,8 @@ async function resolveCustomer(
     );
     if (c) return customerFields(c, fallbackEmail);
   }
-  if (ref?.b2bAccountId) {
-    const c = await b2bPrimaryCustomer(ctx, ref.b2bAccountId);
+  if (ref?.companyId) {
+    const c = await b2bPrimaryCustomer(ctx, ref.companyId);
     if (c) return customerFields(c, fallbackEmail);
   }
   return customerFields(null, fallbackEmail);
@@ -750,7 +750,7 @@ async function resolveQuote(
         status: true,
         total: true,
         validUntil: true,
-        b2bAccountId: true,
+        companyId: true,
         lines: {
           orderBy: { sortOrder: 'asc' },
           select: { description: true, quantity: true, unitPrice: true, lineTotal: true },
@@ -764,8 +764,8 @@ async function resolveQuote(
     status: doc.status,
     total: money(doc.total),
     validUntil: dateLabel(doc.validUntil),
-    reviewUrl: doc.b2bAccountId
-      ? siteLink(slug, `/account/b2b/${doc.b2bAccountId}/quotes`)
+    reviewUrl: doc.companyId
+      ? siteLink(slug, `/account/b2b/${doc.companyId}/quotes`)
       : siteLink(slug, '/account'),
     items: doc.lines.map((l) => ({
       name: l.description,
@@ -792,7 +792,7 @@ async function resolveInvoice(
         total: true,
         balance: true,
         dueAt: true,
-        b2bAccountId: true,
+        companyId: true,
         lines: {
           orderBy: { sortOrder: 'asc' },
           select: { description: true, quantity: true, unitPrice: true, lineTotal: true },
@@ -812,8 +812,8 @@ async function resolveInvoice(
     dueDate: dateLabel(doc.dueAt),
     daysUntilDue: String(daysUntilDue),
     overdueDays: String(overdueDays),
-    payUrl: doc.b2bAccountId
-      ? siteLink(slug, `/account/b2b/${doc.b2bAccountId}/invoices`)
+    payUrl: doc.companyId
+      ? siteLink(slug, `/account/b2b/${doc.companyId}/invoices`)
       : siteLink(slug, '/account'),
     items: doc.lines.map((l) => ({
       description: l.description,
@@ -824,17 +824,17 @@ async function resolveInvoice(
   };
 }
 
-// ── b2bAccount ──────────────────────────────────────────────────────────────
+// ── company ──────────────────────────────────────────────────────────────
 
 async function resolveB2bAccount(
   ctx: ServiceContext,
   ref: EmailRecipientRef | undefined,
   slug: string
 ): Promise<Record<string, string>> {
-  if (!ref?.b2bAccountId) return {};
+  if (!ref?.companyId) return {};
   const account = await withTenant(ctx, (tx) =>
-    tx.b2BAccount.findUnique({
-      where: { id: ref.b2bAccountId! },
+    tx.company.findUnique({
+      where: { id: ref.companyId! },
       select: { companyName: true, status: true, paymentTerms: true, creditLimit: true },
     })
   );
@@ -844,7 +844,7 @@ async function resolveB2bAccount(
     status: account.status,
     paymentTerms: account.paymentTerms ?? '',
     creditLimit: account.creditLimit != null ? money(account.creditLimit) : '',
-    portalUrl: siteLink(slug, `/account/b2b/${ref.b2bAccountId}`),
+    portalUrl: siteLink(slug, `/account/b2b/${ref.companyId}`),
   };
 }
 

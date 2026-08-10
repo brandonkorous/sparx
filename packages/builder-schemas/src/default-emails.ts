@@ -491,7 +491,7 @@ const b2bOrderRejected = (): BuilderNode =>
 // The industry-agnostic booking record (appointment | class | reservation |
 // rental) — the legacy B2B-fleet `appointment` trees were retired 2026-07-14
 // (docs/79 §15.7) once service_appointments was dropped; B2B fleet bookings are
-// Bookings too (Booking.b2bAccountId/assetRef), so these cover them as well.
+// Bookings too (Booking.companyId/assetRef), so these cover them as well.
 // No vehicle copy — `location` / `staff` are the cross-type optionals instead.
 
 const bookingConfirmation = (): BuilderNode =>
@@ -675,8 +675,8 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
     category: 'notification',
     subject: 'Your account is approved',
     preheader: '{{b2bAccount.companyName}} is ready to order.',
-    sources: ['customer', 'b2bAccount', 'tenant'],
-    refs: ['customerId', 'b2bAccountId'],
+    sources: ['customer', 'company', 'tenant'],
+    refs: ['customerId', 'companyId'],
     tree: b2bAccountApproved(),
   },
   {

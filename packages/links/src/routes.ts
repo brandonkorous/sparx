@@ -254,6 +254,10 @@ export const ROUTES: readonly AppRoute[] = [
     entity: 'dashboard',
     entityLabel: 'Dashboards',
   },
+  // Scoring (docs/144 §10). One address, no `:id` — a business has one way of
+  // scoring customers and one of scoring deals, and the surface switches between
+  // them in place rather than giving each model a URL nobody would share.
+  { path: '/crm/scoring', surface: 'crm.scoring' },
   { path: '/crm/tasks', surface: 'crm.tasks.list' },
   { path: '/crm/tasks/:id', surface: 'crm.task.detail', entity: 'task', entityLabel: 'Tasks' },
   { path: '/crm/orders', surface: 'crm.orders.list' },
@@ -261,6 +265,14 @@ export const ROUTES: readonly AppRoute[] = [
   // `:key` because the record type IS its key — and the matcher hands a path
   // parameter through under its own name, so `:id` here would open a blank pane.
   { path: '/crm/record-types/:key', surface: 'crm.object-type.detail' },
+  // The ROWS of a tenant-invented object (docs/144 §3.6). `:objectKey` rather
+  // than `:key` because the pane takes both — the object it is listing and, on
+  // the detail, the row's own id — and two parameters called `key` and `id`
+  // would read as though the object had an id of its own.
+  { path: '/crm/records/:objectKey', surface: 'crm.records.list' },
+  { path: '/crm/records/:objectKey/:id', surface: 'crm.record.detail' },
+  { path: '/crm/settings', surface: 'crm.settings' },
+  { path: '/crm/booking-links', surface: 'crm.meeting-links' },
   { path: '/crm/mailboxes', surface: 'crm.mailboxes.list' },
   { path: '/crm/phone-systems', surface: 'crm.phone-systems.list' },
   { path: '/crm/reports', surface: 'crm.reports' },

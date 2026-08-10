@@ -35,12 +35,12 @@ export interface RecordRef {
 function personName(row: {
   firstName: string | null;
   lastName: string | null;
-  company: string | null;
+  companyName: string | null;
   email: string | null;
 }): string {
   const name = [row.firstName, row.lastName].filter(Boolean).join(' ').trim();
   if (name !== '') return name;
-  if (row.company?.trim()) return row.company.trim();
+  if (row.companyName?.trim()) return row.companyName.trim();
   if (row.email?.trim()) return row.email.trim();
   return 'Someone with no name yet';
 }
@@ -70,7 +70,7 @@ export async function resolveRecordRefs(
           id: true,
           firstName: true,
           lastName: true,
-          company: true,
+          companyName: true,
           email: true,
           deletedAt: true,
         },
@@ -88,7 +88,7 @@ export async function resolveRecordRefs(
     }
 
     case 'company': {
-      const rows = await tx.b2BAccount.findMany({
+      const rows = await tx.company.findMany({
         where: { id: { in: unique } },
         select: { id: true, companyName: true, website: true, deletedAt: true },
       });
@@ -170,7 +170,7 @@ export async function recordExists(
     case 'contact':
       return (await tx.customer.count({ where: { id: recordId, deletedAt: null } })) > 0;
     case 'company':
-      return (await tx.b2BAccount.count({ where: { id: recordId, deletedAt: null } })) > 0;
+      return (await tx.company.count({ where: { id: recordId, deletedAt: null } })) > 0;
     case 'deal':
       return (await tx.deal.count({ where: { id: recordId, deletedAt: null } })) > 0;
     default:
@@ -199,10 +199,10 @@ export interface PrimaryMirror {
 export function primaryMirrorFor(fromType: string, toType: string): PrimaryMirror | null {
   if (fromType === 'deal' && toType === 'contact') return { table: 'deal', column: 'customerId' };
   if (fromType === 'deal' && toType === 'company') {
-    return { table: 'deal', column: 'b2bAccountId' };
+    return { table: 'deal', column: 'companyId' };
   }
   if (fromType === 'contact' && toType === 'company') {
-    return { table: 'customer', column: 'b2bAccountId' };
+    return { table: 'customer', column: 'companyId' };
   }
   return null;
 }

@@ -46,7 +46,7 @@ export const CreateCustomerInput = z.object({
   lastName: z.string().max(255).nullable().optional(),
   company: z.string().max(255).nullable().optional(),
   jobTitle: z.string().max(255).nullable().optional(),
-  b2bAccountId: Uuid.nullable().optional(),
+  companyId: Uuid.nullable().optional(),
   assignedRepId: Uuid.nullable().optional(),
   preferredContactMethod: PreferredContactMethod.nullable().optional(),
   doNotContact: z.boolean().default(false),
@@ -64,7 +64,7 @@ export const CreateCustomerInput = z.object({
 });
 export type CreateCustomerInput = z.infer<typeof CreateCustomerInput>;
 
-// Same defaults-survive-`.partial()` trap as UpdateB2BAccountInput, and the one
+// Same defaults-survive-`.partial()` trap as UpdateCompanyInput, and the one
 // with a consent consequence: customerService.update writes every field that is
 // `!== undefined`, so editing a phone number alone DEMOTED the customer's
 // lifecycle stage back to 'lead', reset their relationship type to 'retail', and

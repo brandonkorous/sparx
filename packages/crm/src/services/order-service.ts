@@ -38,10 +38,10 @@ export interface OrderCustomerSummary {
   id: string;
   firstName: string | null;
   lastName: string | null;
-  company: string | null;
+  companyName: string | null;
   email: string | null;
-  b2bAccountId: string | null;
-  b2bAccount: {
+  companyId: string | null;
+  company: {
     id: string;
     companyName: string;
     paymentTerms: string | null;
@@ -53,12 +53,12 @@ const ORDER_CUSTOMER_SELECT = {
   id: true,
   firstName: true,
   lastName: true,
-  company: true,
+  companyName: true,
   email: true,
-  b2bAccountId: true,
+  companyId: true,
   // paymentTerms rides along so the B2B lens can show what an order is owed
   // under without a second query.
-  b2bAccount: { select: { id: true, companyName: true, paymentTerms: true, status: true } },
+  company: { select: { id: true, companyName: true, paymentTerms: true, status: true } },
 } as const;
 
 export interface OrderWithItems extends Order {
@@ -95,12 +95,12 @@ export async function list(
       // which belong to a deleted business they have no claim to.
       ...(filter.propertyIds ? { propertyId: { in: filter.propertyIds } } : {}),
       // B2B scoping rides the customer relation — an Order carries no
-      // b2bAccountId of its own. A specific account wins over the broad
+      // companyId of its own. A specific account wins over the broad
       // "any B2B account" lens when both are supplied.
-      ...(filter.b2bAccountId
-        ? { customer: { b2bAccountId: filter.b2bAccountId } }
+      ...(filter.companyId
+        ? { customer: { companyId: filter.companyId } }
         : filter.b2bOnly
-          ? { customer: { b2bAccountId: { not: null } } }
+          ? { customer: { companyId: { not: null } } }
           : {}),
       ...(filter.placedSince || filter.placedUntil
         ? {
@@ -120,7 +120,7 @@ export async function list(
               { orderNumber: { contains: filter.q, mode: 'insensitive' as const } },
               { customer: { firstName: { contains: filter.q, mode: 'insensitive' as const } } },
               { customer: { lastName: { contains: filter.q, mode: 'insensitive' as const } } },
-              { customer: { company: { contains: filter.q, mode: 'insensitive' as const } } },
+              { customer: { companyName: { contains: filter.q, mode: 'insensitive' as const } } },
               { customer: { email: { contains: filter.q, mode: 'insensitive' as const } } },
             ],
           }

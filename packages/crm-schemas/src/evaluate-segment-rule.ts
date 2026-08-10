@@ -26,7 +26,7 @@ export interface RuleProjection {
    */
   custom?: {
     contact?: Record<string, unknown>;
-    company?: Record<string, unknown>;
+    b2bAccount?: Record<string, unknown>;
     deal?: Record<string, unknown>;
   };
 }

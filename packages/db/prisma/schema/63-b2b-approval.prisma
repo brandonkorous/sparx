@@ -58,7 +58,7 @@ model PurchaseApprovalRule {
   // agreed to it. Same rule as automations and API keys: deleting a site must
   // narrow what a rule reaches, never widen it.
   property         Property?   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  account          B2BAccount? @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  account          Company? @relation(fields: [accountId], references: [id], onDelete: Cascade)
   requiredApprover User?       @relation("ApprovalRuleApprover", fields: [requiredApproverUserId], references: [id], onDelete: SetNull)
 
   @@index([tenantId, accountId, isActive])

@@ -232,7 +232,7 @@ describe('crm action executors', () => {
     await runAutomationTick(deps, appDb);
 
     const customer = await ownerDb.customer.findUnique({ where: { id: customerId } });
-    expect(customer?.company).toBe('Acme Fleet');
+    expect(customer?.companyName).toBe('Acme Fleet');
   });
 
   it('crm.create_task creates a task assigned to the configured user', async () => {

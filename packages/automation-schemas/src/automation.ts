@@ -7,12 +7,31 @@
 
 import { z } from 'zod';
 
-import { Action } from './action';
+import { Action, validateActionTree } from './action';
 import { ConditionGroup, EMPTY_CONDITION_GROUP } from './condition';
 import { AutomationStatus } from './run';
 import { Trigger } from './trigger';
 
-export const CreateAutomationInput = z.object({
+/** Branch configs parse and nesting stays in bounds. Shared by create and
+ *  update so neither can store a tree the compiler would refuse at run time —
+ *  the failure would otherwise land on a customer's rule at 3am rather than on
+ *  the author while they are looking at it. */
+function checkActionTree(value: { actions?: unknown }, ctx: z.RefinementCtx): void {
+  if (value.actions === undefined) return;
+  for (const issue of validateActionTree(value.actions)) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['actions', ...issue.path.split('.')],
+      message: issue.message,
+    });
+  }
+}
+
+// The raw shape, kept separate from the create schema so `update` can be a
+// `.partial()` of it. `CreateAutomationInput.partial()` is not available once a
+// `.superRefine` is attached, and re-declaring the fields twice is how the two
+// schemas drift apart.
+const AutomationBody = {
   name: z.string().min(1).max(255),
   description: z.string().max(10_000).nullable().optional(),
   /**
@@ -33,9 +52,23 @@ export const CreateAutomationInput = z.object({
   trigger: Trigger,
   conditions: ConditionGroup.default(EMPTY_CONDITION_GROUP),
   actions: z.array(Action).min(1).max(50),
+  /**
+   * WHAT THIS RULE IS FOR (docs/144 §9) — the outcome it is trying to cause.
+   * Null/omitted = no goal, which is every automation written before this
+   * existed and plenty written after (a receipt email is not trying to cause
+   * anything).
+   *
+   * A goal is the difference between a history that says what happened and one
+   * that says whether it worked. When it is met the run STOPS — there is no
+   * point sending the third nudge to someone who already booked — and is
+   * recorded as `converted` rather than `completed`.
+   */
+  goal: ConditionGroup.nullable().optional(),
   /** Loop-guard ceiling: how deep a rule→event→rule cascade may go (§7). */
   maxDepth: z.number().int().min(1).max(10).default(3),
-});
+};
+
+export const CreateAutomationInput = z.object(AutomationBody).superRefine(checkActionTree);
 export type CreateAutomationInput = z.infer<typeof CreateAutomationInput>;
 
 // Update is a partial of the create shape plus a status transition. Tenants drive
@@ -46,11 +79,15 @@ export type CreateAutomationInput = z.infer<typeof CreateAutomationInput>;
 // isn't undefined — so renaming an automation RESET ITS CONDITIONS to the empty
 // group, which is the difference between "email customers who spent over $500"
 // and "email everyone".
-export const UpdateAutomationInput = CreateAutomationInput.partial().extend({
-  status: AutomationStatus.optional(),
-  conditions: ConditionGroup.optional(),
-  maxDepth: z.number().int().min(1).max(10).optional(),
-});
+export const UpdateAutomationInput = z
+  .object(AutomationBody)
+  .partial()
+  .extend({
+    status: AutomationStatus.optional(),
+    conditions: ConditionGroup.optional(),
+    maxDepth: z.number().int().min(1).max(10).optional(),
+  })
+  .superRefine(checkActionTree);
 export type UpdateAutomationInput = z.infer<typeof UpdateAutomationInput>;
 
 // "Duplicate to edit" — fork a (typically system/Managed) automation into a new
@@ -78,6 +115,10 @@ export interface AutomationDraft {
   triggerConfig: unknown;
   conditions: unknown;
   actions: unknown;
+  /** The staged goal (docs/144 §9). Optional on the interface, not just
+   *  nullable: a draft written before goals existed simply has no key, and
+   *  reading it must not become "the goal was cleared". */
+  goal?: unknown;
   maxDepth: number;
 }
 

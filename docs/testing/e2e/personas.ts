@@ -62,7 +62,7 @@ export interface ShopperAccount {
   password: string;
 }
 
-export interface B2BAccount {
+export interface Company {
   contactName: string;
   email: string;
   password: string;
@@ -79,7 +79,7 @@ export interface Persona {
   /** Present only when `commerce` is enabled — used to test storefront checkout. */
   shopper?: ShopperAccount;
   /** Present only when `b2b` is enabled — used to test the wholesale portal. */
-  b2bAccount?: B2BAccount;
+  company?: Company;
   /** What this persona is specifically for — read before testing, not a UI label. */
   purpose: string;
 }
@@ -152,7 +152,7 @@ export const PERSONAS: Persona[] = [
       role: 'owner',
     },
     shopper: { name: 'Tom Bricker', email: 'e2e-autoparts-shopper@sparx.test', password: PASSWORD },
-    b2bAccount: {
+    company: {
       contactName: 'Alicia Munroe',
       email: 'e2e-autoparts-b2b@sparx.test',
       password: PASSWORD,
@@ -224,7 +224,7 @@ export const PERSONAS: Persona[] = [
       email: 'e2e-wholesale-shopper@sparx.test',
       password: PASSWORD,
     },
-    b2bAccount: {
+    company: {
       contactName: 'Carter Diaz',
       email: 'e2e-wholesale-b2b@sparx.test',
       password: PASSWORD,
@@ -309,7 +309,7 @@ export const PERSONAS: Persona[] = [
       email: 'e2e-kitchensink-shopper@sparx.test',
       password: PASSWORD,
     },
-    b2bAccount: {
+    company: {
       contactName: 'Julian Ferreira',
       email: 'e2e-kitchensink-b2b@sparx.test',
       password: PASSWORD,

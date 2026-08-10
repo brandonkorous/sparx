@@ -115,6 +115,25 @@ export const TRIGGER_EVENTS: readonly TriggerEventDef[] = [
     module: 'crm',
   },
   { eventType: 'crm.task.created', label: 'A task is created', module: 'crm' },
+  // ── Workflow depth (docs/144 §9) ──
+  //
+  // "A detail you track changes" is the generic one, and it is the reason custom
+  // properties are worth having at all: a business that invented "renewal date"
+  // can now act on it without anyone at sparx knowing the field exists.
+  {
+    eventType: 'crm.property.changed',
+    label: 'A detail you track changes on a record',
+    module: 'crm',
+  },
+  {
+    eventType: 'crm.association.added',
+    label: 'Two records are linked to each other',
+    module: 'crm',
+  },
+  { eventType: 'booking.created', label: 'Somebody books an appointment', module: 'crm' },
+  { eventType: 'booking.cancelled', label: 'An appointment is cancelled', module: 'crm' },
+  { eventType: 'booking.completed', label: 'An appointment is completed', module: 'crm' },
+  { eventType: 'booking.no_show', label: 'Somebody misses their appointment', module: 'crm' },
   // ── Support requests (docs/144 §7) ──
   //
   // The inbound one is listed FIRST because it is the trigger most rules start
@@ -180,6 +199,11 @@ export const TRIGGER_EVENTS: readonly TriggerEventDef[] = [
   { eventType: 'email.opened', label: 'A marketing email is opened', module: 'email' },
   { eventType: 'email.clicked', label: 'A link in an email is clicked', module: 'email' },
   { eventType: 'email.bounced', label: 'A marketing email bounces', module: 'email' },
+  // Distinct from "a customer replies or writes in" above: THIS one is a reply
+  // to something you sent, which is what a follow-up sequence exits on. The
+  // other includes cold inbound mail, which a nurture rule must not treat as
+  // engagement.
+  { eventType: 'email.replied', label: 'Somebody replies to an email you sent', module: 'email' },
 ];
 
 /** A scheduled trigger scans a kind of record on a timer; these are the kinds it
@@ -347,8 +371,9 @@ export interface ActionDef {
   module: ModuleSlug;
   description: string;
   /** 'fields' → typed config form; 'json' → raw JSON (union/ID configs the UI
-   *  can't safely pick); 'none' → no config. */
-  mode: 'fields' | 'json' | 'none';
+   *  can't safely pick); 'none' → no config; 'branch' → a question plus two
+   *  nested step lists, which no key/value form can express (docs/144 §9). */
+  mode: 'fields' | 'json' | 'none' | 'branch';
   /** Whether a runtime executor is registered — only available actions are
    *  offered for a NEW step. */
   available: boolean;
@@ -402,6 +427,18 @@ export const ACTION_DEFS: readonly ActionDef[] = [
     configFields: [
       { key: 'reason', label: 'Reason', type: 'text', placeholder: 'No longer needed' },
     ],
+  },
+  {
+    type: 'platform.if_else',
+    label: 'Go one way or the other',
+    module: 'platform',
+    description:
+      'Ask a question about the record, then do one set of things if the answer is yes and another if it is no. Either side can be left empty.',
+    // `branch` rather than `fields`: its config holds two whole lists of steps,
+    // which is not something a key/value form can express. The editor renders a
+    // nested canvas for it (see flow-canvas).
+    mode: 'branch',
+    available: true,
   },
   {
     type: 'platform.webhook',
@@ -559,6 +596,159 @@ export const ACTION_DEFS: readonly ActionDef[] = [
         type: 'text',
         help: 'Leave blank to put it in the unassigned queue for whoever picks it up first.',
       },
+    ],
+  },
+  // ── Workflow depth (docs/144 §9) ──
+  {
+    type: 'crm.create_record',
+    label: 'Create a record',
+    module: 'crm',
+    description:
+      'Add a new customer, a new sales deal, or a row of anything else you track. Whatever it creates gets linked to the record that started this rule, so you can find it later.',
+    mode: 'fields',
+    available: true,
+    configFields: [
+      {
+        key: 'objectKey',
+        label: 'What kind of record',
+        type: 'text',
+        required: true,
+        placeholder: 'deal',
+        help: 'Use “contact” for a person, “deal” for a sales opportunity, or the name of something you set up yourself.',
+      },
+      {
+        key: 'title',
+        label: 'Name it',
+        type: 'text',
+        placeholder: 'Renewal — {{customer.company}}',
+        help: 'You can pull details in with {{ }} — they get filled in when the rule runs.',
+      },
+      {
+        key: 'values',
+        label: 'Fill in these details',
+        type: 'json',
+        help: 'Advanced — the fields to set, as JSON. For example {"value": 500}.',
+      },
+    ],
+  },
+  {
+    type: 'crm.set_property',
+    label: 'Set a detail on the record',
+    module: 'crm',
+    description:
+      'Change one thing about whoever (or whatever) started this rule — including the details you set up yourself, like a renewal date or a warranty expiry.',
+    mode: 'fields',
+    available: true,
+    configFields: [
+      {
+        key: 'target',
+        label: 'On which record',
+        type: 'select',
+        options: [
+          { value: 'contact', label: 'The customer' },
+          { value: 'deal', label: 'The sales deal' },
+          { value: 'record', label: 'The record' },
+        ],
+      },
+      { key: 'property', label: 'Which detail', type: 'text', required: true },
+      { key: 'value', label: 'Set it to', type: 'text', required: true },
+      {
+        key: 'custom',
+        label: 'This is a detail I set up myself',
+        type: 'select',
+        options: [
+          { value: 'true', label: 'Yes — one of my own' },
+          { value: 'false', label: 'No — a built-in field' },
+        ],
+        help: 'Leave as “one of my own” unless you are changing something sparx ships with, like the lifecycle stage.',
+      },
+    ],
+  },
+  {
+    type: 'crm.rotate_owner',
+    label: 'Share it out among the team',
+    module: 'crm',
+    description:
+      'Hand the record to whoever on your team currently has the least on. Leave the list blank to include everybody.',
+    mode: 'fields',
+    available: true,
+    configFields: [
+      {
+        key: 'target',
+        label: 'What to hand out',
+        type: 'select',
+        options: [
+          { value: 'deal', label: 'The sales deal' },
+          { value: 'contact', label: 'The customer' },
+        ],
+      },
+      {
+        key: 'userIds',
+        label: 'Share between (team member IDs)',
+        type: 'tags',
+        help: 'Leave blank to share between everyone on your team.',
+      },
+    ],
+  },
+  {
+    type: 'crm.add_to_list',
+    label: 'Put them on a list',
+    module: 'crm',
+    description:
+      'Add the customer to one of your hand-picked lists — or take them off it. Only works on hand-picked lists; a list that decides its own members from rules will not accept it.',
+    mode: 'fields',
+    available: true,
+    configFields: [
+      { key: 'segmentId', label: 'Which list', type: 'text', required: true },
+      {
+        key: 'remove',
+        label: 'Add or remove',
+        type: 'select',
+        options: [
+          { value: 'false', label: 'Put them on it' },
+          { value: 'true', label: 'Take them off it' },
+        ],
+      },
+    ],
+  },
+  {
+    type: 'engagement.send_email',
+    label: 'Write to them personally',
+    module: 'crm',
+    description:
+      'Send one email to one person, threaded onto their conversation so it shows up on their timeline. Respects anyone who has asked not to be contacted. For emailing a whole audience, use a campaign instead.',
+    mode: 'fields',
+    available: true,
+    configFields: [
+      { key: 'subject', label: 'Subject', type: 'text', required: true },
+      {
+        key: 'bodyHtml',
+        label: 'Message',
+        type: 'textarea',
+        required: true,
+        help: 'You can pull in details with {{ }} — for example Hi {{customer.firstName}}.',
+      },
+    ],
+  },
+  {
+    type: 'voice.log_call_task',
+    label: 'Add a call-back to somebody’s list',
+    module: 'crm',
+    description:
+      'Create a task to call the customer back, and note on their record why it came up. Does not place the call.',
+    mode: 'fields',
+    available: true,
+    configFields: [
+      { key: 'title', label: 'What to say it is', type: 'text', placeholder: 'Call them back' },
+      { key: 'description', label: 'Notes', type: 'textarea' },
+      {
+        key: 'dueInDays',
+        label: 'Due in (days)',
+        type: 'number',
+        placeholder: '0',
+        help: '0 means today.',
+      },
+      { key: 'priority', label: 'Priority', type: 'select', options: PRIORITY_OPTIONS },
     ],
   },
   {

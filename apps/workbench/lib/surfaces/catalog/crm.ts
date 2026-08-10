@@ -7,6 +7,7 @@ import {
   Clock,
   Copy,
   Filter,
+  Gauge,
   LifeBuoy,
   ListChecks,
   Mailbox as MailboxIcon,
@@ -16,12 +17,15 @@ import {
   Target,
   Users,
   Workflow,
+  CalendarClock,
+  SlidersHorizontal,
+  Table2,
 } from 'lucide-react';
 import type { SurfaceDefinition } from '../registry';
 import { CustomersListSurface } from '../../../surfaces/crm/customers-list';
 import { CustomerDetailSurface } from '../../../surfaces/crm/customer-detail';
-import { WholesaleAccountsListSurface } from '../../../surfaces/crm/accounts-list';
-import { AccountDetailSurface } from '../../../surfaces/crm/account-detail';
+import { CompaniesListSurface } from '../../../surfaces/crm/companies-list';
+import { CompanyDetailSurface } from '../../../surfaces/crm/company-detail';
 import { SegmentsListSurface } from '../../../surfaces/crm/segments-list';
 import { SegmentDetailSurface } from '../../../surfaces/crm/segment-detail';
 import { DuplicatesSurface } from '../../../surfaces/crm/duplicates';
@@ -36,6 +40,7 @@ import { CrmReportsSurface } from '../../../surfaces/crm/reports';
 import { ReportsLibrarySurface } from '../../../surfaces/crm/reports-library';
 import { ReportBuilderSurface } from '../../../surfaces/crm/report-builder';
 import { DashboardsSurface } from '../../../surfaces/crm/dashboards';
+import { ScoringSurface } from '../../../surfaces/crm/scoring';
 import { ObjectTypesListSurface } from '../../../surfaces/crm/object-types-list';
 import { ObjectTypeDetailSurface } from '../../../surfaces/crm/object-type-detail';
 import { MailboxesListSurface } from '../../../surfaces/crm/mailboxes-list';
@@ -43,8 +48,61 @@ import { PhoneSystemsListSurface } from '../../../surfaces/crm/phone-systems-lis
 import { TicketsListSurface } from '../../../surfaces/crm/tickets-list';
 import { TicketDetailSurface } from '../../../surfaces/crm/ticket-detail';
 import { SlaPoliciesSurface } from '../../../surfaces/crm/sla-policies';
+import { CrmSettingsSurface } from '../../../surfaces/crm/crm-settings';
+import { MeetingLinksSurface } from '../../../surfaces/crm/meeting-links';
+import { RecordsListSurface } from '../../../surfaces/crm/records-list';
+import { RecordDetailSurface } from '../../../surfaces/crm/record-detail';
 
 export const CRM_SURFACES: SurfaceDefinition[] = [
+  /* ── The workspace layer (docs/144 §11 + §12) ──────────────────────────── */
+  {
+    key: 'crm.settings',
+    title: 'How the CRM behaves',
+    module: 'crm',
+    icon: SlidersHorizontal,
+    section: 'Setup',
+    order: 90,
+    keywords: ['duplicates', 'merge', 'domain', 'company suggestion', 'preferences'],
+    component: CrmSettingsSurface,
+  },
+  {
+    key: 'crm.meeting-links',
+    title: 'Booking links',
+    module: 'crm',
+    icon: CalendarClock,
+    section: 'Setup',
+    order: 91,
+    keywords: ['meeting', 'calendar', 'schedule a call', 'meet'],
+    component: MeetingLinksSurface,
+  },
+  /* ── Tenant-invented objects (docs/144 §3.6) ───────────────────────────── */
+  //
+  // ONE list surface and ONE detail surface for EVERY custom object a tenant
+  // declares, parameterised by the object key in the pane's params. The
+  // alternative — a registry entry minted per object — cannot work: the objects
+  // are created at runtime by tenants, and the catalog is a static array
+  // evaluated at module load.
+  //
+  // The launcher entries for each one are added dynamically instead, from the
+  // object registry (see `useCustomObjectSurfaces`). These two are unlisted, in
+  // the same way every detail pane is.
+  {
+    key: 'crm.records.list',
+    title: 'Records',
+    module: 'crm',
+    icon: Table2,
+    component: RecordsListSurface,
+    listed: false,
+  },
+  {
+    key: 'crm.record.detail',
+    title: 'Record',
+    module: 'crm',
+    icon: Table2,
+    component: RecordDetailSurface,
+    listed: false,
+  },
+
   /* ── People ────────────────────────────────────────────────────────────── */
   {
     key: 'crm.customers.list',
@@ -70,22 +128,22 @@ export const CRM_SURFACES: SurfaceDefinition[] = [
   },
   {
     key: 'crm.accounts.list',
-    title: 'Wholesale accounts',
+    title: 'Companies',
     module: 'crm',
     icon: Building2,
     section: 'People',
     order: 11,
-    keywords: ['b2b', 'trade', 'companies'],
-    component: WholesaleAccountsListSurface,
+    keywords: ['companies', 'organisations', 'b2b', 'trade', 'accounts', 'firms'],
+    component: CompaniesListSurface,
     createSurface: 'crm.account.detail',
-    createLabel: 'Add an account',
+    createLabel: 'Add a company',
   },
   {
     key: 'crm.account.detail',
-    title: 'Wholesale account',
+    title: 'Company',
     module: 'crm',
     icon: Building2,
-    component: AccountDetailSurface,
+    component: CompanyDetailSurface,
     listed: false,
   },
   {
@@ -370,6 +428,28 @@ export const CRM_SURFACES: SurfaceDefinition[] = [
     order: 32,
     keywords: ['dashboard', 'board', 'overview', 'kpi', 'at a glance', 'home'],
     component: DashboardsSurface,
+  },
+  // Scoring (docs/144 §10) — sits under Customers rather than Reporting,
+  // because it is not a report: it changes what every list of customers is
+  // ordered by, which is a working setting, not an answer.
+  {
+    key: 'crm.scoring',
+    title: 'Scoring',
+    module: 'crm',
+    icon: Gauge,
+    section: 'Customers',
+    order: 18,
+    keywords: [
+      'score',
+      'scoring',
+      'lead score',
+      'deal health',
+      'hot leads',
+      'priority',
+      'ranking',
+      'who to call',
+    ],
+    component: ScoringSurface,
   },
   {
     key: 'crm.dashboard.detail',

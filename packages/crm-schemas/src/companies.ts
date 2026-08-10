@@ -1,14 +1,41 @@
-// B2B account input schemas.
+// Company input schemas (docs/144 §11, was b2b-accounts / docs/10 §2).
 //
-// docs/10-b2b-wholesale-prd.md §2. Phase 1 ships the record shape; the B2B
-// module adds quote / credit-hold / approval workflows later — those tables
-// FK back into this row rather than redefining the account.
+// The record shape is one thing; who is allowed to see which half of it is
+// another. Everything from `creditLimit` down to `engineProfiles` is the TRADE
+// relationship and renders only when the `b2b` module is on — the schema still
+// accepts them either way, because a tenant who turns the module on next month
+// should find whatever an import or an integration already wrote, not a form
+// that silently dropped it.
 
 import { z } from 'zod';
 
-import { B2BAccountStatus, PaymentTerms, TagList, TagListPatch, Uuid } from './common';
+import { CompanyStatus, PaymentTerms, TagList, TagListPatch, Uuid } from './common';
 
-// Engine profile shape stored in b2b_accounts.engine_profiles JSONB. Used
+/**
+ * An email domain, as a business owner would type it — `acme.com`, or
+ * `@acme.com`, or occasionally `https://acme.com/` pasted from a browser.
+ *
+ * Normalised rather than rejected. A validation error on "you typed the @" is a
+ * form arguing with someone who told it exactly what it needed to know.
+ */
+export const EmailDomain = z
+  .string()
+  .min(3)
+  .max(255)
+  .transform((raw) =>
+    raw
+      .trim()
+      .toLowerCase()
+      .replace(/^https?:\/\//, '')
+      .replace(/^@/, '')
+      .replace(/^www\./, '')
+      .replace(/\/.*$/, '')
+  )
+  .refine((d) => /^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(d), {
+    message: 'That does not look like a domain — try something like acme.com',
+  });
+
+// Engine profile shape stored in companies.engine_profiles JSONB. Used
 // by the fitment-aware catalog when Commerce lands. Each profile is one
 // engine variant the fleet runs — fleet_size on the parent row is the
 // aggregate count, this array describes the variants.
@@ -21,15 +48,19 @@ const EngineProfile = z.object({
 });
 export type EngineProfile = z.infer<typeof EngineProfile>;
 
-export const CreateB2BAccountInput = z.object({
+export const CreateCompanyInput = z.object({
   companyName: z.string().min(1).max(255),
   taxId: z.string().max(64).nullable().optional(),
   website: z.string().url().max(2048).nullable().optional(),
+  // The email domains that belong to this company (docs/144 §11). Capped at 20:
+  // beyond that it is not a company's domains, it is a list of every address
+  // somebody pasted, and the association offer stops being trustworthy.
+  domains: z.array(EmailDomain).max(20).default([]),
   pricingTier: z.string().max(63).nullable().optional(),
   creditLimit: z.number().min(0).max(99_999_999.99).default(0),
   paymentTerms: PaymentTerms.nullable().optional(),
   discountPercent: z.number().min(0).max(100).default(0),
-  status: B2BAccountStatus.default('active'),
+  status: CompanyStatus.default('active'),
   assignedRepId: Uuid.nullable().optional(),
   fleetSize: z.number().int().min(0).nullable().optional(),
   engineProfiles: z.array(EngineProfile).max(100).default([]),
@@ -41,26 +72,30 @@ export const CreateB2BAccountInput = z.object({
   // the bag on every unrelated account edit.
   customProperties: z.record(z.string(), z.unknown()).optional(),
 });
-export type CreateB2BAccountInput = z.infer<typeof CreateB2BAccountInput>;
+export type CreateCompanyInput = z.infer<typeof CreateCompanyInput>;
 
 // The four re-declarations are load-bearing, for the same reason as
 // UpdateDocumentWorkflowInput: `.partial()` makes a field optional but leaves its
 // `.default(...)` intact, so Zod fabricates a value for every defaulted field the
-// caller omitted, and b2bAccountService.update writes each field that is
+// caller omitted, and companyService.update writes each field that is
 // `!== undefined`. This is the sharpest instance in the CRM — editing an
 // account's NOTES alone zeroed its credit limit and its negotiated discount,
 // wiped its engine profiles, and flipped a suspended account back to 'active'.
-export const UpdateB2BAccountInput = CreateB2BAccountInput.extend({
+export const UpdateCompanyInput = CreateCompanyInput.extend({
   creditLimit: z.number().min(0).max(99_999_999.99),
   discountPercent: z.number().min(0).max(100),
-  status: B2BAccountStatus,
+  status: CompanyStatus,
   engineProfiles: z.array(EngineProfile).max(100),
+  // `domains` has a `.default([])` too, so without this line editing a company's
+  // notes would clear every domain on it — and the association offer would go
+  // quiet for that company with nothing on screen to say why.
+  domains: z.array(EmailDomain).max(20),
   // TagList's own `.default([])` survives too, so any edit cleared the tags.
   tags: TagListPatch,
 }).partial();
-export type UpdateB2BAccountInput = z.infer<typeof UpdateB2BAccountInput>;
+export type UpdateCompanyInput = z.infer<typeof UpdateCompanyInput>;
 
-// B2B account contacts — links a Customer to a B2BAccount with a role
+// B2B account contacts — links a Customer to a Company with a role
 // (packages/db/prisma/schema/62-b2b-contacts.prisma). This is the write path
 // for what pricing (contract price), checkout (net-terms eligibility), and
 // the storefront B2B portal (invoices/quotes/orders visibility) all key off.

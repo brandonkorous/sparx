@@ -44,7 +44,7 @@ export interface TaxRateRow {
 export interface TaxExemptionRow {
   id: string;
   customerId: string | null;
-  b2bAccountId: string | null;
+  companyId: string | null;
   jurisdiction: string;
   reason: string;
   certificateNumber: string;
@@ -237,15 +237,15 @@ export async function createExemption(
   rawInput: unknown
 ): Promise<{ id: string }> {
   const input = CreateTaxExemptionInput.parse(rawInput);
-  if (!input.customerId && !input.b2bAccountId) {
-    throw new CommerceValidationError('Either customerId or b2bAccountId is required');
+  if (!input.customerId && !input.companyId) {
+    throw new CommerceValidationError('Either customerId or companyId is required');
   }
   return withTenant(ctx, async (tx) => {
     const created = await tx.taxExemption.create({
       data: {
         tenantId: ctx.tenantId,
         customerId: input.customerId ?? null,
-        b2bAccountId: input.b2bAccountId ?? null,
+        companyId: input.companyId ?? null,
         jurisdiction: input.jurisdiction,
         reason: input.reason,
         certificateNumber: input.certificateNumber,
@@ -283,13 +283,13 @@ export async function listExemptionsForCustomer(
   });
 }
 
-export async function listExemptionsForB2BAccount(
+export async function listExemptionsForCompany(
   ctx: ServiceContext,
-  b2bAccountId: string
+  companyId: string
 ): Promise<TaxExemptionRow[]> {
   return withTenant(ctx, async (tx) => {
     const rows = await tx.taxExemption.findMany({
-      where: { b2bAccountId },
+      where: { companyId },
       orderBy: { validFrom: 'desc' },
       take: 100,
     });
@@ -507,7 +507,7 @@ function serializeExemption(row: TaxExemption): TaxExemptionRow {
   return {
     id: row.id,
     customerId: row.customerId,
-    b2bAccountId: row.b2bAccountId,
+    companyId: row.companyId,
     jurisdiction: row.jurisdiction,
     reason: row.reason,
     certificateNumber: row.certificateNumber,

@@ -240,7 +240,7 @@ export async function applyInvoicing(ctx: ApplyCtx, pack: SampleDataPack): Promi
   }
 
   // B2B accounts-receivable — the /b2b/invoices surface (billing_documents scoped to
-  // a B2BAccount, docs/87 §15). Bills a demo wholesale account so the B2B AR view +
+  // a Company, docs/87 §15). Bills a demo wholesale account so the B2B AR view +
   // credit utilisation aren't empty. b2b implies commerce → invoicing is on, so this
   // runs inside the invoicing gate; keyed on the b2b module.
   if (ctx.isOn('b2b')) {
@@ -298,7 +298,7 @@ async function seedB2bAr(ctx: ApplyCtx, pack: SampleDataPack, opts: B2bArOpts): 
   const b2bPersona = pack.personas.find((p) => p.kind === 'b2b');
   const companyName = b2bPersona?.company ?? b2bPersona?.name ?? 'Wholesale Account';
 
-  const account = await tx.b2BAccount.create({
+  const account = await tx.company.create({
     data: {
       tenantId,
       companyName,
@@ -360,7 +360,7 @@ async function seedB2bAr(ctx: ApplyCtx, pack: SampleDataPack, opts: B2bArOpts): 
         propertyId: ctx.issuingPropertyId,
         workflowId: opts.workflowId,
         stageId: stage.id,
-        b2bAccountId: account.id,
+        companyId: account.id,
         number,
         numberSeq: seq,
         currency: 'USD',
@@ -442,6 +442,6 @@ async function seedB2bAr(ctx: ApplyCtx, pack: SampleDataPack, opts: B2bArOpts): 
   // credit_used = open AR balance. At runtime recomputeTotals → sync_b2b_credit_used
   // maintains this; sample rows are inserted directly, so set it here for parity.
   if (openBalance > 0) {
-    await tx.b2BAccount.update({ where: { id: account.id }, data: { creditUsed: openBalance } });
+    await tx.company.update({ where: { id: account.id }, data: { creditUsed: openBalance } });
   }
 }

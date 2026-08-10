@@ -565,10 +565,10 @@ function TicketEditor({ ctx, id, view }: { ctx: SurfaceContext; id: string; view
                   <Text>Opened</Text>
                   <Text>{new Date(view.ticket.createdAt).toLocaleString()}</Text>
                 </div>
-                {view.ticket.b2bAccount ? (
+                {view.ticket.company ? (
                   <div className="flex items-baseline justify-between gap-3">
                     <Text>Trade account</Text>
-                    <Text>{view.ticket.b2bAccount.name}</Text>
+                    <Text>{view.ticket.company.name}</Text>
                   </div>
                 ) : null}
               </Card>

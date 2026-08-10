@@ -17,7 +17,7 @@ function makeDoc(overrides: Partial<BillingDocument> = {}): BillingDocument {
     workflowId: 'w',
     stageId: 's',
     customerId: 'cust-1',
-    b2bAccountId: null,
+    companyId: null,
     assignedUserId: null,
     number: 'INV-000123',
     numberSeq: 123,
@@ -111,7 +111,7 @@ describe('buildSnapshotPayload', () => {
     });
     expect(payload.party).toEqual({
       customerId: 'cust-1',
-      b2bAccountId: null,
+      companyId: null,
       billTo: { name: 'Acme Diesel' },
       shipTo: null,
     });

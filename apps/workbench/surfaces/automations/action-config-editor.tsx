@@ -403,6 +403,14 @@ export function ActionConfigEditor({
 
       {def?.mode === 'none' ? (
         <Text className="text-sm">This step needs no extra setup.</Text>
+      ) : def?.mode === 'branch' ? (
+        // A branch's whole configuration is the question above and the two step
+        // lists on the canvas. Showing a JSON editor over the same config here
+        // would give somebody a second, worse way to edit the steps they can see
+        // — and a way to break them.
+        <Text className="text-sm">
+          Set the question above, then add steps to either side on the flow.
+        </Text>
       ) : (
         <div className="flex flex-col gap-3">
           {!forcedJson && def?.mode === 'fields' ? (

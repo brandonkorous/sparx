@@ -1,6 +1,9 @@
 'use client';
 
-// The wholesale accounts list — the businesses that buy on agreed terms.
+// The companies list — the organisations this business works with (docs/144 §11).
+// For a tenant selling on account these are also its trading partners, and the
+// trade columns below say so; for everybody else they are simply the firms their
+// contacts work for.
 //
 // An account is a multi-attribute record (its status, what it may owe, its
 // discount, its terms), so it earns a table: each column answers a question an
@@ -28,9 +31,9 @@ import {
   formatMoney,
   paymentTermsLabel,
   useAccounts,
-  type B2BAccount,
-  type B2BAccountStatus,
-} from './accounts-data';
+  type Company,
+  type CompanyStatus,
+} from './companies-data';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -38,9 +41,9 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   return 'tab';
 }
 
-export function WholesaleAccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
+export function CompaniesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
-  const [status, setStatus] = useState<'all' | B2BAccountStatus>('all');
+  const [status, setStatus] = useState<'all' | CompanyStatus>('all');
 
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useAccounts({
     q: search,
@@ -57,17 +60,17 @@ export function WholesaleAccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
     return items;
   }, []);
 
-  const open = (account: B2BAccount, event: { shiftKey: boolean; altKey: boolean }) => {
+  const open = (account: Company, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('crm.account.detail', { id: account.id }, { target: targetFor(event) });
   };
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Wholesale account list controls">
+      <PaneToolbar label="Company list controls">
         <div className="max-w-xs min-w-0 flex-1">
           <SearchInput
             size="sm"
-            aria-label="Search wholesale accounts"
+            aria-label="Search companies"
             placeholder="Search by company…"
             value={search}
             onValueChange={setSearch}
@@ -80,7 +83,7 @@ export function WholesaleAccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
             value={status}
             items={statusItems}
             onValueChange={(next) => {
-              setStatus(next as 'all' | B2BAccountStatus);
+              setStatus(next as 'all' | CompanyStatus);
             }}
           />
         </div>
@@ -88,13 +91,13 @@ export function WholesaleAccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
           color="module"
           size="sm"
           className="ml-auto shrink-0"
-          title="Add an account — hold Shift to open alongside, Alt for a new window"
+          title="Add a company — hold Shift to open alongside, Alt for a new window"
           onClick={(event) => {
             ctx.open('crm.account.detail', { id: 'new' }, { target: targetFor(event) });
           }}
         >
           <Plus className="size-4" aria-hidden />
-          Add an account
+          Add a company
         </Button>
         <RefreshButton
           isFetching={isFetching}
@@ -136,7 +139,7 @@ export function WholesaleAccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
               description: 'Try a different word, or clear the filters to see them all.',
             }}
             firstRun={{
-              title: 'No wholesale accounts yet',
+              title: 'No companies yet',
               description:
                 'Businesses that buy from you at agreed prices live here. Add your first account to set its credit limit, discount and payment terms.',
             }}

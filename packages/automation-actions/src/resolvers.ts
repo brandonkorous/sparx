@@ -15,6 +15,7 @@
 // can address the recipient.
 
 import {
+  PROPERTY_FIELD,
   registerResolver,
   registerScanner,
   type ResolvedFields,
@@ -39,7 +40,7 @@ function num(v: unknown): number | null {
  *
  * A throw inside a resolver 500s the Cloud Run push handler, and Pub/Sub then
  * redelivers the poison message until it DLQs. Observed in prod:
- * `crm.b2b_account.created` publishes `{ b2bAccountId }` while this resolver read
+ * `crm.b2b_account.created` publishes `{ companyId }` while this resolver read
  * only `accountId`/`id`, so EVERY B2B-account event crash-looped the subscription.
  * Degrading to "no match" turns a key mismatch into a rule that quietly does not
  * fire — visible in the warn log, fixable — rather than a wedged worker. A
@@ -78,7 +79,7 @@ const CUSTOMER_CONTACT_SELECT = {
   email: true,
   firstName: true,
   lastName: true,
-  company: true,
+  companyName: true,
   doNotContact: true,
 } as const;
 
@@ -87,7 +88,7 @@ interface ContactLike {
   email: string | null;
   firstName: string | null;
   lastName: string | null;
-  company: string | null;
+  companyName: string | null;
   doNotContact: boolean;
 }
 
@@ -100,7 +101,7 @@ function contactFields(c: ContactLike | null): ResolvedFields {
     'customer.firstName': c.firstName,
     'customer.lastName': c.lastName,
     'customer.fullName': fullName.length > 0 ? fullName : null,
-    'customer.company': c.company,
+    'customer.company': c.companyName,
     'customer.doNotContact': c.doNotContact,
   };
 }
@@ -109,7 +110,7 @@ function contactFields(c: ContactLike | null): ResolvedFields {
  *  B2B account's active primary contact (any active contact as a fallback). */
 async function resolveContact(
   ctx: TenantCtx,
-  ref: { customerId?: string | null; b2bAccountId?: string | null }
+  ref: { customerId?: string | null; companyId?: string | null }
 ): Promise<ResolvedFields> {
   if (ref.customerId) {
     const c = await ctx.tx.customer.findUnique({
@@ -118,15 +119,15 @@ async function resolveContact(
     });
     if (c) return contactFields(c);
   }
-  if (ref.b2bAccountId) {
+  if (ref.companyId) {
     const primary = await ctx.tx.b2bAccountContact.findFirst({
-      where: { accountId: ref.b2bAccountId, isActive: true, role: 'primary_contact' },
+      where: { accountId: ref.companyId, isActive: true, role: 'primary_contact' },
       select: { customer: { select: CUSTOMER_CONTACT_SELECT } },
     });
     const contact =
       primary ??
       (await ctx.tx.b2bAccountContact.findFirst({
-        where: { accountId: ref.b2bAccountId, isActive: true },
+        where: { accountId: ref.companyId, isActive: true },
         select: { customer: { select: CUSTOMER_CONTACT_SELECT } },
       }));
     if (contact) return contactFields(contact.customer);
@@ -156,7 +157,7 @@ const BILLING_SELECT = {
   validUntil: true,
   assignedUserId: true,
   customerId: true,
-  b2bAccountId: true,
+  companyId: true,
   workflow: { select: { slug: true } },
   stage: { select: { stageType: true, name: true } },
 } as const;
@@ -172,7 +173,7 @@ interface BillingLike {
   validUntil: Date | null;
   assignedUserId: string | null;
   customerId: string | null;
-  b2bAccountId: string | null;
+  companyId: string | null;
   workflow: { slug: string };
   stage: { stageType: string; name: string };
 }
@@ -227,14 +228,14 @@ async function hydrateBillingDocument(ctx: TenantCtx, docId: string): Promise<Re
   return {
     ...billingFields(d, Date.now()),
     ...(d.workflow.slug === B2B_QUOTES_WORKFLOW_SLUG ? quoteFields(d) : {}),
-    ...(await resolveContact(ctx, { customerId: d.customerId, b2bAccountId: d.b2bAccountId })),
+    ...(await resolveContact(ctx, { customerId: d.customerId, companyId: d.companyId })),
   };
 }
 
 // ─── B2B account (event) ──────────────────────────────────────────────────────
 
 async function hydrateB2bAccount(ctx: TenantCtx, accountId: string): Promise<ResolvedFields> {
-  const a = await ctx.tx.b2BAccount.findUnique({
+  const a = await ctx.tx.company.findUnique({
     where: { id: accountId },
     select: {
       id: true,
@@ -253,7 +254,7 @@ async function hydrateB2bAccount(ctx: TenantCtx, accountId: string): Promise<Res
     'b2bAccount.paymentTerms': a.paymentTerms,
     'b2bAccount.creditLimit': num(a.creditLimit),
     'b2bAccount.assignedRepId': a.assignedRepId,
-    ...(await resolveContact(ctx, { b2bAccountId: a.id })),
+    ...(await resolveContact(ctx, { companyId: a.id })),
   };
 }
 
@@ -385,6 +386,196 @@ async function hydrateInboundEngagement(
     // isn't one already", on top of the intake's own idempotency.
     'engagement.ticketId': thread.ticketId,
     ...(await resolveContact(ctx, { customerId: thread.customerId })),
+  };
+}
+
+// ─── service requests (docs/144 §7, §9) ───────────────────────────────────────
+
+/**
+ * A ticket, plus the contact it is for and the promise it is under.
+ *
+ * `ticket.minutesToResolve` is computed rather than stored, because the useful
+ * question is never "what is the deadline" — it is "how long have I got", and a
+ * rule saying `ticket.minutesToResolve lt 60` reads the way the shift lead
+ * thinks. Negative when the promise is already broken, which is what lets ONE
+ * condition cover both "nearly late" and "late".
+ */
+async function hydrateTicket(
+  ctx: TenantCtx,
+  ticketId: string,
+  payload: Record<string, unknown>
+): Promise<ResolvedFields> {
+  const ticket = await ctx.tx.ticket.findUnique({
+    where: { id: ticketId },
+    select: {
+      id: true,
+      number: true,
+      subject: true,
+      description: true,
+      priority: true,
+      source: true,
+      tags: true,
+      customerId: true,
+      assignedToUserId: true,
+      stageId: true,
+      firstRespondedAt: true,
+      resolveDueAt: true,
+      respondDueAt: true,
+      resolvedAt: true,
+      createdAt: true,
+      stage: { select: { name: true, stageType: true } },
+      assignedTo: { select: { email: true } },
+    },
+  });
+  if (!ticket) return {};
+
+  const now = Date.now();
+  const minutesUntil = (at: Date | null): number | null =>
+    at === null ? null : Math.round((at.getTime() - now) / 60_000);
+
+  return {
+    'ticket.id': ticket.id,
+    'ticket.number': ticket.number,
+    'ticket.subject': ticket.subject,
+    'ticket.description': ticket.description,
+    'ticket.priority': ticket.priority,
+    'ticket.source': ticket.source,
+    'ticket.tags': ticket.tags,
+    'ticket.stageId': ticket.stageId,
+    'ticket.stageName': ticket.stage.name,
+    'ticket.stageType': ticket.stage.stageType,
+    'ticket.assignedToId': ticket.assignedToUserId,
+    'ticket.assignedToEmail': ticket.assignedTo?.email ?? null,
+    'ticket.isAssigned': ticket.assignedToUserId !== null,
+    'ticket.hasReplied': ticket.firstRespondedAt !== null,
+    'ticket.isResolved': ticket.resolvedAt !== null,
+    'ticket.minutesToRespond': minutesUntil(ticket.respondDueAt),
+    'ticket.minutesToResolve': minutesUntil(ticket.resolveDueAt),
+    'ticket.ageMinutes': Math.round((now - ticket.createdAt.getTime()) / 60_000),
+    // Which promise the SLA sweep was announcing when it fired — `respond` or
+    // `resolve`. Absent on every other ticket trigger, so a rule that references
+    // it only matches an SLA event, which is what an author means by it.
+    'ticket.promise': typeof payload.promise === 'string' ? payload.promise : null,
+    ...(await resolveContact(ctx, { customerId: ticket.customerId })),
+  };
+}
+
+// ─── a field changed / a relationship was made (docs/144 §3, §6, §9) ──────────
+
+/**
+ * `crm.property.changed` — a tenant-declared field moved on SOME object.
+ *
+ * The payload is deliberately generic (`objectKey`, `recordId`, `properties`)
+ * because the whole point of the object registry is that the platform does not
+ * know the object names at build time. So this resolver exposes the change ITSELF
+ * as conditions — `property.objectKey eq 'contact'`, `property.changed contains
+ * 'warranty_expires'` — and then hydrates the underlying record where it can, so
+ * a rule can also read the record's own fields in the same breath.
+ */
+async function hydratePropertyChange(
+  ctx: TenantCtx,
+  payload: Record<string, unknown>
+): Promise<ResolvedFields> {
+  const objectKey = typeof payload.objectKey === 'string' ? payload.objectKey : null;
+  const recordId = typeof payload.recordId === 'string' ? payload.recordId : null;
+  const changed = Array.isArray(payload.properties)
+    ? payload.properties.filter((p): p is string => typeof p === 'string')
+    : [];
+
+  const fields: ResolvedFields = {
+    'property.objectKey': objectKey,
+    'property.recordId': recordId,
+    // A list, so `contains` answers "did THIS field change" — the condition an
+    // author actually writes ("when the renewal date changes, make a task").
+    'property.changed': changed,
+    'property.changedCount': changed.length,
+  };
+
+  if (!objectKey || !recordId) return fields;
+
+  // Hydrate the record behind the change, so one rule can ask both "which field
+  // moved" and "what does the record say now". Only the objects with a resolver;
+  // a tenant-invented object contributes its change fields alone.
+  if (objectKey === 'contact' || objectKey === 'customer') {
+    Object.assign(fields, await resolveContact(ctx, { customerId: recordId }));
+  } else if (objectKey === 'ticket') {
+    Object.assign(fields, await hydrateTicket(ctx, recordId, {}));
+  } else if (objectKey === 'b2b_account') {
+    Object.assign(fields, await hydrateB2bAccount(ctx, recordId));
+  }
+  return fields;
+}
+
+/** `crm.association.added` — two records were linked (docs/144 §6). Exposes both
+ *  ends plus the label, and hydrates the contact when one end is a person, which
+ *  is what makes "when a decision maker joins a deal, tell the rep" writable. */
+async function hydrateAssociation(
+  ctx: TenantCtx,
+  payload: Record<string, unknown>
+): Promise<ResolvedFields> {
+  const str_ = (v: unknown): string | null => (typeof v === 'string' ? v : null);
+  const fromType = str_(payload.fromType);
+  const fromId = str_(payload.fromId);
+  const toType = str_(payload.toType);
+  const toId = str_(payload.toId);
+
+  const fields: ResolvedFields = {
+    'association.id': str_(payload.associationId),
+    'association.fromType': fromType,
+    'association.fromId': fromId,
+    'association.toType': toType,
+    'association.toId': toId,
+    'association.label': str_(payload.labelKey),
+  };
+
+  // Whichever end is a person becomes `customer.*`, so the notify/email actions
+  // downstream have somebody to address without the author wiring it up.
+  const contactId = fromType === 'contact' ? fromId : toType === 'contact' ? toId : null;
+  if (contactId) Object.assign(fields, await resolveContact(ctx, { customerId: contactId }));
+
+  const dealId = fromType === 'deal' ? fromId : toType === 'deal' ? toId : null;
+  if (dealId) fields['deal.id'] = dealId;
+
+  return fields;
+}
+
+// ─── bookings (docs/144 §9) ───────────────────────────────────────────────────
+
+/** A booking + who it is for. The trigger behind "when someone books a call,
+ *  move their deal on" — the one place the scheduling module and the CRM meet. */
+async function hydrateBooking(ctx: TenantCtx, bookingId: string): Promise<ResolvedFields> {
+  const booking = await ctx.tx.booking.findUnique({
+    where: { id: bookingId },
+    select: {
+      id: true,
+      status: true,
+      startAt: true,
+      endAt: true,
+      customerId: true,
+      propertyId: true,
+      service: { select: { name: true, durationMinutes: true } },
+      // A booking can hold several resources (a room AND a technician), so the
+      // first one is exposed as `resourceName` for the common single-resource
+      // case and the count says when there is more.
+      resources: { select: { resource: { select: { name: true } } }, take: 5 },
+    },
+  });
+  if (!booking) return {};
+
+  return {
+    [PROPERTY_FIELD]: booking.propertyId,
+    'booking.id': booking.id,
+    'booking.status': booking.status,
+    'booking.startAt': booking.startAt.toISOString(),
+    'booking.endAt': booking.endAt.toISOString(),
+    'booking.serviceName': booking.service.name,
+    'booking.durationMinutes': booking.service.durationMinutes,
+    'booking.resourceName': booking.resources[0]?.resource.name ?? null,
+    'booking.resourceCount': booking.resources.length,
+    // Hours from now — a rule saying "remind them when it's under 24" reads
+    // correctly whether the run fires today or after a wait step.
+    'booking.hoursAway': Math.round((booking.startAt.getTime() - Date.now()) / 3_600_000),
+    ...(await resolveContact(ctx, { customerId: booking.customerId })),
   };
 }
 
@@ -872,6 +1063,30 @@ const INVENTORY_EVENTS = ['inventory.low', 'inventory.depleted'];
 // a submission (notify / add to CRM / open a deal) beyond the always-on inbox.
 const FORM_EVENTS = ['form.submitted'];
 
+// Service requests (docs/144 §7, §9). Every ticket topic resolves through the
+// same hydrator — the fields a rule wants are the ticket's, whatever moved it.
+const TICKET_EVENTS = [
+  'crm.ticket.created',
+  'crm.ticket.updated',
+  'crm.ticket.assigned',
+  'crm.ticket.stage_changed',
+  'crm.ticket.resolved',
+  'crm.ticket.sla.warning',
+  'crm.ticket.sla.breached',
+];
+
+// Scheduling (docs/144 §9). `booking.created` is the one the plan named; the
+// rest come free from the same hydrator and are the ones a business asks for
+// next ("when they cancel, tell the rep").
+const BOOKING_EVENTS = [
+  'booking.created',
+  'booking.confirmed',
+  'booking.rescheduled',
+  'booking.cancelled',
+  'booking.completed',
+  'booking.no_show',
+];
+
 let installed = false;
 
 /** Register the module entity resolvers + scheduled scanners exactly once. */
@@ -886,14 +1101,14 @@ export function installEntityResolvers(): void {
     );
   }
   for (const ev of B2B_ACCOUNT_EVENTS) {
-    // `crm.b2b_account.created` publishes `{ b2bAccountId, ... }` (packages/crm
+    // `crm.b2b_account.created` publishes `{ companyId, ... }` (packages/crm
     // b2b-account-service) — listed first; the others are defensive fallbacks.
-    registerResolver(ev, byId(['b2bAccountId', 'accountId', 'id'], hydrateB2bAccount));
+    registerResolver(ev, byId(['companyId', 'accountId', 'id'], hydrateB2bAccount));
   }
   for (const ev of B2B_NOTIFICATION_EVENTS) {
     registerResolver(
       ev,
-      byId(['accountId', 'b2bAccountId', 'id'], async (ctx, id, p) => ({
+      byId(['accountId', 'companyId', 'id'], async (ctx, id, p) => ({
         ...(await hydrateB2bAccount(ctx, id)),
         ...b2bNotificationFields(p),
       }))
@@ -918,6 +1133,36 @@ export function installEntityResolvers(): void {
   // The payload is thin ({ taskId, ... }); hydrateTask re-reads the row for the
   // title/due date + the linked customer.
   registerResolver('crm.task.created', byId(['taskId', 'id'], hydrateTask));
+
+  // ── the workflow-depth triggers (docs/144 §9) ─────────────────────────────
+
+  // Service requests. `sla.breached` and `sla.warning` are the two a business
+  // most wants to act on, and the reason the promise clock is stored at all: a
+  // rule that pages the shift lead when an urgent request is 80% through its
+  // promise is the difference between a due date and a system.
+  for (const ev of TICKET_EVENTS) {
+    registerResolver(ev, byId(['ticketId', 'id'], hydrateTicket));
+  }
+
+  // A tenant-declared field changed value on any object (docs/144 §3).
+  registerResolver('crm.property.changed', (ctx, p) => hydratePropertyChange(ctx, p));
+
+  // Two records were linked (docs/144 §6).
+  registerResolver('crm.association.added', (ctx, p) => hydrateAssociation(ctx, p));
+  registerResolver('crm.association.removed', (ctx, p) => hydrateAssociation(ctx, p));
+
+  // Somebody booked time. The one place the scheduling module and the CRM meet.
+  for (const ev of BOOKING_EVENTS) {
+    registerResolver(ev, byId(['bookingId', 'id'], hydrateBooking));
+  }
+
+  // A customer REPLIED, as distinct from a customer writing in. Same hydrator as
+  // an inbound message — `email.replied` is an inbound message that happens to
+  // continue a thread — but a separate trigger, because "they answered" is the
+  // event a follow-up sequence exits on and "they wrote in" is the one support
+  // opens a request on. One event serving both would make every nurture rule
+  // fire on cold inbound mail.
+  registerResolver('email.replied', byId(['threadId', 'id'], hydrateInboundEngagement));
 
   // Announceable entities (docs/133 §9) — feed the social.post action's `announce.*`
   // namespace. A product going live / an article publishing → draft a social post.
@@ -1020,7 +1265,7 @@ export function installEntityResolvers(): void {
         currency: true,
         validUntil: true,
         customerId: true,
-        b2bAccountId: true,
+        companyId: true,
       },
       take: 5_000,
     });
@@ -1036,7 +1281,7 @@ export function installEntityResolvers(): void {
           'quote.validUntil': q.validUntil,
           ...(await resolveContact(ctx, {
             customerId: q.customerId,
-            b2bAccountId: q.b2bAccountId,
+            companyId: q.companyId,
           })),
         },
       }))
@@ -1064,7 +1309,7 @@ export function installEntityResolvers(): void {
           ...billingFields(d as BillingLike, now),
           ...(await resolveContact(ctx, {
             customerId: d.customerId,
-            b2bAccountId: d.b2bAccountId,
+            companyId: d.companyId,
           })),
         },
       }))

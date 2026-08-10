@@ -42,8 +42,16 @@ export const BUILTIN_PATHS: readonly string[] = [
  * staleness is the bad one: flagging a link to a route that exists.
  *
  * `/api/*` is served by route handlers, never by the page router.
+ *
+ * `/sign/*` is here for a DIFFERENT reason, and the difference is worth keeping
+ * straight. It is one leaf, not a dozen — but its parameter is a signing token,
+ * an opaque credential mailed to one person, so there is no roster that could
+ * ever enumerate the valid values the way `productHandles` enumerates products.
+ * It is also unreachable by design: nothing on the storefront links to it, so
+ * the link-checking this table feeds has nothing to check. A `DYNAMIC_ROUTES`
+ * entry would have to invent a roster and a noun for a route that has neither.
  */
-export const OPEN_SUBTREES: readonly string[] = ['/account/', '/api/'];
+export const OPEN_SUBTREES: readonly string[] = ['/account/', '/api/', '/sign/'];
 
 /** Which caller-supplied roster backs each parameterized route. */
 export type RosterKey =

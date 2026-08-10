@@ -67,7 +67,7 @@ export async function getCustomerContext(
         lastName: true,
         email: true,
         phone: true,
-        company: true,
+        companyName: true,
         type: true,
         orderCount: true,
         totalSpent: true,
@@ -84,7 +84,7 @@ export async function getCustomerContext(
     });
 
     const fullName = [customer.firstName, customer.lastName].filter(Boolean).join(' ').trim();
-    const name = firstNonEmpty(fullName, customer.company, customer.email);
+    const name = firstNonEmpty(fullName, customer.companyName, customer.email);
 
     return {
       linked: true,
@@ -92,7 +92,7 @@ export async function getCustomerContext(
       name,
       email: customer.email,
       phone: customer.phone,
-      company: customer.company,
+      company: customer.companyName,
       type: customer.type,
       orderCount: customer.orderCount,
       lifetimeValue: Number(customer.totalSpent),

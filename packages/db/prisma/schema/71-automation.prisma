@@ -41,6 +41,19 @@ model Automation {
   conditions Json @default("{}")
   actions    Json @default("[]")
 
+  // WHAT THIS RULE IS FOR (docs/144 §9) — a ConditionGroup describing the
+  // outcome the automation is trying to cause. Null = no goal declared.
+  //
+  // A goal changes what a run MEANS. Without one, an automation's history is a
+  // list of things that happened ("sent 400 emails"); with one it answers the
+  // only question the owner actually has — did it work. A run whose goal is met
+  // exits early (there is nothing left to nudge someone toward) and is counted
+  // as converted rather than merely completed.
+  //
+  // Evaluated against the same resolved fields conditions use, re-resolved at
+  // each step boundary so it reflects state the run's own actions changed.
+  goal Json?
+
   // Versioning (docs/84 Slice G-versioning) — Builder-style draft → publish +
   // immutable history. `version` is the live published version number (1 on
   // create = first publish); `draft` holds the staged, unpublished edit document
@@ -107,6 +120,7 @@ model AutomationVersion {
   triggerConfig Json    @map("trigger_config")
   conditions    Json
   actions       Json
+  goal          Json?
   maxDepth      Int     @map("max_depth") @db.SmallInt
   // Optional one-line publish note ("what changed").
   note          String? @db.Text
@@ -141,7 +155,14 @@ model AutomationRun {
   // Cascade depth for the loop-guard (docs/81 §7).
   causeDepth   Int    @default(0) @map("cause_depth") @db.SmallInt
 
-  status            String    @default("running") @db.VarChar(20) // running | waiting | completed | failed | skipped
+  // running | waiting | completed | failed | skipped | converted
+  //
+  // `converted` is a TERMINAL SUCCESS distinct from `completed`: the run stopped
+  // because the automation's goal was met, not because it ran out of actions.
+  // Kept apart deliberately — collapsing them would make a rule that converts on
+  // step one indistinguishable from one that sent every email and achieved
+  // nothing, which is the exact comparison enrollment analytics exists to draw.
+  status            String    @default("running") @db.VarChar(20)
   cursorIndex       Int       @default(0) @map("cursor_index") // next action to run
   resumeAt          DateTime? @map("resume_at") @db.Timestamptz // durable-delay wake time
   actionsTotal      Int       @map("actions_total")
@@ -150,6 +171,16 @@ model AutomationRun {
   // Slice G-versioning). Stamped for observability — "which version did this?".
   // Nullable for runs created before versioning shipped.
   automationVersion Int?      @map("automation_version")
+
+  // When the automation's goal was met (docs/144 §9). Set together with
+  // `status = 'converted'`; null on every other outcome. A timestamp rather than
+  // a boolean so "how long does this rule take to work" is a query.
+  goalMetAt DateTime? @map("goal_met_at") @db.Timestamptz
+
+  // Why the run stopped, when it stopped for a reason worth naming: a
+  // `platform.stop` action's reason, or `goal_met`. Null for a plain completion.
+  // Distinct from `error_message`, which only ever describes a failure.
+  exitReason String? @map("exit_reason") @db.VarChar(255)
 
   startedAt   DateTime  @default(now()) @map("started_at") @db.Timestamptz
   completedAt DateTime? @map("completed_at") @db.Timestamptz
@@ -172,14 +203,23 @@ model AutomationRunStep {
   runId    String @map("run_id") @db.Uuid
   tenantId String @map("tenant_id") @db.Uuid // FORCE RLS needs this on the row
 
-  actionIndex Int     @map("action_index")
-  actionType  String  @map("action_type") @db.VarChar(100)
-  status      String  @default("pending") @db.VarChar(20) // pending|running|completed|failed|skipped|gated
-  input       Json?
-  output      Json?
-  error       String? @db.Text
+  // Index into the COMPILED program, not into the authored action list — a
+  // branching rule flattens to a linear step sequence before it runs (docs/144
+  // §9, packages/automation/src/engine/compile.ts).
+  actionIndex Int    @map("action_index")
+  actionType  String @map("action_type") @db.VarChar(100)
+
+  // Where this step sits in the AUTHORED tree — `2`, or `2.then.0` for the first
+  // action inside a branch. The compiled index is what the engine resumes from;
+  // this is what a person reads, and without it a run inside a branch is a list
+  // of numbers that no longer line up with the rule on screen.
+  path    String? @db.VarChar(255)
+  status  String  @default("pending") @db.VarChar(20) // pending|running|completed|failed|skipped|gated
+  input   Json?
+  output  Json?
+  error   String? @db.Text
   // Policy-decision audit: [{ gate, decision, reason }] — `gated` != `failed` (docs/81 §7.1).
-  gateLog     Json?   @map("gate_log")
+  gateLog Json?   @map("gate_log")
 
   startedAt   DateTime? @map("started_at") @db.Timestamptz
   completedAt DateTime? @map("completed_at") @db.Timestamptz

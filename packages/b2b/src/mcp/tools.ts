@@ -94,7 +94,7 @@ const listTierOverrides: McpToolDefinition = {
 const getAccount: McpToolDefinition = {
   name: 'get_b2b_account',
   description:
-    'Fetch one B2B account with its trade enrichment: assigned pricing tier, credit limit / used / remaining, payment terms, status, fleet vehicles, and override count. (Use the CRM get_b2b_accounts tool to browse the roster.)',
+    'Fetch one B2B account with its trade enrichment: assigned pricing tier, credit limit / used / remaining, payment terms, status, fleet vehicles, and override count. (Use the CRM get_companies tool to browse the roster.)',
   scope: 'read:b2b',
   confirmation: false,
   input: z.object({ accountId: uuid() }),

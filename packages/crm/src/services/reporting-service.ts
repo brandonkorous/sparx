@@ -157,7 +157,7 @@ function monthKey(d: Date): string {
 /** Overall CRM metrics snapshot for the reports landing page. */
 export async function tenantSnapshot(ctx: ServiceContext): Promise<{
   customers: number;
-  b2bAccounts: number;
+  companies: number;
   openDeals: number;
   pipelineValue: number;
   openTasks: number;
@@ -168,7 +168,7 @@ export async function tenantSnapshot(ctx: ServiceContext): Promise<{
     const now = new Date();
     const [
       customers,
-      b2bAccounts,
+      companies,
       openDeals,
       openDealsValue,
       openTasks,
@@ -176,7 +176,7 @@ export async function tenantSnapshot(ctx: ServiceContext): Promise<{
       activeSegments,
     ] = await Promise.all([
       tx.customer.count({ where: { deletedAt: null } }),
-      tx.b2BAccount.count({ where: { deletedAt: null } }),
+      tx.company.count({ where: { deletedAt: null } }),
       tx.deal.count({ where: { deletedAt: null, closedAt: null } }),
       tx.deal.aggregate({
         where: { deletedAt: null, closedAt: null },
@@ -189,7 +189,7 @@ export async function tenantSnapshot(ctx: ServiceContext): Promise<{
 
     return {
       customers,
-      b2bAccounts,
+      companies,
       openDeals,
       pipelineValue: Number(openDealsValue._sum.value ?? 0),
       openTasks,
@@ -257,7 +257,7 @@ export async function leadsBySource(
           (SELECT o.channel FROM orders o
              WHERE o.customer_id = c.id
              ORDER BY o.placed_at ASC LIMIT 1),
-          CASE WHEN c.b2b_account_id IS NOT NULL THEN 'b2b_portal' ELSE 'direct' END
+          CASE WHEN c.company_id IS NOT NULL THEN 'b2b_portal' ELSE 'direct' END
         ) AS source,
         COUNT(*)::int AS leads
       FROM customers c

@@ -33,8 +33,10 @@ import { RefreshButton } from '../../components/refresh-button';
 import { useViewer } from '../../lib/api/shell-data';
 import { customerName, customerTypeMeta, formatMoney, type Customer } from './customers-data';
 import {
+  confidenceMeta,
   mergeErrorMessage,
   reasonLabel,
+  useBulkMerge,
   useDuplicates,
   useMergeCustomers,
   type DuplicateGroup,
@@ -66,8 +68,46 @@ export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
   const { data: groups, isPending, isError, isFetching, dataUpdatedAt, refetch } = useDuplicates();
   const { data: viewer } = useViewer();
   const canMerge = viewer?.role === 'admin' || viewer?.role === 'owner';
+  const bulkMerge = useBulkMerge();
+  const toast = useToast();
+  const confirm = useConfirm();
 
-  const clusters = groups ?? [];
+  // Only the CERTAIN ones are offered in bulk. A button that swept up the
+  // "worth a look" groups too would be a button that merges two colleagues, and
+  // the whole point of a confidence is that it stops that being one click.
+  const clusters = groups?.items ?? [];
+  const certainCount = clusters.filter((group) => group.confidence >= 100).length;
+
+  const mergeCertain = async (): Promise<void> => {
+    const ok = await confirm({
+      title: `Merge ${String(certainCount)} certain duplicates?`,
+      description:
+        'Each group has one email address shared by two or more records. The most recently updated record in each survives and absorbs the others — their orders, spend, deals and tasks move onto it, and anything it was missing is filled in from them. This cannot be undone.',
+      confirmLabel: 'Merge them',
+      cancelLabel: 'Not now',
+      color: 'danger',
+    });
+    if (!ok) return;
+    bulkMerge.mutate(100, {
+      onSuccess: (result) => {
+        toast.add({
+          title: `${String(result.merged)} merged`,
+          description:
+            result.absorbed === 1
+              ? '1 record was folded in.'
+              : `${String(result.absorbed)} records were folded in.`,
+          type: 'success',
+        });
+      },
+      onError: (error) => {
+        toast.add({
+          title: 'Could not merge those',
+          description: mergeErrorMessage(error, 'Nothing was changed.'),
+          type: 'error',
+        });
+      },
+    });
+  };
 
   return (
     <div className={PANE_SHELL}>
@@ -135,6 +175,26 @@ export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
                 across, and the extra records are retired.
               </Text>
             </div>
+
+            {canMerge && certainCount > 0 ? (
+              <div className="border-base-300 rounded-box flex flex-wrap items-center justify-between gap-3 border px-4 py-3">
+                <Text className="text-sm">
+                  {certainCount === 1
+                    ? '1 of these is an identical email address'
+                    : `${String(certainCount)} of these are identical email addresses`}{' '}
+                  — the same person by any definition.
+                </Text>
+                <Button
+                  color="module"
+                  size="sm"
+                  loading={bulkMerge.isPending}
+                  onClick={() => void mergeCertain()}
+                >
+                  <CopyCheck className="size-4" aria-hidden />
+                  Merge {certainCount === 1 ? 'it' : 'all ' + String(certainCount)}
+                </Button>
+              </div>
+            ) : null}
 
             {!canMerge ? (
               <Alert color="info" variant="soft">
@@ -213,9 +273,10 @@ function DuplicateCard({
   return (
     <section className="card bg-base-100 overflow-hidden">
       <header className="border-base-300 flex flex-wrap items-center gap-2 border-b px-4 py-3">
-        <Badge color="warning" variant="soft" size="sm">
-          {reasonLabel(group.reason)}
+        <Badge color={confidenceMeta(group.confidence).tone} variant="soft" size="sm">
+          {confidenceMeta(group.confidence).label}
         </Badge>
+        <Text className="text-sm">{reasonLabel(group.reason)}</Text>
         <div className="flex-1" />
         <Text className="text-sm">{group.customers.length} records</Text>
       </header>

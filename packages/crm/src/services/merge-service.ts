@@ -25,6 +25,7 @@ import { withTenant } from '@sparx/db';
 import type { Customer, Prisma } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
+import { crmSettings } from './crm-settings-service';
 import { publishCrmEvent } from '../events';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
@@ -221,9 +222,9 @@ export async function merge(ctx: ServiceContext, rawInput: unknown): Promise<Mer
         phone: filledScalar(primary.phone, dupFields('phone')),
         firstName: filledScalar(primary.firstName, dupFields('firstName')),
         lastName: filledScalar(primary.lastName, dupFields('lastName')),
-        company: filledScalar(primary.company, dupFields('company')),
+        companyName: filledScalar(primary.companyName, dupFields('companyName')),
         jobTitle: filledScalar(primary.jobTitle, dupFields('jobTitle')),
-        b2bAccountId: filledScalar(primary.b2bAccountId, dupFields('b2bAccountId')),
+        companyId: filledScalar(primary.companyId, dupFields('companyId')),
         authUserId: filledScalar(primary.authUserId, dupFields('authUserId')),
       },
     });
@@ -313,19 +314,66 @@ export async function merge(ctx: ServiceContext, rawInput: unknown): Promise<Mer
 // ─────────────────────────────────────────────────────────────────────────
 
 export interface DuplicateGroup {
-  reason: 'email' | 'name+company';
+  /**
+   * Which signal put these together. `name+company` keeps its old spelling on
+   * purpose: it is what the surface renders and what the existing clients read,
+   * and the settings key it corresponds to (`name_company`) is a different
+   * vocabulary — a stored setting rather than a label.
+   */
+  reason: 'email' | 'phone' | 'name+company';
   customers: Customer[];
+  /**
+   * How sure we are, 0-100 — and the whole reason auto-merge is safe to offer.
+   *
+   * An exact email match is 100: two live records with the same address are the
+   * same person by any definition a business uses. A phone match is 90 — shared
+   * office lines and family mobiles are real but rare. Last name plus employer
+   * is 60, which is below every threshold the settings screen will accept, so
+   * it can never auto-merge no matter what somebody sets. That is deliberate:
+   * the weakest signal is the one that would merge two brothers at the same firm.
+   */
+  confidence: number;
 }
 
-/** Naive but effective: group on case-insensitive email, or on
- *  (lower(lastName), lower(company)) when both fields are present. Returns
- *  groups with at least two live members. Pagination is up to the caller —
- *  this is a tenant-wide scan, intended for the dashboard's "Find duplicates"
- *  page or a periodic cleanup job. */
+/** Confidence per signal. Fixed rather than configurable — a number a business
+ *  can tune is a number they can set to 100 for a guess. What IS configurable is
+ *  which signals run at all, and how sure a merge has to be to happen unwatched. */
+const CONFIDENCE: Record<DuplicateGroup['reason'], number> = {
+  email: 100,
+  phone: 90,
+  'name+company': 60,
+};
+
+/** Digits only, so `(555) 010-3344` and `+1 555 010 3344` are one number. A
+ *  number under 7 digits is an extension or a typo, not a way to identify anyone. */
+function phoneKey(raw: string): string | null {
+  const digits = raw.replace(/\D/g, '');
+  return digits.length >= 7 ? digits.slice(-10) : null;
+}
+
+/**
+ * Find likely duplicates, using the signals this business has chosen.
+ *
+ * Which signals run comes from CrmSettings (docs/144 §12) — a parts wholesaler
+ * dedupes on the account email, a clinic on the phone number, and running both
+ * on both produces merges nobody asked for. Defaults are what this did before it
+ * was configurable, so turning the settings surface on changes nothing by itself.
+ *
+ * STRONGEST SIGNAL WINS. A pair caught by email is not reported again under
+ * phone or name: one pair, one reason, the highest confidence that found it.
+ * Reporting the same two people three times is how a duplicates page with
+ * fourteen real problems shows forty rows and gets closed.
+ *
+ * Tenant-wide scan, bounded by `limit`. Pagination is the caller's, and the
+ * surface says what the bound was rather than implying it saw everything.
+ */
 export async function findLikelyDuplicates(
   ctx: ServiceContext,
-  args: { limit?: number } = {}
+  args: { limit?: number; propertyId?: string | null } = {}
 ): Promise<DuplicateGroup[]> {
+  const settings = await crmSettings(ctx, args.propertyId ?? null);
+  const enabled = new Set(settings.duplicateMatchRules);
+
   return withTenant(ctx, async (tx) => {
     const customers = await tx.customer.findMany({
       where: { deletedAt: null },
@@ -333,40 +381,126 @@ export async function findLikelyDuplicates(
       take: Math.min(args.limit ?? 5000, 10_000),
     });
 
-    const byEmail = new Map<string, Customer[]>();
-    const byNameCompany = new Map<string, Customer[]>();
+    const buckets: { reason: DuplicateGroup['reason']; map: Map<string, Customer[]> }[] = [
+      { reason: 'email', map: new Map() },
+      { reason: 'phone', map: new Map() },
+      { reason: 'name+company', map: new Map() },
+    ];
+    const [byEmail, byPhone, byNameCompany] = buckets.map((b) => b.map) as [
+      Map<string, Customer[]>,
+      Map<string, Customer[]>,
+      Map<string, Customer[]>,
+    ];
+
+    const push = (map: Map<string, Customer[]>, key: string, c: Customer): void => {
+      const bucket = map.get(key);
+      if (bucket) bucket.push(c);
+      else map.set(key, [c]);
+    };
 
     for (const c of customers) {
-      if (c.email) {
-        const key = c.email.trim().toLowerCase();
-        const bucket = byEmail.get(key);
-        if (bucket) bucket.push(c);
-        else byEmail.set(key, [c]);
+      if (enabled.has('email') && c.email) {
+        push(byEmail, c.email.trim().toLowerCase(), c);
       }
-      if (c.lastName && c.company) {
-        const key = `${c.lastName.trim().toLowerCase()}|${c.company.trim().toLowerCase()}`;
-        const bucket = byNameCompany.get(key);
-        if (bucket) bucket.push(c);
-        else byNameCompany.set(key, [c]);
+      if (enabled.has('phone') && c.phone) {
+        const key = phoneKey(c.phone);
+        if (key) push(byPhone, key, c);
+      }
+      if (enabled.has('name_company') && c.lastName && c.companyName) {
+        push(
+          byNameCompany,
+          `${c.lastName.trim().toLowerCase()}|${c.companyName.trim().toLowerCase()}`,
+          c
+        );
       }
     }
 
     const groups: DuplicateGroup[] = [];
-    const seen = new Set<string>(); // dedupe groups already covered by email
-    for (const bucket of byEmail.values()) {
-      if (bucket.length < 2) continue;
-      const sorted = bucket.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
-      groups.push({ reason: 'email', customers: sorted });
-      for (const c of sorted) seen.add(c.id);
-    }
-    for (const bucket of byNameCompany.values()) {
-      if (bucket.length < 2) continue;
-      // Skip if all members already appear in an email group — no new info.
-      if (bucket.every((c) => seen.has(c.id))) continue;
-      const sorted = bucket.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
-      groups.push({ reason: 'name+company', customers: sorted });
+    // Ids already reported under a stronger signal. Checked per-member rather
+    // than per-group so a THREE-record cluster where two share an email and the
+    // third only shares a phone still surfaces the third.
+    const seen = new Set<string>();
+
+    for (const { reason, map } of buckets) {
+      for (const bucket of map.values()) {
+        if (bucket.length < 2) continue;
+        if (bucket.every((c) => seen.has(c.id))) continue;
+        const sorted = [...bucket].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+        groups.push({ reason, customers: sorted, confidence: CONFIDENCE[reason] });
+        for (const c of sorted) seen.add(c.id);
+      }
     }
 
-    return groups;
+    // Most confident first, then largest — the order somebody would work them in.
+    return groups.sort(
+      (a, b) => b.confidence - a.confidence || b.customers.length - a.customers.length
+    );
   });
+}
+
+export interface BulkMergeResult {
+  /** Groups collapsed, and how many records disappeared into a survivor. */
+  merged: number;
+  absorbed: number;
+  /** Groups left alone, with the reason a person can act on. */
+  skipped: { reason: string; count: number }[];
+}
+
+/**
+ * Merge every duplicate group at or above a confidence floor.
+ *
+ * THE SURVIVOR IS THE MOST RECENTLY UPDATED RECORD, which is what
+ * `findLikelyDuplicates` already sorts each group by. That is the one somebody
+ * has touched most recently, so it is the one whose corrections are worth
+ * keeping — and every field the survivor is MISSING is filled in from the
+ * others, so nothing is actually lost either way.
+ *
+ * Groups run one at a time in their own transactions rather than one big one. A
+ * merge is irreversible: if the fortieth fails, the thirty-nine before it should
+ * stay done, because re-running is safe and unwinding is not.
+ *
+ * `minConfidence` is required and has no default. There is no sensible default
+ * for "destroy records without asking" — the caller states the floor, and the
+ * settings screen's `autoMergeThreshold` is where a business states theirs.
+ */
+export async function bulkMerge(
+  ctx: ServiceContext,
+  args: { minConfidence: number; limit?: number; propertyId?: string | null }
+): Promise<BulkMergeResult> {
+  const groups = await findLikelyDuplicates(ctx, {
+    limit: args.limit,
+    propertyId: args.propertyId,
+  });
+
+  const result: BulkMergeResult = { merged: 0, absorbed: 0, skipped: [] };
+  const skips = new Map<string, number>();
+  const note = (reason: string): void => {
+    skips.set(reason, (skips.get(reason) ?? 0) + 1);
+  };
+
+  for (const group of groups) {
+    if (group.confidence < args.minConfidence) {
+      note('Not sure enough to merge without someone looking');
+      continue;
+    }
+    const [primary, ...duplicates] = group.customers;
+    if (!primary || duplicates.length === 0) continue;
+
+    try {
+      await merge(ctx, {
+        primaryCustomerId: primary.id,
+        duplicateCustomerIds: duplicates.map((d) => d.id),
+      });
+      result.merged += 1;
+      result.absorbed += duplicates.length;
+    } catch (error) {
+      // One group failing must not stop the rest. The message is kept because
+      // "eleven merged, three refused because they are linked to different
+      // companies" is a usable sentence and "some failed" is not.
+      note(error instanceof Error ? error.message : 'Could not be merged');
+    }
+  }
+
+  result.skipped = [...skips.entries()].map(([reason, count]) => ({ reason, count }));
+  return result;
 }

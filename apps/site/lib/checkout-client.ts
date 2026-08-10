@@ -43,7 +43,7 @@ export interface CheckoutSession {
   customerEmail?: string;
   // Present only when the signed-in customer is an active B2B contact — the
   // frontend's ONLY signal for showing the "bill to account" payment choice.
-  b2bAccountId?: string;
+  companyId?: string;
   // The linked account's payment-terms designation (e.g. 'prepay', 'net30').
   // A 'prepay' account has no net-terms entitlement — hide that choice.
   b2bAccountPaymentTerms?: string;

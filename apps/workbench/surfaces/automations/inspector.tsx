@@ -22,17 +22,20 @@ import {
   Text,
   Textarea,
 } from '@wizeworks/silicaui-react';
-import { Filter, type LucideIcon } from 'lucide-react';
+import { Filter, Target, type LucideIcon } from 'lucide-react';
+import { IfElseConfig } from '@sparx/automation-schemas';
 import type { Action, ConditionGroup, Trigger } from '@sparx/automation-schemas';
 import type { SiteInfo } from '../../lib/api/shell-data';
 import { actionDef, moduleForActionType, moduleLabel } from './automations-catalog';
 import {
   CONDITIONS_NODE,
+  GOAL_NODE,
   NODE_ICONS,
   SETTINGS_NODE,
   TRIGGER_NODE,
   actionHeadline,
   actionIcon,
+  branchArms,
   conditionsHeadline,
   triggerHeadline,
   triggerIcon,
@@ -92,15 +95,28 @@ export interface InspectorProps {
   actionIds: string[];
   onAction: (id: string, next: Action) => void;
   onRemoveAction: (id: string) => void;
+  /** What this rule is trying to cause (docs/144 §9); null = no goal. */
+  goal: ConditionGroup | null;
+  onGoal: (g: ConditionGroup | null) => void;
+  /** Resolve any node id — top-level or a path into a branch — to its action. */
+  actionForNode: (id: string) => Action | null;
+  /** Change the question a branch asks. */
+  onBranchQuestion: (branchNodeId: string, condition: ConditionGroup, label?: string) => void;
 }
 
 export function Inspector(props: InspectorProps) {
   const { selectedId } = props;
   if (selectedId === TRIGGER_NODE) return <TriggerPanel {...props} />;
   if (selectedId === CONDITIONS_NODE) return <ConditionsPanel {...props} />;
+  if (selectedId === GOAL_NODE) return <GoalPanel {...props} />;
   if (selectedId && selectedId !== SETTINGS_NODE) {
+    // Top-level first, then anything the tree can resolve — which covers a step
+    // inside a branch, addressed by path (see branch-tree). The inspector does
+    // not otherwise care where a step lives.
     const idx = props.actionIds.indexOf(selectedId);
     if (idx >= 0) return <ActionPanel {...props} selectedId={selectedId} index={idx} />;
+    const nested = props.actionForNode(selectedId);
+    if (nested) return <ActionPanel {...props} selectedId={selectedId} index={-1} />;
   }
   return <SettingsPanel {...props} />;
 }
@@ -251,19 +267,33 @@ function ActionPanel({
   enabledModules,
   onAction,
   onRemoveAction,
+  actionForNode,
+  onBranchQuestion,
 }: InspectorProps & { selectedId: string; index: number }) {
-  const action = actions[index];
+  // `index >= 0` = a top-level step; otherwise it is nested and resolved by path.
+  const action = index >= 0 ? actions[index] : actionForNode(selectedId);
   if (!action) return <Panel />;
 
   const def = actionDef(action.type);
   const Glyph = NODE_ICONS[actionIcon(action)];
   const module = def?.module ?? moduleForActionType(action.type);
   const title = def?.label ?? actionHeadline(action);
-  const subtitle = `${moduleLabel(module)} · step ${String(index + 1)} of ${String(actions.length)}`;
+  const subtitle =
+    index >= 0
+      ? `${moduleLabel(module)} · step ${String(index + 1)} of ${String(actions.length)}`
+      : `${moduleLabel(module)} · inside a branch`;
 
   return (
     <Panel>
       <PanelHead icon={Glyph} title={title} subtitle={subtitle} />
+      {action.type === 'platform.if_else' ? (
+        <BranchQuestionEditor
+          action={action}
+          onChange={(condition, label) => {
+            onBranchQuestion(selectedId, condition, label);
+          }}
+        />
+      ) : null}
       <ActionConfigEditor
         action={action}
         actionId={selectedId}
@@ -275,6 +305,118 @@ function ActionPanel({
           onRemoveAction(selectedId);
         }}
       />
+    </Panel>
+  );
+}
+
+/**
+ * The question a branch asks, plus the note shown on its card.
+ *
+ * The note is offered FIRST and deliberately: a rendered condition tree tells you
+ * what the rule checks, and "did they book a call?" tells you what it MEANS. On a
+ * canvas of eight steps, the second is what makes the map readable.
+ */
+function BranchQuestionEditor({
+  action,
+  onChange,
+}: {
+  action: Action;
+  onChange: (condition: ConditionGroup, label?: string) => void;
+}) {
+  const arms = branchArms(action);
+  const parsed = IfElseConfig.safeParse(action.config);
+  const condition = parsed.success
+    ? parsed.data.condition
+    : { logic: 'AND' as const, conditions: [] };
+  const label = parsed.success ? (parsed.data.label ?? '') : '';
+
+  return (
+    <div className="flex flex-col gap-4">
+      <Field>
+        <FieldLabel>Call this branch</FieldLabel>
+        <FieldControl>
+          <Input
+            value={label}
+            placeholder="Did they book a call?"
+            onChange={(e) => {
+              onChange(condition, e.target.value);
+            }}
+          />
+        </FieldControl>
+        <FieldDescription>
+          A short note so you can read the flow at a glance. Optional.
+        </FieldDescription>
+      </Field>
+
+      <div className="flex flex-col gap-2">
+        <Text>
+          When the rule reaches this step it checks the following. If it all holds, it does the “If
+          yes” steps ({arms.then.length}); otherwise it does the “If no” steps (
+          {arms.otherwise.length}
+          ), then carries on.
+        </Text>
+        <ConditionEditor
+          value={condition}
+          onChange={(next) => {
+            onChange(next, label === '' ? undefined : label);
+          }}
+        />
+        {condition.conditions.length === 0 ? (
+          <Text>Nothing to check yet — as it stands this always takes the “If yes” side.</Text>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The goal — what the rule is trying to cause (docs/144 §9).
+ *
+ * Its own node rather than a field in Settings, because it is not a setting: it
+ * is the thing that turns run history from "400 emails went out" into "62 of the
+ * 400 people booked". Given the same weight on the canvas as the trigger and the
+ * conditions, since it is the same kind of statement about the rule.
+ */
+function GoalPanel({ goal, onGoal }: InspectorProps) {
+  const active = goal !== null;
+  return (
+    <Panel>
+      <PanelHead
+        icon={Target}
+        title="What you’re aiming for"
+        subtitle="Optional — how you’ll know it worked"
+      />
+      <Text>
+        Describe what you want to happen because of this automation. When it happens for someone,
+        sparx stops running the rest of the steps for them — there is no point nudging somebody who
+        has already done it — and counts them as a success.
+      </Text>
+
+      {active ? (
+        <>
+          <ConditionEditor
+            value={goal}
+            onChange={(next) => {
+              onGoal(next.conditions.length === 0 ? null : next);
+            }}
+          />
+          <Text>
+            Leave every line blank to go back to having no goal. Without one, this rule just runs to
+            the end — which is right for something like a receipt.
+          </Text>
+        </>
+      ) : (
+        <button
+          type="button"
+          className="border-base-300 hover:border-module hover:text-module flex w-full items-center gap-2 rounded-lg border border-dashed px-3 py-2.5 text-left"
+          onClick={() => {
+            onGoal({ logic: 'AND', conditions: [{ field: '', operator: 'eq', value: '' }] });
+          }}
+        >
+          <Target className="size-4 shrink-0" aria-hidden />
+          <span className="text-sm font-medium">Set what you’re aiming for</span>
+        </button>
+      )}
     </Panel>
   );
 }

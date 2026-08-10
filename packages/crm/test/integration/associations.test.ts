@@ -20,7 +20,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { prisma } from '@sparx/db';
 import {
   associationService,
-  b2bAccountService,
+  companyService,
   customerService,
   dealService,
   pipelineService,
@@ -31,12 +31,12 @@ import { disposeTestContext, makeTestContext, type TestContext } from '../helper
 async function dealColumns(
   tenantId: string,
   dealId: string
-): Promise<{ customerId: string | null; b2bAccountId: string | null }> {
+): Promise<{ customerId: string | null; companyId: string | null }> {
   return prisma.$transaction(async (tx) => {
     await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
     const row = await tx.deal.findUniqueOrThrow({
       where: { id: dealId },
-      select: { customerId: true, b2bAccountId: true },
+      select: { customerId: true, companyId: true },
     });
     return row;
   });
@@ -283,7 +283,7 @@ describe('associationService', () => {
   });
 
   it('links a company to a deal and mirrors onto its own column', async () => {
-    const account = await b2bAccountService.create(test.ctx, { companyName: 'Northwind Ltd' });
+    const account = await companyService.create(test.ctx, { companyName: 'Northwind Ltd' });
     const pipeline = await pipelineService.bootstrapDefaultPipeline(test.ctx);
     const deal = await dealService.create(test.ctx, {
       pipelineId: pipeline.id,
@@ -301,7 +301,7 @@ describe('associationService', () => {
     expect(link.isPrimary).toBe(true);
 
     const columns = await dealColumns(test.ctx.tenantId, deal.id);
-    expect(columns.b2bAccountId).toBe(account.id);
+    expect(columns.companyId).toBe(account.id);
   });
 
   it('refuses to relate a record to itself', async () => {
@@ -355,7 +355,7 @@ describe('association labels', () => {
       type: 'retail',
       email: 'lin@labels.test',
     });
-    const account = await b2bAccountService.create(test.ctx, { companyName: 'Labels Ltd' });
+    const account = await companyService.create(test.ctx, { companyName: 'Labels Ltd' });
 
     await associationService.create(test.ctx, {
       fromType: 'company',
@@ -406,8 +406,8 @@ describe('merging customers moves their relationships', () => {
       firstName: 'Dave',
       lastName: 'Kelly',
     });
-    const employer = await b2bAccountService.create(test.ctx, { companyName: 'Kelly Plant Hire' });
-    const other = await b2bAccountService.create(test.ctx, { companyName: 'Second Job Ltd' });
+    const employer = await companyService.create(test.ctx, { companyName: 'Kelly Plant Hire' });
+    const other = await companyService.create(test.ctx, { companyName: 'Second Job Ltd' });
 
     // Both are linked to the same employer — exactly how a duplicate gets
     // noticed — plus the duplicate has one the primary does not.

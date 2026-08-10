@@ -22,7 +22,7 @@ export async function buildSegmentRuleProjection(
     const customer = await tx.customer.findUnique({
       where: { id: customerId },
       include: {
-        b2bAccount: true,
+        company: true,
       },
     });
     if (customer?.deletedAt != null || !customer) {
@@ -50,9 +50,9 @@ export async function buildSegmentRuleProjection(
     const hasMarketingConsent = Array.isArray(consent.scope) && consent.scope.includes('marketing');
     const subscribed = hasMarketingConsent && !customer.doNotContact;
 
-    const b2bUtilization = customer.b2bAccount
-      ? Number(customer.b2bAccount.creditLimit) > 0
-        ? Number(customer.b2bAccount.creditUsed) / Number(customer.b2bAccount.creditLimit)
+    const b2bUtilization = customer.company
+      ? Number(customer.company.creditLimit) > 0
+        ? Number(customer.company.creditUsed) / Number(customer.company.creditLimit)
         : 0
       : 0;
 
@@ -64,7 +64,7 @@ export async function buildSegmentRuleProjection(
         leadStatus: customer.leadStatus,
         email: customer.email,
         tags: customer.tags ?? [],
-        company: customer.company,
+        company: customer.companyName,
         createdAt: customer.createdAt,
         totalSpent: Number(customer.totalSpent),
         orderCount: customer.orderCount,
@@ -73,15 +73,15 @@ export async function buildSegmentRuleProjection(
         daysSinceLastOrder,
         assignedRepId: customer.assignedRepId,
         doNotContact: customer.doNotContact,
-        b2bAccountId: customer.b2bAccountId,
+        b2bAccountId: customer.companyId,
       },
-      b2bAccount: customer.b2bAccount
+      b2bAccount: customer.company
         ? {
-            pricingTier: customer.b2bAccount.pricingTier,
+            pricingTier: customer.company.pricingTier,
             creditUtilization: b2bUtilization,
-            fleetSize: customer.b2bAccount.fleetSize,
-            status: customer.b2bAccount.status,
-            paymentTerms: customer.b2bAccount.paymentTerms,
+            fleetSize: customer.company.fleetSize,
+            status: customer.company.status,
+            paymentTerms: customer.company.paymentTerms,
           }
         : null,
       email: {
@@ -93,14 +93,14 @@ export async function buildSegmentRuleProjection(
       // Tenant-declared properties (docs/144 §3.4), so a rule can say
       // `custom.contact.warrantyExpires` alongside `customer.totalSpent`. The
       // bags are read straight off the rows already loaded above — the company's
-      // comes free with the b2bAccount include, so this costs no extra query.
+      // comes free with the company include, so this costs no extra query.
       //
       // `deal` is deliberately absent: a customer can be on several deals, and
       // "which one does the rule mean?" has no single answer. Deal properties
       // become reachable through a labelled association once Phase 2 lands.
       custom: {
         contact: asBag(customer.customProperties),
-        company: customer.b2bAccount ? asBag(customer.b2bAccount.customProperties) : undefined,
+        company: customer.company ? asBag(customer.company.customProperties) : undefined,
       },
     };
   });

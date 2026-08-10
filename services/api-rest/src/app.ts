@@ -136,6 +136,7 @@ import publicRedirectRoutes from './routes/v1/public/redirects.js';
 import publicB2bPortalRoutes from './routes/v1/public/b2b-portal.js';
 import publicEstimateRoutes from './routes/v1/public/estimates.js';
 import publicSchedulingRoutes from './routes/v1/public/scheduling.js';
+import publicDocumentRoutes from './routes/v1/public/documents.js';
 import schedulingAccountRoutes from './routes/v1/public/scheduling-account.js';
 import crmRequestRoutes from './routes/v1/public/crm-requests.js';
 import schedulingCalendarRoutes from './routes/v1/public/scheduling-calendar.js';
@@ -863,6 +864,8 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(publicB2bPortalRoutes);
   await app.register(publicEstimateRoutes);
   await app.register(publicSchedulingRoutes);
+  // E-sign + meeting links (docs/144 §12) — unauthenticated, tenant by site slug.
+  await app.register(publicDocumentRoutes);
   await app.register(schedulingAccountRoutes);
   await app.register(crmRequestRoutes);
   await app.register(schedulingCalendarRoutes);

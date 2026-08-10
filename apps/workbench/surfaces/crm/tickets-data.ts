@@ -44,7 +44,7 @@ export interface Ticket {
   pipelineId: string;
   stageId: string;
   customerId: string | null;
-  b2bAccountId: string | null;
+  companyId: string | null;
   assignedToUserId: string | null;
   subject: string;
   description: string | null;
@@ -70,7 +70,7 @@ export interface Ticket {
     company: string | null;
     email: string | null;
   } | null;
-  b2bAccount: { id: string; name: string } | null;
+  company: { id: string; name: string } | null;
   assignedTo: { id: string; name: string | null; email: string | null } | null;
 }
 
@@ -355,7 +355,7 @@ export interface TicketInput {
   priority?: TicketPriority;
   source?: TicketSource;
   customerId?: string | null;
-  b2bAccountId?: string | null;
+  companyId?: string | null;
   assignedToUserId?: string | null;
   pipelineId?: string | null;
   stageId?: string | null;

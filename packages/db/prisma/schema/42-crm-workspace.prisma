@@ -1,0 +1,165 @@
+// CRM — the workspace layer (docs/144 §11 + §12).
+//
+// Three tables that are not about a CUSTOMER at all. They are about how a
+// business works its CRM: what it has decided (settings), how each person likes
+// to look at a list (saved views), and how a rep hands out their calendar
+// (meeting links).
+//
+// They arrived together because each one only became possible once something
+// else existed. Saved views are meaningless until custom properties make
+// "which columns?" a real question. Duplicate rules are meaningless until there
+// is more than one signal to match on. A meeting link is meaningless until
+// scheduling can book.
+//
+// All three are tenant-scoped → ENABLE + FORCE RLS + tenant_isolation,
+// hand-written in the migration.
+
+/// The CRM preferences that are DECISIONS rather than data.
+///
+/// One row per (tenant, site). Site-scoped per docs/131 because two unrelated
+/// businesses under one owner will not agree on what counts as the same
+/// person — a parts wholesaler dedupes on account email, a donut shop on phone.
+///
+/// Every column has a default, so a tenant with no row behaves exactly as the
+/// defaults describe. That is deliberate: the settings surface renders and
+/// works before anything has been saved, rather than needing a row created
+/// first.
+model CrmSettings {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  propertyId String? @map("property_id") @db.Uuid
+
+  /// Offer a company to a new contact whose email domain matches one
+  /// (docs/144 §11). OFF by default, and it is only ever an OFFER — silent
+  /// auto-association is how a CRM's data gets quietly wrong, and a business
+  /// should meet that choice rather than find it already made.
+  domainAssociation Boolean @default(false) @map("domain_association")
+
+  /// Which signals mean "the same person": `email`, `phone`, `name_company`.
+  /// Defaults to what the duplicate scanner already did before it was
+  /// configurable, so turning the surface on changes nothing by itself.
+  duplicateMatchRules String[] @default(["email", "name_company"]) @map("duplicate_match_rules")
+
+  /// Above this confidence (50-100) a duplicate pair may be merged without a
+  /// person looking at it. NULL = never, which is the default and the right
+  /// answer for most businesses: a merge cannot be undone.
+  autoMergeThreshold Int? @map("auto_merge_threshold")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  // (tenant, property) unique with NULLS NOT DISTINCT in SQL — otherwise a
+  // tenant accumulates several "tenant-wide" rows and whichever is read first
+  // wins, which is a setting that changes when nothing changed it.
+  @@unique([tenantId, propertyId])
+  @@map("crm_settings")
+}
+
+/// One person's answer to "how do I look at this list": which records, which
+/// columns, in what order.
+///
+/// This could not exist before the object registry. Every list had one fixed
+/// column set, so there was nothing to save. A tenant who has now declared six
+/// extra properties on a contact has a list that is wrong for everybody until
+/// each person can shape it once and keep it.
+model CrmSavedView {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  propertyId String? @map("property_id") @db.Uuid
+
+  /// The author. NOT NULL even on a shared view: "who made this and can change
+  /// it" is what decides whether the delete button renders, and an ownerless
+  /// shared view is one nobody can tidy up.
+  userId String @map("user_id") @db.Uuid
+
+  /// contact | company | deal | ticket | <tenant-authored>. Free text for the
+  /// same reason the registry's key is — a tenant-invented object must get
+  /// saved views without a migration.
+  objectKey String @map("object_key") @db.VarChar(63)
+
+  name String @db.VarChar(120)
+
+  /// A ConditionGroup — the same shape segments, automations and reports filter
+  /// with. One filter vocabulary across the platform is what stops `contains`
+  /// meaning two subtly different things in two places.
+  filters Json @default("{}")
+
+  /// Ordered column keys. Empty = the surface's own default set, which is what
+  /// lets someone save a filter without also having to decide about columns.
+  columns String[] @default([])
+
+  /// `{ field, direction }`, or null for the surface's default order.
+  sort Json?
+
+  /// Visible to the whole team, editable only by its author. A team of four
+  /// should not each rebuild "open deals over $5k".
+  isShared Boolean @default(false) @map("is_shared")
+
+  /// The view this person lands on when they open the list. At most one per
+  /// (user, object) — a partial unique index in the migration.
+  isDefault Boolean @default(false) @map("is_default")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  // Cascade on the user, which is unusual here and correct: a saved view is a
+  // preference, not a record of anything that happened. Nothing is lost.
+  user     User      @relation("CrmSavedViewAuthor", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, userId, objectKey, name], map: "crm_saved_views_name_unique")
+  @@index([tenantId, objectKey, userId], map: "crm_saved_views_lookup_idx")
+  @@map("crm_saved_views")
+}
+
+/// A rep's personal booking link — `/meet/<slug>`.
+///
+/// Deliberately THIN. It does not own availability, duration, buffers, lead
+/// time or cancellation policy: the SchedulingService does, and duplicating any
+/// of that here would give a business two places to change the same thing and
+/// no way to tell which one was live.
+///
+/// What it adds is the three things scheduling has no opinion about: a
+/// memorable public slug, WHOSE link it is, and the fact that a booking taken
+/// through it belongs on a contact's CRM timeline rather than only in a
+/// calendar.
+model CrmMeetingLink {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  propertyId String? @map("property_id") @db.Uuid
+  userId     String  @map("user_id") @db.Uuid
+  serviceId  String  @map("service_id") @db.Uuid
+
+  /// The public path segment. Unique per site, so two businesses under one
+  /// owner can each have a `discovery-call`.
+  slug        String  @db.VarChar(63)
+  name        String  @db.VarChar(120)
+  description String? @db.Text
+
+  isActive Boolean @default(true) @map("is_active")
+
+  /// Denormalized. The alternative is counting bookings on every render of a
+  /// list of links, and this number is never used for anything that needs it to
+  /// be exact.
+  bookingCount Int @default(0) @map("booking_count")
+
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  archivedAt DateTime? @map("archived_at") @db.Timestamptz
+
+  tenant   Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property?         @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  // Cascade on the user: a PERSONAL link belongs to a person. When they leave
+  // it must stop working rather than quietly booking their successor.
+  user     User              @relation("CrmMeetingLinkOwner", fields: [userId], references: [id], onDelete: Cascade)
+  service  SchedulingService @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  // (tenant, property, slug), NULLS NOT DISTINCT in SQL.
+  @@unique([tenantId, propertyId, slug], map: "crm_meeting_links_slug_unique")
+  @@index([tenantId, userId, isActive], map: "crm_meeting_links_user_idx")
+  @@map("crm_meeting_links")
+}

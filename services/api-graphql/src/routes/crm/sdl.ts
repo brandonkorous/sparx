@@ -36,7 +36,7 @@ export const crmSdl = /* GraphQL */ `
     connected
     bad_timing
   }
-  enum B2BAccountStatus {
+  enum CompanyStatus {
     active
     credit_hold
     suspended
@@ -79,7 +79,7 @@ export const crmSdl = /* GraphQL */ `
     jobTitle: String
     tags: [String!]!
     assignedRepId: ID
-    b2bAccountId: ID
+    companyId: ID
     doNotContact: Boolean!
     totalSpent: Float!
     orderCount: Int!
@@ -94,7 +94,7 @@ export const crmSdl = /* GraphQL */ `
     total: Int!
   }
 
-  type B2BAccount {
+  type Company {
     id: ID!
     companyName: String!
     taxId: String
@@ -104,7 +104,7 @@ export const crmSdl = /* GraphQL */ `
     creditUsed: Float!
     paymentTerms: String
     discountPercent: Float!
-    status: B2BAccountStatus!
+    status: CompanyStatus!
     assignedRepId: ID
     fleetSize: Int
     notes: String
@@ -112,8 +112,8 @@ export const crmSdl = /* GraphQL */ `
     createdAt: DateTime!
     updatedAt: DateTime!
   }
-  type B2BAccountPage {
-    items: [B2BAccount!]!
+  type CompanyPage {
+    items: [Company!]!
     total: Int!
   }
 
@@ -143,7 +143,7 @@ export const crmSdl = /* GraphQL */ `
     pipelineId: ID!
     stageId: ID!
     customerId: ID
-    b2bAccountId: ID
+    companyId: ID
     title: String!
     value: Float!
     currency: String!
@@ -180,7 +180,7 @@ export const crmSdl = /* GraphQL */ `
     id: ID!
     customerId: ID
     dealId: ID
-    b2bAccountId: ID
+    companyId: ID
     type: String!
     description: String
     actorId: ID
@@ -237,7 +237,7 @@ export const crmSdl = /* GraphQL */ `
 
   type CrmSnapshot {
     customers: Int!
-    b2bAccounts: Int!
+    companies: Int!
     openDeals: Int!
     pipelineValue: Float!
     openTasks: Int!
@@ -277,8 +277,8 @@ export const crmSdl = /* GraphQL */ `
     crmTopCustomers(limit: Int, type: CustomerType): [CrmCustomer!]!
     crmInactiveCustomers(days: Int!, limit: Int): [CrmCustomer!]!
 
-    b2bAccounts(status: B2BAccountStatus, q: String, take: Int, skip: Int): B2BAccountPage!
-    b2bAccount(id: ID!): B2BAccount
+    companies(status: CompanyStatus, q: String, take: Int, skip: Int): CompanyPage!
+    company(id: ID!): Company
 
     pipelines(includeArchived: Boolean): [Pipeline!]!
     pipeline(id: ID!): Pipeline
@@ -298,7 +298,7 @@ export const crmSdl = /* GraphQL */ `
     crmActivities(
       customerId: ID
       dealId: ID
-      b2bAccountId: ID
+      companyId: ID
       type: String
       since: DateTime
       until: DateTime
@@ -336,9 +336,9 @@ export const crmSdl = /* GraphQL */ `
     bulkTagCustomers(input: JSON!): Int!
     mergeCustomers(input: JSON!): CrmCustomer!
 
-    createB2BAccount(input: JSON!): B2BAccount!
-    updateB2BAccount(id: ID!, input: JSON!): B2BAccount!
-    archiveB2BAccount(id: ID!): Boolean!
+    createCompany(input: JSON!): Company!
+    updateCompany(id: ID!, input: JSON!): Company!
+    archiveCompany(id: ID!): Boolean!
 
     createPipeline(input: JSON!): Pipeline!
     updatePipeline(id: ID!, input: JSON!): Pipeline!

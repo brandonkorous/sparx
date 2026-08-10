@@ -2,7 +2,7 @@
 //
 // A BillingDocument is a human-built estimate / work order / invoice / ticket
 // that moves through a tenant-configured stage workflow and bills a retail
-// Customer OR a B2BAccount. The workflow/stage/line-type config tables below are
+// Customer OR a Company. The workflow/stage/line-type config tables below are
 // the Phase 1 substrate — the documents, lines, snapshots and payments land in
 // later phases (docs/87 §16). The shape deliberately mirrors the proven CRM
 // Pipeline / PipelineStage pattern (22-crm-pipelines.prisma): tenant-owned,
@@ -108,7 +108,7 @@ model BillingDocumentLineType {
 }
 
 // An authored billing document (docs/87 §2/§6/§11). Bills a retail Customer OR
-// a B2BAccount (at least one set — the Deal pattern). Lives on a workflow at a
+// a Company (at least one set — the Deal pattern). Lives on a workflow at a
 // stage; lines carry the charges; totals are derived from the lines plus the
 // per-document tax rate, shipping, and surcharge. Money is Decimal(12,2) dollars
 // (matching orders/quotes); cost basis is Int cents (matching the markup engine).
@@ -128,7 +128,7 @@ model BillingDocument {
   workflowId     String  @map("workflow_id") @db.Uuid
   stageId        String  @map("stage_id") @db.Uuid
   customerId     String? @map("customer_id") @db.Uuid
-  b2bAccountId   String? @map("b2b_account_id") @db.Uuid
+  companyId   String? @map("company_id") @db.Uuid
   assignedUserId String? @map("assigned_user_id") @db.Uuid
 
   // Minted per `numberOnEnter` stage (Phase 3). Null until the document reaches
@@ -227,7 +227,7 @@ model BillingDocument {
   workflow       DocumentWorkflow          @relation(fields: [workflowId], references: [id])
   stage          DocumentStage             @relation(fields: [stageId], references: [id])
   customer       Customer?                 @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  b2bAccount     B2BAccount?               @relation(fields: [b2bAccountId], references: [id], onDelete: SetNull)
+  company     Company?               @relation(fields: [companyId], references: [id], onDelete: SetNull)
   assignedUser   User?                     @relation("BillingDocumentAssignee", fields: [assignedUserId], references: [id], onDelete: SetNull)
   createdBy      User?                     @relation("BillingDocumentCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
   // Reverse side of Order.convertedFromDocument — no FK column here, the FK
@@ -235,6 +235,7 @@ model BillingDocument {
   convertedOrder Order?                    @relation("DocumentConvertedToOrder")
   lines          BillingDocumentLine[]
   snapshots      BillingDocumentSnapshot[]
+  signatures     BillingDocumentSignature[]
   payments       BillingDocumentPayment[]
   dealLinks      DealBillingDocument[]
 
@@ -245,7 +246,7 @@ model BillingDocument {
   @@index([tenantId, propertyId, status, dueAt])
   @@index([tenantId, workflowId, stageId])
   @@index([tenantId, customerId])
-  @@index([tenantId, b2bAccountId])
+  @@index([tenantId, companyId])
   @@index([tenantId, status, dueAt])
   @@index([tenantId, updatedAt(sort: Desc)])
   @@map("billing_documents")
@@ -330,8 +331,79 @@ model BillingDocumentSnapshot {
   stage     DocumentStage   @relation(fields: [stageId], references: [id])
   createdBy User?           @relation("BillingSnapshotAuthor", fields: [createdById], references: [id], onDelete: SetNull)
 
+  signatures BillingDocumentSignature[]
+
   @@index([tenantId, documentId, createdAt(sort: Desc)])
   @@map("billing_document_snapshots")
+}
+
+/// A request for a customer to sign a document — and, once they have, the
+/// signature itself (docs/144 §12).
+///
+/// ONE ROW for both, on purpose. The question a business asks is "where is that
+/// quote up to", and one row answers it end to end: sent, opened, signed,
+/// declined, expired. Splitting request from signature would mean joining two
+/// tables to answer the only question anybody has.
+///
+/// The rendering pipeline (`billing-render-service`, `billing-snapshot`) already
+/// produced the customer-facing document; what it could not do was let the
+/// customer ACCEPT one. Without this, "approved" was a stage a member of staff
+/// moved a quote to on the customer's behalf — a record of a phone call, not a
+/// signature.
+model BillingDocumentSignature {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  documentId String  @map("document_id") @db.Uuid
+
+  /// The document AS IT WAS at the moment of signature. Without this a
+  /// signature says someone agreed to something and cannot say to what: the
+  /// lines could be edited the next morning and the signature would silently
+  /// attest to the new ones. Frozen on sign, not on send — what the customer
+  /// saw when they clicked is what they signed.
+  snapshotId String? @map("snapshot_id") @db.Uuid
+
+  signerName  String @map("signer_name") @db.VarChar(160)
+  signerEmail String @map("signer_email") @db.VarChar(320)
+
+  /// SHA-256 hex of the signing token — never the token. Same rule the API keys
+  /// follow: a leaked database dump must not be a set of working signing links.
+  tokenHash String @map("token_hash") @db.Char(64)
+
+  /// pending | signed | declined | expired | revoked. A column rather than
+  /// derived state, because deriving it needs three nullable timestamps and a
+  /// clock comparison at every read, and "everything still waiting" is a list a
+  /// business looks at every morning.
+  status String @default("pending") @db.VarChar(20)
+
+  requestedAt   DateTime  @default(now()) @map("requested_at") @db.Timestamptz
+  requestedBy   String?   @map("requested_by") @db.Uuid
+  expiresAt     DateTime  @map("expires_at") @db.Timestamptz
+  viewedAt      DateTime? @map("viewed_at") @db.Timestamptz
+  signedAt      DateTime? @map("signed_at") @db.Timestamptz
+  declinedAt    DateTime? @map("declined_at") @db.Timestamptz
+  declineReason String?   @map("decline_reason") @db.VarChar(500)
+
+  /// `{ kind: 'typed' | 'drawn', value }`. The evidentiary weight is in the
+  /// surrounding facts — token, time, address, agent — not in the picture.
+  signatureData Json? @map("signature_data")
+
+  ip        String? @db.VarChar(45)
+  userAgent String? @map("user_agent") @db.VarChar(500)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant      Tenant                    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  document    BillingDocument           @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  // SetNull: deleting a snapshot must not delete the evidence that something
+  // was signed. In practice snapshots are never deleted, which is why this is
+  // the weaker of the two.
+  snapshot    BillingDocumentSnapshot?  @relation(fields: [snapshotId], references: [id], onDelete: SetNull)
+  requestedByUser User?                 @relation("BillingSignatureRequester", fields: [requestedBy], references: [id], onDelete: SetNull)
+
+  @@unique([tokenHash], map: "billing_document_signatures_token_unique")
+  @@index([tenantId, documentId, requestedAt(sort: Desc)], map: "billing_document_signatures_document_idx")
+  @@map("billing_document_signatures")
 }
 
 // A builder-authored PRINT TEMPLATE (docs/87 §10) — the document's printed

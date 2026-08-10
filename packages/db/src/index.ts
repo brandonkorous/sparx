@@ -60,7 +60,7 @@ export type {
   // Site forms (docs/115)
   FormSubmission,
   FormDefinition,
-  B2BAccount,
+  Company,
   B2bAccountContact,
   Pipeline,
   PipelineStage,
@@ -110,6 +110,15 @@ export type {
   CrmReport,
   CrmDashboard,
   CrmDashboardWidget,
+  ScoringModel,
+  ScoreEvent,
+  SegmentMembershipEvent,
+  // The CRM workspace layer (docs/144 §11 + §12) — how a business works its CRM
+  // rather than anything about a customer.
+  CrmSettings,
+  CrmSavedView,
+  CrmMeetingLink,
+  BillingDocumentSignature,
   // CRM — orders + child tables
   Order,
   OrderItem,

@@ -112,7 +112,7 @@ async function assertOwnQuote(
       where: {
         id,
         deletedAt: null,
-        b2bAccountId: accountId,
+        companyId: accountId,
         workflow: { slug: B2B_QUOTE_WORKFLOW_SLUG },
       },
       select: { id: true },
@@ -172,7 +172,7 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
 
     const [account, invoiceCounts, contactIds] = await withTenant(ctx, (tx) =>
       Promise.all([
-        tx.b2BAccount.findFirst({
+        tx.company.findFirst({
           where: { id: accountId, deletedAt: null },
           select: {
             id: true,
@@ -188,7 +188,7 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
         // account's receivables by status, summing the OPEN balance per bucket.
         tx.billingDocument.groupBy({
           by: ['status'],
-          where: { b2bAccountId: accountId, deletedAt: null },
+          where: { companyId: accountId, deletedAt: null },
           _count: { id: true },
           _sum: { balance: true },
         }),
@@ -270,7 +270,7 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
     await requireContactRole(ctx, customerId, accountId);
     const q = PagedQuery.parse(request.query);
 
-    const invoiceWhere = { b2bAccountId: accountId, deletedAt: null };
+    const invoiceWhere = { companyId: accountId, deletedAt: null };
     const { invoiceItems, invoiceTotal } = await withTenant(ctx, async (tx) => {
       const [invoiceItems, invoiceTotal] = await Promise.all([
         tx.billingDocument.findMany({
@@ -404,7 +404,7 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
     const quoteWhere = {
       deletedAt: null,
       workflow: { slug: B2B_QUOTE_WORKFLOW_SLUG },
-      b2bAccountId: accountId,
+      companyId: accountId,
       ...(role === 'viewer' ? { customerId } : {}),
     };
 
@@ -482,7 +482,7 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
       workflowId: draftStage.workflowId,
       stageId: draftStage.id,
       customerId,
-      b2bAccountId: accountId,
+      companyId: accountId,
       ...(body.customerNote !== undefined ? { customerNote: body.customerNote } : {}),
     });
 

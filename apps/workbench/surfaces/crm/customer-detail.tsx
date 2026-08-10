@@ -67,7 +67,7 @@ import { CustomPropertiesPanel } from './custom-properties-panel';
 import { AssociationsPanel } from './associations-panel';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useTeamRoster } from '../../lib/api/team';
-import { useAccounts } from './accounts-data';
+import { useAccounts } from './companies-data';
 import { useModuleStates } from '../../lib/api/shell-data';
 import { useMediaAssets, useUploadMedia } from '../commerce/products-data';
 import { CustomerAddressesSection } from './customer-addresses';
@@ -147,7 +147,7 @@ interface Draft {
   preferredContactMethod: string;
   doNotContact: boolean;
   assignedRepId: string;
-  b2bAccountId: string;
+  companyId: string;
   tags: string[];
   /** The extra details THIS business tracks (docs/144 §3). Shape is per-tenant. */
   customProperties: Record<string, unknown>;
@@ -167,7 +167,7 @@ function emptyDraft(): Draft {
     preferredContactMethod: '',
     doNotContact: false,
     assignedRepId: '',
-    b2bAccountId: '',
+    companyId: '',
     tags: [],
     customProperties: {},
   };
@@ -187,7 +187,7 @@ function toDraft(c: Customer): Draft {
     preferredContactMethod: c.preferredContactMethod ?? '',
     doNotContact: c.doNotContact,
     assignedRepId: c.assignedRepId ?? '',
-    b2bAccountId: c.b2bAccountId ?? '',
+    companyId: c.companyId ?? '',
     tags: c.tags,
     customProperties: c.customProperties ?? {},
   };
@@ -319,11 +319,11 @@ function CustomerEditor({
   const accountItems = useMemo(() => {
     const items: Record<string, string> = { '': 'Not linked to an account' };
     for (const a of accounts?.items ?? []) items[a.id] = a.companyName;
-    if (draft.b2bAccountId && !items[draft.b2bAccountId]) {
-      items[draft.b2bAccountId] = 'A removed account';
+    if (draft.companyId && !items[draft.companyId]) {
+      items[draft.companyId] = 'A removed account';
     }
     return items;
-  }, [accounts, draft.b2bAccountId]);
+  }, [accounts, draft.companyId]);
 
   /* ── Validation ───────────────────────────────────────────────────────── */
 
@@ -363,7 +363,7 @@ function CustomerEditor({
     jobTitle: trimOrNull(draft.jobTitle),
     // A wholesale link only means anything for a wholesale contact; clearing the
     // link when the kind changes keeps the record honest.
-    b2bAccountId: draft.type === 'b2b' ? draft.b2bAccountId || null : null,
+    companyId: draft.type === 'b2b' ? draft.companyId || null : null,
     assignedRepId: draft.assignedRepId || null,
     preferredContactMethod: draft.preferredContactMethod
       ? (draft.preferredContactMethod as 'email' | 'phone' | 'sms')
@@ -678,10 +678,10 @@ function CustomerEditor({
             <Select
               color="module"
               aria-label="Which wholesale account this contact belongs to"
-              value={draft.b2bAccountId}
+              value={draft.companyId}
               items={accountItems}
               onValueChange={(next) => {
-                set('b2bAccountId', next as string);
+                set('companyId', next as string);
               }}
             />
             <FieldDescription>
@@ -1033,7 +1033,7 @@ function IdentityRail({
 
   const rep = customer.assignedRepId ? repItems[customer.assignedRepId] : null;
   const account =
-    customer.type === 'b2b' && customer.b2bAccountId ? accountItems[customer.b2bAccountId] : null;
+    customer.type === 'b2b' && customer.companyId ? accountItems[customer.companyId] : null;
   const contact = customer.preferredContactMethod
     ? CONTACT_METHOD_LABEL[customer.preferredContactMethod]
     : null;

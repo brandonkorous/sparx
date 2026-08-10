@@ -16,7 +16,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { NET_TERMS_AR_WORKFLOW_SLUG } from '@sparx/crm-schemas/builtins';
 
 import {
-  b2bAccountService,
+  companyService,
   b2bArService,
   billingDocumentService,
   billingPaymentService,
@@ -33,7 +33,7 @@ describe('b2b AR — order-derived billing documents', () => {
 
   beforeAll(async () => {
     test = await makeTestContext('owner');
-    const account = await b2bAccountService.create(test.ctx, {
+    const account = await companyService.create(test.ctx, {
       companyName: 'Gillett Diesel',
       paymentTerms: 'net30',
     });
@@ -45,12 +45,12 @@ describe('b2b AR — order-derived billing documents', () => {
   });
 
   async function creditUsed(): Promise<number> {
-    return Number((await b2bAccountService.get(test.ctx, accountId)).creditUsed);
+    return Number((await companyService.get(test.ctx, accountId)).creditUsed);
   }
 
   it('createOrderArDocument builds a finalised invoice + line, and syncs credit', async () => {
     const doc = await b2bArService.createOrderArDocument(test.ctx, {
-      b2bAccountId: accountId,
+      companyId: accountId,
       propertyId: test.propertyId,
       orderId: null,
       amount: 1200.5,
@@ -59,7 +59,7 @@ describe('b2b AR — order-derived billing documents', () => {
     });
 
     expect(doc.number).toMatch(/^INV-\d{6}$/);
-    expect(doc.b2bAccountId).toBe(accountId);
+    expect(doc.companyId).toBe(accountId);
     expect(doc.status).toBe('unpaid');
     expect(doc.finalizedAt).not.toBeNull();
     expect(Number(doc.total)).toBe(1200.5);
@@ -80,7 +80,7 @@ describe('b2b AR — order-derived billing documents', () => {
 
   it('ensureNetTermsArWorkflow is idempotent — a 2nd AR doc reuses the workflow', async () => {
     const doc = await b2bArService.createOrderArDocument(test.ctx, {
-      b2bAccountId: accountId,
+      companyId: accountId,
       propertyId: test.propertyId,
       amount: 100,
       dueAt: future(),
@@ -101,7 +101,7 @@ describe('b2b AR — order-derived billing documents', () => {
 
   it('a full payment clears the balance and releases credit', async () => {
     const { items } = await billingDocumentService.list(test.ctx, {
-      b2bAccountId: accountId,
+      companyId: accountId,
       propertyId: test.propertyId,
       status: 'unpaid',
     });
@@ -122,7 +122,7 @@ describe('b2b AR — order-derived billing documents', () => {
 
   it('voiding an open AR document releases its credit', async () => {
     const doc = await b2bArService.createOrderArDocument(test.ctx, {
-      b2bAccountId: accountId,
+      companyId: accountId,
       propertyId: test.propertyId,
       amount: 777,
       dueAt: future(),

@@ -30,6 +30,13 @@ export interface Segment {
   name: string;
   slug: string;
   description: string | null;
+  /**
+   * How membership is decided (docs/144 §10).
+   *
+   * `dynamic` — the rules decide, and the evaluator keeps it current.
+   * `static` — a hand-picked set; the evaluator leaves it alone entirely.
+   */
+  kind: 'dynamic' | 'static';
   /** The predicate tree. Opaque here — shown as a count, never edited. */
   rules: unknown;
   color: string | null;
@@ -58,6 +65,7 @@ export const segmentKeys = {
   detail: (id: string) => [...segmentKeys.all, id] as const,
   members: (id: string) => [...segmentKeys.all, id, 'members'] as const,
   count: (id: string) => [...segmentKeys.all, id, 'member-count'] as const,
+  history: (id: string) => [...segmentKeys.all, id, 'history'] as const,
 };
 
 /* ── Presentation ───────────────────────────────────────────────────────── */
@@ -140,6 +148,7 @@ export interface SegmentInput {
   slug?: string;
   description?: string | null;
   color?: string | null;
+  kind?: 'dynamic' | 'static';
   rules?: SegmentRule;
 }
 
@@ -199,6 +208,62 @@ export function useArchiveSegment(id: string) {
     mutationFn: () => api.delete(`/v1/crm/segments/${id}`),
     onSuccess: () => {
       invalidate();
+    },
+  });
+}
+
+/* ── Hand-picked lists (docs/144 §10) ───────────────────────────────────── */
+
+/** One join or departure. Kept even after the membership row is gone, which is
+ *  the whole reason this exists — "who came off this list" is unanswerable from
+ *  current membership alone. */
+export interface MembershipEvent {
+  id: string;
+  segmentId: string;
+  customerId: string;
+  kind: 'entered' | 'exited';
+  source: 'rule' | 'manual' | 'automation' | 'import';
+  actorId: string | null;
+  occurredAt: string;
+  customer: Customer;
+}
+
+export const MEMBERSHIP_SOURCE_LABEL: Record<MembershipEvent['source'], string> = {
+  rule: 'The rules',
+  manual: 'Added by hand',
+  automation: 'An automation',
+  import: 'An import',
+};
+
+export function useSegmentHistory(id: string, kind?: 'entered' | 'exited') {
+  return useQuery({
+    queryKey: [...segmentKeys.history(id), kind ?? null],
+    queryFn: () =>
+      api.list<MembershipEvent>(`/v1/crm/segments/${id}/history`, kind ? { kind } : {}),
+    enabled: id !== 'new' && id !== '',
+  });
+}
+
+export function useAddListMembers(id: string) {
+  const invalidate = useInvalidateSegments();
+  return useMutation({
+    mutationFn: (customerIds: string[]) =>
+      api.post<{ added: number; alreadyOn: number }>(`/v1/crm/segments/${id}/members`, {
+        customerIds,
+      }),
+    onSuccess: () => {
+      invalidate(id);
+    },
+  });
+}
+
+export function useRemoveListMembers(id: string) {
+  const invalidate = useInvalidateSegments();
+  return useMutation({
+    mutationFn: (customerIds: string[]) =>
+      api.post<{ removed: number }>(`/v1/crm/segments/${id}/members/remove`, { customerIds }),
+    onSuccess: () => {
+      invalidate(id);
     },
   });
 }

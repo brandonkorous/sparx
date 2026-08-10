@@ -83,7 +83,7 @@ export async function escalateAccount(
   const suspendDays = opts.suspendDays ?? DEFAULTS.suspendDays;
 
   return withTenant(ctx, async (tx) => {
-    const account = await tx.b2BAccount.findUnique({
+    const account = await tx.company.findUnique({
       where: { id: accountId },
       select: { id: true, status: true, companyName: true },
     });
@@ -109,7 +109,7 @@ export async function escalateAccount(
     // + `dueAt < now` excludes drafts/paid/void.
     const documents = await tx.billingDocument.findMany({
       where: {
-        b2bAccountId: accountId,
+        companyId: accountId,
         deletedAt: null,
         status: { in: ['unpaid', 'partial', 'overdue'] },
         dueAt: { not: null, lt: now },
@@ -145,7 +145,7 @@ export async function escalateAccount(
       transition = 'credit_hold';
     }
     if (transition) {
-      await tx.b2BAccount.update({
+      await tx.company.update({
         where: { id: accountId },
         data: { status: transition, updatedAt: now },
       });

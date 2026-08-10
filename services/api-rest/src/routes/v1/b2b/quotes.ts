@@ -34,7 +34,7 @@ const ListQuery = z.object({
 });
 
 const QUOTE_INCLUDE = {
-  b2bAccount: { select: { id: true, companyName: true } },
+  company: { select: { id: true, companyName: true } },
   customer: { select: { id: true, firstName: true, lastName: true, email: true } },
   stage: { select: { id: true, name: true, customerLabel: true, stageType: true } },
 } satisfies Prisma.BillingDocumentInclude;
@@ -45,7 +45,7 @@ function mapQuote(doc: QuoteDoc) {
   return {
     id: doc.id,
     number: doc.number,
-    accountId: doc.b2bAccountId,
+    accountId: doc.companyId,
     customerId: doc.customerId,
     subtotal: doc.subtotal,
     taxTotal: doc.taxTotal,
@@ -61,9 +61,7 @@ function mapQuote(doc: QuoteDoc) {
     },
     createdAt: doc.createdAt.toISOString(),
     updatedAt: doc.updatedAt.toISOString(),
-    account: doc.b2bAccount
-      ? { id: doc.b2bAccount.id, companyName: doc.b2bAccount.companyName }
-      : null,
+    account: doc.company ? { id: doc.company.id, companyName: doc.company.companyName } : null,
     customer: doc.customer
       ? {
           id: doc.customer.id,
@@ -86,7 +84,7 @@ const b2bQuoteRoutes: FastifyPluginAsync = async (app) => {
     const where: Prisma.BillingDocumentWhereInput = {
       deletedAt: null,
       workflow: { slug: B2B_QUOTE_WORKFLOW_SLUG },
-      ...(q.account_id ? { b2bAccountId: q.account_id } : { b2bAccountId: { not: null } }),
+      ...(q.account_id ? { companyId: q.account_id } : { companyId: { not: null } }),
       ...(q.stage ? { stage: { name: q.stage } } : {}),
     };
 

@@ -15,7 +15,7 @@
 // envelope, not the fields — the tick re-resolves at execution time so effects
 // act on fresh state.
 
-import { ConditionGroup } from '@sparx/automation-schemas';
+import { Action, ConditionGroup, countActions } from '@sparx/automation-schemas';
 import type { PrismaClient } from '@prisma/client';
 import type { Prisma } from '@sparx/db';
 import { withTenant } from '@sparx/db';
@@ -25,6 +25,16 @@ import type { EngineDeps, TenantCtx, TriggerEnvelope } from '../engine-types';
 import { propertyOf, resolveFields } from '../resolvers/registry';
 import { dedupeOf } from './idempotency';
 import { installBuiltins } from './install';
+
+/** How many actions the author wrote, counting the ones inside branches. Falls
+ *  back to the top-level length for a row whose actions don't parse — the run
+ *  loop will fail that automation loudly on its first step, and a wrong count on
+ *  a doomed run is not worth a second failure path here. */
+export function countAuthoredActions(stored: unknown): number {
+  const parsed = Action.array().safeParse(stored);
+  if (!parsed.success) return Array.isArray(stored) ? stored.length : 0;
+  return countActions(parsed.data);
+}
 
 export async function handleTrigger(
   envelope: TriggerEnvelope,
@@ -98,7 +108,28 @@ export async function handleTrigger(
           continue;
         }
 
-        const actionsTotal = Array.isArray(a.actions) ? a.actions.length : 0;
+        // A goal already met at enrollment means there is nothing to nudge
+        // anyone toward — the customer did the thing before the rule got to
+        // them. Enrolling anyway would send the first email of a sequence to
+        // someone who already booked, which is the single most visible way an
+        // automation embarrasses a business.
+        const goal = ConditionGroup.safeParse(a.goal ?? null);
+        if (
+          goal.success &&
+          goal.data.conditions.length > 0 &&
+          evaluateConditions(goal.data, fields)
+        ) {
+          deps.logger.debug(
+            { automationId: a.id },
+            'automation: skipped (goal already met at enrollment)'
+          );
+          continue;
+        }
+
+        // The AUTHORED action count, branches included (docs/144 §9) — what a
+        // person means by "12 steps". Not the compiled program length, which
+        // carries the compiler's own jumps.
+        const actionsTotal = countAuthoredActions(a.actions);
         await tx.automationRun.upsert({
           where: { automationId_dedupeKey: { automationId: a.id, dedupeKey } },
           create: {

@@ -366,7 +366,7 @@ export async function getProductPricing(ctx: B2bContext, productId: string) {
         : tx.contractPrice.findMany({
             where: { tenantId: ctx.tenantId, variantId: { in: variantIds } },
             orderBy: { validFrom: 'desc' },
-            include: { b2bAccount: { select: { id: true, companyName: true } } },
+            include: { company: { select: { id: true, companyName: true } } },
           }),
     ]);
 
@@ -420,8 +420,8 @@ export async function getProductPricing(ctx: B2bContext, productId: string) {
     })),
     contractPrices: result.contractPrices.map((c) => ({
       id: c.id,
-      accountId: c.b2bAccountId,
-      accountName: c.b2bAccount.companyName,
+      accountId: c.companyId,
+      accountName: c.company.companyName,
       variantId: c.variantId,
       priceCents: c.priceCents,
       validFrom: c.validFrom.toISOString(),

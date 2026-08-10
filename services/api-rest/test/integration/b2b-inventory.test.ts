@@ -33,7 +33,7 @@ async function seedTenant(b2bEnabled: boolean): Promise<B2bInvTenant> {
     const u = await tx.user.create({
       data: { tenantId: tenant.id, email, name: 'Rep', role: 'owner' },
     });
-    const account = await tx.b2BAccount.create({
+    const account = await tx.company.create({
       data: { tenantId: tenant.id, companyName: 'Fleet Co' },
     });
     const w = await tx.warehouse.create({

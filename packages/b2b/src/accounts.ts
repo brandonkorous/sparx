@@ -3,7 +3,7 @@
 // array of generalized fitment selections), per-account product overrides, and the
 // fleet-filtered compatible-products read. Extracted from the api-rest routes.
 //
-// Boundary with CRM: @sparx/crm's b2bAccountService owns the account RECORD
+// Boundary with CRM: @sparx/crm's companyService owns the account RECORD
 // (companyName, taxId, assigned rep, the free-text `pricingTier` label). These
 // functions own the B2B MODULE's enrichments — chiefly the validated `pricingTierId`
 // FK (CRM only sets the label string) and the override / fleet tables.
@@ -279,7 +279,7 @@ export async function listAccounts(
 
   const [items, total] = await Promise.all([
     withTenant(ctx, (tx) =>
-      tx.b2BAccount.findMany({
+      tx.company.findMany({
         where,
         take: input.take,
         skip: input.skip,
@@ -287,7 +287,7 @@ export async function listAccounts(
         include: PRICING_TIER_FK_SELECT,
       })
     ),
-    withTenant(ctx, (tx) => tx.b2BAccount.count({ where })),
+    withTenant(ctx, (tx) => tx.company.count({ where })),
   ]);
 
   return { items: items.map(toAccountView), total, take: input.take };
@@ -295,7 +295,7 @@ export async function listAccounts(
 
 export async function getAccount(ctx: B2bContext, id: string) {
   const account = await withTenant(ctx, (tx) =>
-    tx.b2BAccount.findFirst({
+    tx.company.findFirst({
       where: { id, tenantId: ctx.tenantId, deletedAt: null },
       include: {
         ...PRICING_TIER_FK_SELECT,
@@ -323,7 +323,7 @@ export async function updateTradeConfig(
   const body = AccountPatchBody.parse(rawInput);
 
   const existing = await withTenant(ctx, (tx) =>
-    tx.b2BAccount.findFirst({ where: { id, tenantId: ctx.tenantId, deletedAt: null } })
+    tx.company.findFirst({ where: { id, tenantId: ctx.tenantId, deletedAt: null } })
   );
   if (!existing) throw notFound('b2b account');
 
@@ -349,7 +349,7 @@ export async function updateTradeConfig(
       incoming: body.customProperties,
     });
 
-    return tx.b2BAccount.update({
+    return tx.company.update({
       where: { id },
       data: {
         pricingTierId: body.pricingTierId,
@@ -379,7 +379,7 @@ export async function setFleet(ctx: B2bContext, id: string, rawInput: unknown) {
   const body = FleetVehiclesBody.parse(rawInput);
 
   const account = await withTenant(ctx, (tx) =>
-    tx.b2BAccount.findFirst({ where: { id, tenantId: ctx.tenantId, deletedAt: null } })
+    tx.company.findFirst({ where: { id, tenantId: ctx.tenantId, deletedAt: null } })
   );
   if (!account) throw notFound('b2b account');
 
@@ -407,7 +407,7 @@ export async function setFleet(ctx: B2bContext, id: string, rawInput: unknown) {
   }
 
   const updated = await withTenant(ctx, (tx) =>
-    tx.b2BAccount.update({
+    tx.company.update({
       where: { id },
       data: {
         engineProfiles: body.vehicles,
@@ -430,7 +430,7 @@ export async function listCompatibleProducts(
   input: z.infer<typeof CompatibleProductsQuery>
 ) {
   const account = await withTenant(ctx, (tx) =>
-    tx.b2BAccount.findFirst({
+    tx.company.findFirst({
       where: { id, tenantId: ctx.tenantId, deletedAt: null },
       select: { id: true, engineProfiles: true },
     })
@@ -519,7 +519,7 @@ export async function listCompatibleProducts(
 
 async function requireAccount(ctx: B2bContext, accountId: string): Promise<void> {
   const account = await withTenant(ctx, (tx) =>
-    tx.b2BAccount.findFirst({ where: { id: accountId, tenantId: ctx.tenantId, deletedAt: null } })
+    tx.company.findFirst({ where: { id: accountId, tenantId: ctx.tenantId, deletedAt: null } })
   );
   if (!account) throw notFound('b2b account');
 }

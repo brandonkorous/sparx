@@ -114,7 +114,7 @@ export async function createRule(
 
   const rule = await withTenant(ctx, async (tx) => {
     if (body.accountId) {
-      const account = await tx.b2BAccount.findFirst({
+      const account = await tx.company.findFirst({
         where: { id: body.accountId, tenantId: ctx.tenantId, deletedAt: null },
         select: { id: true },
       });
@@ -188,7 +188,7 @@ export async function listQueue(ctx: B2bContext, input: ApprovalQueueInput) {
   const where: Prisma.OrderWhereInput = {
     tenantId: ctx.tenantId,
     status: 'pending_approval',
-    ...(input.account_id ? { customer: { b2bAccountId: input.account_id } } : {}),
+    ...(input.account_id ? { customer: { companyId: input.account_id } } : {}),
     ...(input.q
       ? {
           OR: [
@@ -197,7 +197,7 @@ export async function listQueue(ctx: B2bContext, input: ApprovalQueueInput) {
             { customer: { lastName: { contains: input.q, mode: 'insensitive' } } },
             { customer: { email: { contains: input.q, mode: 'insensitive' } } },
             {
-              customer: { b2bAccount: { companyName: { contains: input.q, mode: 'insensitive' } } },
+              customer: { company: { companyName: { contains: input.q, mode: 'insensitive' } } },
             },
           ],
         }
@@ -220,8 +220,8 @@ export async function listQueue(ctx: B2bContext, input: ApprovalQueueInput) {
               firstName: true,
               lastName: true,
               email: true,
-              b2bAccountId: true,
-              b2bAccount: { select: { id: true, companyName: true } },
+              companyId: true,
+              company: { select: { id: true, companyName: true } },
             },
           },
         },
@@ -248,8 +248,8 @@ export async function listQueue(ctx: B2bContext, input: ApprovalQueueInput) {
         [o.customer.firstName, o.customer.lastName].filter(Boolean).join(' ') ||
         (o.customer.email ?? null),
       customerEmail: o.customer.email,
-      b2bAccountId: o.customer.b2bAccountId,
-      companyName: o.customer.b2bAccount?.companyName ?? null,
+      companyId: o.customer.companyId,
+      companyName: o.customer.company?.companyName ?? null,
     })),
     total,
     skip: input.skip,
@@ -290,7 +290,7 @@ export async function approveOrder(
         currency: true,
         metadata: true,
         customer: {
-          select: { b2bAccountId: true, b2bAccount: { select: { paymentTerms: true } } },
+          select: { companyId: true, company: { select: { paymentTerms: true } } },
         },
       },
     });
@@ -341,11 +341,11 @@ export async function approveOrder(
     const meta = (existing.metadata ?? {}) as Record<string, unknown>;
     const paymentTermsRequested =
       typeof meta.paymentTermsRequested === 'string' ? meta.paymentTermsRequested : null;
-    const accountId = existing.customer.b2bAccountId ?? null;
+    const accountId = existing.customer.companyId ?? null;
     let b2bInvoiceId: string | null = null;
 
     if (paymentTermsRequested && accountId) {
-      const paymentTerms = existing.customer.b2bAccount?.paymentTerms ?? paymentTermsRequested;
+      const paymentTerms = existing.customer.company?.paymentTerms ?? paymentTermsRequested;
       const dueDaysMatch = /^net(\d+)$/i.exec(paymentTerms);
       const dueDays = dueDaysMatch?.[1] ? parseInt(dueDaysMatch[1], 10) : 30;
       const dueAt = new Date();
@@ -366,7 +366,7 @@ export async function approveOrder(
       const arDoc = await b2bArService.createOrderArDocument(
         { tenantId: ctx.tenantId, userId: ctx.userId ?? undefined, tx },
         {
-          b2bAccountId: accountId,
+          companyId: accountId,
           propertyId: issuingPropertyId,
           orderId,
           amount: Number(existing.total),

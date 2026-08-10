@@ -114,10 +114,10 @@ model Tenant {
 
   // Social posting module (docs/133) — connected accounts, their destinations, the
   // composed posts, and the per-target fan-out rows.
-  socialConnections SocialConnection[]
-  socialTargets     SocialTarget[]
-  socialPosts       SocialPost[]
-  socialPostTargets SocialPostTarget[]
+  socialConnections  SocialConnection[]
+  socialTargets      SocialTarget[]
+  socialPosts        SocialPost[]
+  socialPostTargets  SocialPostTarget[]
   // …the saved hashtag blocks, the weekly posting cadence, and the engagement inbox.
   socialHashtagSets  SocialHashtagSet[]
   socialPostingSlots SocialPostingSlot[]
@@ -168,7 +168,7 @@ model Tenant {
   // CRM module — customer spine
   customers         Customer[]
   customerAddresses CustomerAddress[]
-  b2bAccounts       B2BAccount[]
+  companies       Company[]
 
   // CRM module — sales pipeline
   pipelines            Pipeline[]
@@ -183,6 +183,13 @@ model Tenant {
   // cleanly regardless of which side is walked.
   crmReports           CrmReport[]
   crmDashboards        CrmDashboard[]
+  scoringModels        ScoringModel[]
+  scoreEvents          ScoreEvent[]
+  listHistory          SegmentMembershipEvent[]
+  crmSettings          CrmSettings[]
+  crmSavedViews        CrmSavedView[]
+  crmMeetingLinks      CrmMeetingLink[]
+  documentSignatures   BillingDocumentSignature[]
   crmDashboardWidgets  CrmDashboardWidget[]
   dealOrders           DealOrder[]
   dealBillingDocuments DealBillingDocument[]
@@ -472,7 +479,7 @@ model Tenant {
   // Scheduling module (docs/79) — appointments / classes / reservations / rentals.
   // The legacy B2B fleet tables (service_types/service_appointments) were retired
   // onto this engine 2026-07-14 (docs/79 §15.7); B2B fleet context now rides on
-  // Booking.b2bAccountId/assetRef/partsLinked/workOrderId.
+  // Booking.companyId/assetRef/partsLinked/workOrderId.
   schedulingResources    SchedulingResource[]
   schedulingServices     SchedulingService[]
   bookings               Booking[]

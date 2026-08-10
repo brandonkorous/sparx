@@ -1,0 +1,151 @@
+// Scoring + list membership history (docs/144 §10).
+//
+// TWO IDEAS THAT LOOK LIKE ONE. A SCORE is a number a business assigns to a
+// record so a list of five hundred contacts can be worked in an order that means
+// something. MEMBERSHIP HISTORY is the record of who was on a list and when they
+// left. They ship together because both answer the same complaint about a CRM
+// that only stores current state: "it tells me what is true now and nothing about
+// how it got that way."
+//
+// All three tables are tenant-scoped → ENABLE + FORCE RLS + tenant_isolation,
+// hand-written in the migration.
+
+/// A scoring model — the rules that turn a record into a number.
+///
+/// One model per object per site, so a business can score contacts and deals on
+/// completely different logic (a contact scores on engagement, a deal on size and
+/// stage age). `rules` is an array of `{ condition: ConditionGroup, points }`:
+/// every rule whose condition matches contributes its points, so the score is a
+/// SUM and not a first-match. That is deliberate — a first-match ladder forces an
+/// author to think about ordering, and the question "how did this reach 74" stops
+/// being answerable by reading the rules in any order.
+model ScoringModel {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  // Cascade: a scoring model is authored configuration for one business.
+  propertyId String? @map("property_id") @db.Uuid
+
+  /// Which object this scores. `contact` and `deal` today; the column is a key
+  /// rather than an enum so a tenant-invented object can be scored without a
+  /// migration (docs/144 §3).
+  objectKey String @map("object_key") @db.VarChar(63)
+
+  name        String  @db.VarChar(160)
+  description String? @db.Text
+
+  /// [{ condition: ConditionGroup, points: number, label?: string }]
+  rules Json @default("[]")
+
+  /// Points bled off per day since the record last did anything, floored at zero.
+  /// Null = no decay. Decay is what stops a contact who was interested a year ago
+  /// from outranking one who replied this morning — without it a score is a
+  /// lifetime total and the top of the list slowly fossilises.
+  decayPerDay Decimal? @map("decay_per_day") @db.Decimal(8, 2)
+
+  /// Scores are clamped into [0, maxScore] so the number means the same thing on
+  /// every record and a runaway rule cannot produce a 40,000.
+  maxScore Int @default(100) @map("max_score")
+
+  isActive Boolean @default(true) @map("is_active")
+
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  archivedAt DateTime? @map("archived_at") @db.Timestamptz
+
+  tenant   Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property?    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  events   ScoreEvent[]
+
+  // One ACTIVE model per (site, object) — enforced as a partial unique index in
+  // the migration (WHERE is_active AND archived_at IS NULL, NULLS NOT DISTINCT),
+  // which Prisma cannot express. Two active models would make "the score" mean
+  // two different numbers depending on which one ran last.
+  @@index([tenantId, objectKey, isActive])
+  @@index([tenantId, propertyId, objectKey])
+  @@map("scoring_models")
+}
+
+/// One row per score CHANGE — the answer to "why is this 74?".
+///
+/// This table exists because a score column alone is an unexplained number, and
+/// an unexplained number is one a business owner learns to ignore. Each row
+/// carries the delta, the resulting total, and which rule produced it, so the
+/// record's score panel reads as a list of reasons rather than a gauge.
+///
+/// Append-only. Rows are never updated; a correction is a new row.
+model ScoreEvent {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  modelId String? @map("model_id") @db.Uuid
+
+  /// Soft reference — `objectKey` + `recordId` rather than a per-object FK,
+  /// because a tenant-invented object has no table of its own to point at. Same
+  /// pattern as CrmActivity.linkedEntityId.
+  objectKey String @map("object_key") @db.VarChar(63)
+  recordId  String @map("record_id") @db.Uuid
+
+  /// Signed points this change contributed. Negative for decay and for a rule
+  /// that stopped matching.
+  delta Int
+
+  /// The score AFTER this change, already clamped. Stored rather than derived so
+  /// the history reads correctly even after the model's rules are edited.
+  score Int
+
+  /// Which rule fired, in the business's own words ("Opened three emails"). Null
+  /// for a decay row or a manual adjustment.
+  reason String? @db.VarChar(255)
+
+  /// `rule` | `decay` | `manual` | `recompute`
+  source String @default("rule") @db.VarChar(20)
+
+  actorId String? @map("actor_id") @db.Uuid
+
+  occurredAt DateTime @default(now()) @map("occurred_at") @db.Timestamptz
+
+  tenant Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  model  ScoringModel? @relation(fields: [modelId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, objectKey, recordId, occurredAt(sort: Desc)])
+  @@index([tenantId, occurredAt(sort: Desc)])
+  @@map("score_events")
+}
+
+/// List membership history — an append-only log of entries and exits.
+///
+/// `segment_members` is a CURRENT-STATE table: a customer who leaves a segment
+/// has their row deleted, and with it every trace that they were ever on it. So
+/// "who dropped out of at-risk this month" — the question that tells a business
+/// whether anything it did worked — was unanswerable by construction. This is
+/// the log that makes it a query.
+///
+/// Deliberately NOT a nullable `exited_at` on `segment_members`: a customer can
+/// enter, leave and re-enter a list, and a single row can only remember the last
+/// of those.
+model SegmentMembershipEvent {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  segmentId  String @map("segment_id") @db.Uuid
+  customerId String @map("customer_id") @db.Uuid
+
+  /// `entered` | `exited`
+  kind String @db.VarChar(10)
+
+  /// How the change happened: `rule` (the evaluator), `manual` (someone added
+  /// them), `automation` (a crm.add_to_list action), `import`.
+  source String @default("rule") @db.VarChar(20)
+
+  actorId String? @map("actor_id") @db.Uuid
+
+  occurredAt DateTime @default(now()) @map("occurred_at") @db.Timestamptz
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  segment  Segment  @relation(fields: [segmentId], references: [id], onDelete: Cascade)
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, segmentId, occurredAt(sort: Desc)])
+  @@index([tenantId, customerId, occurredAt(sort: Desc)])
+  @@map("segment_membership_events")
+}

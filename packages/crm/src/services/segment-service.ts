@@ -8,15 +8,22 @@
 // the dashboard "members" UI and email broadcast targeting can be built
 // before the evaluator exists.
 
-import { CreateSegmentInput, UpdateSegmentInput } from '@sparx/crm-schemas';
+import { CreateSegmentInput, ListMembershipInput, UpdateSegmentInput } from '@sparx/crm-schemas';
 import { BUILT_IN_SEGMENT_TEMPLATES } from '@sparx/crm-schemas/builtins';
 import { withTenant } from '@sparx/db';
-import type { Customer, Prisma, Segment, SegmentMember } from '@sparx/db';
+import type {
+  Customer,
+  Prisma,
+  Segment,
+  SegmentMember,
+  SegmentMembershipEvent,
+  TxClient,
+} from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import { publishCrmEvent } from '../events';
 import type { ServiceContext } from '../errors';
-import { CrmNotFoundError } from '../errors';
+import { CrmNotFoundError, CrmValidationError } from '../errors';
 
 export async function list(
   ctx: ServiceContext,
@@ -79,6 +86,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Se
         name: input.name,
         slug: input.slug,
         description: input.description ?? null,
+        kind: input.kind,
         rules: input.rules,
         color: input.color ?? null,
         isSystem: false,
@@ -124,6 +132,7 @@ export async function update(
         ...(input.name !== undefined ? { name: input.name } : {}),
         ...(input.slug !== undefined ? { slug: input.slug } : {}),
         ...(input.description !== undefined ? { description: input.description } : {}),
+        ...(input.kind !== undefined ? { kind: input.kind } : {}),
         ...(input.rules !== undefined ? { rules: input.rules } : {}),
         ...(input.color !== undefined ? { color: input.color } : {}),
       },
@@ -201,6 +210,183 @@ export async function members(
 /** Count of members. */
 export async function memberCount(ctx: ServiceContext, segmentId: string): Promise<number> {
   return withTenant(ctx, (tx) => tx.segmentMember.count({ where: { segmentId } }));
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Static lists (docs/144 §10) — membership by hand
+// ─────────────────────────────────────────────────────────────────────────
+
+/**
+ * Add people to a STATIC list.
+ *
+ * Refuses on a dynamic list, and that refusal is the feature. A hand edit to a
+ * rule-driven list survives exactly until the next recompute, so silently
+ * accepting it would mean someone adds forty contacts, sees them appear, sends a
+ * broadcast an hour later and reaches nine — with nothing anywhere saying why.
+ * Being told no is recoverable; being quietly undone is not.
+ */
+export async function addMembers(
+  ctx: ServiceContext,
+  segmentId: string,
+  rawInput: unknown,
+  source: 'manual' | 'automation' | 'import' = 'manual'
+): Promise<{ added: number; alreadyOn: number }> {
+  const input = ListMembershipInput.parse(rawInput);
+
+  return withTenant(ctx, async (tx) => {
+    const segment = await requireStaticList(tx, segmentId);
+
+    // Only customers this tenant can see, and only ones on the list's own site.
+    // RLS already bounds the first; the site check is what stops a donut-shop
+    // contact landing on a machine shop's audience and receiving its broadcast.
+    const eligible = await tx.customer.findMany({
+      where: {
+        id: { in: input.customerIds },
+        deletedAt: null,
+        ...(segment.propertyId ? { OR: [{ propertyId: segment.propertyId }] } : {}),
+      },
+      select: { id: true },
+    });
+
+    const existing = await tx.segmentMember.findMany({
+      where: { segmentId, customerId: { in: eligible.map((c) => c.id) } },
+      select: { customerId: true },
+    });
+    const onAlready = new Set(existing.map((m) => m.customerId));
+    const toAdd = eligible.filter((c) => !onAlready.has(c.id));
+
+    if (toAdd.length > 0) {
+      await tx.segmentMember.createMany({
+        data: toAdd.map((c) => ({ tenantId: ctx.tenantId, segmentId, customerId: c.id })),
+      });
+      await tx.segmentMembershipEvent.createMany({
+        data: toAdd.map((c) => ({
+          tenantId: ctx.tenantId,
+          segmentId,
+          customerId: c.id,
+          kind: 'entered',
+          source,
+          actorId: ctx.userId ?? null,
+        })),
+      });
+    }
+
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: 'crm.segment.members_added',
+      entityType: 'Segment',
+      entityId: segmentId,
+      diff: { after: { added: toAdd.length } },
+    });
+
+    return { added: toAdd.length, alreadyOn: onAlready.size };
+  });
+}
+
+/** Take people off a static list. Writes an `exited` history row for each, so
+ *  "who came off this list and when" stays answerable after the membership row
+ *  is gone — which is the entire reason the history table exists. */
+export async function removeMembers(
+  ctx: ServiceContext,
+  segmentId: string,
+  rawInput: unknown,
+  source: 'manual' | 'automation' | 'import' = 'manual'
+): Promise<{ removed: number }> {
+  const input = ListMembershipInput.parse(rawInput);
+
+  return withTenant(ctx, async (tx) => {
+    await requireStaticList(tx, segmentId);
+
+    const present = await tx.segmentMember.findMany({
+      where: { segmentId, customerId: { in: input.customerIds } },
+      select: { customerId: true },
+    });
+    if (present.length === 0) return { removed: 0 };
+
+    const ids = present.map((m) => m.customerId);
+    await tx.segmentMember.deleteMany({ where: { segmentId, customerId: { in: ids } } });
+    await tx.segmentMembershipEvent.createMany({
+      data: ids.map((customerId) => ({
+        tenantId: ctx.tenantId,
+        segmentId,
+        customerId,
+        kind: 'exited',
+        source,
+        actorId: ctx.userId ?? null,
+      })),
+    });
+
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: 'crm.segment.members_removed',
+      entityType: 'Segment',
+      entityId: segmentId,
+      diff: { after: { removed: ids.length } },
+    });
+
+    return { removed: ids.length };
+  });
+}
+
+async function requireStaticList(tx: TxClient, segmentId: string): Promise<Segment> {
+  const segment = await tx.segment.findUnique({ where: { id: segmentId } });
+  if (!segment || segment.archivedAt) throw new CrmNotFoundError('Segment', segmentId);
+  if (segment.kind !== 'static') {
+    throw new CrmValidationError(
+      `“${segment.name}” decides its own members from the rules you set, so people cannot be added by hand. Change it to a hand-picked list first, or edit the rules.`,
+      [{ field: 'segmentId', message: 'segment kind is dynamic; membership is rule-driven' }]
+    );
+  }
+  return segment;
+}
+
+/**
+ * Who joined or left a list, newest first (docs/144 §10).
+ *
+ * The question this answers — "who dropped out of at-risk this month" — was
+ * unanswerable before, because `segment_members` deletes the row on exit and with
+ * it every trace the person was ever on the list.
+ */
+export async function membershipHistory(
+  ctx: ServiceContext,
+  segmentId: string,
+  args: { kind?: 'entered' | 'exited'; since?: Date; limit?: number } = {}
+): Promise<(SegmentMembershipEvent & { customer: Customer })[]> {
+  return withTenant(ctx, (tx) =>
+    tx.segmentMembershipEvent.findMany({
+      where: {
+        segmentId,
+        ...(args.kind ? { kind: args.kind } : {}),
+        ...(args.since ? { occurredAt: { gte: args.since } } : {}),
+      },
+      include: { customer: true },
+      orderBy: { occurredAt: 'desc' },
+      take: Math.min(args.limit ?? 100, 500),
+    })
+  );
+}
+
+/** One contact's list history — every list they have been on, and when. Reads
+ *  from the customer's side of the same table; the record pane's "Lists" panel. */
+export async function customerListHistory(
+  ctx: ServiceContext,
+  customerId: string,
+  args: { limit?: number } = {}
+): Promise<(SegmentMembershipEvent & { segment: Segment })[]> {
+  return withTenant(ctx, (tx) =>
+    tx.segmentMembershipEvent.findMany({
+      where: { customerId },
+      include: { segment: true },
+      orderBy: { occurredAt: 'desc' },
+      take: Math.min(args.limit ?? 50, 200),
+    })
+  );
 }
 
 // previewCount + recomputeFull are non-trivial enough to live in their own

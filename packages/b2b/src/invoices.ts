@@ -59,7 +59,7 @@ const PAID_METHOD_MAP: Record<string, string> = {
 };
 
 const INVOICE_INCLUDE = {
-  b2bAccount: { select: { id: true, companyName: true, paymentTerms: true } },
+  company: { select: { id: true, companyName: true, paymentTerms: true } },
   payments: {
     orderBy: { receivedAt: 'desc' },
     include: { recordedBy: { select: { id: true, name: true, email: true } } },
@@ -77,7 +77,7 @@ function mapInvoice(doc: InvoiceDoc) {
   const lastPayment = doc.payments.find((p) => p.kind !== 'refund') ?? doc.payments[0] ?? null;
   return {
     id: doc.id,
-    accountId: doc.b2bAccountId,
+    accountId: doc.companyId,
     orderId: typeof meta.orderId === 'string' ? meta.orderId : null,
     invoiceNumber: doc.number ?? '',
     amountCents: cents(doc.total),
@@ -90,11 +90,11 @@ function mapInvoice(doc: InvoiceDoc) {
     notes: doc.notes,
     createdAt: doc.createdAt.toISOString(),
     updatedAt: doc.updatedAt.toISOString(),
-    account: doc.b2bAccount
+    account: doc.company
       ? {
-          id: doc.b2bAccount.id,
-          companyName: doc.b2bAccount.companyName,
-          paymentTerms: doc.b2bAccount.paymentTerms,
+          id: doc.company.id,
+          companyName: doc.company.companyName,
+          paymentTerms: doc.company.paymentTerms,
         }
       : null,
     paidBy: lastPayment?.recordedBy
@@ -113,7 +113,7 @@ export type InvoiceView = ReturnType<typeof mapInvoice>;
 async function loadInvoice(ctx: B2bContext, id: string): Promise<InvoiceView | null> {
   const doc = await withTenant(ctx, (tx) =>
     tx.billingDocument.findFirst({
-      where: { id, b2bAccountId: { not: null }, deletedAt: null },
+      where: { id, companyId: { not: null }, deletedAt: null },
       include: INVOICE_INCLUDE,
     })
   );
@@ -124,7 +124,7 @@ async function loadInvoice(ctx: B2bContext, id: string): Promise<InvoiceView | n
 
 export async function listInvoices(ctx: B2bContext, input: InvoiceListInput) {
   const where: Prisma.BillingDocumentWhereInput = {
-    b2bAccountId: input.account_id ?? { not: null },
+    companyId: input.account_id ?? { not: null },
     deletedAt: null,
     ...(input.status ? { status: input.status } : {}),
   };
@@ -173,7 +173,7 @@ export async function createInvoice(
   const body = InvoiceCreateBody.parse(rawInput);
 
   const doc = await b2bArService.createOrderArDocument(ctx, {
-    b2bAccountId: body.accountId,
+    companyId: body.accountId,
     propertyId,
     orderId: body.orderId ?? null,
     amount: body.amountCents / 100,
@@ -227,8 +227,8 @@ export async function markInvoicePaid(
 
   const before = await withTenant(ctx, (tx) =>
     tx.billingDocument.findFirst({
-      where: { id, b2bAccountId: { not: null }, deletedAt: null },
-      select: { id: true, status: true, balance: true, b2bAccountId: true, notes: true },
+      where: { id, companyId: { not: null }, deletedAt: null },
+      select: { id: true, status: true, balance: true, companyId: true, notes: true },
     })
   );
   if (!before) throw notFound('Invoice not found');
@@ -246,18 +246,18 @@ export async function markInvoicePaid(
   }
 
   // Lift credit_hold if the account now has no open receivables.
-  const liftAccountId = before.b2bAccountId;
+  const liftAccountId = before.companyId;
   if (liftAccountId) {
     await withTenant(ctx, async (tx) => {
       const open = await tx.billingDocument.count({
         where: {
-          b2bAccountId: liftAccountId,
+          companyId: liftAccountId,
           deletedAt: null,
           status: { in: ['unpaid', 'partial', 'overdue'] },
         },
       });
       if (open === 0) {
-        await tx.b2BAccount.updateMany({
+        await tx.company.updateMany({
           where: { id: liftAccountId, status: 'credit_hold' },
           data: { status: 'active' },
         });
@@ -278,7 +278,7 @@ export async function writeOffInvoice(
 
   const before = await withTenant(ctx, (tx) =>
     tx.billingDocument.findFirst({
-      where: { id, b2bAccountId: { not: null }, deletedAt: null },
+      where: { id, companyId: { not: null }, deletedAt: null },
       select: { id: true, status: true },
     })
   );

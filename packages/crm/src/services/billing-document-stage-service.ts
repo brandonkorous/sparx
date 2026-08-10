@@ -202,9 +202,9 @@ export async function applyStageEntryEffects(
     }
     // Net-terms B2B documents get a due date from the account's terms on finalize
     // (§8). Retail / already-dated documents keep their dueAt.
-    if (document.b2bAccountId && document.dueAt === null) {
-      const account = await tx.b2BAccount.findUnique({
-        where: { id: document.b2bAccountId },
+    if (document.companyId && document.dueAt === null) {
+      const account = await tx.company.findUnique({
+        where: { id: document.companyId },
         select: { paymentTerms: true },
       });
       const days = netTermsDays(account?.paymentTerms);
@@ -323,7 +323,7 @@ function docEventPayload(doc: BillingDocument): Record<string, unknown> {
     documentId: doc.id,
     number: doc.number,
     customerId: doc.customerId,
-    b2bAccountId: doc.b2bAccountId,
+    companyId: doc.companyId,
     stageId: doc.stageId,
     total: Number(doc.total),
     currency: doc.currency,

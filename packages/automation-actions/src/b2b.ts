@@ -91,7 +91,7 @@ export function installB2bActions(): void {
   // the dunning predicate (`hasOverdueInvoices = true`) and a credit-utilization
   // predicate both read off the same scan. RLS scopes both queries to the tenant.
   registerScanner('b2b_account', async (ctx: TenantCtx): Promise<ScannedRow[]> => {
-    const accounts = await ctx.tx.b2BAccount.findMany({
+    const accounts = await ctx.tx.company.findMany({
       where: { deletedAt: null },
       select: ACCOUNT_SELECT,
       orderBy: { updatedAt: 'desc' },
@@ -102,14 +102,14 @@ export function installB2bActions(): void {
     // open net-terms document past its due date is actionable. RLS scopes the
     // query to the tenant.
     const agg = await ctx.tx.$queryRaw<OverdueAgg[]>`
-      SELECT b2b_account_id AS account_id,
+      SELECT company_id AS account_id,
              MAX(GREATEST(0, EXTRACT(DAY FROM (now() - due_at))::int))::int AS max_days_past_due,
              COUNT(*)::int AS actionable_count
       FROM billing_documents
-      WHERE b2b_account_id IS NOT NULL AND deleted_at IS NULL
+      WHERE company_id IS NOT NULL AND deleted_at IS NULL
         AND status IN ('unpaid', 'partial', 'overdue')
         AND balance > 0 AND due_at IS NOT NULL AND due_at < now()
-      GROUP BY b2b_account_id
+      GROUP BY company_id
     `;
     const byAccount = new Map(agg.map((r) => [r.account_id, r]));
     return accounts.map((a) => ({

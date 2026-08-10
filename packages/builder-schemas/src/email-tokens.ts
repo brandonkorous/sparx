@@ -212,7 +212,7 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     overdueDays: '0',
     payUrl: '#',
   },
-  b2bAccount: {
+  company: {
     companyName: 'Rivera & Co.',
     status: 'approved',
     paymentTerms: 'Net 30',

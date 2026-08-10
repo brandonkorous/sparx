@@ -21,7 +21,7 @@ model CrmActivity {
   tenantId     String  @map("tenant_id") @db.Uuid
   customerId   String? @map("customer_id") @db.Uuid
   dealId       String? @map("deal_id") @db.Uuid
-  b2bAccountId String? @map("b2b_account_id") @db.Uuid
+  companyId String? @map("company_id") @db.Uuid
 
   type        String  @db.VarChar(63)
   description String? @db.Text
@@ -41,12 +41,12 @@ model CrmActivity {
   tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   customer   Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
   deal       Deal?       @relation(fields: [dealId], references: [id], onDelete: SetNull)
-  b2bAccount B2BAccount? @relation(fields: [b2bAccountId], references: [id], onDelete: SetNull)
+  company Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
 
   @@id([id, occurredAt], map: "crm_activities_pkey")
   @@index([tenantId, customerId, occurredAt(sort: Desc)])
   @@index([tenantId, dealId, occurredAt(sort: Desc)])
-  @@index([tenantId, b2bAccountId, occurredAt(sort: Desc)])
+  @@index([tenantId, companyId, occurredAt(sort: Desc)])
   @@index([tenantId, type, occurredAt(sort: Desc)])
   @@index([tenantId, occurredAt(sort: Desc)])
   @@map("crm_activities")

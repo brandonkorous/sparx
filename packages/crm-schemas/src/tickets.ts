@@ -155,7 +155,7 @@ export const CreateTicketInput = z.object({
   /** Both optional: a request may come from a person we know, a trade account,
    *  or an address we have never seen. */
   customerId: OptionalUuid,
-  b2bAccountId: OptionalUuid,
+  companyId: OptionalUuid,
   assignedToUserId: OptionalUuid,
 
   subject: z.string().min(1).max(255),
@@ -236,7 +236,7 @@ export const TicketQuery = z.object({
   priority: TicketPriority.optional(),
   source: TicketSource.optional(),
   customerId: Uuid.optional(),
-  b2bAccountId: Uuid.optional(),
+  companyId: Uuid.optional(),
   assignedToUserId: Uuid.optional(),
   /** `unassigned` is not expressible as an id, and it is the single most
    *  important queue on the screen. */

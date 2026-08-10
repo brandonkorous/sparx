@@ -67,7 +67,7 @@ const TrackQuery = z.object({
 
 const ListQuery = z.object({
   customer_id: z.string().uuid().optional(),
-  // B2B scoping — resolved through Customer.b2bAccountId (an Order has no
+  // B2B scoping — resolved through Customer.companyId (an Order has no
   // account column). `b2b_only=true` is what the /b2b/orders lens sends.
   b2b_account_id: z.string().uuid().optional(),
   b2b_only: z
@@ -103,7 +103,7 @@ const orderRoutes: FastifyPluginAsync = (app) => {
     const q = ListQuery.parse(request.query);
     const { items, total } = await orderService.list(toOrderContext(request), {
       customerId: q.customer_id,
-      b2bAccountId: q.b2b_account_id,
+      companyId: q.b2b_account_id,
       b2bOnly: q.b2b_only,
       status: q.status,
       paymentStatus: q.payment_status,

@@ -39,7 +39,7 @@ export const CreateBookingInput = z.object({
 
   // Who — appointment/reservation: customer on the booking; class: attendees[].
   customerId: OptionalUuid,
-  b2bAccountId: OptionalUuid,
+  companyId: OptionalUuid,
   partySize: z.number().int().min(1).max(100000).optional(),
   locationId: OptionalUuid,
 

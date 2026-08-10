@@ -82,6 +82,22 @@ export type CrmTopic =
   | 'crm.record.created'
   | 'crm.record.updated'
   | 'crm.record.deleted'
+  // E-sign (docs/144 §12). Three separate topics rather than one with a status,
+  // because a business wants to be told about them differently: a request going
+  // out is routine, a signature is worth a notification, and a DECLINE is the
+  // one somebody should ring about today. One topic would make all three the
+  // same automation with a condition on it.
+  //
+  // No token ever rides these. A bus message is logged, retried and
+  // dead-lettered; a signing link inside one is a signing link in a log file.
+  | 'crm.document.signature_requested'
+  | 'crm.document.signed'
+  | 'crm.document.declined'
+  // A meeting was booked through a rep's personal link (docs/144 §12). Distinct
+  // from the scheduling module's own booking events: those say an appointment
+  // exists, this says a SALES conversation was booked with a named person, which
+  // is what a sequence or a task rule wants to fire on.
+  | 'crm.meeting.booked'
   // A tenant-declared property changed value on ANY object. The automation
   // engine's `crm.property.changed` trigger (docs/144 §9) keys off this; the
   // payload carries the object key, the record id and which properties moved.

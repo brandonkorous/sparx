@@ -113,7 +113,7 @@ async function aggregateB2bOrdersByDay(
       COALESCE(SUM(o.total), 0)              AS revenue
     FROM orders o
     JOIN customers c ON c.id = o.customer_id
-    WHERE c.b2b_account_id IS NOT NULL
+    WHERE c.company_id IS NOT NULL
       AND o.status NOT IN ('cancelled', 'pending_approval')
       AND o.placed_at >= ${from}
       AND o.placed_at < ${toExclusive}
@@ -146,9 +146,9 @@ const reportRoutes: FastifyPluginAsync = (app) => {
         credit,
         tierGroups,
       ] = await Promise.all([
-        tx.b2BAccount.count({ where: { deletedAt: null } }),
-        tx.b2BAccount.count({ where: { deletedAt: null, status: 'active' } }),
-        tx.b2BAccount.count({ where: { deletedAt: null, status: 'credit_hold' } }),
+        tx.company.count({ where: { deletedAt: null } }),
+        tx.company.count({ where: { deletedAt: null, status: 'active' } }),
+        tx.company.count({ where: { deletedAt: null, status: 'credit_hold' } }),
         tx.billingDocument.count({
           where: {
             deletedAt: null,
@@ -156,23 +156,23 @@ const reportRoutes: FastifyPluginAsync = (app) => {
             stage: { stageType: OPEN_QUOTE_STAGE_TYPE },
           },
         }),
-        // Open B2B accounts-receivable — billing_documents scoped to a B2BAccount
+        // Open B2B accounts-receivable — billing_documents scoped to a Company
         // (docs/87 §15; the legacy b2b_invoices table was retired). `balance` nets
         // out partial payments, so the aging below reflects true outstanding AR.
         tx.billingDocument.findMany({
           where: {
-            b2bAccountId: { not: null },
+            companyId: { not: null },
             deletedAt: null,
             status: { in: ['unpaid', 'partial', 'overdue'] },
           },
           select: { balance: true, dueAt: true },
         }),
         tx.order.count({ where: { status: 'pending_approval' } }),
-        tx.b2BAccount.aggregate({
+        tx.company.aggregate({
           where: { deletedAt: null, status: { not: 'inactive' } },
           _sum: { creditLimit: true, creditUsed: true },
         }),
-        tx.b2BAccount.groupBy({
+        tx.company.groupBy({
           by: ['pricingTier'],
           where: { deletedAt: null, pricingTier: { not: null } },
           _count: { _all: true },
@@ -315,7 +315,7 @@ const reportRoutes: FastifyPluginAsync = (app) => {
           createdAt: true,
           validUntil: true,
           stage: { select: { name: true, customerLabel: true } },
-          b2bAccount: { select: { companyName: true } },
+          company: { select: { companyName: true } },
           customer: { select: { firstName: true, lastName: true, email: true } },
         },
       });
@@ -328,7 +328,7 @@ const reportRoutes: FastifyPluginAsync = (app) => {
           return {
             id: q.id,
             quoteNumber: q.number ?? '',
-            account: q.b2bAccount?.companyName ?? customerName ?? '—',
+            account: q.company?.companyName ?? customerName ?? '—',
             // The workflow-stage name (Draft/Submitted/Under Review/Quoted) — the
             // quote-lifecycle signal, not BillingDocument's coarse AR status
             // (unpaid/partial/paid/overdue/void), which is meaningless pre-invoice.
@@ -352,8 +352,8 @@ const reportRoutes: FastifyPluginAsync = (app) => {
 
     return withTenant(ctx, async (tx) => {
       const groups = await tx.billingDocument.groupBy({
-        by: ['b2bAccountId'],
-        where: { b2bAccountId: { not: null }, deletedAt: null },
+        by: ['companyId'],
+        where: { companyId: { not: null }, deletedAt: null },
         _sum: { total: true },
         _count: { _all: true },
         orderBy: { _sum: { total: 'desc' } },
@@ -361,8 +361,8 @@ const reportRoutes: FastifyPluginAsync = (app) => {
       });
       if (groups.length === 0) return ok([]);
 
-      const ids = groups.map((g) => g.b2bAccountId).filter((id): id is string => id !== null);
-      const accounts = await tx.b2BAccount.findMany({
+      const ids = groups.map((g) => g.companyId).filter((id): id is string => id !== null);
+      const accounts = await tx.company.findMany({
         where: { id: { in: ids } },
         select: { id: true, companyName: true, pricingTier: true, paymentTerms: true },
       });
@@ -370,9 +370,9 @@ const reportRoutes: FastifyPluginAsync = (app) => {
 
       return ok(
         groups.map((g) => {
-          const a = byId.get(g.b2bAccountId!);
+          const a = byId.get(g.companyId!);
           return {
-            accountId: g.b2bAccountId!,
+            accountId: g.companyId!,
             name: a?.companyName ?? '—',
             tier: a?.pricingTier ?? null,
             paymentTerms: a?.paymentTerms ?? null,

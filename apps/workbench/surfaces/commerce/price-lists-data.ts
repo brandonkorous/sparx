@@ -42,7 +42,7 @@ export interface PriceListRow {
   /** null = applies on every channel. */
   channel: string | null;
   customerSegmentId: string | null;
-  b2bAccountId: string | null;
+  companyId: string | null;
   collectionId: string | null;
   priority: number;
   validFrom: string | null;
@@ -114,9 +114,9 @@ export function priceListState(row: {
  *  specific group/account name is not loaded. */
 export function audienceSummary(row: {
   customerSegmentId: string | null;
-  b2bAccountId: string | null;
+  companyId: string | null;
 }): string {
-  if (row.b2bAccountId) return 'A trade account';
+  if (row.companyId) return 'A trade account';
   if (row.customerSegmentId) return 'A customer group';
   return 'Everyone';
 }
@@ -201,7 +201,7 @@ export interface PriceListWriteInput {
   currency: string;
   channel?: string | null;
   customerSegmentId?: string | null;
-  b2bAccountId?: string | null;
+  companyId?: string | null;
   validFrom?: string | null;
   validTo?: string | null;
   status: PriceListStatus;

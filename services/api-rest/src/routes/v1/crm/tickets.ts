@@ -78,7 +78,7 @@ const ticketRoutes: FastifyPluginAsync = (app) => {
         ...(q.priority ? { priority: q.priority } : {}),
         ...(q.source ? { source: q.source } : {}),
         ...(q.customer_id ? { customerId: q.customer_id } : {}),
-        ...(q.b2b_account_id ? { b2bAccountId: q.b2b_account_id } : {}),
+        ...(q.b2b_account_id ? { companyId: q.b2b_account_id } : {}),
         ...(q.assigned_to ? { assignedToUserId: q.assigned_to } : {}),
         ...(q.unassigned ? { unassigned: q.unassigned === 'true' } : {}),
         ...(q.breached ? { breached: q.breached === 'true' } : {}),

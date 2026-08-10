@@ -36,7 +36,7 @@ describe('b2b fleet holds', () => {
     warehouseId = fixture.warehouseId;
 
     accountId = await withTenant(ctx(), async (tx) => {
-      const a = await tx.b2BAccount.create({
+      const a = await tx.company.create({
         data: { tenantId, companyName: 'Acme Fleet Co' },
       });
       return a.id;

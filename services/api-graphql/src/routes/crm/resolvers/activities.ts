@@ -8,7 +8,7 @@ import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
 interface ListArgs {
   customerId?: string;
   dealId?: string;
-  b2bAccountId?: string;
+  companyId?: string;
   type?: string;
   since?: string;
   until?: string;

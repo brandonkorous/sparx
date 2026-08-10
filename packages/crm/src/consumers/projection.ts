@@ -26,7 +26,7 @@ export interface CustomerProjection {
   lifecycleStage: LifecycleStage;
   leadStatus: LeadStatus | null;
   authUserId: string | null;
-  b2bAccountId: string | null;
+  companyId: string | null;
   assignedRepId: string | null;
   email: string | null;
   doNotContact: boolean;
@@ -91,7 +91,7 @@ export function projectionFromCustomer(customer: Customer): CustomerProjection {
     lifecycleStage: customer.lifecycleStage as LifecycleStage,
     leadStatus: customer.leadStatus as LeadStatus | null,
     authUserId: customer.authUserId,
-    b2bAccountId: customer.b2bAccountId,
+    companyId: customer.companyId,
     assignedRepId: customer.assignedRepId,
     email: customer.email,
     doNotContact: customer.doNotContact,

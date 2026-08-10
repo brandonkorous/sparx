@@ -66,7 +66,7 @@ export type ExemptionReason = z.infer<typeof ExemptionReason>;
 
 export const CreateTaxExemptionInput = z.object({
   customerId: Uuid.optional(),
-  b2bAccountId: Uuid.optional(),
+  companyId: Uuid.optional(),
   jurisdiction: z.string().min(2).max(6), // "US" or "US-CA"
   reason: ExemptionReason,
   certificateNumber: z.string().min(1).max(127),

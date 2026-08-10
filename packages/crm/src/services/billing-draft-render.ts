@@ -45,7 +45,7 @@ export interface BillingDraftInput {
   status?: string | null;
   currency?: string | null;
   customerId?: string | null;
-  b2bAccountId?: string | null;
+  companyId?: string | null;
   billTo?: unknown;
   shipTo?: unknown;
   issuedAt?: string | null;
@@ -86,7 +86,7 @@ export async function buildRenderDataFromDraft(
         tx,
         draftLines.map((l) => l.lineTypeId ?? null)
       ),
-      resolveBillTo(tx, draft.billTo, draft.customerId ?? null, draft.b2bAccountId ?? null),
+      resolveBillTo(tx, draft.billTo, draft.customerId ?? null, draft.companyId ?? null),
     ]);
 
     const taxRate = num(draft.taxRate);

@@ -9,6 +9,9 @@
 //   GET    /v1/crm/segments/:id/member-count      → count of members
 //   POST   /v1/crm/segments/preview-count         → match-count for a draft rule
 //   POST   /v1/crm/segments/:id/recompute         → full re-evaluation
+//   POST   /v1/crm/segments/:id/members           → add to a hand-picked list (§10)
+//   POST   /v1/crm/segments/:id/members/remove    → take off a hand-picked list
+//   GET    /v1/crm/segments/:id/history           → who joined / left, and when
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
@@ -28,6 +31,11 @@ const ListQuery = z.object({
 const MembersQuery = z.object({
   limit: z.coerce.number().int().min(1).max(1000).optional(),
   offset: z.coerce.number().int().min(0).optional(),
+});
+const HistoryQuery = z.object({
+  kind: z.enum(['entered', 'exited']).optional(),
+  since: z.string().datetime().optional(),
+  limit: z.coerce.number().int().min(1).max(500).optional(),
 });
 
 const segmentRoutes: FastifyPluginAsync = (app) => {
@@ -123,6 +131,45 @@ const segmentRoutes: FastifyPluginAsync = (app) => {
     const result = await segmentService.recomputeFull(toCrmContext(request), { segmentId: id });
     return ok(result);
   });
+
+  // ── hand-picked lists (docs/144 §10) ──
+  //
+  // These refuse on a rule-driven list at the SERVICE, not here: the check needs
+  // the segment's own kind, and duplicating it in the route is how the two come
+  // to disagree.
+
+  app.post('/v1/crm/segments/:id/members', async (request) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    const { id } = PathId.parse(request.params);
+    const result = await segmentService.addMembers(toCrmContext(request), id, request.body);
+    return ok(result);
+  });
+
+  // DELETE with a body is awkward for a lot of HTTP clients, so removal is a
+  // POST to a named sub-resource. The alternative — one id per DELETE — would
+  // turn "take these 200 people off" into 200 round trips.
+  app.post('/v1/crm/segments/:id/members/remove', async (request) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    const { id } = PathId.parse(request.params);
+    const result = await segmentService.removeMembers(toCrmContext(request), id, request.body);
+    return ok(result);
+  });
+
+  app.get('/v1/crm/segments/:id/history', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCrmModule(request);
+    const { id } = PathId.parse(request.params);
+    const q = HistoryQuery.parse(request.query);
+    const items = await segmentService.membershipHistory(toCrmContext(request), id, {
+      ...(q.kind ? { kind: q.kind } : {}),
+      ...(q.since ? { since: new Date(q.since) } : {}),
+      ...(q.limit === undefined ? {} : { limit: q.limit }),
+    });
+    return ok(items);
+  });
+
   return Promise.resolve();
 };
 

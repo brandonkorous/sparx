@@ -53,7 +53,7 @@ function requesterName(view: TicketView): string {
     if (customer.company?.trim()) return customer.company.trim();
     if (customer.email?.trim()) return customer.email.trim();
   }
-  if (view.ticket.b2bAccount) return view.ticket.b2bAccount.name;
+  if (view.ticket.company) return view.ticket.company.name;
   return 'Someone not on file';
 }
 

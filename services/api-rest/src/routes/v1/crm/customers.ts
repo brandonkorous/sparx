@@ -87,7 +87,7 @@ const customerRoutes: FastifyPluginAsync = (app) => {
       lifecycleStage: q.lifecycle_stage,
       leadStatus: q.lead_status,
       assignedRepId: q.assigned_rep_id ?? undefined,
-      b2bAccountId: q.b2b_account_id ?? undefined,
+      companyId: q.b2b_account_id ?? undefined,
       propertyId,
       tag: q.tag,
       q: q.q,

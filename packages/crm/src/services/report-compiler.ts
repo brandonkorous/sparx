@@ -74,10 +74,13 @@ const SOURCES: Record<string, ObjectSource> = {
       type: { column: 'type', kind: 'text', label: 'Kind of customer' },
       lifecycleStage: { column: 'lifecycle_stage', kind: 'text', label: 'Stage' },
       leadStatus: { column: 'lead_status', kind: 'text', label: 'Lead status' },
-      company: { column: 'company', kind: 'text', label: 'Company' },
+      // The field KEY stays 'company' — it is stored in saved report definitions
+      // — while the column moved to company_name (docs/144 §11). This map is
+      // exactly the layer that exists so one can change without the other.
+      company: { column: 'company_name', kind: 'text', label: 'Company' },
       jobTitle: { column: 'job_title', kind: 'text', label: 'Job title' },
       assignedRepId: { column: 'assigned_rep_id', kind: 'uuid', label: 'Owner' },
-      b2bAccountId: { column: 'b2b_account_id', kind: 'uuid', label: 'Business account' },
+      companyId: { column: 'company_id', kind: 'uuid', label: 'Company' },
       doNotContact: { column: 'do_not_contact', kind: 'boolean', label: 'Do not contact' },
       totalSpent: { column: 'total_spent', kind: 'currency', label: 'Lifetime spend' },
       orderCount: { column: 'order_count', kind: 'number', label: 'Orders' },

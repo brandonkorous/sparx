@@ -79,7 +79,7 @@ const pricingRoutes: FastifyPluginAsync = async (app) => {
     const { items, total } = await pricingService.listPriceLists(toCommerceContext(request), {
       ...(q.status ? { status: q.status } : {}),
       ...(q.channel ? { channel: q.channel } : {}),
-      ...(q.b2b_account_id ? { b2bAccountId: q.b2b_account_id } : {}),
+      ...(q.b2b_account_id ? { companyId: q.b2b_account_id } : {}),
       ...(q.q ? { q: q.q } : {}),
       take: q.take,
       skip: q.skip,

@@ -9,7 +9,7 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
-  b2bAccountService,
+  companyService,
   b2bEscalationService,
   billingDocumentService,
   billingLineService,
@@ -119,7 +119,7 @@ describe('billing document payments / AR', () => {
   });
 
   it('escalation dual-reads an overdue authored invoice and ladders the account', async () => {
-    const account = await b2bAccountService.create(test.ctx, {
+    const account = await companyService.create(test.ctx, {
       companyName: 'Fleet Co',
       paymentTerms: 'net30',
     });
@@ -128,7 +128,7 @@ describe('billing document payments / AR', () => {
     const dueAt = new Date(Date.now() + 5 * DAY);
     const doc = await billingDocumentService.create(test.ctx, {
       workflowId: invoiceWorkflowId,
-      b2bAccountId: account.id,
+      companyId: account.id,
       taxRate: 0,
       dueAt: dueAt.toISOString(),
     });

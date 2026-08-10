@@ -202,13 +202,9 @@ async function resolveViewerB2bAccountId(
   return withTenant({ tenantId }, async (tx) => {
     const customer = await tx.customer.findFirst({
       where: { id: resolved.customerId },
-      select: { b2bAccountId: true },
+      select: { companyId: true },
     });
-    return pricingService.resolveActiveB2bAccountId(
-      tx,
-      resolved.customerId,
-      customer?.b2bAccountId
-    );
+    return pricingService.resolveActiveB2bAccountId(tx, resolved.customerId, customer?.companyId);
   });
 }
 
@@ -221,7 +217,7 @@ async function resolveViewerB2bAccountId(
  */
 async function resolveDefaultVariantContractPrices(
   tenantId: string,
-  b2bAccountId: string,
+  companyId: string,
   variantIds: string[]
 ): Promise<Map<string, number>> {
   if (variantIds.length === 0) return new Map();
@@ -229,7 +225,7 @@ async function resolveDefaultVariantContractPrices(
   const rows = await withTenant({ tenantId }, (tx) =>
     tx.contractPrice.findMany({
       where: {
-        b2bAccountId,
+        companyId,
         variantId: { in: variantIds },
         validFrom: { lte: now },
         OR: [{ validTo: null }, { validTo: { gte: now } }],
@@ -865,7 +861,7 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
               quantity: 1,
               channel: 'storefront',
               currency: v.currency,
-              b2bAccountId: viewerB2bAccountId,
+              companyId: viewerB2bAccountId,
               customerSegmentIds: [],
               // The active site (docs/131 §4) so the PDP "your price" only applies
               // this site's price lists, not a sibling business's.

@@ -48,7 +48,7 @@ export interface Customer {
   lifecycleStage: LifecycleStage;
   leadStatus: LeadStatus | null;
   propertyId: string | null;
-  b2bAccountId: string | null;
+  companyId: string | null;
   assignedRepId: string | null;
   email: string | null;
   phone: string | null;
@@ -101,7 +101,7 @@ export interface CustomerListParams {
   leadStatus?: LeadStatus;
   sortBy?: CustomerSort;
   assignedRepId?: string;
-  b2bAccountId?: string;
+  companyId?: string;
 }
 
 /** One file attached to a customer. The bytes live in the media pipeline; this
@@ -360,7 +360,7 @@ export function useCustomers(params: CustomerListParams) {
         ...(params.leadStatus ? { lead_status: params.leadStatus } : {}),
         ...(params.sortBy ? { sort_by: params.sortBy } : {}),
         ...(params.assignedRepId ? { assigned_rep_id: params.assignedRepId } : {}),
-        ...(params.b2bAccountId ? { b2b_account_id: params.b2bAccountId } : {}),
+        ...(params.companyId ? { b2b_account_id: params.companyId } : {}),
         take: 100,
       }),
     placeholderData: (previous) => previous,
@@ -496,7 +496,7 @@ export interface CustomerInput {
   lastName?: string | null;
   company?: string | null;
   jobTitle?: string | null;
-  b2bAccountId?: string | null;
+  companyId?: string | null;
   assignedRepId?: string | null;
   preferredContactMethod?: 'email' | 'phone' | 'sms' | null;
   doNotContact?: boolean;

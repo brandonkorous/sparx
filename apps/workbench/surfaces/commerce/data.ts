@@ -33,10 +33,11 @@ export interface OrderCustomer {
   id: string;
   firstName: string | null;
   lastName: string | null;
-  company: string | null;
+  /** The employer they typed — not the linked company record below. */
+  companyName: string | null;
   email: string | null;
-  b2bAccountId: string | null;
-  b2bAccount: {
+  companyId: string | null;
+  company: {
     id: string;
     companyName: string;
     paymentTerms: string | null;
@@ -502,7 +503,7 @@ export function channelLabel(order: Order): string {
 export function customerName(customer: OrderCustomer | null): string {
   if (!customer) return 'Unknown customer';
   const person = [customer.firstName, customer.lastName].filter(Boolean).join(' ').trim();
-  if (customer.company) return customer.company;
+  if (customer.companyName) return customer.companyName;
   if (person) return person;
   return customer.email ?? 'Unknown customer';
 }

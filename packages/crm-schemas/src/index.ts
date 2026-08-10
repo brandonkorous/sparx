@@ -7,7 +7,7 @@
 // type-safe across transports.
 
 export * from './customers';
-export * from './b2b-accounts';
+export * from './companies';
 export * from './object-defs';
 export * from './associations';
 export * from './engagement';
@@ -16,6 +16,8 @@ export * from './pipelines';
 export * from './deals';
 export * from './tickets';
 export * from './reports';
+export * from './scoring';
+export * from './workspace';
 export * from './activities';
 export * from './tasks';
 export * from './segments';

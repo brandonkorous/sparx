@@ -72,19 +72,23 @@ export interface ListConversationsFilter {
 
 type ConversationRow = Prisma.ChatConversationGetPayload<{
   include: {
-    customer: { select: { firstName: true; lastName: true; email: true; company: true } };
+    customer: { select: { firstName: true; lastName: true; email: true; companyName: true } };
     messages: { take: 1; orderBy: { createdAt: 'desc' } };
   };
 }>;
 
 function displayName(
-  customer: { firstName: string | null; lastName: string | null; company: string | null } | null,
+  customer: {
+    firstName: string | null;
+    lastName: string | null;
+    companyName: string | null;
+  } | null,
   visitorName: string | null,
   visitorEmail: string | null
 ): string | null {
   if (customer) {
     const full = [customer.firstName, customer.lastName].filter(Boolean).join(' ').trim();
-    return firstNonEmpty(full, customer.company);
+    return firstNonEmpty(full, customer.companyName);
   }
   return firstNonEmpty(visitorName, visitorEmail);
 }
@@ -136,7 +140,7 @@ function toSummaryDto(row: ConversationRow): ConversationSummaryDto {
 }
 
 const SUMMARY_INCLUDE = {
-  customer: { select: { firstName: true, lastName: true, email: true, company: true } },
+  customer: { select: { firstName: true, lastName: true, email: true, companyName: true } },
   messages: { take: 1, orderBy: { createdAt: 'desc' } },
 } satisfies Prisma.ChatConversationInclude;
 

@@ -9,6 +9,7 @@
 // As email / commerce / b2b executors land, add their `installXActions()` here.
 
 export { installCrmActions } from './crm.js';
+export { installCrmDepthActions } from './crm-depth.js';
 export { installB2bActions } from './b2b.js';
 export { installEmailActions } from './email.js';
 export { installSequenceActions } from './sequences.js';
@@ -25,6 +26,7 @@ export {
 
 import { installB2bActions } from './b2b.js';
 import { installCrmActions } from './crm.js';
+import { installCrmDepthActions } from './crm-depth.js';
 import { installEmailActions } from './email.js';
 import { installSequenceActions } from './sequences.js';
 import { installFormActions } from './forms.js';
@@ -35,6 +37,7 @@ import { installEntityResolvers } from './resolvers.js';
 /** Register every module action executor + entity resolver/scanner (idempotent). */
 export function installModuleActions(): void {
   installCrmActions();
+  installCrmDepthActions();
   installB2bActions();
   installEmailActions();
   installSequenceActions();

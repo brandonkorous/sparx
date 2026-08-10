@@ -104,7 +104,7 @@ export async function ensureNetTermsArWorkflow(
 }
 
 export interface CreateOrderArInput {
-  b2bAccountId: string;
+  companyId: string;
   /** The site ISSUING this invoice (docs/131 §3.6) — decides whose books the
    *  number comes out of and whose letterhead is frozen onto it. Required rather
    *  than optional: an order-derived AR document inherits the order's site, and a
@@ -140,11 +140,11 @@ export async function createOrderArDocument(
   input: CreateOrderArInput
 ): Promise<DocumentWithLines> {
   return withTenant(ctx, async (tx) => {
-    const account = await tx.b2BAccount.findUnique({
-      where: { id: input.b2bAccountId },
+    const account = await tx.company.findUnique({
+      where: { id: input.companyId },
       select: { id: true, companyName: true },
     });
-    if (!account) throw new CrmNotFoundError('B2BAccount', input.b2bAccountId);
+    if (!account) throw new CrmNotFoundError('Company', input.companyId);
 
     const { workflowId, invoiceStage } = await ensureNetTermsArWorkflow(tx, ctx.tenantId);
     // The issuing site's own sequence (docs/131 §3.6) — this AR invoice lands in
@@ -160,7 +160,7 @@ export async function createOrderArDocument(
         propertyId: input.propertyId,
         workflowId,
         stageId: invoiceStage.id,
-        b2bAccountId: input.b2bAccountId,
+        companyId: input.companyId,
         currency: input.currency ?? 'USD',
         number,
         numberSeq: seq,

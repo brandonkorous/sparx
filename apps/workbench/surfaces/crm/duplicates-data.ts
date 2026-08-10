@@ -27,8 +27,15 @@ import type { Customer } from './customers-data';
 /** One cluster of records the server believes are the same person. Ordered
  *  newest-first by the server, so the first is the natural "keep this one". */
 export interface DuplicateGroup {
-  reason: 'email' | 'name+company';
+  reason: 'email' | 'phone' | 'name+company';
   customers: Customer[];
+  /**
+   * How sure the server is, 0-100 — and the reason a bulk merge is safe to
+   * offer at all. An identical email is 100; a shared phone number is 90; a
+   * surname and an employer is 60, which is below every threshold the settings
+   * screen accepts, so the weakest signal can never merge on its own.
+   */
+  confidence: number;
 }
 
 export const duplicateKeys = {
@@ -36,7 +43,20 @@ export const duplicateKeys = {
 };
 
 export function reasonLabel(reason: DuplicateGroup['reason']): string {
-  return reason === 'email' ? 'Same email address' : 'Same name and company';
+  if (reason === 'email') return 'Same email address';
+  if (reason === 'phone') return 'Same phone number';
+  return 'Same surname and employer';
+}
+
+/** How sure reads, as a word and a colour. "60%" beside "100%" in the same grey
+ *  tells somebody nothing about which one to act on. */
+export function confidenceMeta(confidence: number): {
+  tone: 'success' | 'info' | 'warning';
+  label: string;
+} {
+  if (confidence >= 100) return { tone: 'success', label: 'Certain' };
+  if (confidence >= 80) return { tone: 'info', label: 'Very likely' };
+  return { tone: 'warning', label: 'Worth a look' };
 }
 
 /* ── Queries ────────────────────────────────────────────────────────────── */
@@ -44,7 +64,37 @@ export function reasonLabel(reason: DuplicateGroup['reason']): string {
 export function useDuplicates() {
   return useQuery({
     queryKey: duplicateKeys.all,
-    queryFn: () => api.get<DuplicateGroup[]>('/v1/crm/customers/duplicates'),
+    // `/v1/crm/duplicates`, not the older `/v1/crm/customers/duplicates`: only
+    // this one honours the tenant's chosen match rules and returns a confidence
+    // (docs/144 §12). The old path still exists for anything integrating
+    // against it, and returns the two-reason answer it always did.
+    queryFn: () => api.list<DuplicateGroup>('/v1/crm/duplicates', {}),
+  });
+}
+
+export interface BulkMergeResult {
+  merged: number;
+  absorbed: number;
+  skipped: { reason: string; count: number }[];
+}
+
+/**
+ * Merge every group at or above a confidence floor.
+ *
+ * The survivor in each is the most recently updated record — the one somebody
+ * has touched most recently, so the one whose corrections are worth keeping —
+ * and every field it is missing is filled in from the others, so nothing is
+ * actually lost either way.
+ */
+export function useBulkMerge() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (minConfidence: number) =>
+      api.post<BulkMergeResult>('/v1/crm/duplicates/bulk-merge', { minConfidence }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: duplicateKeys.all });
+      void queryClient.invalidateQueries({ queryKey: ['crm', 'customers'] });
+    },
   });
 }
 

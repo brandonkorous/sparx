@@ -28,6 +28,11 @@ export { evaluateConditions } from './conditions/evaluate';
 // ── resolver / scanner registry ──
 export {
   getScanner,
+  // The reserved key a resolver stamps with the record's site (docs/131 §3.1).
+  // Exported because module resolvers live in @sparx/automation-actions and must
+  // set it — one that forgets makes its events invisible to site-scoped rules.
+  PROPERTY_FIELD,
+  propertyOf,
   registerResolver,
   registerScanner,
   registeredResolverEvents,
@@ -90,6 +95,14 @@ export {
   type AutomationRunWithSteps,
   type ListRunsFilter,
 } from './service/run-service';
+// Per-automation enrollment analytics (docs/144 §9) — the funnel a goal makes
+// meaningful, plus per-step drop-off.
+export {
+  enrollmentAnalytics,
+  type EnrollmentAnalytics,
+  type EnrollmentFunnel,
+  type StepDropOff,
+} from './service/enrollment-service';
 export {
   automationsOverview,
   reconcileRunsRollup,

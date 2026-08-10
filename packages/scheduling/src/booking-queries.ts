@@ -66,7 +66,7 @@ export interface ListBookingsOptions {
   serviceId?: string;
   resourceId?: string;
   customerId?: string;
-  b2bAccountId?: string;
+  companyId?: string;
   locationId?: string;
   /** The member's reachable sites (docs/131 §3.3); undefined = unrestricted. A
    *  booking's `propertyId` is denormalized from its service and SetNull on site
@@ -97,7 +97,7 @@ function buildWhere(opts: ListBookingsOptions): Record<string, unknown> {
     ...(opts.bookingType ? { bookingType: opts.bookingType } : {}),
     ...(opts.serviceId ? { serviceId: opts.serviceId } : {}),
     ...(opts.customerId ? { customerId: opts.customerId } : {}),
-    ...(opts.b2bAccountId ? { b2bAccountId: opts.b2bAccountId } : {}),
+    ...(opts.companyId ? { companyId: opts.companyId } : {}),
     ...(opts.locationId ? { locationId: opts.locationId } : {}),
     ...(opts.resourceId ? { resources: { some: { resourceId: opts.resourceId } } } : {}),
     ...(Object.keys(startAt).length ? { startAt } : {}),

@@ -1,11 +1,11 @@
-// b2bAccountContactService — links a Customer to a B2BAccount with a role
+// b2bAccountContactService — links a Customer to a Company with a role
 // (packages/db/prisma/schema/62-b2b-contacts.prisma). This is the write path
 // that was previously missing entirely: pricing (contract price), checkout
 // (net-terms eligibility), and the storefront B2B portal (invoices/quotes/
 // orders visibility) all key off an ACTIVE row here, but nothing ever
 // created one.
 //
-// `Customer.b2bAccountId` is the customer's "primary account" pointer (per
+// `Customer.companyId` is the customer's "primary account" pointer (per
 // the schema's own doc comment) — set here the first time a customer is
 // added as a contact, and left untouched afterward even if they're later
 // added to (or removed from) other accounts, so their default pricing
@@ -20,7 +20,7 @@ import type { ServiceContext } from '../errors';
 import { CrmConflictError, CrmNotFoundError } from '../errors';
 
 export interface B2bAccountContactRow extends B2bAccountContact {
-  customer: Pick<Customer, 'id' | 'firstName' | 'lastName' | 'email' | 'company'>;
+  customer: Pick<Customer, 'id' | 'firstName' | 'lastName' | 'email' | 'companyName'>;
 }
 
 export async function list(
@@ -33,7 +33,7 @@ export async function list(
       orderBy: { createdAt: 'asc' },
       include: {
         customer: {
-          select: { id: true, firstName: true, lastName: true, email: true, company: true },
+          select: { id: true, firstName: true, lastName: true, email: true, companyName: true },
         },
       },
     })
@@ -48,9 +48,9 @@ export async function create(
   const input = CreateB2bAccountContactInput.parse(rawInput);
 
   const result = await withTenant(ctx, async (tx) => {
-    const account = await tx.b2BAccount.findUnique({ where: { id: accountId } });
+    const account = await tx.company.findUnique({ where: { id: accountId } });
     if (account?.deletedAt !== null) {
-      throw new CrmNotFoundError('B2BAccount', accountId);
+      throw new CrmNotFoundError('Company', accountId);
     }
     const customer = await tx.customer.findUnique({ where: { id: input.customerId } });
     if (customer?.deletedAt !== null) {
@@ -84,11 +84,11 @@ export async function create(
     // Primary-account pointer + customer type promotion, set only the first
     // time — a customer's default pricing account shouldn't shift just
     // because they're later added to a second account as e.g. a viewer.
-    if (!customer.b2bAccountId || customer.type !== 'b2b') {
+    if (!customer.companyId || customer.type !== 'b2b') {
       await tx.customer.update({
         where: { id: customer.id },
         data: {
-          b2bAccountId: customer.b2bAccountId ?? accountId,
+          companyId: customer.companyId ?? accountId,
           // Any non-wholesale relationship (retail / partner / vendor) becomes a
           // wholesale (`b2b`) contact once on a trade account — only an existing
           // b2b contact keeps its type. Written the once (see the guard above).
@@ -112,7 +112,7 @@ export async function create(
       where: { id: contact.id },
       include: {
         customer: {
-          select: { id: true, firstName: true, lastName: true, email: true, company: true },
+          select: { id: true, firstName: true, lastName: true, email: true, companyName: true },
         },
       },
     });
@@ -143,7 +143,7 @@ export async function update(
       },
       include: {
         customer: {
-          select: { id: true, firstName: true, lastName: true, email: true, company: true },
+          select: { id: true, firstName: true, lastName: true, email: true, companyName: true },
         },
       },
     });

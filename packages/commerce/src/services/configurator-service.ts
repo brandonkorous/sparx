@@ -1020,7 +1020,7 @@ export async function requestQuote(
   input: {
     selection: unknown;
     customerId?: string;
-    b2bAccountId?: string;
+    companyId?: string;
     notes?: string;
   }
 ): Promise<{ requestId: string }> {
@@ -1039,7 +1039,7 @@ export async function requestQuote(
       requestId,
       templateId: selection.templateId,
       customerId: input.customerId ?? null,
-      b2bAccountId: input.b2bAccountId ?? null,
+      companyId: input.companyId ?? null,
       notes: input.notes ?? null,
       resolved,
     },

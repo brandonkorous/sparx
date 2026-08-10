@@ -97,7 +97,7 @@ export async function buildRenderData(
       receivedAt: p.receivedAt.toISOString(),
     }));
 
-    const billTo = await resolveBillTo(tx, doc.billTo, doc.customerId, doc.b2bAccountId);
+    const billTo = await resolveBillTo(tx, doc.billTo, doc.customerId, doc.companyId);
     const shipTo = partyFromJson(doc.shipTo, 'Ship to');
 
     return {
@@ -161,7 +161,7 @@ export async function buildRenderDataFromSnapshot(
       tx,
       payload.party.billTo,
       payload.party.customerId,
-      payload.party.b2bAccountId
+      payload.party.companyId
     );
     const shipTo = partyFromJson(payload.party.shipTo, 'Ship to');
 

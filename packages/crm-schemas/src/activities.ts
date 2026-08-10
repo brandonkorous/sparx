@@ -14,11 +14,11 @@ export const CreateActivityInput = z
     type: ActivityType,
     description: z.string().max(10_000).nullable().optional(),
 
-    // At least one anchor — customer, deal, or b2bAccount. Service layer
+    // At least one anchor — customer, deal, or company. Service layer
     // enforces this with a refinement so we can't insert orphan activities.
     customerId: Uuid.nullable().optional(),
     dealId: Uuid.nullable().optional(),
-    b2bAccountId: Uuid.nullable().optional(),
+    companyId: Uuid.nullable().optional(),
 
     actorId: Uuid.nullable().optional(),
     actorType: ActorType,
@@ -32,19 +32,16 @@ export const CreateActivityInput = z
     metadata: z.record(z.string(), z.unknown()).optional(),
     correctsActivityId: Uuid.nullable().optional(),
   })
-  .refine(
-    (input) => input.customerId != null || input.dealId != null || input.b2bAccountId != null,
-    {
-      message: 'Activity must anchor to at least one of: customerId, dealId, b2bAccountId',
-    }
-  );
+  .refine((input) => input.customerId != null || input.dealId != null || input.companyId != null, {
+    message: 'Activity must anchor to at least one of: customerId, dealId, companyId',
+  });
 export type CreateActivityInput = z.infer<typeof CreateActivityInput>;
 
 // List filters — used by activityService.list (Server Action + MCP).
 export const ListActivitiesInput = z.object({
   customerId: Uuid.optional(),
   dealId: Uuid.optional(),
-  b2bAccountId: Uuid.optional(),
+  companyId: Uuid.optional(),
   type: ActivityType.optional(),
   since: z.string().datetime().optional(),
   until: z.string().datetime().optional(),

@@ -11,10 +11,10 @@
 //   approver        → can approve orders (Ph6 purchase approval)
 //   viewer          → read-only (invoices, orders, quotes)
 //
-// Note: `customers.b2b_account_id` remains the "primary account" FK. This
+// Note: `customers.company_id` remains the "primary account" FK. This
 // table is additive — a contact can see their primary account, plus other
 // accounts they've been explicitly added to. Most customers will have exactly
-// one row here matching their `customers.b2b_account_id`.
+// one row here matching their `customers.company_id`.
 
 model B2bAccountContact {
   id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -30,7 +30,7 @@ model B2bAccountContact {
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant   Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  account  B2BAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  account  Company @relation(fields: [accountId], references: [id], onDelete: Cascade)
   customer Customer   @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
   @@unique([tenantId, accountId, customerId], map: "b2b_account_contacts_unique")

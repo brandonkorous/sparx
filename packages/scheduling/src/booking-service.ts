@@ -249,7 +249,7 @@ export async function createBooking(
           capacity: service.capacity,
           partySize: input.partySize ?? null,
           customerId: input.customerId ?? null,
-          b2bAccountId: input.b2bAccountId ?? null,
+          companyId: input.companyId ?? null,
           assetRef: (input.assetRef ?? undefined) as Prisma.InputJsonValue | undefined,
           partsLinked: input.partsLinked,
           workOrderId: input.workOrderId ?? null,

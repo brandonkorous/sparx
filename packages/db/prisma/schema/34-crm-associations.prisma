@@ -10,8 +10,8 @@
 // contact's deals when they are the technical evaluator rather than the buyer,
 // and cannot answer "who else is involved here?" at all.
 //
-// THE FKs STAY. `deals.customer_id`, `deals.b2b_account_id`,
-// `customers.b2b_account_id` and every column like them keep working exactly as
+// THE FKs STAY. `deals.customer_id`, `deals.company_id`,
+// `customers.company_id` and every column like them keep working exactly as
 // they do today, and the service keeps them in step with the association row
 // marked `is_primary`. This is a graph LAYERED OVER a fast primary pointer, not
 // a replacement for it: every existing index, report, segment field, RLS policy

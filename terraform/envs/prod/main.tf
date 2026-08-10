@@ -225,6 +225,15 @@ module "pubsub" {
     "crm.engagement.sent"     = []
     "crm.engagement.received" = []
 
+    # E-sign + meeting links (docs/144 §12). Three signature topics rather than
+    # one with a status field, because a business wants to hear about them
+    # differently — a request going out is routine, a signature is worth a
+    # notification, and a decline is the one somebody should ring about today.
+    "crm.document.signature_requested" = []
+    "crm.document.signed"              = []
+    "crm.document.declined"            = []
+    "crm.meeting.booked"               = []
+
     # Service requests (docs/144 §7). Topic-only, like the rest of the CRM bus.
     # The two SLA topics are the reason the support clock is worth storing at
     # all: they are what a tenant hangs "tell the shift lead when an urgent

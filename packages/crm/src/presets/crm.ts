@@ -168,6 +168,10 @@ function segmentPreset(spec: {
         slug: spec.slug,
         description: spec.description,
         color: spec.color,
+        // Every preset segment is rule-driven — that is what a preset IS: a
+        // definition worth starting from. A hand-picked list has nothing to
+        // preset, since its whole content is the tenant's own choices.
+        kind: 'dynamic',
         rules: spec.rules,
       };
       const segment = await segmentService.create(sx, input);

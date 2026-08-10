@@ -38,7 +38,7 @@ interface CustomerLike {
   lifecycleStage: string;
   leadStatus: string | null;
   email: string | null;
-  company: string | null;
+  companyName: string | null;
   doNotContact: boolean;
   tags: string[];
   totalSpent: unknown;
@@ -60,7 +60,7 @@ function customerFields(c: CustomerLike, now: Date): ResolvedFields {
     'customer.lifecycleStage': c.lifecycleStage,
     'customer.leadStatus': c.leadStatus,
     'customer.email': c.email,
-    'customer.company': c.company,
+    'customer.company': c.companyName,
     'customer.doNotContact': c.doNotContact,
     'customer.tags': c.tags,
     'customer.totalSpent': num(c.totalSpent),
@@ -78,7 +78,7 @@ const CUSTOMER_SELECT = {
   lifecycleStage: true,
   leadStatus: true,
   email: true,
-  company: true,
+  companyName: true,
   doNotContact: true,
   tags: true,
   totalSpent: true,

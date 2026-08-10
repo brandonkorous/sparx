@@ -15,7 +15,7 @@ model CheckoutSession {
   currency String @db.VarChar(3)
 
   customerId       String? @map("customer_id") @db.Uuid
-  b2bAccountId     String? @map("b2b_account_id") @db.Uuid
+  companyId     String? @map("company_id") @db.Uuid
   customerEmail    String? @map("customer_email") @db.VarChar(255)
   customerPhone    String? @map("customer_phone") @db.VarChar(50)
   acceptsMarketing Boolean @default(false) @map("accepts_marketing")
@@ -66,7 +66,7 @@ model CheckoutSession {
   tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   cart       Cart        @relation(fields: [cartId], references: [id], onDelete: Cascade)
   customer   Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  b2bAccount B2BAccount? @relation(fields: [b2bAccountId], references: [id], onDelete: SetNull)
+  company Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
 
   @@unique([tenantId, idempotencyKey], map: "checkout_sessions_idempotency_unique")
   @@index([tenantId, cartId])

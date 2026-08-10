@@ -49,7 +49,7 @@ export interface BillingSnapshotPayload {
   };
   party: {
     customerId: string | null;
-    b2bAccountId: string | null;
+    companyId: string | null;
     billTo: unknown;
     shipTo: unknown;
   };
@@ -90,7 +90,7 @@ export function buildSnapshotPayload(
     },
     party: {
       customerId: document.customerId,
-      b2bAccountId: document.b2bAccountId,
+      companyId: document.companyId,
       billTo: document.billTo ?? null,
       shipTo: document.shipTo ?? null,
     },

@@ -39,7 +39,7 @@ async function syncDealAssociations(
   deal: Deal
 ): Promise<void> {
   await syncPrimaryFromColumn(tx, tenantId, 'deal', deal.id, 'contact', deal.customerId);
-  await syncPrimaryFromColumn(tx, tenantId, 'deal', deal.id, 'company', deal.b2bAccountId);
+  await syncPrimaryFromColumn(tx, tenantId, 'deal', deal.id, 'company', deal.companyId);
 }
 
 export interface ListDealsFilter {
@@ -48,7 +48,7 @@ export interface ListDealsFilter {
   stageId?: string;
   assignedRepId?: string | null;
   customerId?: string;
-  b2bAccountId?: string;
+  companyId?: string;
   /** The sites this member may reach (docs/131 §3.3 read-scoping); undefined = an
    *  unrestricted member who sees every site. A restricted member sees deals on
    *  their granted sites PLUS tenant-wide (null-property) deals — the same
@@ -65,7 +65,7 @@ export interface ListDealsFilter {
 // the nested objects is unaffected.
 const dealSubjectInclude = {
   stage: { select: { name: true, stageType: true } },
-  customer: { select: { firstName: true, lastName: true, company: true, email: true } },
+  customer: { select: { firstName: true, lastName: true, companyName: true, email: true } },
 } satisfies Prisma.DealInclude;
 
 export async function list(
@@ -83,7 +83,7 @@ export async function list(
       ...(filter.stageId ? { stageId: filter.stageId } : {}),
       ...(filter.assignedRepId !== undefined ? { assignedRepId: filter.assignedRepId } : {}),
       ...(filter.customerId ? { customerId: filter.customerId } : {}),
-      ...(filter.b2bAccountId ? { b2bAccountId: filter.b2bAccountId } : {}),
+      ...(filter.companyId ? { companyId: filter.companyId } : {}),
       ...(filter.state === 'open'
         ? { closedAt: null }
         : filter.state === 'closed'
@@ -149,7 +149,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<De
         pipelineId: input.pipelineId,
         stageId: input.stageId,
         customerId: input.customerId ?? null,
-        b2bAccountId: input.b2bAccountId ?? null,
+        companyId: input.companyId ?? null,
         assignedRepId: input.assignedRepId ?? null,
         title: input.title,
         value: input.value,
@@ -173,7 +173,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<De
         tenantId: ctx.tenantId,
         customerId: created.customerId,
         dealId: created.id,
-        b2bAccountId: created.b2bAccountId,
+        companyId: created.companyId,
         type: 'deal.created',
         description: `Deal "${created.title}" created`,
         actorId: ctx.userId ?? null,
@@ -256,7 +256,7 @@ export async function update(
             }
           : {}),
         ...(input.customerId !== undefined ? { customerId: input.customerId } : {}),
-        ...(input.b2bAccountId !== undefined ? { b2bAccountId: input.b2bAccountId } : {}),
+        ...(input.companyId !== undefined ? { companyId: input.companyId } : {}),
         ...(input.assignedRepId !== undefined ? { assignedRepId: input.assignedRepId } : {}),
         ...(input.source !== undefined ? { source: input.source } : {}),
         // Correcting the reason is a plain edit — the stage is not moving, so it
@@ -271,10 +271,10 @@ export async function update(
           : {}),
       },
     });
-    // Repointing `customerId` / `b2bAccountId` moves the PRIMARY relationship
+    // Repointing `customerId` / `companyId` moves the PRIMARY relationship
     // with it. Skipped when neither was in the patch, so an ordinary rename
     // costs nothing.
-    if (input.customerId !== undefined || input.b2bAccountId !== undefined) {
+    if (input.customerId !== undefined || input.companyId !== undefined) {
       await syncDealAssociations(tx, ctx.tenantId, updated);
     }
 
@@ -361,7 +361,7 @@ export async function moveStage(
         tenantId: ctx.tenantId,
         customerId: updated.customerId,
         dealId: updated.id,
-        b2bAccountId: updated.b2bAccountId,
+        companyId: updated.companyId,
         type:
           toStage.stageType === 'won'
             ? 'deal.closed'

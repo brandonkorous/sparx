@@ -51,7 +51,7 @@ model TaxExemption {
   id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId           String    @map("tenant_id") @db.Uuid
   customerId         String?   @map("customer_id") @db.Uuid
-  b2bAccountId       String?   @map("b2b_account_id") @db.Uuid
+  companyId       String?   @map("company_id") @db.Uuid
   jurisdiction       String    @db.VarChar(6) // "US" or "US-CA"
   reason             String    @db.VarChar(20)
   // ^ resale | manufacturing | agricultural | government | nonprofit | diplomatic | other
@@ -65,10 +65,10 @@ model TaxExemption {
 
   tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   customer   Customer?   @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  b2bAccount B2BAccount? @relation(fields: [b2bAccountId], references: [id], onDelete: Cascade)
+  company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@index([tenantId, customerId])
-  @@index([tenantId, b2bAccountId])
+  @@index([tenantId, companyId])
   @@index([tenantId, jurisdiction])
   @@map("commerce_tax_exemptions")
 }

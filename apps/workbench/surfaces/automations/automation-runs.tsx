@@ -22,10 +22,11 @@ import {
   Table,
   Timestamp,
 } from '@wizeworks/silicaui-react';
-import { ArrowDown, ArrowUp, History, ListChecks } from 'lucide-react';
+import { ArrowDown, ArrowUp, History, ListChecks, Target } from 'lucide-react';
 import { RefreshButton } from '../../components/refresh-button';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { EnrollmentPanel } from './enrollment-panel';
 import { runState } from './automations-presentation';
 import { useAutomation, useAutomationRuns, type AutomationRunRow } from './automations-data';
 
@@ -51,6 +52,8 @@ function triggerSummary(triggerEvent: unknown): string | null {
 
 export function AutomationRunsSurface({ ctx }: { ctx: SurfaceContext }) {
   const automationId = typeof ctx.params.automationId === 'string' ? ctx.params.automationId : '';
+  // Results first — see the note by the toggle in the toolbar.
+  const [view, setView] = useState<'results' | 'runs'>('results');
   const [status, setStatus] = useState('all');
   const [sort, setSort] = useState<{ key: SortKey; dir: Dir }>({ key: 'started', dir: 'desc' });
 
@@ -127,7 +130,31 @@ export function AutomationRunsSurface({ ctx }: { ctx: SurfaceContext }) {
         <Heading level={2} className="min-w-0 truncate text-base font-semibold">
           {automation ? `${automation.name} — runs` : 'Runs'}
         </Heading>
-        <div className="ml-auto w-40 shrink-0">
+        <div className="ml-auto flex shrink-0 items-center gap-1">
+          <Button
+            size="sm"
+            variant={view === 'results' ? 'soft' : 'ghost'}
+            color={view === 'results' ? 'module' : 'neutral'}
+            onClick={() => {
+              setView('results');
+            }}
+          >
+            <Target className="size-4" aria-hidden />
+            Results
+          </Button>
+          <Button
+            size="sm"
+            variant={view === 'runs' ? 'soft' : 'ghost'}
+            color={view === 'runs' ? 'module' : 'neutral'}
+            onClick={() => {
+              setView('runs');
+            }}
+          >
+            <History className="size-4" aria-hidden />
+            Every run
+          </Button>
+        </div>
+        <div className={`w-40 shrink-0 ${view === 'runs' ? '' : 'hidden'}`}>
           <Select
             size="sm"
             color="module"
@@ -155,105 +182,117 @@ export function AutomationRunsSurface({ ctx }: { ctx: SurfaceContext }) {
         />
       </PaneToolbar>
 
-      <Card className="min-h-0 flex-1 overflow-y-auto">
-        {isError ? (
-          <EmptyState
-            icon={<History className="size-6" aria-hidden />}
-            title="Could not load these runs"
-            description="Something went wrong reaching the server. Try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
-          />
-        ) : isPending ? (
-          <p className="p-4 text-sm" role="status">
-            Loading runs…
-          </p>
-        ) : rows.length === 0 ? (
-          <EmptyState
-            icon={<History className="size-6" aria-hidden />}
-            title={filtering ? 'No runs match that' : 'No runs yet'}
-            description={
-              filtering
-                ? 'Try a different result, or switch the filter back to Any.'
-                : 'This rule has not fired yet. Once its trigger happens, every run shows up here with a step-by-step record.'
-            }
-          />
-        ) : (
-          <Table size="sm" hover>
-            <thead>
-              <tr>
-                {header('started', 'Started')}
-                <th className="hidden @xl:table-cell">Trigger</th>
-                {header('steps', 'Steps', 'hidden text-right @md:table-cell')}
-                {header('finished', 'Finished', 'hidden @lg:table-cell')}
-                {header('status', 'Result')}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((run) => {
-                const state = runState(run.status);
-                const summary = triggerSummary(run.triggerEvent);
-                return (
-                  <tr
-                    key={run.id}
-                    className="cursor-pointer"
-                    tabIndex={0}
-                    role="button"
-                    onClick={(event) => {
-                      open(run, event);
-                    }}
-                    onKeyDown={(event) => {
-                      if (event.key !== 'Enter' && event.key !== ' ') return;
-                      event.preventDefault();
-                      open(run, event);
-                    }}
-                  >
-                    <td className="text-sm">
-                      <div className="flex items-center gap-1.5">
-                        <Timestamp value={run.startedAt} format="relative" />
-                        {run.automationVersion !== null ? (
-                          <Badge color="neutral" variant="outline" size="sm">
-                            v{run.automationVersion}
-                          </Badge>
-                        ) : null}
-                      </div>
-                    </td>
-                    <td className="hidden max-w-64 truncate font-mono text-xs @xl:table-cell">
-                      {summary ?? '—'}
-                    </td>
-                    <td className="hidden text-right tabular-nums @md:table-cell">
-                      {run.actionsTotal}
-                    </td>
-                    <td className="hidden text-sm @lg:table-cell">
-                      {run.completedAt ? (
-                        <Timestamp value={run.completedAt} format="relative" />
-                      ) : (
-                        '—'
-                      )}
-                    </td>
-                    <td>
-                      <Badge color={state.tone} variant="soft" size="sm">
-                        {state.label}
-                      </Badge>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </Table>
-        )}
-      </Card>
+      {/* "Results" is the DEFAULT view, and that is the point of the pair: the
+          run list says a hundred things happened; the funnel says whether any of
+          it worked. Somebody who opens this surface is asking the second
+          question, and the first is one click away when they need the detail. */}
+      {view === 'results' ? (
+        <div className="min-h-0 flex-1 overflow-y-auto p-1">
+          <EnrollmentPanel automationId={automationId} />
+        </div>
+      ) : (
+        <Card className="min-h-0 flex-1 overflow-y-auto">
+          {isError ? (
+            <EmptyState
+              icon={<History className="size-6" aria-hidden />}
+              title="Could not load these runs"
+              description="Something went wrong reaching the server. Try again in a moment."
+              actions={
+                <Button
+                  size="sm"
+                  color="module"
+                  onClick={() => {
+                    void refetch();
+                  }}
+                >
+                  Try again
+                </Button>
+              }
+            />
+          ) : isPending ? (
+            <p className="p-4 text-sm" role="status">
+              Loading runs…
+            </p>
+          ) : rows.length === 0 ? (
+            <EmptyState
+              icon={<History className="size-6" aria-hidden />}
+              title={filtering ? 'No runs match that' : 'No runs yet'}
+              description={
+                filtering
+                  ? 'Try a different result, or switch the filter back to Any.'
+                  : 'This rule has not fired yet. Once its trigger happens, every run shows up here with a step-by-step record.'
+              }
+            />
+          ) : (
+            <Table size="sm" hover>
+              <thead>
+                <tr>
+                  {header('started', 'Started')}
+                  <th className="hidden @xl:table-cell">Trigger</th>
+                  {header('steps', 'Steps', 'hidden text-right @md:table-cell')}
+                  {header('finished', 'Finished', 'hidden @lg:table-cell')}
+                  {header('status', 'Result')}
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((run) => {
+                  const state = runState(run.status);
+                  const summary = triggerSummary(run.triggerEvent);
+                  return (
+                    <tr
+                      key={run.id}
+                      className="cursor-pointer"
+                      tabIndex={0}
+                      role="button"
+                      onClick={(event) => {
+                        open(run, event);
+                      }}
+                      onKeyDown={(event) => {
+                        if (event.key !== 'Enter' && event.key !== ' ') return;
+                        event.preventDefault();
+                        open(run, event);
+                      }}
+                    >
+                      <td className="text-sm">
+                        <div className="flex items-center gap-1.5">
+                          <Timestamp value={run.startedAt} format="relative" />
+                          {run.automationVersion !== null ? (
+                            <Badge color="neutral" variant="outline" size="sm">
+                              v{run.automationVersion}
+                            </Badge>
+                          ) : null}
+                        </div>
+                      </td>
+                      <td className="hidden max-w-64 truncate font-mono text-xs @xl:table-cell">
+                        {summary ?? '—'}
+                      </td>
+                      <td className="hidden text-right tabular-nums @md:table-cell">
+                        {run.actionsTotal}
+                      </td>
+                      <td className="hidden text-sm @lg:table-cell">
+                        {run.completedAt ? (
+                          <Timestamp value={run.completedAt} format="relative" />
+                        ) : (
+                          '—'
+                        )}
+                      </td>
+                      <td>
+                        <Badge color={state.tone} variant="soft" size="sm">
+                          {state.label}
+                        </Badge>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </Table>
+          )}
+        </Card>
+      )}
 
-      <p className="shrink-0 px-1 text-xs">Click a run to see every step and why each one ran.</p>
+      {view === 'runs' ? (
+        <p className="shrink-0 px-1 text-xs">Click a run to see every step and why each one ran.</p>
+      ) : null}
     </div>
   );
 }

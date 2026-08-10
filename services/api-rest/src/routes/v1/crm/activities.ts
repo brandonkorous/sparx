@@ -37,7 +37,7 @@ const activityRoutes: FastifyPluginAsync = (app) => {
     const rows = await activityService.list(toCrmContext(request), {
       customerId: q.customer_id,
       dealId: q.deal_id,
-      b2bAccountId: q.b2b_account_id,
+      companyId: q.b2b_account_id,
       type: q.type,
       since: q.since,
       until: q.until,

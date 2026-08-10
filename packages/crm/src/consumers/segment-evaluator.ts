@@ -101,6 +101,12 @@ export async function evaluateCustomerForTenant(
     const segments = await tx.segment.findMany({
       where: {
         archivedAt: null,
+        // STATIC LISTS ARE NOT THE EVALUATOR'S BUSINESS (docs/144 §10). A
+        // hand-picked list has no rules to re-derive membership from, so
+        // evaluating one would find nothing matched and remove everybody —
+        // emptying a list somebody built by hand, on the next event that touched
+        // any of its members. This one clause is the whole contract.
+        kind: 'dynamic',
         ...(customer?.propertyId
           ? { OR: [{ propertyId: customer.propertyId }, { propertyId: null }] }
           : {}),
@@ -125,10 +131,18 @@ export async function evaluateCustomerForTenant(
             customerId,
           },
         });
+        // The membership row records that they ARE on the list; this records
+        // that they JOINED, and survives them leaving again (docs/144 §10).
+        await tx.segmentMembershipEvent.create({
+          data: { tenantId, segmentId: segment.id, customerId, kind: 'entered', source: 'rule' },
+        });
         entered.push(segment.id);
       } else if (!shouldBeMember && existing) {
         await tx.segmentMember.delete({
           where: { segmentId_customerId: { segmentId: segment.id, customerId } },
+        });
+        await tx.segmentMembershipEvent.create({
+          data: { tenantId, segmentId: segment.id, customerId, kind: 'exited', source: 'rule' },
         });
         exited.push(segment.id);
       }

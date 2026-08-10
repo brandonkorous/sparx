@@ -54,7 +54,7 @@ model TenantBusiness {
 
   // The business's OWN tax identifier — EIN, VAT number, GST, ABN. Distinct
   // from TaxZone.registrationNumber (a per-jurisdiction nexus registration) and
-  // from B2BAccount.taxId (a CUSTOMER's id). 02-tenant.prisma anticipated this
+  // from Company.taxId (a CUSTOMER's id). 02-tenant.prisma anticipated this
   // field living on the legal entity; this satellite is that entity's record.
   taxId String? @map("tax_id") @db.VarChar(64)
 

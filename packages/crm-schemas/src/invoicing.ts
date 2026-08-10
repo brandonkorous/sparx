@@ -146,7 +146,7 @@ export const CreateBillingDocumentInput = z
     // Defaults to the workflow's first stage when omitted.
     stageId: z.string().uuid().optional(),
     customerId: z.string().uuid().optional().nullable(),
-    b2bAccountId: z.string().uuid().optional().nullable(),
+    companyId: z.string().uuid().optional().nullable(),
     assignedUserId: z.string().uuid().optional().nullable(),
     currency: z.string().length(3).default('USD'),
     taxRate: z.number().min(0).max(1).default(0),
@@ -164,7 +164,7 @@ export const CreateBillingDocumentInput = z
     dueAt: z.string().datetime().optional().nullable(),
     metadata: z.record(z.string(), z.unknown()).optional(),
   })
-  .refine((v) => Boolean(v.customerId) || Boolean(v.b2bAccountId), {
+  .refine((v) => Boolean(v.customerId) || Boolean(v.companyId), {
     message: 'A billing document must bill a customer or a B2B account.',
     path: ['customerId'],
   });
@@ -173,7 +173,7 @@ export type CreateBillingDocumentInput = z.infer<typeof CreateBillingDocumentInp
 export const UpdateBillingDocumentInput = z
   .object({
     customerId: z.string().uuid().nullable(),
-    b2bAccountId: z.string().uuid().nullable(),
+    companyId: z.string().uuid().nullable(),
     assignedUserId: z.string().uuid().nullable(),
     currency: z.string().length(3),
     taxRate: z.number().min(0).max(1),
@@ -237,7 +237,7 @@ export const ListBillingDocumentsInput = z.object({
   workflowId: z.string().uuid().optional(),
   stageId: z.string().uuid().optional(),
   customerId: z.string().uuid().optional(),
-  b2bAccountId: z.string().uuid().optional(),
+  companyId: z.string().uuid().optional(),
   // The member's reachable sites (docs/131 §3.3), set by the route from site
   // access — undefined = unrestricted. A document's `propertyId` is REQUIRED
   // (every invoice has an issuer), so there is no null/orphaned case: a

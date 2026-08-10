@@ -5,7 +5,7 @@
 import { z } from 'zod';
 
 import {
-  CreateB2BAccountInput,
+  CreateCompanyInput,
   CreateB2bAccountContactInput,
   CreatePipelineInput,
   CreatePipelineStageInput,
@@ -13,7 +13,7 @@ import {
   CreateCustomerInput,
   MergeCustomersInput,
   ReorderPipelineStagesInput,
-  UpdateB2BAccountInput,
+  UpdateCompanyInput,
   UpdateCustomerInput,
   UpdateDealInput,
   UpdatePipelineInput,
@@ -24,7 +24,7 @@ import {
 
 import {
   activityService,
-  b2bAccountService,
+  companyService,
   b2bAccountContactService,
   customerService,
   dealService,
@@ -51,7 +51,7 @@ const CustomerWriteInput = CreateCustomerInput.pick({
   lastName: true,
   company: true,
   jobTitle: true,
-  b2bAccountId: true,
+  companyId: true,
   assignedRepId: true,
   preferredContactMethod: true,
   doNotContact: true,
@@ -74,7 +74,7 @@ const CustomerPatchInput = UpdateCustomerInput.pick({
   lastName: true,
   company: true,
   jobTitle: true,
-  b2bAccountId: true,
+  companyId: true,
   assignedRepId: true,
   preferredContactMethod: true,
   doNotContact: true,
@@ -237,7 +237,7 @@ export const createDeal: McpToolDefinition = {
     value: z.number().min(0).optional().default(0),
     probability: z.number().min(0).max(100).optional().default(0),
     customerId: z.string().uuid().optional(),
-    b2bAccountId: z.string().uuid().optional(),
+    companyId: z.string().uuid().optional(),
     assignedRepId: z.string().uuid().optional(),
     expectedCloseDate: z.string().date().optional(),
   }),
@@ -319,38 +319,37 @@ export const updateTask: McpToolDefinition = {
 
 // ── B2B accounts ───────────────────────────────────────────────────────────
 
-export const createB2bAccount: McpToolDefinition = {
-  name: 'create_b2b_account',
+export const createCompany: McpToolDefinition = {
+  name: 'create_company',
   description:
-    'Create a B2B / wholesale trade account: company, tax id, credit limit, payment terms, discount, pricing tier, assigned rep. Customers become contacts on it via add_b2b_account_contact, which is what unlocks trade pricing and net-terms at checkout.',
+    'Add a company — the organisation a contact works for. Name is the only thing required; tax id, website and email domains are optional. The trade fields (credit limit, payment terms, discount, pricing tier) only mean anything to a business selling on account: set them and customers become authorised buyers on it via add_b2b_account_contact, which is what unlocks trade pricing and net-terms at checkout.',
   scope: 'write:crm',
   confirmation: true,
-  input: CreateB2BAccountInput,
-  run: (ctx, input) => b2bAccountService.create(ctx, input),
+  input: CreateCompanyInput,
+  run: (ctx, input) => companyService.create(ctx, input),
 };
 
-export const updateB2bAccount: McpToolDefinition = {
-  name: 'update_b2b_account',
+export const updateCompany: McpToolDefinition = {
+  name: 'update_company',
   description:
-    'Update a B2B account — any subset of company, tax id, website, pricing tier, credit limit, payment terms, discount, status, assigned rep, fleet size, notes, tags. Omitted fields are unchanged.',
+    'Update a company — any subset of name, tax id, website, email domains, pricing tier, credit limit, payment terms, discount, status, assigned rep, fleet size, notes, tags. Omitted fields are left exactly as they are.',
   scope: 'write:crm',
   confirmation: true,
-  input: UpdateB2BAccountInput.extend({ accountId: z.string().uuid() }),
+  input: UpdateCompanyInput.extend({ companyId: z.string().uuid() }),
   run: (ctx, input) => {
-    const { accountId, ...patch } = input as { accountId: string } & Record<string, unknown>;
-    return b2bAccountService.update(ctx, accountId, patch);
+    const { companyId, ...patch } = input as { companyId: string } & Record<string, unknown>;
+    return companyService.update(ctx, companyId, patch);
   },
 };
 
-export const deleteB2bAccount: McpToolDefinition = {
-  name: 'delete_b2b_account',
+export const deleteCompany: McpToolDefinition = {
+  name: 'delete_company',
   description:
-    'Soft-delete a B2B account: it is hidden from lists but not erased, so its orders and history are preserved.',
+    'Remove a company from the lists. Nothing is erased — its orders, invoices and history stay, and the contacts who worked there keep theirs.',
   scope: 'write:crm',
   confirmation: true,
-  input: z.object({ accountId: z.string().uuid() }),
-  run: (ctx, input) =>
-    b2bAccountService.softDelete(ctx, (input as { accountId: string }).accountId),
+  input: z.object({ companyId: z.string().uuid() }),
+  run: (ctx, input) => companyService.softDelete(ctx, (input as { companyId: string }).companyId),
 };
 
 export const addB2bAccountContact: McpToolDefinition = {
@@ -520,9 +519,9 @@ export const writeTools = [
   updateDeal,
   deleteDeal,
   convertQuote,
-  createB2bAccount,
-  updateB2bAccount,
-  deleteB2bAccount,
+  createCompany,
+  updateCompany,
+  deleteCompany,
   addB2bAccountContact,
   createPipeline,
   updatePipeline,

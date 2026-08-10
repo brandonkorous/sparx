@@ -87,7 +87,7 @@ describe('the specific losses that prompted this guard', () => {
   });
 
   it('a B2B account note does not reset credit limit or status', () => {
-    const patch = schemas.UpdateB2BAccountInput.parse({ notes: 'Called Tuesday' });
+    const patch = schemas.UpdateCompanyInput.parse({ notes: 'Called Tuesday' });
     expect(patch).toEqual({ notes: 'Called Tuesday' });
   });
 

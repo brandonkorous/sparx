@@ -12,7 +12,7 @@ import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 
 import customerRoutes from './customers.js';
-import b2bAccountRoutes from './b2b-accounts.js';
+import companyRoutes from './companies.js';
 import objectDefRoutes from './object-defs.js';
 import associationRoutes from './associations.js';
 import engagementRoutes from './engagement.js';
@@ -23,9 +23,11 @@ import dealRoutes from './deals.js';
 import activityRoutes from './activities.js';
 import taskRoutes from './tasks.js';
 import segmentRoutes from './segments.js';
+import scoringRoutes from './scoring.js';
 import reportRoutes from './reports.js';
 import reportBuilderRoutes from './report-builder.js';
 import crmImportExportRoutes from './import.js';
+import workspaceRoutes from './workspace.js';
 import { toCrmContext } from '../../../lib/crm-context.js';
 
 const crmRoutes: FastifyPluginAsync = async (app) => {
@@ -41,15 +43,23 @@ const crmRoutes: FastifyPluginAsync = async (app) => {
   // with, rather than at the end of an unrelated list.
   await app.register(ticketRoutes);
   await app.register(customerRoutes);
-  await app.register(b2bAccountRoutes);
+  await app.register(companyRoutes);
   await app.register(pipelineRoutes);
   await app.register(dealRoutes);
   await app.register(activityRoutes);
   await app.register(taskRoutes);
   await app.register(segmentRoutes);
+  // Scoring follows segments: a score is what makes a list of five hundred
+  // contacts workable in an order, and both read the same customer projection.
+  await app.register(scoringRoutes);
   await app.register(reportRoutes);
   await app.register(reportBuilderRoutes);
   await app.register(crmImportExportRoutes);
+  // The workspace layer (docs/144 §11 + §12) — settings, saved views, meeting
+  // links, duplicate management and the staff half of e-sign. Last, because
+  // every one of them is about how the records above get WORKED rather than
+  // about a record.
+  await app.register(workspaceRoutes);
 
   // Idempotent seed for tenants that just enabled CRM. Same functions also
   // run on the `module.activated` Pub/Sub consumer; both paths are no-ops on

@@ -5,7 +5,7 @@
 //
 // A wholesale order is an ordinary order whose buyer belongs to a trade account.
 // There is no separate "B2B order" table: the platform identifies one by the
-// customer's `b2bAccountId`, so this reads the same `/v1/orders` root every order
+// customer's `companyId`, so this reads the same `/v1/orders` root every order
 // list does, with `b2b_only=true` (and optionally one account) applied.
 //
 // The row shape, the decimal coercion, and the paid/sent state language all live

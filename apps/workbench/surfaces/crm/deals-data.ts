@@ -36,7 +36,7 @@ export interface Deal {
   pipelineId: string;
   stageId: string;
   customerId: string | null;
-  b2bAccountId: string | null;
+  companyId: string | null;
   assignedRepId: string | null;
   title: string;
   /** Serialized Prisma Decimal (dollars) — a string. */
