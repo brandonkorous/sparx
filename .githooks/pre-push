@@ -28,6 +28,58 @@ step "pnpm install --frozen-lockfile (lockfile drift check)"
 pnpm install --frozen-lockfile --ignore-scripts --silent || fail "pnpm-lock.yaml out of sync with a package.json — run \`pnpm install\` and commit the updated lockfile"
 ok "lockfile in sync"
 
+# `--ignore-scripts` above means NOTHING here generates the Prisma client, and
+# the lint/typecheck steps below simply use whatever is already on disk. In a
+# checkout that has ever run a full `pnpm install`, that is fine.
+#
+# In a FRESH one it is not, and the failure is maximally misleading: with no
+# generated client, every `prisma.*` call types as `any`, and typed-lint reports
+# ~1500 `no-unsafe-*` errors naming YOUR source files. Nothing in that output
+# says "the client is missing."
+#
+# This is not a hypothetical checkout. It is the standard escape hatch when a
+# parallel agent's half-finished work is blocking a push: `git worktree add
+# <path> origin/main`, commit there, push from there — the hook then validates
+# committed state instead of somebody else's WIP. That worktree is always fresh,
+# so the recipe for getting out of one trap landed directly in another
+# (2026-08-09, and again 2026-08-10).
+#
+# Generating only when ABSENT is what keeps this compatible with the reason
+# `--ignore-scripts` exists. The Windows EPERM file-lock happens when Prisma
+# tries to overwrite an engine binary that a running `next dev` still holds
+# open; if there is no client at all, there is nothing to overwrite and nothing
+# holding a lock. So the case we skip and the case we handle are disjoint.
+#
+# The probe resolves @prisma/client and looks for the GENERATED tree beside it,
+# rather than `require.resolve('.prisma/client')` — under pnpm's isolated layout
+# `.prisma` is a sibling of `@prisma` inside the virtual store and resolves from
+# nowhere the hook could run. Both candidate positions are checked so a hoisted
+# node_modules works too; getting this wrong in the safe direction (reporting
+# ABSENT when it is present) would regenerate on every push, which is the exact
+# EPERM risk `--ignore-scripts` was added to avoid.
+step "prisma client present"
+if node -e "
+  const path = require('path'), fs = require('fs');
+  // Resolved FROM packages/db, never from the repo root: pnpm does not hoist,
+  // so @prisma/client is not resolvable at the top level and a bare
+  // require.resolve here throws MODULE_NOT_FOUND even when the client is
+  // perfectly healthy — which would regenerate on every single push.
+  const dir = path.dirname(
+    require.resolve('@prisma/client', { paths: [path.join(process.cwd(), 'packages', 'db')] })
+  );
+  const found = ['../..', '..', '../../..']
+    .map((up) => path.join(dir, up, '.prisma', 'client', 'index.js'))
+    .some((p) => fs.existsSync(p));
+  process.exit(found ? 0 : 1);
+" 2>/dev/null; then
+  ok "client already generated"
+else
+  printf "  no generated Prisma client (fresh checkout) — generating once\n"
+  pnpm --filter @sparx/db db:generate >/dev/null 2>&1 \
+    || fail "prisma generate failed — run \`pnpm --filter @sparx/db db:generate\` to see it"
+  ok "client generated"
+fi
+
 # The pure-Node structural checks CI runs. Under a second each, no install, and
 # they catch the class of drift that otherwise surfaces minutes into a release
 # build: an event with no topic, a surface with no address, an image built
@@ -43,9 +95,9 @@ pnpm format:check >/dev/null || fail "prettier found unformatted files — run \
 ok "format clean"
 
 # Bypass turbo's `^build` dep graph by running each workspace's lint/typecheck
-# script directly. We rely on whatever generated artifacts (Prisma client etc.)
-# are already on disk — CI runs the full turbo graph as the source of truth.
-# Avoids EPERM on locked Prisma DLLs when `next dev` is running locally.
+# script directly, against the generated artifacts on disk — which the step
+# above has now guaranteed exist. CI runs the full turbo graph as the source of
+# truth. Avoids EPERM on locked Prisma DLLs when `next dev` is running locally.
 # NODE_OPTIONS raises the V8 old-space cap for both steps below.
 #
 # `@sparx/api-rest` is one `tsc` program over 469 files and type-checks just
