@@ -1,0 +1,90 @@
+# Nightly domain renewal reminders — emails a tenant 30, 14 and 7 days before a
+# purchased domain expires.
+#
+# THIS CAPABILITY HAS NEVER RUN. The handler has existed since the domain-worker
+# was written, and its own docblock says "called by a Cloud Scheduler job" — but
+# no such job was ever created. terraform/envs/prod/serverless.tf still carries
+# the note "NOT wired yet: the nightly renewal-reminder cron", and the service
+# account there was granted the Pub/Sub permission for events it never published.
+# The move off Cloud Run then carried the HTTP route onto event-worker, so the
+# endpoint answers and nothing calls it. Every purchased domain has so far
+# reached its expiry date with the platform silent.
+#
+# DAILY IS PART OF THE ALGORITHM, not a preference. runRenewalCheck() selects
+# domains expiring inside a ONE-DAY window (now+29d .. now+30d, and the same for
+# 14 and 7), which tiles the calendar exactly when it runs once a day and leaves
+# gaps when it does not. A skipped day drops that day's cohort for that
+# threshold — permanently, because the window has moved on by the next run.
+# Three thresholds mean a domain has to be missed three times to go unwarned,
+# which is the only reason a gap is survivable rather than silent data loss.
+#
+# That is also why startingDeadlineSeconds is an hour rather than the 300s the
+# other jobs use: if the node is busy or a release is mid-roll at 04:20, waiting
+# is correct and skipping is not. `renewalRemindersSent` records which
+# thresholds have fired per domain, so a late or repeated run cannot double-send.
+#
+# 04:20 UTC sits between crm-overdue-reminders (04:00) and crm-segment-recompute
+# (05:00), off the top of the hour where every other scheduler bunches — the same
+# reasoning as automation-reconcile-seeds at 02:07.
+#
+# Auth is the shared cron token, matching automation-tick and
+# automation-reconcile-seeds. The handler denies when the token is UNSET rather
+# than allowing, so a misconfigured deployment fails closed.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: domain-renewal-check
+  namespace: sparx-prod
+  labels:
+    app: domain-cron
+    job: renewal-check
+spec:
+  schedule: '20 4 * * *'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 3600
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            app: domain-cron
+            job: renewal-check
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.1
+              command: ['sh', '-c']
+              args:
+                - >
+                  curl --fail-with-body --silent --show-error
+                  --max-time 600
+                  -X POST
+                  -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
+                  http://event-worker.sparx-prod.svc.cluster.local:8080/internal/cron/renewal-check
+              env:
+                - name: SPARX_INTERNAL_CRON_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: sparx-app-secrets
+                      key: SPARX_INTERNAL_CRON_TOKEN
+              resources:
+                requests:
+                  cpu: '25m'
+                  memory: '16Mi'
+                limits:
+                  cpu: '100m'
+                  memory: '64Mi'
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ['ALL']
+                seccompProfile:
+                  type: RuntimeDefault

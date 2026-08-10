@@ -1520,7 +1520,9 @@ jobs:
     timeout-minutes: 30
     continue-on-error: true
     env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # GH_TOKEN is deliberately NOT set job-wide: the two prune steps below need
+      # DIFFERENT tokens, and giving both the same one breaks whichever it does
+      # not suit. See each step.
       OWNER: ${{ github.repository_owner }}
       # Enough to roll back through several releases. `kubectl rollout undo`
       # only needs the previous one; this is the margin for finding out days
@@ -1531,17 +1533,86 @@ jobs:
       MAX_DELETES: ${{ vars.MAX_RUN_DELETES || '300' }}
 
     steps:
+      # This step needs a CLASSIC PAT, and it silently did not have one for its
+      # whole life. GitHub documents the package endpoints for "OAuth app tokens
+      # and personal access tokens (classic)" carrying `read:packages` +
+      # `delete:packages`. The run's GITHUB_TOKEN is neither of those things,
+      # and it is scoped to this REPOSITORY while the images live in the OWNER's
+      # user namespace (ghcr.io/<owner>/sparx/*) — it cannot enumerate that
+      # namespace at all.
+      #
+      # The old code piped the listing straight into `grep ... || true`, which
+      # turns "the API refused me" and "there are no packages" into the same
+      # empty string, and then reported the second one. Every release since has
+      # printed `No sparx/* container packages found` while 23 packages sat
+      # there accumulating a version per commit. So the listing is now checked
+      # for FAILURE separately from EMPTINESS, and neither is allowed to look
+      # like success.
+      #
+      # THIS IS TIDINESS, NOT COST — and the distinction matters, because the
+      # Artifact Registry story above does NOT carry over. GitHub bills neither
+      # half of this: "GitHub Packages usage is free for public packages", and
+      # separately "container image storage and bandwidth for the Container
+      # registry is currently free". These packages are public (that is what
+      # makes the anonymous pull above work), so the versions piling up cost
+      # nothing. What they cost is a packages page nobody can read and a
+      # rollback target nobody can find.
+      #
+      # So this step is OPTIONAL by design and stays off until someone supplies
+      # a token. Do not "fix" that by reaching for a broader credential — an
+      # unprunable registry is untidy, whereas a long-lived PAT with delete
+      # rights sitting in CI is a real risk, and the outage at the top of this
+      # file is what happens when a credential decision is made casually.
       - name: Prune old image versions
+        env:
+          GH_TOKEN: ${{ secrets.GHCR_CLEANUP_TOKEN }}
         run: |
           set -euo pipefail
+
+          if [ -z "${GH_TOKEN:-}" ]; then
+            # Notice, not warning: this is an intentional off state, and an
+            # annotation on every release for something that costs nothing is
+            # how people learn to skim release output.
+            echo "::notice::Image pruning is off (no GHCR_CLEANUP_TOKEN)."
+            {
+              echo '### Cleanup — images'
+              echo ''
+              echo '**Off: no `GHCR_CLEANUP_TOKEN`.** Nothing is broken and'
+              echo 'nothing is being billed — GHCR storage is free for public'
+              echo 'packages. Old versions simply accumulate, one per service'
+              echo 'per commit, and the packages page gets long.'
+              echo ''
+              echo 'To turn it on: create a *classic* PAT with `read:packages`'
+              echo 'and `delete:packages`, save it as the `GHCR_CLEANUP_TOKEN`'
+              echo 'repo secret. It then keeps the newest'
+              echo "\`$KEEP_IMAGES\` versions per package. The run GITHUB_TOKEN"
+              echo 'cannot do this — see the note in release.yml.'
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
           # Packages are named `sparx/<service>` because the images are pushed
           # as ghcr.io/<owner>/sparx/<service>. The API wants that slash encoded.
-          PACKAGES=$(gh api --paginate \
+          #
+          # Captured, not piped: a 401/403 here must not be mistaken for an
+          # empty registry.
+          if ! listing=$(gh api --paginate \
             "/users/$OWNER/packages?package_type=container&per_page=100" \
-            --jq '.[].name' | grep '^sparx/' || true)
+            --jq '.[].name' 2>&1); then
+            echo "::error::Could not list container packages for $OWNER. \
+          Check GHCR_CLEANUP_TOKEN has read:packages + delete:packages and has \
+          not expired. API said: $listing"
+            exit 1
+          fi
+
+          PACKAGES=$(printf '%s\n' "$listing" | grep '^sparx/' || true)
 
           if [ -z "$PACKAGES" ]; then
-            echo "::warning::No sparx/* container packages found for $OWNER."
+            # Reachable and genuinely empty — the token worked and there is
+            # nothing named sparx/*. That is a real anomaly on a repo that just
+            # pushed images, so it is a warning rather than silence.
+            echo "::warning::Listed $OWNER's packages successfully but found no \
+          sparx/* containers. Did the image naming change?"
             exit 0
           fi
 
@@ -1589,7 +1660,14 @@ jobs:
       # surviving ones are simply trimmed to the newest $KEEP_RUNS.
       - uses: actions/checkout@v4
 
+      # GITHUB_TOKEN, not the PAT above: run history is REPO-scoped, which is
+      # exactly what this token is good at, and `actions: write` is already
+      # granted workflow-wide. Handing this step the packages PAT instead would
+      # break it — a classic PAT scoped to read/delete:packages has no rights
+      # over Actions at all, and this pruning currently works.
       - name: Prune old workflow runs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           REPO='${{ github.repository }}'

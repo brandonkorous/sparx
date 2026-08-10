@@ -22,6 +22,10 @@ resources:
   # runs but nothing ever ticks.
   - automation-tick.yaml
   - automation-reconcile-seeds.yaml
+  # Without this, a purchased domain expires with no warning to its owner — the
+  # handler shipped with the domain-worker but was never given a scheduler on
+  # either cloud.
+  - domain-renewal-check.yaml
   - site-analytics-rollup.yaml
   - search-console-sync.yaml
   - inventory-valuation-snapshot.yaml

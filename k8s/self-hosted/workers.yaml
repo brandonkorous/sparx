@@ -86,9 +86,18 @@ spec:
             - { name: SERVICE_NAME, value: event-worker }
             - { name: PORT, value: '8080' }
           resources:
-            requests: { memory: 320Mi, cpu: 50m }
+            # 384Mi against a measured 347Mi. Unlike its BestEffort siblings
+            # this one declares a request, because it is the ONLY consumer of
+            # twelve durables — evicting it stops every background side effect
+            # on the platform at once, where losing media-worker only delays
+            # thumbnails. Keep this just above actual: the kubelet ranks
+            # eviction by usage ABOVE request, so a stale low number here would
+            # quietly move event-worker to the front of that queue.
+            requests: { memory: 384Mi, cpu: 50m }
             # No CPU limit — CPU is compressible, so a cap only throttles the
-            # cold start. The memory limit is what protects the node.
+            # cold start. The memory limit is the leak backstop; it is NOT what
+            # keeps the node alive under pressure (see the eviction note in
+            # ../azure/apps/kustomization.yaml).
             limits: { memory: 1Gi }
           startupProbe:
             # Twelve subscriptions are established before the process reports

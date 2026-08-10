@@ -14,11 +14,14 @@
 //   • POST /internal/cron/tick and /internal/cron/reconcile-seeds — driven by
 //     the `automation-tick` (every minute) and `automation-reconcile-seeds`
 //     (daily) CronJobs. Real callers, in-cluster, today.
-//   • POST /internal/cron/renewal-check — the domain renewal sweep. NOTHING
-//     schedules this: it was a Cloud Scheduler job that did not come across, and
-//     no CronJob replaced it. It is carried over rather than deleted because
-//     deleting it would quietly remove a capability while looking like cleanup;
-//     it needs a CronJob to actually run. Flagged, not fixed.
+//   • POST /internal/cron/renewal-check — the domain renewal sweep, driven by
+//     the `domain-renewal-check` CronJob (daily, 04:20 UTC). It was carried over
+//     here with nothing scheduling it at all: the Cloud Scheduler job its
+//     docblock names was never actually created on either cloud, so the route
+//     answered and no purchased domain ever got an expiry warning. Keeping the
+//     dead route rather than deleting it is what made it cheap to wire up; see
+//     k8s/cronjobs/domain-renewal-check.yaml for why the schedule must stay
+//     daily.
 //
 // Probes are tcpSocket in the manifest, so /healthz is for humans and for any
 // future httpGet probe — it must stay cheap and touch nothing.

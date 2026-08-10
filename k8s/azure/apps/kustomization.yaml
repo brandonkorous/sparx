@@ -228,16 +228,51 @@ patches:
   # platform, and the base's 100m-per-app is most of it before a single CronJob
   # pod asks for anything.
   #
-  # `requests` is what the SCHEDULER reserves, not what a process uses. Small
-  # requests let all eight schedule and then grow into whatever they need; the
-  # memory LIMIT is what actually protects the node, by OOMKilling one leaking
-  # Next process instead of letting it take everything down. CPU limits are
-  # dropped — CPU is compressible, so a cap only throttles cold starts.
+  # CPU stays deliberately small for exactly that reason: CPU is compressible,
+  # a request is a floor and not a cap, and the node is already 77% reserved.
+  # CPU limits are dropped entirely — a cap only throttles cold starts.
   #
-  # Unlike the workers (no resources at all, BestEffort — see
-  # ../../self-hosted/workers.yaml), the apps keep an explicit request so they
-  # are Burstable: under pressure the kubelet evicts a worker before it evicts
-  # something serving traffic.
+  # MEMORY IS NOT CPU, AND THIS FILE USED TO TREAT IT AS IF IT WERE. The rule
+  # here read "small requests let everything schedule and then grow into what it
+  # needs; the memory LIMIT is what protects the node." The first half is true.
+  # The second half is false, and it is what took production down.
+  #
+  # A limit protects the node from ONE container leaking. It does nothing about
+  # the node filling up from every container being honestly, permanently larger
+  # than it claimed. When that happens the kubelet evicts, and it ranks victims
+  # by USAGE ABOVE REQUEST — not by absolute usage, not by limit, not by age.
+  # So the pod that under-requests by the widest margin is chosen first, which
+  # is a rule that deliberately selects whoever lied hardest about their size.
+  #
+  # api-rest requested 128Mi and used ~614Mi. It was the worst offender on the
+  # node by 150Mi, so it was first in line every time, and it is the ONE
+  # Deployment here running `strategy: Recreate` — its eviction is downtime, not
+  # a rolling replace. That is the eviction of 2026-08-08: the node tightened,
+  # the kubelet picked the pod that serves every API request, and the expired
+  # pull secret above then kept it down for twelve hours.
+  #
+  # So these are measured numbers, not guesses — steady-state RSS from
+  # `kubectl top`, rounded up one step for headroom. Two consequences are the
+  # point rather than a side effect:
+  #
+  #   1. Eviction order becomes meaningful. Every app now sits just UNDER its
+  #      request, so none of them is an obvious victim, and the kubelet falls
+  #      through to the BestEffort workers — which is what should absorb
+  #      pressure and is why they still declare nothing.
+  #   2. The scheduler stops lying. Requests summed to ~1.8Gi on a node running
+  #      5.3Gi, so it believed the node was half empty and admitted anything.
+  #      Honest requests turn "cram it in, then evict something serving traffic"
+  #      into "the surge pod waits for room." Pending is recoverable; eviction
+  #      is an outage.
+  #
+  # Rollouts still fit: api-rest is Recreate and the three workers are
+  # maxSurge 0, so only the RollingUpdate apps surge, they free their old pod's
+  # request as each becomes ready, and the scheduler admits the rest in waves.
+  # A release therefore takes longer under pressure instead of failing — well
+  # inside the 15m `rollout status` timeout.
+  #
+  # When an app's real footprint moves, MOVE THE NUMBER. A request that drifts
+  # below actual is not a saving; it is a vote for that pod to be killed first.
   #
   # Per-app rather than one patch, because a strategic-merge patch on
   # `containers` merges by container NAME.
@@ -253,7 +288,8 @@ patches:
             containers:
               - name: api-graphql
                 resources:
-                  requests: { cpu: '25m', memory: '96Mi' }
+                  # measured 245Mi
+                  requests: { cpu: '25m', memory: '288Mi' }
                   limits: { memory: '768Mi' }
   - target: { kind: Deployment, name: api-mcp }
     patch: |-
@@ -267,7 +303,8 @@ patches:
             containers:
               - name: api-mcp
                 resources:
-                  requests: { cpu: '25m', memory: '96Mi' }
+                  # measured 404Mi
+                  requests: { cpu: '25m', memory: '448Mi' }
                   limits: { memory: '768Mi' }
   - target: { kind: Deployment, name: mcp-site }
     patch: |-
@@ -281,6 +318,7 @@ patches:
             containers:
               - name: mcp-site
                 resources:
+                  # measured 89Mi — already honest, left alone
                   requests: { cpu: '25m', memory: '96Mi' }
                   limits: { memory: '512Mi' }
   - target: { kind: Deployment, name: workbench }
@@ -295,7 +333,8 @@ patches:
             containers:
               - name: workbench
                 resources:
-                  requests: { cpu: '25m', memory: '96Mi' }
+                  # measured 232Mi
+                  requests: { cpu: '25m', memory: '256Mi' }
                   limits: { memory: '640Mi' }
   - target: { kind: Deployment, name: web }
     patch: |-
@@ -309,7 +348,9 @@ patches:
             containers:
               - name: web
                 resources:
-                  requests: { cpu: '25m', memory: '96Mi' }
+                  # measured 419Mi — the marketing site is the second-largest
+                  # process here, not the small one its old 96Mi implied.
+                  requests: { cpu: '25m', memory: '448Mi' }
                   limits: { memory: '640Mi' }
   - target: { kind: Deployment, name: site }
     patch: |-
@@ -323,7 +364,10 @@ patches:
             containers:
               - name: site
                 resources:
-                  requests: { cpu: '25m', memory: '96Mi' }
+                  # measured 119Mi, but this is the pod that serves every TENANT
+                  # storefront — its footprint grows with traffic and with how
+                  # many sites are live, so it gets margin the others don't.
+                  requests: { cpu: '25m', memory: '160Mi' }
                   limits: { memory: '640Mi' }
   - target: { kind: Deployment, name: market }
     patch: |-
@@ -337,6 +381,7 @@ patches:
             containers:
               - name: market
                 resources:
+                  # measured 88Mi — already honest, left alone
                   requests: { cpu: '25m', memory: '96Mi' }
                   limits: { memory: '640Mi' }
 
@@ -420,8 +465,15 @@ patches:
                     mountPath: /media
                 resources:
                   requests:
+                    # CPU stays 50m: it is what Prisma reads to size its pool
+                    # (see DB_CONNECTION_LIMIT above), and the node has ~420m
+                    # of CPU left to give.
                     cpu: '50m'
-                    memory: '128Mi'
+                    # measured 614Mi. This was 128Mi — a 486Mi understatement,
+                    # the widest on the node, on the one pod whose eviction is
+                    # an outage rather than a rolling replace. See the eviction
+                    # note above; this number is the fix for it.
+                    memory: '640Mi'
                   limits:
                     memory: '1536Mi'
             volumes:

@@ -1141,12 +1141,16 @@ resource "google_cloud_run_v2_job" "platform_crm_backfill" {
 # Cloud Run + subscription wiring (the `domain.purchased = ["worker-domain"]` map
 # entry in main.tf only created an idle pull sub — nothing consumed the event).
 #
-# NOT wired yet: the nightly renewal-reminder cron (POST /internal/cron/
-# renewal-check). The endpoint authenticates by the x-sparx-internal-cron-token
-# header; wiring Cloud Scheduler without putting that secret in the job config
-# wants an OIDC email-claim check like the automation-worker tick (a small
-# domain-worker change). Tracked as a follow-up — it fires 30 days before a
-# 1-year expiry, so it's off the pre-launch critical path.
+# The nightly renewal-reminder cron (POST /internal/cron/renewal-check) is NOT
+# wired in THIS env and will not be. It was deferred here because Cloud
+# Scheduler could not carry the x-sparx-internal-cron-token header without
+# putting the secret in the job config, which wanted an OIDC email-claim check
+# like the automation-worker tick. That follow-up was never done, so the sweep
+# never ran anywhere — a purchased domain reached its expiry with the platform
+# silent. It is now scheduled in the live deployment by an in-cluster CronJob
+# (k8s/cronjobs/domain-renewal-check.yaml), which mounts the token from
+# sparx-app-secrets and needs no OIDC at all. This file stays validate-clean as
+# history; do not add the Scheduler job here.
 resource "google_service_account" "domain_worker" {
   account_id   = "sparx-domain-worker"
   display_name = "Sparx domain-worker (Cloud Run)"

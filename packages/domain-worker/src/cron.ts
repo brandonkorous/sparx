@@ -1,9 +1,14 @@
-// Nightly renewal reminder cron. Called by a Cloud Scheduler job POST to
-// /internal/cron/renewal-check.
+// Nightly renewal reminder cron. Driven by the `domain-renewal-check` CronJob,
+// which POSTs to event-worker's /internal/cron/renewal-check.
 //
-// Sends email.send Pub/Sub events at 30d, 14d, and 7d before a purchased
-// domain expires. renewalRemindersSent tracks which thresholds have fired
-// so each reminder is sent at most once per domain lifecycle.
+// Sends email.send events at 30d, 14d, and 7d before a purchased domain
+// expires. renewalRemindersSent tracks which thresholds have fired so each
+// reminder is sent at most once per domain lifecycle.
+//
+// The windows below are one day wide and tile the calendar, so this is only
+// correct when it runs ONCE A DAY: a skipped run drops that day's cohort for
+// that threshold rather than deferring it. Do not move it to a schedule that
+// can miss or double up without reworking the query.
 
 import type { Logger } from 'pino';
 import { prisma } from '@sparx/db';
