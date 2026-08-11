@@ -226,8 +226,80 @@
  * kept OUT of the silicaui `@plugin { colors }` list to keep generated CSS lean. */
 
 [data-theme='sparx'],
+[data-theme='light'] {
+  --color-module-storefront: #4f46e5; /* legacy Site Builder indigo */
+  --color-module-storefront-content: #ffffff;
+  --color-module-builder: #4f46e5; /* indigo-600 — the site-building foundation module */
+  --color-module-builder-content: #ffffff;
+  --color-module-commerce: #f97316; /* orange */
+  /* Was #ffffff, which measures 2.80:1 on this fill — failing not just AA's 4.5
+     but the 3.0 LARGE-text floor too, the only module pair in this block that
+     did. The comment beside it already said "white fails AA on this fill"; the
+     value simply never followed, while cms/crm/email/inventory all carry that
+     same note AND a dark ink. This is orange-950, the dark tint of the module's
+     own hue, exactly matching how those four resolve it: 5.58:1. */
+  --color-module-commerce-content: #ffffff; /* orange-950 — white measures 2.80:1 here */
+  --color-module-cms: #14b8a6; /* teal */
+  --color-module-cms-content: #ffffff; /* white fails AA on this fill */
+  --color-module-crm: #06b6d4; /* cyan */
+  --color-module-crm-content: #ffffff; /* white fails AA on this fill */
+  --color-module-email: #0ea5e9; /* sky */
+  --color-module-email-content: #ffffff; /* white fails AA on this fill */
+  --color-module-b2b: #475569; /* slate */
+  --color-module-b2b-content: #ffffff;
+  /* Darkened one step from lime-600 #65a30d so WHITE ink clears AA (3.09 -> 4.99).
+     The dark-ink alternative technically passed, but a near-black label on a
+     bright lime fill read as an outlier next to every other module's white — the
+     hue was the thing out of step, not the ink. */
+  --color-module-invoicing: #4d7c0f; /* lime-700 */
+  --color-module-invoicing-content: #ffffff;
+  --color-module-ai: #db2777; /* pink-600 */
+  --color-module-ai-content: #ffffff;
+  --color-module-dropship: #10b981; /* emerald */
+  --color-module-dropship-content: #ffffff; /* white fails AA on this fill */
+  --color-module-inventory: #f59e0b; /* amber — white ink fails AA, so dark ink */
+  --color-module-inventory-content: #ffffff;
+  --color-module-chat: #7c3aed; /* violet-600 */
+  --color-module-chat-content: #ffffff;
+  --color-module-scheduling: #e11d48; /* rose-600 */
+  --color-module-scheduling-content: #ffffff;
+  --color-module-automations: #c026d3; /* fuchsia-600 */
+  --color-module-automations-content: #ffffff;
+  --color-module-seo: #eab308; /* yellow — dark on-fill ink for legibility */
+  --color-module-seo-content: #ffffff;
+  --color-module-social: #2563eb; /* blue-600 — the social-network blue, distinct from email's sky */
+  --color-module-social-content: #ffffff;
+  --color-module-finance: #16a34a; /* money green (green-600, deeper than success) */
+  --color-module-finance-content: #ffffff; /* white fails AA on this fill */
+  --color-module-partner: #6d28d9; /* violet-700, one notch deeper than chat */
+  --color-module-partner-content: #ffffff;
+  /* Social posting — a true blue (blue-600), the hue business owners map to social
+     platforms. Within the blue family but distinct from Builder indigo (violet-lean)
+     and Email sky (cyan-lean); white ink clears AA on it. */
+  --color-module-social: #2563eb; /* blue-600 */
+  --color-module-social-content: #ffffff;
+  /* The platform "module" is not a module — it is the account itself (Start here,
+     Pulse, Business details, Team, Domains), so it wears the BRAND, not a hue of
+     its own. Aliased rather than copied: sparx Ember is defined once, above, and
+     a literal here would be a second copy to keep in sync.
+     It previously carried Builder's indigo, which made a platform pane and a
+     Builder pane the same colour — never a decision, just an unowned default.
+     Builder keeps indigo; that split from brand primary IS deliberate. */
+  --color-module-platform: var(--color-primary);
+  --color-module-platform-content: var(--color-primary-content);
+
+  /* ── silicaui shape + type tokens ────────────────────────────────────────── */
+  --radius-box: 0.5rem; /* cards, alerts, larger surfaces (rounded-box) */
+  --radius-field: 6px; /* inputs, buttons (rounded-field) */
+  --radius-selector: 9999px; /* pills, toggles, badges (rounded-selector) */
+  --border: 1px; /* silicaui border utilities read this, not Tailwind's default */
+  --depth: 0; /* silicaui shadow utilities read this, not Tailwind's default */
+  --font-sans: 'Geist', 'Inter', system-ui, sans-serif;
+  --font-heading: 'europa', 'Inter', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+}
+
 [data-theme='sparx-dark'],
-[data-theme='light'],
 [data-theme='dark'] {
   --color-module-storefront: #4f46e5; /* legacy Site Builder indigo */
   --color-module-storefront-content: #ffffff;

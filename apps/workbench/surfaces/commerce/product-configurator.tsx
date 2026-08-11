@@ -83,6 +83,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { ScrollStrip } from '../../components/scroll-strip';
 import {
   FollowingNotice,
   ProductScopeFallback,
@@ -1341,13 +1342,15 @@ function ConfiguratorBody({
             }}
           >
             <div className="bg-base-300 shrink-0 rounded-full px-4 py-2">
-              <TabsList className="overflow-x-auto">
-                {rows.map((row) => (
-                  <TabsTab key={row.id} value={row.id}>
-                    {row.name}
-                  </TabsTab>
-                ))}
-              </TabsList>
+              <ScrollStrip label="steps">
+                <TabsList>
+                  {rows.map((row) => (
+                    <TabsTab key={row.id} value={row.id}>
+                      {row.name}
+                    </TabsTab>
+                  ))}
+                </TabsList>
+              </ScrollStrip>
             </div>
           </Tabs>
         ) : null}

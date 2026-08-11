@@ -71,6 +71,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { MoneyInput } from '../invoicing/money-input';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { ScrollStrip } from '../../components/scroll-strip';
 import { useDomains } from '../domains/data';
 import { useAnnounceProduct } from './product-scope';
 import { ProductOverviewTab } from './product-overview';
@@ -652,45 +653,51 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             outside the thing that moves. Do not merge these back into one
             element, and do not reduce `px-4` without re-checking a narrow pane. */}
         <div className="bg-base-300 shrink-0 rounded-full px-4 py-2">
-          <TabsList className="overflow-x-auto">
-            {TABS.map((entry) => (
-              // `text-base-content` is not decoration — it is a correction.
-              // Silica's own `.tabs-tab` ships its resting ink at 65% alpha, which
-              // is a faded token on text a person is meant to READ. Tab labels are
-              // navigation: they have to be legible before you click them, and
-              // "which section am I not in" is the question the strip exists to
-              // answer. The selected tab is already distinguished by a filled
-              // pill, so the fade buys no hierarchy it was not already getting for
-              // free. Full ink on every label; the pill carries the state.
-              <TabsTab key={entry.value} value={entry.value} className="flex items-center gap-1.5">
-                {entry.label}
-                {/* The dot is what makes a toolbar Save honest. Save commits the
-                    tab you are standing on, so something has to say "Pricing
-                    still has unsaved work" while you are on Media — placement
-                    was never going to carry that. Same device the dock uses on a
-                    pane tab, one level down. Announced as well as drawn: a
-                    colour-only signal is not a signal for everyone. */}
-                {tabSave.dirtyTabs.has(entry.value) ? (
-                  <>
-                    <span
-                      // The selected pill is already a solid module fill, so a
-                      // `bg-module` dot would vanish into it — invisible on the
-                      // one tab you are actually standing on. On the selected
-                      // pill the dot wears the pill's own ink; everywhere else
-                      // it wears the module hue against the plain strip.
-                      className={
-                        entry.value === tab
-                          ? 'bg-module-content size-1.5 shrink-0 rounded-full'
-                          : 'bg-module size-1.5 shrink-0 rounded-full'
-                      }
-                      aria-hidden
-                    />
-                    <span className="sr-only">(unsaved changes)</span>
-                  </>
-                ) : null}
-              </TabsTab>
-            ))}
-          </TabsList>
+          <ScrollStrip label="tabs">
+            <TabsList>
+              {TABS.map((entry) => (
+                // `text-base-content` is not decoration — it is a correction.
+                // Silica's own `.tabs-tab` ships its resting ink at 65% alpha, which
+                // is a faded token on text a person is meant to READ. Tab labels are
+                // navigation: they have to be legible before you click them, and
+                // "which section am I not in" is the question the strip exists to
+                // answer. The selected tab is already distinguished by a filled
+                // pill, so the fade buys no hierarchy it was not already getting for
+                // free. Full ink on every label; the pill carries the state.
+                <TabsTab
+                  key={entry.value}
+                  value={entry.value}
+                  className="flex items-center gap-1.5"
+                >
+                  {entry.label}
+                  {/* The dot is what makes a toolbar Save honest. Save commits the
+                      tab you are standing on, so something has to say "Pricing
+                      still has unsaved work" while you are on Media — placement
+                      was never going to carry that. Same device the dock uses on a
+                      pane tab, one level down. Announced as well as drawn: a
+                      colour-only signal is not a signal for everyone. */}
+                  {tabSave.dirtyTabs.has(entry.value) ? (
+                    <>
+                      <span
+                        // The selected pill is already a solid module fill, so a
+                        // `bg-module` dot would vanish into it — invisible on the
+                        // one tab you are actually standing on. On the selected
+                        // pill the dot wears the pill's own ink; everywhere else
+                        // it wears the module hue against the plain strip.
+                        className={
+                          entry.value === tab
+                            ? 'bg-module-content size-1.5 shrink-0 rounded-full'
+                            : 'bg-module size-1.5 shrink-0 rounded-full'
+                        }
+                        aria-hidden
+                      />
+                      <span className="sr-only">(unsaved changes)</span>
+                    </>
+                  ) : null}
+                </TabsTab>
+              ))}
+            </TabsList>
+          </ScrollStrip>
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto">
