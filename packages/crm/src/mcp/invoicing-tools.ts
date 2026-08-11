@@ -1,8 +1,8 @@
 // Invoicing MCP tools (docs/87 §12) — natural-language authoring of billing
 // documents. A thin wrapper over the same services the REST transport uses (one
-// service layer, three transports): "Start an estimate for Gillett's truck #14 —
-// 2 injectors and 3 hours labor", "Approve the estimate", "Mark INV-000123 paid by
-// check."
+// service layer, three transports): "Start an estimate for the Harborview lobby
+// refit — 40 hours of joinery and the materials", "Approve the estimate", "Mark
+// INV-000123 paid by cheque."
 //
 // These carry the dedicated `read:invoicing` / `write:invoicing` scopes (the
 // Invoicing module is first-class, not a CRM sub-feature), so they ship as their

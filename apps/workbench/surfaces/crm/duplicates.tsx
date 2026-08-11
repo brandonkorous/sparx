@@ -31,7 +31,13 @@ import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { useViewer } from '../../lib/api/shell-data';
-import { customerName, customerTypeMeta, formatMoney, type Customer } from './customers-data';
+import {
+  customerName,
+  customerTypeMeta,
+  formatMoney,
+  lifecycleStageMeta,
+  type Customer,
+} from './customers-data';
 import {
   confidenceMeta,
   mergeErrorMessage,
@@ -337,6 +343,7 @@ function CandidateRow({
   onKeep: () => void;
 }) {
   const meta = customerTypeMeta(customer.type);
+  const stage = lifecycleStageMeta(customer.lifecycleStage);
   const spent = Number(customer.totalSpent);
 
   return (
@@ -367,13 +374,29 @@ function CandidateRow({
           >
             {customerName(customer)}
           </button>
-          <Badge color={meta.color} variant="soft" size="sm">
-            {meta.label}
+          {/* STAGE FIRST — it is the fact this choice turns on. The two records
+              in a group are usually the same relationship type (both retail),
+              so a pair of identical "Individual" chips told somebody nothing
+              while the thing that actually differed — one is a paying customer,
+              the other a lead somebody typed in last week — was not on screen at
+              all. Type still shows when it is not the plain default. */}
+          <Badge color={stage.color} variant="soft" size="sm">
+            {stage.label}
           </Badge>
+          {customer.type !== 'retail' ? (
+            <Badge color={meta.color} variant="soft" size="sm">
+              {meta.label}
+            </Badge>
+          ) : null}
+          {customer.doNotContact ? (
+            <Badge color="warning" variant="soft" size="sm">
+              Asked not to be contacted
+            </Badge>
+          ) : null}
         </div>
         <Text className="truncate text-sm">
           {customer.email ?? 'No email'}
-          {customer.company ? ` · ${customer.company}` : ''}
+          {customer.company !== null ? ` · ${customer.company}` : ''}
         </Text>
       </div>
 

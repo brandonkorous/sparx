@@ -9,8 +9,11 @@
 // a tenant without Commerce was still offered Commerce surfaces by name.)
 
 import { useMemo } from 'react';
+import { Boxes } from 'lucide-react';
 import { buildNav, type NavModule } from './nav';
+import { getSurface, type SurfaceDefinition } from './registry';
 import { useModuleStates } from '../api/shell-data';
+import { useObjectTypes } from '../../surfaces/crm/object-types-data';
 
 /**
  * The set of module slugs to show, or `null` for "don't know yet".
@@ -74,13 +77,64 @@ export function useKnownModules(): Set<string> {
   return useMemo(() => new Set(moduleStates?.map((state) => state.slug)), [moduleStates]);
 }
 
+/**
+ * The record types THIS business invented, as navigation rows.
+ *
+ * A tenant defines "Projects" and it has to appear where they will look for it,
+ * which is the Customers panel beside Companies and Deals — not only behind
+ * Record types → Open. Inventing something and then being unable to find it
+ * again is the difference between a feature and a demo.
+ *
+ * Every row points at the ONE generic records surface and carries the record
+ * type in `defaultParams`. Registering a surface per type would put a tenant's
+ * own vocabulary into the persisted layout keys, which is where surface keys are
+ * required to be stable and universal.
+ *
+ * Built-ins are excluded: Companies, Customers, Deals and Requests already have
+ * their own purpose-built surfaces, and a second row opening a generic table of
+ * the same records would be two doors into one room, one of them worse.
+ */
+function useTenantRecordTypeRows(): SurfaceDefinition[] {
+  const { data } = useObjectTypes({ kind: 'custom' });
+
+  return useMemo(() => {
+    const base = getSurface('crm.records.list');
+    if (!base) return [];
+    return (data?.items ?? [])
+      .filter((type) => type.archivedAt === null)
+      .map((type) => ({
+        ...base,
+        title: type.labelPlural || type.label,
+        icon: Boxes,
+        section: 'Your records',
+        // After every built-in section, since these are additions to a CRM that
+        // already works rather than the first thing anyone looks for.
+        order: 900,
+        defaultParams: { objectKey: type.key },
+        createSurface: undefined,
+        keywords: [type.label, type.labelPlural, type.key],
+      }));
+  }, [data]);
+}
+
 export function useVisibleNav(): NavModule[] {
   const nav = useMemo(() => buildNav(), []);
   const reachable = useReachableModules();
   const known = useKnownModules();
+  const recordTypeRows = useTenantRecordTypeRows();
 
   return useMemo(
-    () => nav.filter((entry) => moduleIsVisible(entry.module, reachable, known)),
-    [nav, reachable, known]
+    () =>
+      nav
+        .filter((entry) => moduleIsVisible(entry.module, reachable, known))
+        .map((entry) => {
+          if (entry.module !== 'crm' || recordTypeRows.length === 0) return entry;
+          return {
+            ...entry,
+            sections: [...entry.sections, { title: 'Your records', surfaces: recordTypeRows }],
+            count: entry.count + recordTypeRows.length,
+          };
+        }),
+    [nav, reachable, known, recordTypeRows]
   );
 }

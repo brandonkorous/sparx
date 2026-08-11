@@ -24,6 +24,11 @@ import { changedProperties, resolvePropertyBag, toJsonInput } from './custom-pro
 import { schemaFor } from './object-def-service';
 import { crmSettings } from './crm-settings-service';
 
+/** A company as the LIST needs it: the record plus how many contacts sit under
+ *  it. `_count` is Prisma's own shape and goes over the wire as-is, so the
+ *  surface reads `row._count.customers` rather than a second request per row. */
+export type CompanyWithContactCount = Company & { _count: { customers: number } };
+
 export interface ListCompaniesFilter {
   status?: 'active' | 'credit_hold' | 'suspended' | 'inactive';
   assignedRepId?: string | null;
@@ -133,7 +138,7 @@ export async function matchByEmailDomain(
 export async function list(
   ctx: ServiceContext,
   filter: ListCompaniesFilter = {}
-): Promise<{ items: Company[]; total: number }> {
+): Promise<{ items: CompanyWithContactCount[]; total: number }> {
   return withTenant(ctx, async (tx) => {
     const where: Prisma.CompanyWhereInput = {
       deletedAt: null,
@@ -149,6 +154,11 @@ export async function list(
         orderBy: { updatedAt: 'desc' },
         take: Math.min(filter.take ?? 50, 250),
         skip: filter.skip ?? 0,
+        // HOW MANY PEOPLE WE KNOW THERE. For a business not selling on account
+        // this is the only number on the row that means anything — a company
+        // with nine contacts and one with none are a client and a business card,
+        // and the credit limit says the same nothing about both.
+        include: { _count: { select: { customers: true } } },
       }),
       tx.company.count({ where }),
     ]);

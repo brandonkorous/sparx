@@ -178,24 +178,30 @@ export function CrmSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
                 title="Suggesting a company"
                 description="What happens when somebody new is added with a work email address."
               >
-                <div className="flex items-start gap-3">
-                  <Switch
-                    color="module"
-                    checked={draft.domainAssociation}
-                    onCheckedChange={(checked) => {
-                      set('domainAssociation', checked === true);
-                    }}
-                  />
-                  <div className="flex flex-col gap-1">
-                    <FieldLabel>Offer a company when the email domain matches one</FieldLabel>
-                    <FieldDescription>
-                      Add someone at <Text as="span">jo@rivera.example</Text> and we&rsquo;ll ask
-                      whether they belong under Rivera Fabrication — if you have told us that domain
-                      belongs to them. It is always a question, never done for you, and personal
-                      addresses like gmail are ignored entirely.
-                    </FieldDescription>
+                {/* The label and its description are Field parts, so they need a
+                    Field root above them — outside one, Base UI throws and takes
+                    the whole pane down with it. */}
+                <Field>
+                  <div className="flex items-start gap-3">
+                    <Switch
+                      color="module"
+                      aria-label="Offer a company when the email domain matches one"
+                      checked={draft.domainAssociation}
+                      onCheckedChange={(checked) => {
+                        set('domainAssociation', checked === true);
+                      }}
+                    />
+                    <div className="flex flex-col gap-1">
+                      <FieldLabel>Offer a company when the email domain matches one</FieldLabel>
+                      <FieldDescription>
+                        Add someone at <Text as="span">jo@northgatedental.com</Text> and we&rsquo;ll
+                        ask whether they belong under Northgate Dental Group — if you have told us
+                        that domain belongs to them. It is always a question, never done for you,
+                        and personal addresses like gmail are ignored entirely.
+                      </FieldDescription>
+                    </div>
                   </div>
-                </div>
+                </Field>
               </FormSection>
 
               <FormSection
@@ -208,7 +214,7 @@ export function CrmSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
                     const onlyOne = on && draft.duplicateMatchRules.length === 1;
                     return (
                       <Card key={rule.value} className="p-3">
-                        <div className="flex items-start gap-3">
+                        <Field className="flex items-start gap-3">
                           <Checkbox
                             color="module"
                             checked={on}
@@ -246,7 +252,7 @@ export function CrmSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
                               </FieldDescription>
                             ) : null}
                           </div>
-                        </div>
+                        </Field>
                       </Card>
                     );
                   })}

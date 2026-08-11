@@ -58,11 +58,12 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Camera, Loader2, Plus, Trash2 } from 'lucide-react';
+import { Building2, Camera, Loader2, Plus, Trash2 } from 'lucide-react';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { ScrollStrip } from '../../components/scroll-strip';
 import { CustomPropertiesPanel } from './custom-properties-panel';
 import { AssociationsPanel } from './associations-panel';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -76,6 +77,7 @@ import { CustomerOverviewTab } from './customer-overview';
 import {
   CustomerActivityTab,
   CustomerDealsTab,
+  CustomerInvoicesTab,
   CustomerNotesTab,
   CustomerOrdersTab,
   CustomerSubscriptionsTab,
@@ -123,6 +125,9 @@ const TABS: { value: string; label: string }[] = [
   { value: 'overview', label: 'Overview' },
   { value: 'notes', label: 'Notes' },
   { value: 'orders', label: 'Orders' },
+  // Next to Orders on purpose: what they bought and what they were asked to pay
+  // are the two money questions, and a business can have either without the other.
+  { value: 'invoices', label: 'Invoices' },
   { value: 'deals', label: 'Deals' },
   { value: 'tasks', label: 'Tasks' },
   { value: 'subscriptions', label: 'Subscriptions' },
@@ -345,7 +350,7 @@ function CustomerEditor({
     create.isError || update.isError
       ? customerErrorMessage(
           create.error ?? update.error,
-          'Could not save this customer. Nothing was changed.'
+          'The server did not answer. Nothing was changed and your work is still on screen — try again in a moment.'
         )
       : null;
 
@@ -867,7 +872,12 @@ function CustomerEditor({
         <div className="@container mx-auto w-full max-w-6xl">
           <div className="grid gap-3 @3xl:grid-cols-[19rem_minmax(0,1fr)] @3xl:items-start">
             <aside className="flex min-w-0 flex-col gap-3 @3xl:sticky @3xl:top-0">
-              <IdentityRail customer={customer} repItems={repItems} accountItems={accountItems} />
+              <IdentityRail
+                ctx={ctx}
+                customer={customer}
+                repItems={repItems}
+                accountItems={accountItems}
+              />
             </aside>
 
             <section className="flex min-w-0 flex-col gap-3">
@@ -881,35 +891,40 @@ function CustomerEditor({
                 }}
                 className="flex flex-col gap-2 @lg:gap-3"
               >
-                <div className="bg-base-300 shrink-0 rounded-full px-4 py-2">
-                  <TabsList className="overflow-x-auto">
-                    {TABS.map((entry) => (
-                      <TabsTab
-                        key={entry.value}
-                        value={entry.value}
-                        className="flex items-center gap-1.5"
-                      >
-                        {entry.label}
-                        {/* The dirty dot makes a toolbar Save honest: it says
+                {/* Ten tabs do not fit a narrowed pane, and `overflow-x-auto`
+                    alone hid Documents and Details behind an edge with nothing
+                    to say they were there. */}
+                <div className="bg-base-300 shrink-0 rounded-full px-2 py-2">
+                  <ScrollStrip label="tabs">
+                    <TabsList>
+                      {TABS.map((entry) => (
+                        <TabsTab
+                          key={entry.value}
+                          value={entry.value}
+                          className="flex items-center gap-1.5"
+                        >
+                          {entry.label}
+                          {/* The dirty dot makes a toolbar Save honest: it says
                             "Details has unsaved work" while you stand on Overview.
                             On the selected pill it wears the pill's own ink so it
                             stays visible against the fill. */}
-                        {entry.value === 'details' && dirty ? (
-                          <>
-                            <span
-                              className={
-                                entry.value === tab
-                                  ? 'bg-module-content size-1.5 shrink-0 rounded-full'
-                                  : 'bg-module size-1.5 shrink-0 rounded-full'
-                              }
-                              aria-hidden
-                            />
-                            <span className="sr-only">(unsaved changes)</span>
-                          </>
-                        ) : null}
-                      </TabsTab>
-                    ))}
-                  </TabsList>
+                          {entry.value === 'details' && dirty ? (
+                            <>
+                              <span
+                                className={
+                                  entry.value === tab
+                                    ? 'bg-module-content size-1.5 shrink-0 rounded-full'
+                                    : 'bg-module size-1.5 shrink-0 rounded-full'
+                                }
+                                aria-hidden
+                              />
+                              <span className="sr-only">(unsaved changes)</span>
+                            </>
+                          ) : null}
+                        </TabsTab>
+                      ))}
+                    </TabsList>
+                  </ScrollStrip>
                 </div>
 
                 <TabsPanel value="overview">
@@ -925,6 +940,11 @@ function CustomerEditor({
                 <TabsPanel value="orders">
                   {visited.current.has('orders') ? (
                     <CustomerOrdersTab ctx={ctx} customerId={customer.id} />
+                  ) : null}
+                </TabsPanel>
+                <TabsPanel value="invoices">
+                  {visited.current.has('invoices') ? (
+                    <CustomerInvoicesTab ctx={ctx} customerId={customer.id} />
                   ) : null}
                 </TabsPanel>
                 <TabsPanel value="deals">
@@ -967,10 +987,12 @@ function CustomerEditor({
 /* ── Identity rail (the persistent read masthead) ─────────────────────────── */
 
 function IdentityRail({
+  ctx,
   customer,
   repItems,
   accountItems,
 }: {
+  ctx: SurfaceContext;
   customer: Customer;
   repItems: Record<string, string>;
   accountItems: Record<string, string>;
@@ -981,7 +1003,16 @@ function IdentityRail({
   const leadMeta = customer.leadStatus ? leadStatusMeta(customer.leadStatus) : null;
   const name = customerName(customer);
   const initials = customerInitials(customer);
-  const subtitle = [customer.company, customer.jobTitle].filter(Boolean).join(' · ');
+  // TYPED-IN AND FILED-UNDER LOOK DIFFERENT, because they ARE different: one is
+  // a word somebody wrote in a box, the other is a link to a company record with
+  // its own people, terms and paperwork. Rendering both as the same grey line
+  // meant accepting the association offer changed nothing you could see — the
+  // banner disappeared, a toast came and went, and the card read exactly as it
+  // had a second earlier. Filed reads as a link and opens the company; typed
+  // stays plain text.
+  const companyId = customer.companyId;
+  const filedUnder = companyId !== null ? customer.company : null;
+  const typedCompany = companyId === null ? customer.company : null;
   // Resolve the photo to a real URL; the Avatar falls back to initials when
   // there is no photo or it is still processing.
   const avatarAssets = useMediaAssets(
@@ -1084,7 +1115,31 @@ function IdentityRail({
           <Heading level={2} className="text-lg font-semibold">
             {name}
           </Heading>
-          {subtitle ? <Text className="text-sm">{subtitle}</Text> : null}
+          <Text className="flex flex-wrap items-center justify-center gap-1 text-sm">
+            {filedUnder !== null && companyId !== null ? (
+              <Button
+                variant="link"
+                color="module"
+                size="sm"
+                className="h-auto p-0"
+                title={`Open ${filedUnder}`}
+                onClick={(event) => {
+                  ctx.open(
+                    'crm.account.detail',
+                    { id: companyId },
+                    { target: event.shiftKey ? 'beside' : 'tab' }
+                  );
+                }}
+              >
+                <Building2 className="size-3.5" aria-hidden />
+                {filedUnder}
+              </Button>
+            ) : typedCompany !== null ? (
+              <span>{typedCompany}</span>
+            ) : null}
+            {customer.company !== null && customer.jobTitle !== null ? <span>·</span> : null}
+            {customer.jobTitle !== null ? <span>{customer.jobTitle}</span> : null}
+          </Text>
           {/* The three classification axes, lifecycle first (the primary signal). */}
           <div className="flex flex-wrap items-center justify-center gap-1.5 pt-1">
             <Badge color={lifecycleMeta.color} variant="soft" size="sm">

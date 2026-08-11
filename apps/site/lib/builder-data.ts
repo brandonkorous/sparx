@@ -189,6 +189,17 @@ function resolveEntryBodyAssets(
   return b;
 }
 
+/** The route a `cms.<type>` collection CARD links to — mirrors silica-data's `entryUrl`
+ *  so this (builder-preview) path links a journal/index card the SAME way the live silica
+ *  storefront does. Only `blog_post` has a per-record detail route (`app/blog/[slug]`);
+ *  other content types render inline and carry no destination, so their card `url` is `''`
+ *  and the anchor stays un-clickable rather than pointing every card at the static index
+ *  placeholder (`/blog`), which 404s. Keep in sync with `silica-data.ts` `entryUrl`. */
+function cmsEntryUrl(type: string, slug: string | null | undefined): string {
+  if (!slug) return '';
+  return type === 'blog_post' ? `/blog/${slug}` : '';
+}
+
 /** Hydrate the CMS entries a tree PINS by id (docs/98 Pillar 7 record-display) into
  *  `__pins['cms:<id>']` — the entry body with asset fields resolved, so a section
  *  pinned to a blog post reads `item.title` / `item.body` / `item.featuredImage`.
@@ -269,6 +280,12 @@ export async function loadBuilderData(
             shown.map((e) => ({
               ...resolveEntryBodyAssets(e.body, tenantSlug),
               ...projectByline(e, tenantSlug),
+              // The card's own slug + destination, so a `cms.<type>` index card can bind its
+              // `<a href>` to `item.url` and deep-link the post (blog_post → /blog/<slug>)
+              // instead of every card falling back to the static `/blog` placeholder. Mirrors
+              // silica-data's `toSilicaEntry`.
+              slug: e.slug ?? '',
+              url: cmsEntryUrl(type, e.slug),
             }))
           );
           // n+1 came back → more exist. Bindable, so a template can say so instead of

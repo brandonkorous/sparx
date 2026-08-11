@@ -10,10 +10,29 @@ import type { ServiceContext } from '@sparx/crm';
 import { isModuleEnabled } from '@sparx/auth';
 import { requireAuth } from '@sparx/api-core/auth';
 import { moduleDisabled } from '@sparx/api-core/errors';
+import { resolvePropertyId } from './property.js';
 
 export function toCrmContext(request: FastifyRequest): ServiceContext {
   const auth = requireAuth(request);
   return { tenantId: auth.tenantId, userId: auth.actorId };
+}
+
+/**
+ * The site being worked in, from the switcher header.
+ *
+ * CRM SETTINGS ARE PER-SITE (docs/131): two unrelated businesses under one owner
+ * do not share a duplicate rule or a domain-suggestion preference. That makes
+ * this a matched pair — anything that WRITES a setting scoped to a site and
+ * anything that READS one have to agree on which site, or the switch saves
+ * cleanly, reads back cleanly on the settings screen, and does nothing at all
+ * where it is actually consumed. It lived as a private helper in the workspace
+ * routes while `match-domain` in the companies routes resolved settings at
+ * tenant scope, which is exactly that failure: turning the suggestion on made
+ * no difference whatsoever, and nothing anywhere reported a problem.
+ */
+export async function activeCrmSite(request: FastifyRequest): Promise<string> {
+  const auth = requireAuth(request);
+  return resolvePropertyId(auth, request.headers['x-sparx-property-id'] as string | undefined);
 }
 
 /** Throws MODULE_DISABLED (→ 404 envelope) if the caller's tenant doesn't

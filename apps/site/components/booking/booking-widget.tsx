@@ -47,9 +47,21 @@ function formatDateTime(iso: string): string {
 export function BookingWidget({
   tenantSlug,
   service,
+  onBooked,
 }: {
   tenantSlug: string;
   service: PublicService;
+  /**
+   * Called once a booking actually exists, with its id.
+   *
+   * Only the booking-link page uses it, to say "that one came through /meet/…"
+   * — the CRM meaning, recorded AFTER scheduling has done the real work rather
+   * than instead of it. It deliberately fires from the same two places that set
+   * the confirmation, deposit path included: a booking paid for is still a
+   * booking, and a link whose counter only moved for the free services would be
+   * a counter nobody could trust.
+   */
+  onBooked?: (bookingId: string) => void;
 }) {
   const isReservation = service.bookingType === 'reservation';
   const isCustomerChoice = service.assignmentStrategy === 'customer_choice';
@@ -206,6 +218,7 @@ export function BookingWidget({
         setPendingDeposit(result);
       } else {
         setConfirmation(result);
+        onBooked?.(result.id);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not complete the booking.');
@@ -266,6 +279,7 @@ export function BookingWidget({
         serviceName={pendingDeposit.serviceName}
         onPaid={() => {
           setConfirmation(pendingDeposit);
+          onBooked?.(pendingDeposit.id);
           setPendingDeposit(null);
         }}
       />

@@ -1,17 +1,18 @@
 # 144 — CRM: from 5 to 10
 
-Version: 0.7 (phase 7 in progress — company rename, settings, saved views, e-sign, meeting links, custom-object surfaces)
+Version: 1.3 (docs/144 complete; the surface-by-surface sweep is in progress — §14.1 carries the running list of what using it as its owner has found)
 Author: Brandon Korous
-Last Updated: 2026-08-09
+Last Updated: 2026-08-10
 
 > **Status: IN PROGRESS.** This is the implementation plan for closing the gap between the sparx CRM
 > as it stands today and a CRM that beats HubSpot on every axis a small business can see. §2 is an
 > audit of what already existed when the plan was written and is deliberately specific, because most
 > of this plan is _extending_ working machinery rather than starting anything.
 >
-> **Phases 0–6 are built. Phase 7 is PART-BUILT and is the only one left** — its data layer,
-> services, REST, MCP and about half its surfaces have landed; §14.1 lists exactly which pieces are
-> still missing and what each one is blocked on. Decisions reversed or deviated from during the
+> **All seven phases are built** — data layer, services, REST, MCP and every surface, driven in a
+> browser rather than through the API. §14.1 records what the browser pass found, the two items
+> still open (neither is a feature), and the traps worth knowing before touching this again.
+> Decisions reversed or deviated from during the
 > build are recorded in the section they belong to — mailboxes are **IMAP/SMTP only**, never the
 > Gmail API or Microsoft Graph (§5.2); a support promise carries its **own** business-hours calendar
 > rather than reusing the Scheduling module's (§7.3); the report built-ins are eight new definitions
@@ -711,16 +712,16 @@ touches the widest blast radius and should land when nothing else is mid-flight.
 Written down because a plan that does not record what was built from it sends the next person to
 re-read eleven sections to find out. **Read this before picking the work up again.**
 
-| Phase | Built   | Browser-verified                 | Migrations (all APPLIED)                                                                                           |
-| ----- | ------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| **0** | ✅      | ✅                               | — (no schema)                                                                                                      |
-| **1** | ✅      | ✅                               | `20270207000000_crm_custom_properties`                                                                             |
-| **2** | ✅      | ❌ **never driven in a browser** | `20270208000000_crm_associations`                                                                                  |
-| **3** | ✅      | ❌ **never driven in a browser** | `20270209000000_crm_engagement`, `20270210000000_crm_mailbox_imap_only`, `20270211000000_crm_calls`                |
-| **4** | ✅      | ✅ (prod, 2026-08-07)            | `20270212000000_crm_tickets`                                                                                       |
-| **5** | ✅      | ❌ **never driven in a browser** | `20270214000000_crm_reporting`                                                                                     |
-| **6** | ✅      | ❌ **never driven in a browser** | `20270215000000_crm_workflow_depth_and_scoring`                                                                    |
-| **7** | 🟡 part | ❌ **never driven in a browser** | `20270216000000_crm_company_rename`, `20270217000000_crm_workspace`, `20270218000000_crm_company_rename_functions` |
+| Phase | Built   | Browser-verified                                              | Migrations (all APPLIED)                                                                                           |
+| ----- | ------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **0** | ✅      | ✅                                                            | — (no schema)                                                                                                      |
+| **1** | ✅      | ✅                                                            | `20270207000000_crm_custom_properties`                                                                             |
+| **2** | ✅      | ❌ **never driven in a browser**                              | `20270208000000_crm_associations`                                                                                  |
+| **3** | ✅      | ❌ **never driven in a browser**                              | `20270209000000_crm_engagement`, `20270210000000_crm_mailbox_imap_only`, `20270211000000_crm_calls`                |
+| **4** | ✅      | ✅ (prod, 2026-08-07)                                         | `20270212000000_crm_tickets`                                                                                       |
+| **5** | ✅      | ❌ **never driven in a browser**                              | `20270214000000_crm_reporting`                                                                                     |
+| **6** | ✅      | ❌ **never driven in a browser**                              | `20270215000000_crm_workflow_depth_and_scoring`                                                                    |
+| **7** | ✅ done | ✅ driven in a browser end to end, 12 defects found and fixed | `20270216000000_crm_company_rename`, `20270217000000_crm_workspace`, `20270218000000_crm_company_rename_functions` |
 
 **THE BROWSER COLUMN IS THE MOST IMPORTANT ONE HERE.** The phase 0/1 browser pass found **six bugs
 with typecheck and the full test suite green the whole time** — one of which left Save permanently
@@ -774,11 +775,69 @@ scoring arithmetic by 16, so the risk here is entirely in the two surfaces:
   should keep its rules visible on switching back, and the members panel should only appear once
   the list exists.
 
+**WHAT A PHASE 7 BROWSER PASS SHOULD LOOK FOR.** The rename is pinned by 400 passing CRM tests
+and the RLS audit, so the risk is NOT in the data — it is in the four surfaces, and in one thing
+tests structurally cannot see.
+
+- **THE RENAME'S BLAST RADIUS IS THE WHOLE APP, NOT THE CRM.** ~125 files changed and typecheck
+  cannot see a wrong LABEL. Open a commerce order, a B2B account, an invoice, a booking and a chat
+  conversation and check the customer's employer still renders — those all read the field that
+  moved from `company` to `companyName`. A blank where a company name used to be is the failure
+  mode, and it looks like missing data rather than a bug.
+- **The company pane with the `b2b` module OFF.** No credit limit, no payment terms, no discount,
+  no price tier, no fleet size, and no credit read-out in the toolbar. Then turn `b2b` on and
+  confirm the values that were hidden are still there — the whole point is that they were preserved,
+  not dropped.
+- **The domains field.** Paste `https://www.acme.com/pricing` and `@acme.com` into it; both should
+  save as `acme.com`. Then check the settings screen: with the suggestion switched OFF, the match
+  endpoint must return nothing at all rather than a suggestion nobody asked for.
+- **The duplicates screen.** Every cluster carries a confidence AND a reason. The bulk action offers
+  only the CERTAIN ones — if it ever offers to sweep up a "worth a look" group, that is the bug,
+  because those are two colleagues as often as one person.
+- **The signing page** (`/sign/<token>` on the storefront). Walk all five states: sign one, decline
+  one with a reason, let one expire, re-request on a document that already has a pending link (the
+  first must stop working), and open a signed one again. The signed state must show WHEN and offer
+  nothing further. The lines and total must sit above the buttons on a phone.
+- **Booking links.** Create one, copy it, open it. An archived link must say it is no longer in use
+  rather than 404 — somebody is clicking it out of an old email.
+- **A custom object end to end.** Invent a record type, add three fields, press Open on it, add a
+  row, edit it, relate it to a contact. Nothing on either surface should be hardcoded to a built-in.
+
 ### Phase 7 — exactly where it stands
 
-**READ THIS BEFORE TOUCHING ANY OF IT.** Phase 7 is the only part-built phase in this plan, and the
-split is not along the lines you would guess: the DATA and the SERVICES are complete for all four
-workstreams, and what is missing is surfaces plus one operational step.
+**COMPLETE, AND DRIVEN IN A BROWSER AS A BUSINESS OWNER RATHER THAN AS A DEVELOPER.** Data,
+services, REST, MCP and every surface are built; `/meet/[slug]`, the signature panel on the
+document pane, the association offer, the company's People list, the saved-views menu on the customers list
+and launcher entries for tenant-defined record types all landed on 2026-08-10.
+
+**WHAT THE BROWSER PASS FOUND, AND WHY IT MATTERS FOR THE NEXT PHASE.** Twelve defects, every one
+of which typechecked, linted and passed 400 tests. That is the point worth carrying forward: this
+phase's failure mode was never a broken function, it was a correct function nobody could reach or
+whose result nobody could see.
+
+| What an owner saw                                                          | What was actually wrong                                                                                                                                                                                                                     |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| "An internal error occurred" when adding a contact already on file         | P2002 escaped `customerService.create`/`update` as a 500. Now a 409 naming the person who has the address — the 500 is what sends somebody back to type a variant address and MAKE the duplicate                                            |
+| The Company column blank on every customer, in every app                   | The rename moved the Prisma field to `companyName`, so `company` vanished from every payload — orders, chat, invoices, bookings, carts. Restored as a derived field on the Prisma client, so all ~120 embed sites are right by construction |
+| `$0.00` credit limit and "No agreed terms" on a dental practice            | The companies LIST never got the `b2b` gate the detail pane had. Now People + email domains, with trade columns arriving and leaving with the module                                                                                        |
+| "Fleet size" asked of a caterer                                            | A trade field AND an industry assumption, sitting outside the gate                                                                                                                                                                          |
+| A company saying "nothing is linked" while the list said 1 person          | The pane showed the association graph but never its own `companyId` contacts                                                                                                                                                                |
+| Turning on domain suggestions changing nothing                             | Written per SITE by the settings screen, read at TENANT scope by `match-domain`. Both now use one shared `activeCrmSite` helper                                                                                                             |
+| The whole settings pane                                                    | Crashed — `FieldLabel` outside a `Field` root                                                                                                                                                                                               |
+| Clicking "Yes, file them there" appearing to do nothing                    | Typed and filed rendered identically. A filed company is now a link to the company                                                                                                                                                          |
+| A merge demoting a paying customer to a lead                               | Lifecycle stage now takes the furthest-along value in the group, whichever record is kept                                                                                                                                                   |
+| **A merge silently re-opening somebody who had asked not to be contacted** | `doNotContact: false` is not `null`, so fill-what-is-missing never looked at it. Now it only ever ratchets up                                                                                                                               |
+| **Duplicate detection running tenant-wide**                                | On a tenant with two unrelated businesses, one person known to both scored 100 and `bulkMerge` would have combined them. Buckets are now per-site, and `merge()` itself refuses across sites since MCP and REST call it directly            |
+| A customer asked to "Accept this draft"                                    | The stage's internal label leaked out as the document's noun. A draft stage now reads as "document" to the signer, and the sender is warned before asking                                                                                   |
+
+**THIS FINDING IS NOW FIXED** — see §14.1. Kept for the reasoning.
+`customers_tenant_property_email_unique` is
+`(tenant_id, property_id, email)`, and Postgres counts NULLs as DISTINCT — so two TENANT-WIDE
+customers can hold the same address and never collide. The constraint protects site-scoped contacts
+only, which is why the seed data has two global rows on one address and why duplicate DETECTION has
+to exist alongside the constraint rather than as a backstop to it. Changing this is a migration
+and a data clean-up. `NULLS NOT DISTINCT` turned out to be the WRONG instrument (it would
+break contacts with no email); a partial index was the right one.
 
 **All three migrations are applied and the client is regenerated.** Green as of 2026-08-09:
 typecheck (101 projects), lint (98), `pnpm test` (92 tasks, including the DB-backed CRM suite at
@@ -809,37 +868,331 @@ with a function over it is ever renamed, look here first.**
 | §3.6 custom objects | `records-list` + `record-detail`, one pair for every tenant-invented object, reached from the record-type list                                                           |
 | plumbing            | 4 new `CrmTopic`s + their Terraform topics, 4 new link routes, 12 new MCP tools                                                                                          |
 
-#### Still missing, and what each one needs
+#### What is left
 
-Every one of these has its server side DONE — the work left is a surface over an endpoint that
-already exists and a data layer that already calls it.
+Everything listed here previously — the duplicates confidence model, the signature panel, the
+`/meet/[slug]` page, the domain-match offer, launcher entries for custom objects and the
+integration suite — is BUILT and was driven in a browser on 2026-08-10. **Saved views now cover
+every CRM list**, also driven in a browser: Customers, Companies, Deals (board and table),
+Requests, and the generic list that serves a tenant's own record types. `pnpm --filter @sparx/db
+build` is verified (it needed one run with dev stopped — `prisma generate` cannot replace the
+query-engine DLL while a dev server holds it). The NULL-site uniqueness finding is now FIXED, and
+chasing it turned up a considerably worse bug in `mergeService`; both are below.
 
-- **The duplicates surface still shows the old two-reason model.** `GET /v1/crm/duplicates` now
-  returns a `confidence` per group and a third `phone` reason, and `POST
-/v1/crm/duplicates/bulk-merge` exists — `workspace-data.ts` already types both. What is left is
-  rendering the confidence badge and a bulk-merge action in `duplicates.tsx`.
-- **Saved views are not on any list yet.** Service, REST, MCP and `useSavedViews` are all in place;
-  no list surface reads them. The first one to wire is the contacts list, because custom properties
-  are what made "which columns?" a real question in the first place.
-- **The signature panel is not on the document pane.** `useSignatures` /
-  `useSignatureMutations` exist; the invoicing detail surface does not render them. The one
-  design constraint: the signing link comes back ONCE and cannot be re-issued, so the UI has to
-  show it and offer a copy rather than assume it can be fetched again.
-- **`apps/site` has no `/meet/[slug]` page.** The public API is live; the page is unwritten, so
-  a booking link resolves but has nothing to render. (`/sign/[token]` **is built** — five states,
-  typed-name signature, decline with a reason.)
-- **The contact pane does not offer a company on a domain match.** `useCompanyDomainMatch` is
-  written and the endpoint answers; nothing calls it. It must stay an OFFER — the setting exists
-  precisely so that it never applies itself.
-- **Custom objects have no launcher entries of their own.** They are reachable — the record-type
-  list has an "Open" action per custom object — but they are not in the rail or the command
-  palette. `buildNav()` is a static array evaluated at module load and these objects are invented
-  at runtime, so this needs a dynamic merge in `use-visible-nav.ts`, not a catalog entry.
-- **No integration suite of its own yet.** The existing 400 CRM tests pass against the renamed
-  schema, which is what proves the rename is sound — but nothing yet covers the NEW behaviour.
-  Following the existing 20-suite pattern, this phase still needs: an RLS isolation case per new
-  table, the domain-match blocklist, the one-live-signature-per-document rule, the snapshot frozen
-  at signature, and the confidence floor on `bulkMerge`.
+#### Tenant-wide contacts could share an email — fixed, and what it cost to fix
+
+`20270220000000_crm_customer_tenant_wide_email_unique` adds
+`customers_tenant_global_email_unique`, a PARTIAL unique index over
+`(tenant_id, email) WHERE property_id IS NULL AND email IS NOT NULL AND deleted_at IS NULL`.
+
+- **Not `NULLS NOT DISTINCT` on the existing index.** That keyword applies to the whole index, so it
+  would also make two contacts with NO email collide — and a phone-only contact is completely
+  normal. "You cannot save the second walk-in" would be a far worse bug than the one being fixed.
+  There is a test for exactly this.
+- **Live rows only**, unlike the site-scoped index which deliberately counts deleted ones. At site
+  scope a deleted contact holding its address is a feature (the app can say "it is in your bin"); at
+  tenant scope the same rule would let one deleted contact reserve an address across every site the
+  business runs, permanently.
+- **It cleans up only what is unambiguously empty** — rows no other table references at all — and
+  then RAISES with the list of anything left, rather than merging records unattended. The tenant
+  loop with `set_config('app.tenant_id', …)` is load-bearing: `customers` is FORCE RLS and
+  `sparx_owner` is a non-superuser in prod, so a query without it returns zero rows there while
+  passing locally on a superuser, and the cleanup would silently do nothing before the index failed
+  the deploy. **If it does fire in a deploy, recovery is two steps** — merge the pairs it names, then
+  `prisma migrate resolve --rolled-back …` before re-running, because Prisma records the attempt as
+  failed and later deploys refuse until that record is cleared.
+
+#### The sweep — using every CRM surface as its owner (2026-08-10, continuing)
+
+Nine more gaps, none of which typecheck, lint or 420 tests could see. The pattern across almost all
+of them: **the API already did the work and no screen asked it.** That is API-first behaving as
+designed on the server and being left half-spent on the client, and it is where the next reviewer
+should look first.
+
+**The company was a dead end.** It knew who worked there and nothing else — no invoices, no deals,
+no requests, though all three carry a `company_id` and all three were already filterable
+(`b2b_account_id` on the wire, the name that survived the rename). Added as read-only sections.
+
+**A company's debt includes its people's.** Billing a named contact writes `customerId` and leaves
+`companyId` null — correct, that is who the document is made out to — so filtering by company alone
+reported a trade account as debt-free while somebody there was 60 days late. `billing-document-
+service.list` now ORs in `{ customer: { companyId } }`, wrapped in `AND` so it composes with the `q`
+search instead of one `OR` key overwriting the other. Verified: Meridian Architects shows the $3,800
+that is really Marcus Lien's.
+
+**Segments, five findings:**
+
+1. **The list had no member counts** — six names, no sizes, and the only way to learn one was to
+   open it. `segmentMembership(count)` already existed in the data layer, written for this list and
+   never given a count. Now `include: { _count: { select: { members: true } } }` on the list query.
+2. **A NEW SEGMENT NEVER FILLED.** The evaluator is entirely CUSTOMER-driven: when one person
+   changes, re-check that person against every segment. Creating a segment changes no person, so
+   nothing ran — the builder counted "24 of 24 match", the owner pressed Create, and the list said
+   "No members yet" beneath a screen promising "anyone who matches is added automatically". It is
+   also why five of six built-ins sat at zero. `crm.segment.created` / `.updated` were already
+   published and already in the topic union; there was no subscriber. Added the segment-driven pass
+   to `segment-evaluator`, honouring the `rulesChanged` flag so a rename does not pay for a scan.
+3. **No way to refill one.** Scoring has a recompute button; segments had none, and a SEEDED segment
+   never fires a create event — so an owner looking at an empty group they knew should have people
+   in it had nothing to press. Added "Update membership" (rule-driven segments only: re-cutting a
+   hand-picked list would empty something somebody built by hand).
+4. **The preview counted people the segment could never contain.** A segment draws from one site
+   plus the tenant-wide contacts and the evaluator enforces that; `previewCount` scanned the whole
+   tenant. Hence "24 of 24 match" → 22 members, unexplained — and the count was quietly describing
+   another business's customers. Scoped in the service, defaulted in the route exactly like `create`
+   does. Now "22 of 22".
+5. **Seven surfaces said the same sentence twice.** `<AlertTitle>Could not save this X</AlertTitle>`
+   over a description of "Could not save this X. Nothing was changed." — company, customer, deal,
+   pipeline, request, segment, task. It only surfaces on a non-4xx failure, which is precisely when
+   somebody needs to be told what to do.
+
+**Scoring: the number was computed, stored, and shown nowhere.**
+
+This is the largest single gap the sweep has found, and the cleanest example of the pattern behind
+almost all of them — _the API already did the work and no screen asked it._
+
+Everything below the surface was finished. `scoringService` resolves each record's own site's model,
+sums the matching rules, subtracts decay, clamps, writes the record's `score`, and writes a
+`score_events` row carrying the delta, the new total and the rule labels that produced it — and
+writes nothing at all when the number did not move, so a chatty integration cannot bury the real
+reasons. `/preview` returns a live breakdown from the saved model. `/history` returns the events.
+`/adjust` moves a score by hand with an actor and a reason. `score` and `scored_at` are columns on
+both `customers` and `deals`.
+
+**None of it reached a screen.** `useScoreHistory`, `useAdjustScore`, `scoreBand` and `SOURCE_LABEL`
+were written in `scoring-data.ts` and imported by nothing; a grep for `score` across all 57 CRM
+surface files returned the scoring editor and nothing else. So an owner could write rules, watch the
+live preview land on somebody they recognised, press "Re-score everyone", be told _"142 of 300 scores
+changed"_ — and then have no way to see a single one of them. The service header comment describes a
+contact's score panel reading `74 · Opened three emails +20 · No order in 90 days −10`. That panel
+did not exist. The rules editor was a form that fed a void.
+
+Built:
+
+- **`score-panel.tsx`**, on the customer's Overview tab (with the money, because "are they worth my
+  time" is the question that tab exists to answer) and on the deal editor. It answers the three
+  questions in the order they get asked: what is the number and is that good (the figure, plus a
+  band — an owner acts on _Hot_, never on 61-versus-64); why is it that number (the rules that
+  matched, each with its points, plus decay as its own line); and can I change it (adjust, with a
+  required reason — a hand-moved score is the one entry in the history the rules cannot account for,
+  and without a sentence saying why, next month's reader finds an unexplained jump and stops
+  trusting every other number on the panel).
+- **The "no model" state, which is the common one and is not an error.** A business that never set
+  scoring up has no model and every record sits at zero. Rendering a confident `0` there would read
+  as "we scored them and they came out worthless" — a lie about a customer. The panel says what
+  scoring is for and links to the screen that sets it up.
+- **A staleness line.** The stored number and the live breakdown can legitimately disagree. The panel
+  says which of the two reasons it is rather than showing numbers that quietly differ — see the
+  banner finding below.
+- **A score column and a "Best score first" sort on the customers list**, and a health badge on the
+  deal board's cards. Both appear only once a model exists: a column of zeros on a tenant that never
+  wrote a rule invents a ranking out of an unconfigured feature. `sort_by=score` needed adding to
+  the list endpoint's enum and the service's union — three characters of plumbing standing between
+  a finished scoring engine and the one question it is FOR, "who do I call first".
+
+**Then driving it end to end found four more, none of which any test could have caught.** A model
+was written in the browser (spend ≥ $500 → +30, orders ≥ 1 → +20), saved, and run over the tenant:
+"6 of 24 scores changed", and the numbers were right — Dana Whitfield 50, Priya Nair 20 on $90.24
+of orders, because only the second rule fires for her.
+
+1. **A SAVED MODEL COULD NOT DISPLAY ITS OWN OPERATORS.** Every "is at least" went blank the instant
+   the editor re-seeded from the server — which is every time anybody reopens their scoring rules.
+   The stored JSON was always intact (checked in Postgres); the screen simply could not say what it
+   held, so an owner returning to their rules saw two fields and a hole where the comparison should
+   be. The cause: `items` and `value` were both built inline on every render, and the Combobox
+   resolves the selected item **by reference**, so nothing ever matched. It looked correct while the
+   author was clicking only because the component was holding the very object they had just picked.
+   The field picker beside it was right by accident of having been written with a memoized array and
+   a `find` into it — which is now the documented shape, in a comment that says why. Swept the other
+   ten Comboboxes in the app: all already correct.
+2. **"0 · Not scored" on sixteen of eighteen rows.** Two customers had points and the eye could not
+   find them under a wall of grey badges — the precise opposite of what a score column is for. Zero
+   now renders as a dash; a badge means "this one has points".
+3. **And "Not scored" was a false statement.** Once a model exists, a zero means the rules ran and
+   nothing matched. Telling an owner the machinery never looked at that person is a different fact
+   and an untrue one. `scoreBand` now returns **Cold**; whether anything has been scored at all is
+   `scoredAt`'s job, and only the panel reads it.
+4. **The staleness banner lied about the one action sitting directly above it.** Adjusting Dana by
+   hand to 60 produced _"the rules have changed since this was last worked out"_ — they had not;
+   somebody had moved the number. A hand adjustment leaves the rules untouched, so the two figures
+   differ **by design and permanently**. The newest `score_events` row tells the two cases apart
+   (`manual` vs `rule`), so the panel now says "Someone moved this by hand" as info rather than a
+   warning, because nothing is wrong and there is nothing to fix.
+
+**One honest limitation, stated rather than papered over.** `scoreRecord` writes whatever the rules
+compute, so **a re-score silently discards a hand adjustment.** An owner who bumps somebody to 60 and
+presses "Re-score everyone" next week watches their judgement vanish without a word. Making it stick
+means a real design change — a separate manual-offset column that survives recomputation, added to
+the sum rather than overwritten by it — which is schema work, not a gap to close in passing. Until
+that is decided, both the adjust form and the banner say plainly that the change lasts until the next
+re-score and that anything you want counted permanently belongs in a rule.
+
+**And a fifth, from the user's own question — "should we store score history?"** It was already
+stored, and the panel above renders it. But the engine records `actorId` on a hand adjustment and
+nothing displayed it, so the history read "Changed by hand" and left the reader to guess by whom —
+while the adjust form directly above promised "this shows in the history below with your name on
+it". That is the one row on the panel the rules cannot account for; the whole reason it is written
+down is that a person stands behind it, and an anonymous override invites exactly the suspicion the
+history exists to prevent. Resolved through the team roster (falling back to no name rather than a
+raw uuid, which happens legitimately when whoever made the change has left).
+
+#### Calls: logged, and then unreadable in three different ways
+
+Following the same "what does the data layer expose that no screen consumes" thread into the support
+side turned up `useCallsFor` with **zero** consumers, and pulling on it found three separate faults.
+
+1. **The engagement composer asks how long you talked and how it went, and showed neither back.**
+   Every logged call became one line of text in the timeline. Duration and outcome were write-only,
+   and a call the platform recorded was **stored and unlistenable** — `recordingUrl` was rendered by
+   no screen in the app. There is now a Calls table under the composer on the customer's Notes tab:
+   when, which way, how it went, how long, and a link to the recording.
+2. **THE INVALIDATION HAD NEVER MATCHED, so logging anything left the screen unchanged.** The
+   composer invalidated the literal `['crm', 'activities']`; the timeline is keyed on
+   `['crm', 'customer-activity', …]`. No overlap, so the refresh has always been a no-op — you got a
+   cheerful "Call logged" toast over a list still reading "No notes yet", and the honest reading of
+   that screen is that nothing was saved. So you log it again. `scoring-data.ts` opens with a
+   warning about this exact trap ("an invalidate that misses leaves a stale picker or a stale number
+   on screen next to a fresh one") and it was live here the whole time. Every key in that function
+   is now IMPORTED from the module that owns it — a hand-typed key is a copy of a fact that lives
+   somewhere else, and it goes stale with no type error, no failing test, and nothing on screen but
+   an absence.
+3. **"A call" has two writers and only one of them makes a `CallRecord`.** Click-to-call
+   (`callService.placeCall`) writes a `CallRecord` plus a message; logging a call you made on your
+   own phone (`engagementService.logCall`) writes only the message. So `/v1/crm/calls` holds exactly
+   the calls the platform dialled and none of the ones anybody logged — which, for a tenant with no
+   phone system connected, is all of them. Built against `CallRecord` the new card would have sat
+   permanently empty while its owner logged calls into it all day. It reads engagement messages of
+   `kind: 'call'` instead, which both writers produce; `CallRecord` is joined on the shared
+   timestamp for the one thing only a dialled call has, the recording.
+
+#### Tabs that ran off the edge of the pane
+
+Raised from the screen rather than the code: the customer profile's ten tabs overflowed their
+container, so Documents and Details sat past the right edge with nothing to say they were there.
+`overflow-x-auto` was doing its job — the content was reachable — but the only hint it existed was a
+scrollbar the platform may not draw at all. On a pane that can be dragged narrow, two tabs simply did
+not exist from the operator's side.
+
+`components/scroll-strip.tsx` is the general fix: a horizontal strip that shows a chevron at each end
+when, and only when, there is more of it off-screen. Two decisions worth keeping:
+
+- **The buttons are in flow, not floating over the content.** An overlaid chevron covers whatever is
+  at the edge — usually the tab you were reaching for. These take their own space and push the strip
+  in (DESIGN.md prefers an in-flow push to an overlay).
+- **Overflow decides whether the PAIR is mounted; position decides only whether each is disabled.**
+  Mounting a button narrows the scroller, which can create the very overflow that justifies the
+  button — remove it and the overflow goes, so it comes back, forever. Tying the mount to overflow
+  alone and disabling rather than unmounting at the ends makes that impossible, because removing the
+  pair strictly widens the scroller.
+
+Five more strips carried the same latent defect and were migrated with it — product detail, product
+reviews, product translations, the product configurator, and CMS translation detail. All five are
+tab strips whose count grows with the tenant's own data (one tab per locale, per configurator step),
+so they were overflow bugs waiting for a tenant big enough to trip them.
+
+**Still to sweep:** the tasks queue and requests/SLA proper, reports/dashboards, custom record types
+end to end, mailboxes/phone systems/booking links.
+
+#### Proven in a browser, and the gap that proving it exposed
+
+The merge fix was driven end to end on 2026-08-10 rather than trusted: an invoice was raised against
+one of two duplicate Marcus Lien records at Meridian Architects, the pair was merged in the
+Duplicates screen, and the invoice's Customer field afterwards reads `marcus@meridianarch.com` where
+it had read `m.lien@`. The document followed the person.
+
+Doing that surfaced the next thing. The invoice editor promises, under its customer picker, that
+"the customer record this invoice belongs to — it shows up in their history". **It did not.** The
+customer had tabs for orders, deals, tasks, subscriptions and uploaded files, and nowhere at all to
+see an invoice — so an owner could not tell from a contact that the contact owed them $3,800. The
+API had supported `customerId` on `/v1/invoicing/documents` the whole time; only the tab was missing,
+which is what API-first is supposed to leave behind. `CustomerInvoicesTab` now sits next to Orders
+(what they bought and what they were asked to pay are different questions, and a business can have
+either without the other), wears the Invoicing hue, and leads its right column with **Owed**.
+
+#### Case was the unwatched door into the same bug
+
+Both unique indexes on `customers` compare raw text, and nothing lowercased an address on the way
+in — so `Jane@example.com` and `jane@example.com` were two contacts to the database and one person
+to everybody else. A trailing space did the same thing and is easier to do by accident, because it
+is invisible.
+
+Normalised in `CreateCustomerInput` / `UpdateCustomerInput` / `SubscribeCustomerInput` rather than in
+`customerService`, so REST, MCP, GraphQL, the importer and the storefront signup all agree — a rule
+enforced at one write path is a rule the next write path will not have. Checkout, marketplace order
+ingest and the CSV importer were already normalising; the CRM's own front door was the gap.
+
+**No backfill, deliberately.** Lowercasing existing rows could make two of them collide, which would
+fail against the very indexes this is protecting. Duplicate detection already compares
+case-insensitively, so legacy pairs surface in the Duplicates screen and get merged like any other
+pair — which is also why `merge.test.ts` now seeds its case-variant row straight into the table:
+that pair can no longer be created through the front door.
+
+#### A merge left 33 of the 37 customer tables behind
+
+Found by merging a real duplicate pair on the dev database and then asking what still pointed at the
+retired record. `mergeService` relinked activities, deals, tasks and addresses. Everything else —
+**orders, invoices, payment intents, saved cards, subscriptions, bookings, support requests,
+consent records, store credit** — kept pointing at the contact that had just been retired, while the
+survivor's `totalSpent` and `orderCount` were rolled up from that same duplicate in the same
+transaction. The result read "3 orders, $2,400" above an empty order list, and nothing in the UI
+could recover it.
+
+Consent is the sharpest edge: a person's recorded "no" staying attached to a record in the bin while
+the record they now are has nothing on file is how somebody gets emailed after asking not to be.
+
+The fix is `MOVED_MODELS` plus three tables that cannot be moved with a plain update because a
+unique key already says "one row per customer" — segment membership (composite PK), trade-account
+contacts, and store credit, where the balances are ADDED and the ledger is re-parented before the
+emptied row is dropped (`AccountCreditTransaction` cascades, so deleting first would destroy the
+history of where the money came from).
+
+**The list is checked against the schema, not against memory.**
+`merge-covers-every-customer-table.test.ts` reads the DMMF and fails if any model carrying a
+`customerId` is in neither `MOVED_MODELS` nor `MERGE_HANDLED_ELSEWHERE`. That is the actual fix —
+the original was not written wrong, it was written once and then thirty-three tables were added by
+people with no reason to know that function existed.
+
+##### How a list joins saved views
+
+`SavedViewsMenu` is a dropdown in the pane toolbar beside Refresh (NOT a bar of its own — that was
+tried and rejected: it cost every visitor a row of chrome for an occasional action, and made views
+read as a feature of one screen rather than something every list has). It is list-agnostic: a list
+supplies its object key, `current` and `baseline` groups, and an `onApply`. The two adapters —
+`viewFilters([...])` to write and `viewFilterValue` / `viewFilterHas` to read back — live in the
+menu module, not in each list, so the operator names are typed as `ConditionOperator` in exactly one
+place (see the trap below). `objectKey` is a free string server-side, so a tenant's own record type
+gets the control with no code written for it.
+
+Three things that are easy to get wrong, all of which were got wrong first:
+
+- **`baseline` is not `{conditions: []}` for every list.** It is what the list shows with nothing
+  chosen: Deals opens on open deals, its board opens on the default pipeline. Without an honest
+  baseline the menu offers to save an untouched list, which is the offer that teaches people to
+  stop reading it.
+- **Save what the resolvers publish, not the control.** The Requests list has one "which requests"
+  dropdown that is three separate facts, stored as `ticket.isResolved`, `ticket.isAssigned` and
+  `ticket.minutesToResolve` — real fields a report could also be written against. Storing the name
+  of the option somebody picked would make the view mean something only that screen understands.
+- **Absence means no restriction.** A view with no condition on a field reads back as "everything"
+  for that control, NOT as the list's opening default. A view says what it says.
+
+**`jsonb` DOES NOT PRESERVE KEY ORDER** — Postgres re-orders by key length then bytes, so a
+condition saved as `{field, operator, value}` returns as `{field, value, operator}`. Comparing
+filter sets with plain `JSON.stringify` therefore reported "changed" about a view that had just
+been saved from exactly those controls: the menu never once reached "Nothing new to save" and
+quietly invited a duplicate of every view. `sameFilters` canonicalises (keys sorted, conditions
+sorted) rather than serialising. Anything else in the platform that compares a stored JSON blob to
+a freshly-built one has this bug waiting in it.
+
+**A TRAP THAT COST AN HOUR AND WILL COST THE NEXT PERSON THE SAME.** `ConditionGroup` is a union of
+`Condition | sub-group`, and a sub-group's fields are ALL defaulted. So a leaf that fails to parse
+as a `Condition` — one wrong operator name, `equals` instead of `eq` — does not raise. It falls
+through to the sub-group branch, Zod strips the unrecognised keys, and it is stored as
+`{"logic":"AND","conditions":[]}`. The filter is gone and the write reports success. The operator
+names are `eq`/`neq`/`gt`/`lt`/`gte`/`lte`/`contains`/`not_contains`/`in`/`not_in`/`is_set`/
+`is_not_set` (`packages/automation-schemas/src/condition.ts`) — check against that list rather than
+guessing, because nothing downstream will tell you. Same family as the `.default()`-survives-
+`.partial()` footgun this doc already records.
 
 #### Deviations recorded during the build
 
@@ -885,22 +1238,22 @@ SHAPE of the gap, not just the number: the audit's finding was "foundation 7–9
 2–5, missing primitives 0–1", and the primitives are now built, which moved six categories that look
 unrelated. What remains is ONE area that does not exist at all (companies) plus a short tail.
 
-| Category               | Audit | Now      | Full plan | Blocked on                      |
-| ---------------------- | ----- | -------- | --------- | ------------------------------- |
-| Data model & tenancy   | 8     | **10**   | 10        | — done                          |
-| Sales engagement       | 2     | **9**    | 9         | — done                          |
-| Tasks & activity log   | 6     | **9**    | 9         | — done                          |
-| Deals & pipelines      | 5     | **10**   | 10        | — done (deal health scoring)    |
-| API, MCP & events      | 7     | 9        | 10        | company + saved-view tools      |
-| Contact management     | 6     | 9        | 10        | saved views (NOT built)         |
-| Quotes, invoicing & AR | 9     | 9        | 10        | e-sign (§12)                    |
-| Lists & segmentation   | 7     | **10**   | 10        | — done (static lists + history) |
-| Extensibility          | 1     | 7        | 10        | custom-object surfaces (§3.6)   |
-| Workflows / automation | 6     | **9**    | 9         | — done, unverified in a browser |
-| Companies              | 5     | **5**    | 9         | phase 7 untouched               |
-| Reporting & dashboards | 3     | **9**    | 9         | — done, unverified in a browser |
-| Service / tickets      | 0     | 9        | 9         | — done, verified in production  |
-| **Weighted overall**   | **5** | **~9.5** | **10**    |                                 |
+| Category               | Audit | Now      | Full plan | Blocked on                          |
+| ---------------------- | ----- | -------- | --------- | ----------------------------------- |
+| Data model & tenancy   | 8     | **10**   | 10        | — done                              |
+| Sales engagement       | 2     | **9**    | 9         | — done                              |
+| Tasks & activity log   | 6     | **9**    | 9         | — done                              |
+| Deals & pipelines      | 5     | **10**   | 10        | — done (deal health scoring)        |
+| API, MCP & events      | 7     | 9        | 10        | company + saved-view tools          |
+| Contact management     | 6     | 9        | 10        | saved views (built, Customers only) |
+| Quotes, invoicing & AR | 9     | 9        | 10        | e-sign (§12)                        |
+| Lists & segmentation   | 7     | **10**   | 10        | — done (static lists + history)     |
+| Extensibility          | 1     | 7        | 10        | custom-object surfaces (§3.6)       |
+| Workflows / automation | 6     | **9**    | 9         | — done, unverified in a browser     |
+| Companies              | 5     | **5**    | 9         | phase 7 untouched                   |
+| Reporting & dashboards | 3     | **9**    | 9         | — done, unverified in a browser     |
+| Service / tickets      | 0     | 9        | 9         | — done, verified in production      |
+| **Weighted overall**   | **5** | **~9.5** | **10**    |                                     |
 
 Verified absent as of this checkpoint (grepped, not assumed): **no saved views**, no `companies`
 rename, no e-sign, no meeting links, no custom-object surfaces. **The one remaining phase is 7** —

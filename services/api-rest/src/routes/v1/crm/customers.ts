@@ -58,7 +58,7 @@ const ListQuery = z.object({
   include_deleted: z.coerce.boolean().optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
-  sort_by: z.enum(['lastOrderAt', 'totalSpent', 'updatedAt', 'createdAt']).optional(),
+  sort_by: z.enum(['score', 'lastOrderAt', 'totalSpent', 'updatedAt', 'createdAt']).optional(),
 });
 
 const TopQuery = z.object({

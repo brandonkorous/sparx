@@ -101,7 +101,15 @@ export function useBulkMerge() {
 /* ── Merge ──────────────────────────────────────────────────────────────── */
 
 export interface MergeResult {
-  reattached: { activities: number; deals: number; tasks: number; addresses: number };
+  reattached: {
+    activities: number;
+    deals: number;
+    tasks: number;
+    addresses: number;
+    /** Orders, invoices, bookings, consents, saved cards, credit — everything
+     *  the person owned that is not one of the four counted above. */
+    everythingElse: number;
+  };
 }
 
 export function useMergeCustomers() {

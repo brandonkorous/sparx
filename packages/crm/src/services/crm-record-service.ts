@@ -1,7 +1,7 @@
 // crmRecordService — rows of a tenant-invented object (docs/144 §3.2, §3.6).
 //
 // One service for EVERY custom object, because there is no build-time knowledge
-// of what those objects are. A business that defines "Service contract" gets
+// of what those objects are. A business that defines "Project" gets
 // create/read/update/delete, search, ownership and site scoping from this file
 // with no code written for them — which is the entire promise of a custom
 // object, and the reason the generic workbench surfaces (§3.6) can exist at all.

@@ -260,7 +260,7 @@ function TaskEditor({ ctx, id, task }: { ctx: SurfaceContext; id: string; task?:
     create.isError || update.isError
       ? taskErrorMessage(
           create.error ?? update.error,
-          'Could not save this task. Nothing was changed.'
+          'The server did not answer. Nothing was changed and your work is still on screen — try again in a moment.'
         )
       : null;
 

@@ -28,7 +28,12 @@ import { z } from 'zod';
 import { b2bAccountContactService, companyService } from '@sparx/crm';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
-import { requireCrmModule, requireCrmOrB2bModule, toCrmContext } from '../../../lib/crm-context.js';
+import {
+  activeCrmSite,
+  requireCrmModule,
+  requireCrmOrB2bModule,
+  toCrmContext,
+} from '../../../lib/crm-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const PathContactId = z.object({ id: z.string().uuid(), contactId: z.string().uuid() });
@@ -73,7 +78,11 @@ function register(app: FastifyInstance, base: string): void {
     requireRole(request, 'viewer');
     await requireCrmOrB2bModule(request);
     const { email } = MatchQuery.parse(request.query);
-    const match = await companyService.matchByEmailDomain(toCrmContext(request), email);
+    // The SITE's preference, not the tenant's — whether to suggest an employer
+    // is saved per business, so reading it at tenant scope always found nothing
+    // and always answered "turned off", however the switch was set.
+    const propertyId = await activeCrmSite(request);
+    const match = await companyService.matchByEmailDomain(toCrmContext(request), email, propertyId);
     return ok(match);
   });
 

@@ -33,7 +33,20 @@ interface Envelope<T> {
   data?: T;
 }
 
-async function publicGet<T>(path: string): Promise<T | null> {
+/** What `/meet/<slug>` needs to frame a booking (docs/144 §12). */
+export interface PublicMeetingLink {
+  id: string;
+  name: string;
+  description: string | null;
+  serviceId: string;
+  hostName: string;
+  durationMinutes: number;
+  timezone: string | null;
+  /** False once retired, or once the service behind it is gone. */
+  active: boolean;
+}
+
+async function publicGet<T>(path: string, init?: RequestInit): Promise<T | null> {
   const route = await resolveSiteRoute();
   if (!route) return null;
   // Scope every public scheduling read to the ACTIVE site, exactly as lib/commerce.ts
@@ -50,6 +63,7 @@ async function publicGet<T>(path: string): Promise<T | null> {
   try {
     const res = await fetch(url, {
       next: { revalidate: 60, tags: ['sparx-scheduling', `scheduling:${route.tenantSlug}`] },
+      ...init,
     });
     const json = (await res.json()) as Envelope<T>;
     if (!res.ok || !json.success || json.data === undefined) return null;
@@ -62,6 +76,24 @@ async function publicGet<T>(path: string): Promise<T | null> {
 /** Bookable services for the active tenant (empty when scheduling is off). */
 export async function listBookableServices(): Promise<PublicService[]> {
   return (await publicGet<PublicService[]>('/v1/public/scheduling/services')) ?? [];
+}
+
+/**
+ * A booking link by its public slug (docs/144 §12), or null if no such link.
+ *
+ * Returns retired links too, with `active: false`. The link is in email
+ * signatures and old quotes that cannot be recalled, so the page has to be able
+ * to say "no longer in use" — which is something the reader can act on, unlike a
+ * not-found page.
+ *
+ * NOT revalidated. A link resolves once per visit because the answer includes
+ * whether it is still taking bookings, and a cached "yes" outlives the moment
+ * somebody retired it.
+ */
+export async function getMeetingLink(slug: string): Promise<PublicMeetingLink | null> {
+  return publicGet<PublicMeetingLink>(`/v1/public/meet/${encodeURIComponent(slug)}`, {
+    cache: 'no-store',
+  });
 }
 
 /** A single bookable service by id, or null if it isn't bookable online. */

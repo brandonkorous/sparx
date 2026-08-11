@@ -25,6 +25,11 @@ import { publishCrmEvent } from '../events';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
 
+/** A list row: the segment plus how many customers are currently in it. */
+export interface SegmentListItem extends Segment {
+  _count: { members: number };
+}
+
 export async function list(
   ctx: ServiceContext,
   args: {
@@ -35,7 +40,7 @@ export async function list(
     take?: number;
     skip?: number;
   } = {}
-): Promise<{ items: Segment[]; total: number }> {
+): Promise<{ items: SegmentListItem[]; total: number }> {
   return withTenant(ctx, async (tx) => {
     const where: Prisma.SegmentWhereInput = {
       ...(args.includeArchived ? {} : { archivedAt: null }),
@@ -57,6 +62,12 @@ export async function list(
         orderBy: [{ isBuiltIn: 'desc' }, { name: 'asc' }],
         take: Math.min(args.take ?? 50, 250),
         skip: args.skip ?? 0,
+        // HOW MANY PEOPLE ARE IN IT is the only question this list is opened to
+        // answer, and it was the one thing missing: six named segments with no
+        // sizes is a table of contents, not an answer, and the only way to learn
+        // one was to open it. Counted in the same query rather than by asking the
+        // per-segment count endpoint once per row.
+        include: { _count: { select: { members: true } } },
       }),
       tx.segment.count({ where }),
     ]);

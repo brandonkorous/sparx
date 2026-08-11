@@ -118,9 +118,24 @@ const segmentRoutes: FastifyPluginAsync = (app) => {
   });
 
   app.post('/v1/crm/segments/preview-count', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     await requireCrmModule(request);
-    const result = await segmentService.previewCount(toCrmContext(request), request.body as never);
+    const body = (request.body ?? {}) as Record<string, unknown>;
+    // Scoped exactly like `create` above, and for the same reason: the count has
+    // to describe the people the segment could actually contain. Unscoped, the
+    // builder said "24 of 24 match" and the saved segment held 22 — the other
+    // two belonging to a different business under the same tenant.
+    const propertyId =
+      body.propertyId === undefined
+        ? await resolvePropertyId(
+            auth,
+            request.headers['x-sparx-property-id'] as string | undefined
+          )
+        : (body.propertyId as string | null);
+    const result = await segmentService.previewCount(toCrmContext(request), {
+      ...body,
+      propertyId,
+    } as never);
     return ok(result);
   });
 

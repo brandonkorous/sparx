@@ -23,6 +23,9 @@ import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
+import { SavedViewsMenu, viewFilterValue, viewFilters } from './saved-views-menu';
+import { scoreBand, useActiveScoringModel } from './scoring-data';
+import type { SavedView } from './workspace-data';
 import {
   LIFECYCLE_STAGES,
   RELATIONSHIP_TYPES,
@@ -58,11 +61,53 @@ const SORTS: { value: CustomerSort; label: string }[] = [
   { value: 'createdAt', label: 'Newest added' },
 ];
 
+/**
+ * The score column and its sort exist only once the business has set scoring up.
+ *
+ * "Who should I call first" is the question a score is FOR, and before this the
+ * answer was unreachable: the number was computed, stored and invisible. But a
+ * column of zeros on a tenant that never wrote a rule is worse than no column —
+ * it invents a ranking out of an unconfigured feature. So the column appears
+ * when the number starts meaning something, and not before.
+ */
+const SCORE_SORT: { value: CustomerSort; label: string } = {
+  value: 'score',
+  label: 'Best score first',
+};
+
 export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
   const [stage, setStage] = useState<'all' | LifecycleStage>('all');
   const [type, setType] = useState<'all' | CustomerType>('all');
   const [sortBy, setSortBy] = useState<CustomerSort>('lastOrderAt');
+  // Which saved view is showing, or null for the whole list. A view SETS the
+  // filters and then stops being involved — changing one afterwards simply means
+  // the current choices differ from the saved ones, which is what re-enables
+  // "save these filters".
+  const [viewId, setViewId] = useState<string | null>(null);
+
+  // This list's controls in the platform's condition DSL, on the field paths the
+  // resolvers already publish — so a view saved here reads the same as a segment
+  // or a report condition written on the same fields.
+  const currentFilters = viewFilters([
+    search.trim() !== '' && {
+      field: 'customer.search',
+      operator: 'contains',
+      value: search.trim(),
+    },
+    stage !== 'all' && { field: 'customer.lifecycleStage', operator: 'eq', value: stage },
+    type !== 'all' && { field: 'customer.type', operator: 'eq', value: type },
+  ]);
+
+  const applyView = (view: SavedView | null): void => {
+    setViewId(view?.id ?? null);
+    setSearch(viewFilterValue(view, 'customer.search'));
+    const nextStage = viewFilterValue(view, 'customer.lifecycleStage');
+    setStage(nextStage === '' ? 'all' : (nextStage as LifecycleStage));
+    const nextType = viewFilterValue(view, 'customer.type');
+    setType(nextType === '' ? 'all' : (nextType as CustomerType));
+    setSortBy((view?.sort?.field ?? 'lastOrderAt') as CustomerSort);
+  };
 
   useEffect(() => {
     ctx.setTitle('Customers');
@@ -94,11 +139,17 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
     return items;
   }, []);
 
+  const scoringModel = useActiveScoringModel('contact');
+  const scored = scoringModel !== null;
+
   const sortItems = useMemo(() => {
     const items: Record<string, string> = {};
+    // Ranked first when it exists, because it is the one sort that answers "who
+    // do I call first" rather than "what happened most recently".
+    if (scored) items[SCORE_SORT.value] = SCORE_SORT.label;
     for (const s of SORTS) items[s.value] = s.label;
     return items;
-  }, []);
+  }, [scored]);
 
   const open = (customer: Customer, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('crm.customer.detail', { id: customer.id }, { target: targetFor(event) });
@@ -164,6 +215,15 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
           <Plus className="size-4" aria-hidden />
           Add a customer
         </Button>
+        <SavedViewsMenu
+          objectKey="contact"
+          current={currentFilters}
+          baseline={viewFilters([])}
+          sort={{ field: sortBy, direction: 'desc' }}
+          nameHint="New enquiries"
+          selectedId={viewId}
+          onApply={applyView}
+        />
         <RefreshButton
           isFetching={isFetching}
           updatedAt={data ? dataUpdatedAt : undefined}
@@ -217,6 +277,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <th>Name</th>
                 <th className="hidden @md:table-cell">Company</th>
                 <th>Stage</th>
+                {scored ? <th className="text-right">Score</th> : null}
                 <th className="text-right">Total spent</th>
                 <th className="hidden text-right @lg:table-cell">Last order</th>
               </tr>
@@ -261,6 +322,30 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
                         {stageMeta.label}
                       </Badge>
                     </td>
+                    {scored ? (
+                      <td className="text-right">
+                        {/* The band, not a bare number: a business owner acts on
+                            "Hot" and never on 61-versus-64. The figure rides
+                            along for whoever does want to compare two.
+
+                            ZERO GETS A DASH, NOT A BADGE. Most people score zero
+                            on a young model, and a badge on every one of them is
+                            a wall of grey that buries the two rows worth looking
+                            at — the exact opposite of what a score column is for.
+                            A badge here means "this one has points". */}
+                        {row.score > 0 ? (
+                          <Badge
+                            color={scoreBand(row.score, scoringModel.maxScore).color}
+                            variant="soft"
+                            size="sm"
+                          >
+                            {row.score} · {scoreBand(row.score, scoringModel.maxScore).label}
+                          </Badge>
+                        ) : (
+                          <span className="text-sm">—</span>
+                        )}
+                      </td>
+                    ) : null}
                     <td className="text-right font-mono text-sm tabular-nums">
                       {formatMoney(row.totalSpent)}
                     </td>

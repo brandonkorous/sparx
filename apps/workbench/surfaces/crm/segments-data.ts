@@ -45,6 +45,10 @@ export interface Segment {
   archivedAt: string | null;
   createdAt: string;
   updatedAt: string;
+  /** How many customers are in it right now. Present on LIST rows only — the
+   *  detail pane counts live against the rules being edited, which is a
+   *  different (and more expensive) question. */
+  _count?: { members: number };
 }
 
 /** One materialised membership, with the customer it points at. */
@@ -138,6 +142,28 @@ export function useInvalidateSegments() {
     void queryClient.invalidateQueries({ queryKey: segmentKeys.all });
     if (id) void queryClient.invalidateQueries({ queryKey: segmentKeys.detail(id) });
   };
+}
+
+/**
+ * Re-cut the segment across every customer, now.
+ *
+ * Membership normally keeps itself up to date — the evaluator re-checks a person
+ * when they change, and re-cuts a segment when its rules change. This is the
+ * escape hatch for the case neither covers: a segment that was SEEDED rather
+ * than created (every built-in arrived that way, which is why they sat at zero),
+ * or one whose customers changed while something was down. Without it an owner
+ * looking at an empty segment they know should have people in it has nothing to
+ * press.
+ */
+export function useRecomputeSegment() {
+  const invalidate = useInvalidateSegments();
+  return useMutation({
+    mutationFn: (id: string) =>
+      api.post<{ scanned: number; changed: number }>(`/v1/crm/segments/${id}/recompute`, {}),
+    onSuccess: (_result, id) => {
+      invalidate(id);
+    },
+  });
 }
 
 /** The editable slice. `rules` is the server's predicate tree; `slug` is the

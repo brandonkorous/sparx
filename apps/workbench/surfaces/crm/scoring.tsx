@@ -144,7 +144,6 @@ function RuleRow({
   const value = leaf?.value;
 
   const kind = fields.find((f) => f.path === field)?.kind;
-  const operators = operatorsFor(kind);
   const needsValue = !VALUELESS.has(operator);
 
   function setLeaf(patch: { field?: string; operator?: string; value?: unknown }) {
@@ -164,12 +163,34 @@ function RuleRow({
     });
   }
 
+  // ══════════════════════════════════════════════════════════════════════════
+  // A COMBOBOX'S VALUE MUST BE AN ELEMENT OF ITS OWN `items`, NOT AN EQUAL COPY
+  // ══════════════════════════════════════════════════════════════════════════
+  //
+  // Both lists are memoized and both selections are looked up BY IDENTITY out of
+  // the memoized array. That is not tidiness — it is the whole fix for a bug that
+  // made a SAVED MODEL UNREADABLE: the operator list used to be built inline
+  // (`items={operators.map(…)}`) with an equal-but-separate object for `value`,
+  // and since the Combobox resolves the selected item by reference, nothing ever
+  // matched. It looked right while an author was clicking, because the component
+  // was holding the very object they had picked — and then went blank the moment
+  // the state was re-seeded from the server, which is every time anybody reopens
+  // their own scoring rules. The rules underneath were always intact; the screen
+  // simply stopped being able to say what they were.
+  //
+  // The field picker was correct by accident of being written this way. Copy the
+  // shape, not the inline version.
   const fieldOptions = useMemo(
     () => fields.map((f) => ({ value: f.path, label: f.label })),
     [fields]
   );
+  const operatorOptions = useMemo(
+    () => operatorsFor(kind).map((o) => ({ value: o.value, label: o.label })),
+    [kind]
+  );
   const selectedField = fieldOptions.find((o) => o.value === field) ?? null;
-  const selectedOperator = operators.find((o) => o.value === operator) ?? operators[0] ?? null;
+  const selectedOperator =
+    operatorOptions.find((o) => o.value === operator) ?? operatorOptions[0] ?? null;
 
   return (
     <Card className="flex flex-col gap-3 p-3">
@@ -188,12 +209,8 @@ function RuleRow({
         <Combobox
           color="module"
           aria-label="How to compare it"
-          items={operators.map((o) => ({ value: o.value, label: o.label }))}
-          value={
-            selectedOperator
-              ? { value: selectedOperator.value, label: selectedOperator.label }
-              : null
-          }
+          items={operatorOptions}
+          value={selectedOperator}
           onValueChange={(next) => {
             const chosen = next as { value: string } | null;
             if (chosen) setLeaf({ operator: chosen.value });

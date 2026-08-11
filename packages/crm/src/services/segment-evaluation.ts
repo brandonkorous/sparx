@@ -6,6 +6,7 @@
 // reconcile drift from dropped events).
 
 import { withTenant } from '@sparx/db';
+import type { Prisma } from '@sparx/db';
 import { SegmentRuleSchema, evaluateSegmentRule, type SegmentRule } from '@sparx/crm-schemas';
 
 import { buildSegmentRuleProjection } from '../consumers/segment-projection';
@@ -19,7 +20,7 @@ const PREVIEW_SAMPLE_DEFAULT = 250;
  *  dashboard rule editor calls this on every change to show "X of Y match." */
 export async function previewCount(
   ctx: ServiceContext,
-  args: { rule: unknown; sampleSize?: number }
+  args: { rule: unknown; sampleSize?: number; propertyId?: string | null }
 ): Promise<{ matches: number; sampled: number; total: number }> {
   const parsed = SegmentRuleSchema.safeParse(args.rule);
   if (!parsed.success) {
@@ -30,15 +31,29 @@ export async function previewCount(
   const rule: SegmentRule = parsed.data;
   const limit = Math.min(args.sampleSize ?? PREVIEW_SAMPLE_DEFAULT, 1000);
 
+  // THE PREVIEW HAS TO COUNT THE SAME PEOPLE THE SEGMENT CAN CONTAIN.
+  //
+  // A segment draws from ONE site plus the tenant-wide contacts (docs/131 §5),
+  // and the evaluator enforces that when it materialises membership. The preview
+  // did not: it scanned every customer in the tenant, so a rule builder said
+  // "24 of 24 match", the owner saved, and the segment came back with 22 — the
+  // other two belonging to a different business under the same tenant, unable to
+  // join and never explained. Worse than the mismatch, the count was quietly
+  // describing another business's customers.
+  const scope: Prisma.CustomerWhereInput = {
+    deletedAt: null,
+    ...(args.propertyId ? { OR: [{ propertyId: args.propertyId }, { propertyId: null }] } : {}),
+  };
+
   return withTenant(ctx, async (tx) => {
     const [sample, total] = await Promise.all([
       tx.customer.findMany({
-        where: { deletedAt: null },
+        where: scope,
         select: { id: true },
         orderBy: { updatedAt: 'desc' },
         take: limit,
       }),
-      tx.customer.count({ where: { deletedAt: null } }),
+      tx.customer.count({ where: scope }),
     ]);
 
     let matches = 0;

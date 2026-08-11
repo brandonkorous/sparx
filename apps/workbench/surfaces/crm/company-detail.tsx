@@ -3,11 +3,16 @@
 // One company — create it, then manage it.
 //
 // Create and manage are the same surface: `{ id: 'new' }` builds it, `{ id }`
-// manages it. An account is the BUSINESS you trade with — its credit limit, its
-// discount, its payment terms. Its people are customers of the `b2b` kind linked
-// to it from their own records. This is an editable entity, so its name is a
-// field at the top, not a repeated read-only heading. Removing a company is
-// rare, irreversible and admin-only, so it sits in a quiet row after the work.
+// manages it. A company is an ORGANISATION this business deals with — who they
+// are, which email addresses are theirs, who on your team owns the relationship,
+// and which of your contacts work there. If the `b2b` module is on it is also a
+// trading partner, and the terms of that trade appear; if it is not, none of
+// them do, because a credit limit on a dental practice is not a blank field, it
+// is the wrong question.
+//
+// This is an editable entity, so its name is a field at the top, not a repeated
+// read-only heading. Removing a company is rare, irreversible and admin-only, so
+// it sits in a quiet row after the work.
 
 import { useEffect, useMemo, useState } from 'react';
 import {
@@ -25,6 +30,7 @@ import {
   Heading,
   Input,
   Select,
+  Table,
   TagInput,
   Text,
   Textarea,
@@ -39,7 +45,20 @@ import { FormSection } from '../../components/form-section';
 import { useModuleStates } from '../../lib/api/shell-data';
 import { CustomPropertiesPanel } from './custom-properties-panel';
 import { AssociationsPanel } from './associations-panel';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { customerName, lifecycleStageMeta, useCustomers } from './customers-data';
+import { useQuery } from '@sparx/query';
+import { api } from '../../lib/api/client';
+import { ModuleScope } from '../../components/module-scope';
+import {
+  formatMoney as formatInvoiceMoney,
+  normalizeDocument,
+  statusTone,
+  type BillingDocument,
+} from '../invoicing/types';
+import { formatMoney as formatDealMoney, useDeals } from './deals-data';
+import { stageTypeMeta } from './pipelines-data';
+import { priorityLabel, priorityTone, useTickets } from './tickets-data';
+import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useTeamRoster } from '../../lib/api/team';
 import { useViewer } from '../../lib/api/shell-data';
 import {
@@ -295,7 +314,7 @@ function CompanyEditor({
     create.isError || update.isError
       ? accountErrorMessage(
           create.error ?? update.error,
-          'Could not save this company. Nothing was changed.'
+          'The server did not answer. Nothing was changed and your work is still on screen — try again in a moment.'
         )
       : null;
 
@@ -649,30 +668,39 @@ function CompanyEditor({
               </FieldDescription>
             </Field>
 
-            <Field>
-              <FieldLabel>Fleet size</FieldLabel>
-              <FieldControl
-                render={
-                  <div className="max-w-[10rem]">
-                    <Input
-                      color="module"
-                      type="number"
-                      min={0}
-                      inputMode="numeric"
-                      value={draft.fleetSize}
-                      placeholder="Optional"
-                      onChange={(event) => {
-                        set('fleetSize', numberOrEmpty(event.target.value));
-                      }}
-                    />
-                  </div>
-                }
-              />
-              <FieldDescription>
-                If this business runs a fleet, how many vehicles or machines. Leave blank if it does
-                not apply.
-              </FieldDescription>
-            </Field>
+            {/* FLEET SIZE IS A TRADE FIELD, AND AN INDUSTRY-SPECIFIC ONE. It
+                exists because a supplier selling to hauliers holds stock against
+                how many machines a customer runs, and `b2b_fleet_holds` keys off
+                it. Asked of a caterer or a dental practice it is not merely
+                blank, it is a question about their business that assumes the
+                wrong business — so it arrives with the `b2b` module and leaves
+                with it, like every other term below the same line. */}
+            {tradeEnabled ? (
+              <Field>
+                <FieldLabel>Fleet size</FieldLabel>
+                <FieldControl
+                  render={
+                    <div className="max-w-[10rem]">
+                      <Input
+                        color="module"
+                        type="number"
+                        min={0}
+                        inputMode="numeric"
+                        value={draft.fleetSize}
+                        placeholder="Optional"
+                        onChange={(event) => {
+                          set('fleetSize', numberOrEmpty(event.target.value));
+                        }}
+                      />
+                    </div>
+                  }
+                />
+                <FieldDescription>
+                  If this business runs vehicles or machines you hold stock against, how many. Leave
+                  blank if it does not apply.
+                </FieldDescription>
+              </Field>
+            ) : null}
 
             <Field>
               <FieldLabel>Labels</FieldLabel>
@@ -712,15 +740,23 @@ function CompanyEditor({
             </Field>
           </FormSection>
 
-          {/* The people at this business, and any group it belongs to
-              (docs/144 §6). Writes immediately, so it is only offered once the
-              account exists. */}
+          {/* WHO WORKS HERE. Not the same thing as the panel below it: this is
+              every contact whose employer IS this company (`companyId`), which is
+              what the domain offer sets and what the list's People count counts.
+              Without it the pane contradicted its own list — "1 person" on one
+              screen, "nothing is linked to this yet" on the next. */}
+          {!isNew && account ? <CompanyPeople companyId={account.id} ctx={ctx} /> : null}
+          {!isNew && account ? <CompanyRelated companyId={account.id} ctx={ctx} /> : null}
+
+          {/* Everything else connected to this company — the group it belongs to,
+              a deal it is the client on, whoever signs its paperwork (docs/144
+              §6). Writes immediately, so it is only offered once it exists. */}
           {!isNew && account ? (
             <AssociationsPanel
               objectKey="company"
               recordId={account.id}
               ctx={ctx}
-              title="Who is involved here"
+              title="Linked to this company"
             />
           ) : null}
 
@@ -760,5 +796,282 @@ function CompanyEditor({
         </div>
       </div>
     </div>
+  );
+}
+
+/**
+ * The people whose employer is this company.
+ *
+ * This is `customer.companyId`, not the association graph — the same link the
+ * domain offer sets when a new contact writes in from one of the company's
+ * addresses, and the same one the list counts under People. A company that
+ * cannot show you its own people is a filing cabinet with the drawer welded
+ * shut: the reason anybody opens a company is to find who they were dealing
+ * with there.
+ *
+ * Stage rides each row because "who at this client is still just a lead" is the
+ * question a company view is scanned for, and it is the one thing a name and an
+ * email cannot tell you.
+ */
+/**
+ * What the company owes, what is in flight with them, and what they have asked
+ * for — the three questions a company record was silently unable to answer.
+ *
+ * A company knew who worked there and nothing else. Its invoices, its deals and
+ * its support requests all existed, all carried a `company_id`, and all were
+ * filterable on the API already; there was simply no screen that asked. So the
+ * pane could show a trade account with a £40k credit limit and give no hint that
+ * they were £12k overdue on it, which is the single fact that decides whether
+ * you take the next order.
+ *
+ * Read-only on purpose, like every related list in the CRM: a row opens the real
+ * record. This is a lens onto those things, never a second place to edit them.
+ */
+function CompanyRelated({ companyId, ctx }: { companyId: string; ctx: SurfaceContext }) {
+  const open = (surface: string, id: string, event: { shiftKey: boolean; altKey: boolean }) => {
+    const target: OpenTarget = event.altKey ? 'window' : event.shiftKey ? 'beside' : 'tab';
+    ctx.open(surface, { id }, { target });
+  };
+
+  const invoices = useQuery({
+    queryKey: ['invoicing', 'documents', { companyId }],
+    queryFn: () =>
+      api
+        .list<BillingDocument>('/v1/invoicing/documents', {
+          companyId,
+          sort_by: 'createdAt',
+          order: 'desc',
+          take: 50,
+        })
+        .then((result) => ({ items: result.items.map(normalizeDocument) })),
+  });
+  const deals = useDeals({ companyId, take: 50 });
+  const tickets = useTickets({ companyId, state: 'all', take: 50 });
+
+  const invoiceRows = invoices.data?.items ?? [];
+  const dealRows = deals.data?.items ?? [];
+  const ticketRows = tickets.data?.items ?? [];
+
+  // What is still owed across everything unpaid. The number an owner is looking
+  // for is rarely one invoice — it is "how exposed am I to this company".
+  const owed = invoiceRows.reduce((sum, doc) => sum + doc.balance, 0);
+  const owedCurrency = invoiceRows[0]?.currency ?? 'USD';
+  const unpaidCount = invoiceRows.filter((doc) => doc.balance > 0).length;
+
+  return (
+    <>
+      <FormSection
+        title="What they owe"
+        description="Everything billed to this company or to anyone who works here, newest first — because a contact's unpaid invoice is still this company's debt."
+      >
+        <ModuleScope module="invoicing">
+          {invoices.isPending ? (
+            <Text className="text-sm" role="status">
+              Loading&hellip;
+            </Text>
+          ) : invoiceRows.length === 0 ? (
+            <Text className="text-sm">
+              Nothing has been billed to this company yet. Raise an invoice from Invoicing and pick
+              them as the customer.
+            </Text>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {owed > 0 ? (
+                <Alert color="warning" variant="soft">
+                  <AlertContent>
+                    <AlertTitle>
+                      {formatInvoiceMoney(owed, owedCurrency)} outstanding
+                      {unpaidCount === 1
+                        ? ' on one document'
+                        : ` across ${String(unpaidCount)} documents`}
+                    </AlertTitle>
+                  </AlertContent>
+                </Alert>
+              ) : null}
+              <Table size="sm" hover>
+                <thead>
+                  <tr>
+                    <th>Number</th>
+                    <th>Status</th>
+                    <th className="text-right">Total</th>
+                    <th className="text-right">Owed</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {invoiceRows.map((doc) => (
+                    <tr
+                      key={doc.id}
+                      className="cursor-pointer"
+                      onClick={(event) => {
+                        open('invoicing.invoice.edit', doc.id, event);
+                      }}
+                    >
+                      <td className="font-mono text-sm">{doc.number ?? 'Draft'}</td>
+                      <td>
+                        <Badge color={statusTone(doc.status)} variant="soft" size="sm">
+                          {doc.status}
+                        </Badge>
+                      </td>
+                      <td className="text-right font-mono text-sm tabular-nums">
+                        {formatInvoiceMoney(doc.total, doc.currency)}
+                      </td>
+                      <td className="text-right font-mono text-sm tabular-nums">
+                        {formatInvoiceMoney(doc.balance, doc.currency)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
+          )}
+        </ModuleScope>
+      </FormSection>
+
+      <FormSection title="Deals" description="Sales being worked with this company.">
+        {deals.isPending ? (
+          <Text className="text-sm" role="status">
+            Loading&hellip;
+          </Text>
+        ) : dealRows.length === 0 ? (
+          <Text className="text-sm">No deals with this company yet.</Text>
+        ) : (
+          <Table size="sm" hover>
+            <thead>
+              <tr>
+                <th>Deal</th>
+                <th>Stage</th>
+                <th className="text-right">Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {dealRows.map((deal) => {
+                const meta = stageTypeMeta(deal.stage?.stageType ?? 'open');
+                return (
+                  <tr
+                    key={deal.id}
+                    className="cursor-pointer"
+                    onClick={(event) => {
+                      open('crm.deal.detail', deal.id, event);
+                    }}
+                  >
+                    <td className="font-medium">{deal.title}</td>
+                    <td>
+                      <Badge color={meta.tone} variant="soft" size="sm">
+                        {deal.stage?.name ?? meta.label}
+                      </Badge>
+                    </td>
+                    <td className="text-right font-mono text-sm tabular-nums">
+                      {formatDealMoney(deal.value, deal.currency)}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
+        )}
+      </FormSection>
+
+      <FormSection
+        title="Requests"
+        description="Support this company has asked for, open and resolved."
+      >
+        {tickets.isPending ? (
+          <Text className="text-sm" role="status">
+            Loading&hellip;
+          </Text>
+        ) : ticketRows.length === 0 ? (
+          <Text className="text-sm">Nobody here has raised a request.</Text>
+        ) : (
+          <Table size="sm" hover>
+            <thead>
+              <tr>
+                <th className="w-16 text-right">#</th>
+                <th>Request</th>
+                <th>Urgency</th>
+                <th className="hidden @lg:table-cell">Stage</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ticketRows.map((row) => (
+                <tr
+                  key={row.ticket.id}
+                  className="cursor-pointer"
+                  onClick={(event) => {
+                    open('crm.ticket.detail', row.ticket.id, event);
+                  }}
+                >
+                  <td className="text-right text-sm tabular-nums">{row.ticket.number}</td>
+                  <td className="font-medium">{row.ticket.subject}</td>
+                  <td>
+                    <Badge color={priorityTone(row.ticket.priority)} variant="soft" size="sm">
+                      {priorityLabel(row.ticket.priority)}
+                    </Badge>
+                  </td>
+                  <td className="hidden text-sm @lg:table-cell">{row.ticket.stage?.name ?? '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        )}
+      </FormSection>
+    </>
+  );
+}
+
+function CompanyPeople({ companyId, ctx }: { companyId: string; ctx: SurfaceContext }) {
+  const { data, isPending } = useCustomers({ companyId });
+  const people = data?.items ?? [];
+
+  const open = (id: string, event: { shiftKey: boolean; altKey: boolean }): void => {
+    const target: OpenTarget = event.altKey ? 'window' : event.shiftKey ? 'beside' : 'tab';
+    ctx.open('crm.customer.detail', { id }, { target });
+  };
+
+  return (
+    <FormSection
+      title="People here"
+      description="Everyone whose employer is this company. Open one to see their history."
+    >
+      {isPending ? (
+        <Text className="text-sm" role="status">
+          Loading…
+        </Text>
+      ) : people.length === 0 ? (
+        <Text className="text-sm">
+          Nobody is filed under this company yet. Open a contact and set their company, or add this
+          company&rsquo;s email domains above and new arrivals will be offered it automatically.
+        </Text>
+      ) : (
+        <ul className="flex flex-col gap-1">
+          {people.map((person) => {
+            const stage = lifecycleStageMeta(person.lifecycleStage);
+            return (
+              <li key={person.id}>
+                <button
+                  type="button"
+                  className="hover:bg-base-200 flex w-full items-center gap-3 rounded-md px-2 py-2 text-left"
+                  onClick={(event) => {
+                    open(person.id, event);
+                  }}
+                >
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-medium">{customerName(person)}</span>
+                    {person.jobTitle !== null && person.jobTitle !== '' ? (
+                      <span className="block text-sm">{person.jobTitle}</span>
+                    ) : null}
+                  </span>
+                  {person.email !== null ? (
+                    <span className="hidden text-sm @md:block">{person.email}</span>
+                  ) : null}
+                  <Badge color={stage.color} variant="soft" size="sm">
+                    {stage.label}
+                  </Badge>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </FormSection>
   );
 }

@@ -50,6 +50,12 @@ export interface Deal {
   tags: string[];
   /** The extra details THIS business tracks on a deal (docs/144 §3). */
   customProperties: Record<string, unknown>;
+  /** How healthy this business's own rules think the deal is (docs/144 §10).
+   *  Asks a different question from a contact's score — "will this close",
+   *  not "how interested are they". */
+  score: number;
+  /** When the score was last worked out. Null means it never has been. */
+  scoredAt: string | null;
   createdAt: string;
   updatedAt: string;
   /** Present on list + detail via the service include. */
@@ -62,6 +68,11 @@ export interface DealListParams {
   pipelineId?: string;
   stageId?: string;
   customerId?: string;
+  /** Every deal with this company, whoever the named contact is. Sent as
+   *  `b2b_account_id` — the wire name deliberately survived the company rename
+   *  (docs/144 §11 deviation 1), so the parameter and the field differ on
+   *  purpose rather than by mistake. */
+  companyId?: string;
   state?: 'open' | 'closed';
   /**
    * How many to pull. The table wants a page; the board wants every deal on the
@@ -139,6 +150,7 @@ export function useDeals(params: DealListParams) {
         ...(params.pipelineId ? { pipeline_id: params.pipelineId } : {}),
         ...(params.stageId ? { stage_id: params.stageId } : {}),
         ...(params.customerId ? { customer_id: params.customerId } : {}),
+        ...(params.companyId ? { b2b_account_id: params.companyId } : {}),
         ...(params.state ? { state: params.state } : {}),
         take: params.take ?? 100,
       }),

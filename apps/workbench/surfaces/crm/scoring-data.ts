@@ -116,7 +116,12 @@ export function scoreBand(
   if (pct >= 70) return { label: 'Hot', color: 'success' };
   if (pct >= 40) return { label: 'Warm', color: 'warning' };
   if (pct > 0) return { label: 'Cool', color: 'neutral' };
-  return { label: 'Not scored', color: 'neutral' };
+  // "Cold", NOT "not scored". Once a model exists, a zero is a real verdict —
+  // the rules ran and nothing matched. Calling that "not scored" tells an owner
+  // the machinery never looked at this person, which is a different fact and a
+  // false one. Whether anything has been scored AT ALL is `scoredAt`'s job, and
+  // the panel reads it there.
+  return { label: 'Cold', color: 'neutral' };
 }
 
 /** How a score change came about, in words. */
@@ -186,6 +191,38 @@ export function useScorePreview(input: {
     placeholderData: (previous) => previous,
     retry: false,
   });
+}
+
+/**
+ * Why this record scores what it scores, RIGHT NOW.
+ *
+ * The same preview endpoint the rule editor uses, called with no rule override —
+ * which makes the server fall back to the saved model, so this is the live
+ * breakdown rather than a hypothetical one. Sending the record's own rules back
+ * up would be a second copy of the model that goes stale the moment somebody
+ * edits it.
+ */
+export function useScoreBreakdown(objectKey: string, recordId: string) {
+  return useQuery({
+    queryKey: scoringKeys.preview({ objectKey, recordId, live: true }),
+    queryFn: () =>
+      api.post<ScoreBreakdown | null>('/v1/crm/scoring/preview', { objectKey, recordId }),
+    enabled: recordId !== '',
+    retry: false,
+  });
+}
+
+/**
+ * The model that is actually running for an object, if there is one.
+ *
+ * Null is a REAL answer and the common one — a business that has never set up
+ * scoring has no model, and every record sits at zero. The panel says that in
+ * words instead of showing a confident 0, which would read as "we scored them
+ * and they came out worthless".
+ */
+export function useActiveScoringModel(objectKey: string): ScoringModel | null {
+  const { data } = useScoringModels(objectKey);
+  return (data?.items ?? []).find((m) => m.isActive) ?? null;
 }
 
 /** One record's score history — the "why is this 74" panel. */

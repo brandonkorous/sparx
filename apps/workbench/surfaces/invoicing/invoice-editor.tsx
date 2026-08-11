@@ -41,6 +41,7 @@ import { InvoiceSummary } from './invoice-summary';
 import { HistorySection } from './history';
 import { DocumentActions, StageControl, useDocumentWorkflow } from './lifecycle';
 import { PaymentsSection } from './payments';
+import { SignaturesSection } from './signatures';
 import { InvoiceValidationError, listDocumentWorkflows, saveInvoice } from './save';
 import { newLineKey, type DraftLine } from './totals';
 import type { LineTypeOption } from './line-editor-modal';
@@ -387,6 +388,14 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
                     draft that doesn't exist yet. Deliberately OUTSIDE the
                     read-only rule: a locked/finalized invoice is exactly the
                     one getting paid. */}
+                {/* Asking the customer to accept it, and what came back
+                    (docs/144 §12). Saved documents only — there is nothing to
+                    sign until the thing exists, and a link to a draft that is
+                    still being edited is a link to a moving target. */}
+                {doc ? (
+                  <SignaturesSection doc={doc} isDraft={currentStage?.stageType === 'draft'} />
+                ) : null}
+
                 {doc ? <PaymentsSection doc={doc} /> : null}
 
                 {/* Frozen records — an appendix about the past. Renders

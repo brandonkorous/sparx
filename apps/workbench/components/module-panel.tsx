@@ -17,7 +17,7 @@
 // `+`. An earlier version hand-rolled these rows as raw <button>s with their own
 // hover classes, which is exactly the re-skinning the design rules ban.
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Compass, Pin, PinOff, Plus } from 'lucide-react';
 import {
   Badge,
@@ -35,7 +35,7 @@ import {
   Tooltip,
 } from '@wizeworks/silicaui-react';
 import { ModuleScope, type WorkbenchModule } from './module-scope';
-import { buildNav } from '../lib/surfaces/nav';
+import { useVisibleNav } from '../lib/surfaces/use-visible-nav';
 import { resolveTitle, type OpenTarget, type SurfaceDefinition } from '../lib/surfaces/registry';
 import { useWorkbench } from '../lib/workbench/context';
 import { isTourableModule } from '../lib/tour/module-tours';
@@ -84,6 +84,16 @@ function NavBadgeCount({ useCount }: { useCount: () => number | null | undefined
   );
 }
 
+/** React key for a nav row. The surface key alone stopped being unique the
+ *  moment one surface could appear once per tenant-defined record type. */
+function navRowKey(surface: SurfaceDefinition): string {
+  const params = surface.defaultParams;
+  if (!params) return surface.key;
+  return `${surface.key}:${Object.entries(params)
+    .map(([k, v]) => `${k}=${String(v)}`)
+    .join(',')}`;
+}
+
 function matches(surface: SurfaceDefinition, filter: string): boolean {
   if (!filter) return true;
   const needle = filter.toLowerCase();
@@ -99,7 +109,13 @@ export function ModulePanel({
   pinnable = true,
 }: ModulePanelProps) {
   const { controller } = useWorkbench();
-  const nav = useMemo(() => buildNav(), []);
+  // The SAME navigation the rail and the mobile drawer read, not a second call
+  // to buildNav(). The two disagreed the moment navigation stopped being purely
+  // static: a record type a business invented is added to the nav by the hook,
+  // so a panel building its own copy showed every built-in surface and none of
+  // the tenant's own. This is the drift this file's header warns about, and it
+  // had already happened here.
+  const nav = useVisibleNav();
   const entry = nav.find((candidate) => candidate.module === module);
   const listRef = useRef<HTMLDivElement>(null);
   const [filter, setFilter] = useState('');
@@ -138,8 +154,13 @@ export function ModulePanel({
     next?.focus();
   };
 
-  const openSurface = (key: string, event: { shiftKey: boolean; altKey: boolean }) => {
-    controller.open(key, undefined, { target: targetFor(event) });
+  const openSurface = (
+    surface: SurfaceDefinition,
+    event: { shiftKey: boolean; altKey: boolean }
+  ) => {
+    // A row for a tenant-defined record type is the generic records surface
+    // plus which type it is showing, so the params ride on the row.
+    controller.open(surface.key, surface.defaultParams, { target: targetFor(event) });
     if (!pinned) onDismiss();
   };
 
@@ -262,7 +283,7 @@ export function ModulePanel({
                     // button inside a button is invalid HTML that React reports
                     // as a hydration error. `trailing` is for badges and
                     // chevrons — anything clickable has to sit outside.
-                    <div key={surface.key} className="group/row relative flex items-center">
+                    <div key={navRowKey(surface)} className="group/row relative flex items-center">
                       <Tooltip
                         side="right"
                         content={`${label} — Shift-click to open alongside, Alt-click for a new window`}
@@ -276,7 +297,7 @@ export function ModulePanel({
                           trailing={<NavBadge surface={surface} />}
                           onKeyDown={onItemKeyDown}
                           onClick={(event) => {
-                            openSurface(surface.key, event);
+                            openSurface(surface, event);
                           }}
                         >
                           {label}

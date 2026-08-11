@@ -82,6 +82,23 @@ interface Draft {
   fields: DraftField[];
 }
 
+/**
+ * A first guess at the plural, offered as a starting point rather than imposed.
+ *
+ * English is irregular and this is not a linguistics problem worth solving —
+ * "Person" will come out "Persons" and somebody will fix it in the box next to
+ * it, which takes two seconds and is the point of showing it as a value instead
+ * of applying it silently at save time. It handles the endings that would look
+ * careless if it did not: -y → -ies, and the sibilants that need -es.
+ */
+function pluralise(singular: string): string {
+  const word = singular.trim();
+  if (word === '') return '';
+  if (/[^aeiou]y$/i.test(word)) return `${word.slice(0, -1)}ies`;
+  if (/(s|x|z|ch|sh)$/i.test(word)) return `${word}es`;
+  return `${word}s`;
+}
+
 const EMPTY_DRAFT: Draft = {
   key: '',
   label: '',
@@ -118,6 +135,8 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const archive = useArchiveObjectType(objectKey);
 
   const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT);
+  // Stops the guessed plural from overwriting one they typed themselves.
+  const [pluralTouched, setPluralTouched] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   /** What the draft looked like when it was last in agreement with the server. */
@@ -154,7 +173,7 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const isBuiltin = type?.kind === 'builtin';
 
   const nameError =
-    draft.label.trim() === '' ? 'Give this record type a name, like "Service contract".' : null;
+    draft.label.trim() === '' ? 'Give this record type a name, like "Project".' : null;
   const keyError =
     isNew && draft.key.trim() !== '' && !/^[a-z][a-z0-9_]*$/.test(draft.key.trim())
       ? 'Use lowercase letters, numbers and underscores, starting with a letter.'
@@ -333,14 +352,19 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 render={
                   <Input
                     value={draft.label}
-                    placeholder="Service contract"
+                    placeholder="Project"
                     onChange={(e) => {
                       const label = e.target.value;
                       setDraft((d) => ({
                         ...d,
                         label,
-                        // Only auto-fill while they haven't typed their own.
-                        labelPlural: d.labelPlural === '' ? '' : d.labelPlural,
+                        // Follow the singular until somebody types their own
+                        // plural, the same way the address below follows the
+                        // name. It has to be a real VALUE, not a placeholder:
+                        // a greyed "Projects" that saves as "Project" is a
+                        // field that lied about what it was going to do, and
+                        // the sidebar afterwards is where you find out.
+                        labelPlural: pluralTouched ? d.labelPlural : pluralise(label),
                         key: isNew && d.key === '' ? '' : d.key,
                       }));
                     }}
@@ -356,14 +380,18 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 render={
                   <Input
                     value={draft.labelPlural}
-                    placeholder="Service contracts"
+                    placeholder="Projects"
                     onChange={(e) => {
+                      setPluralTouched(true);
                       setDraft((d) => ({ ...d, labelPlural: e.target.value }));
                     }}
                   />
                 }
               />
-              <FieldDescription>Leave blank to use the same word.</FieldDescription>
+              <FieldDescription>
+                Filled in from the name above — change it for a word that does not simply take an
+                &ldquo;s&rdquo;, or clear it if the word is the same either way.
+              </FieldDescription>
             </Field>
 
             {isNew ? (
@@ -373,7 +401,7 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   render={
                     <Input
                       value={draft.key}
-                      placeholder="service_contract"
+                      placeholder="project"
                       onChange={(e) => {
                         setDraft((d) => ({ ...d, key: e.target.value }));
                       }}
@@ -400,7 +428,7 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   <Textarea
                     rows={2}
                     value={draft.description}
-                    placeholder="The agreements we hold with customers to service their equipment."
+                    placeholder="A piece of work we run for a customer, from the go-ahead to the final invoice."
                     onChange={(e) => {
                       setDraft((d) => ({ ...d, description: e.target.value }));
                     }}

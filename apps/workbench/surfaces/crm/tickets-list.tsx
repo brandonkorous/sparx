@@ -29,6 +29,8 @@ import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
+import { SavedViewsMenu, viewFilterHas, viewFilterValue, viewFilters } from './saved-views-menu';
+import type { SavedView } from './workspace-data';
 import {
   priorityLabel,
   priorityTone,
@@ -61,6 +63,36 @@ export function TicketsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
   const [view, setView] = useState<'open' | 'mine' | 'unassigned' | 'late' | 'all'>('open');
   const [priority, setPriority] = useState<'all' | TicketPriority>('all');
+  const [viewId, setViewId] = useState<string | null>(null);
+
+  // "Which requests" is one dropdown but three separate facts, so it is saved as
+  // three conditions on the fields the resolvers publish rather than as the name
+  // of the option somebody picked. That is what lets the same view be handed to
+  // a report — and it is why "Late" survives as a real question (no time left on
+  // the promise) instead of a magic word only this screen understands.
+  const currentFilters = viewFilters([
+    search.trim() !== '' && { field: 'ticket.search', operator: 'contains', value: search.trim() },
+    view !== 'all' && { field: 'ticket.isResolved', operator: 'eq', value: false },
+    view === 'unassigned' && { field: 'ticket.isAssigned', operator: 'eq', value: false },
+    view === 'late' && { field: 'ticket.minutesToResolve', operator: 'lt', value: 0 },
+    priority !== 'all' && { field: 'ticket.priority', operator: 'eq', value: priority },
+  ]);
+
+  const applyView = (saved: SavedView | null): void => {
+    setViewId(saved?.id ?? null);
+    setSearch(viewFilterValue(saved, 'ticket.search'));
+    setView(
+      viewFilterHas(saved, 'ticket.isAssigned')
+        ? 'unassigned'
+        : viewFilterHas(saved, 'ticket.minutesToResolve')
+          ? 'late'
+          : viewFilterHas(saved, 'ticket.isResolved')
+            ? 'open'
+            : 'all'
+    );
+    const nextPriority = viewFilterValue(saved, 'ticket.priority');
+    setPriority(nextPriority === '' ? 'all' : (nextPriority as TicketPriority));
+  };
 
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useTickets({
     q: search,
@@ -147,6 +179,17 @@ export function TicketsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <Plus className="size-4" aria-hidden />
           New request
         </Button>
+        {/* No sort: this queue is ordered by what runs out first, which is
+            business-hours arithmetic the server does. A saved view must not
+            overwrite that with a column somebody happened to click. */}
+        <SavedViewsMenu
+          objectKey="ticket"
+          current={currentFilters}
+          baseline={viewFilters([{ field: 'ticket.isResolved', operator: 'eq', value: false }])}
+          nameHint="Needs me today"
+          selectedId={viewId}
+          onApply={applyView}
+        />
         <RefreshButton
           isFetching={isFetching}
           updatedAt={data ? dataUpdatedAt : undefined}

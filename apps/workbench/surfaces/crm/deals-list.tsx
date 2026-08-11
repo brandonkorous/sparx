@@ -48,6 +48,9 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { RecordBoard, type BoardColumn, type BoardTone } from '../../components/record-board';
+import { SavedViewsMenu, viewFilterValue, viewFilters } from './saved-views-menu';
+import { scoreBand, useActiveScoringModel } from './scoring-data';
+import type { SavedView } from './workspace-data';
 import { readListView, writeListView, type ListView } from '../../lib/view-preference';
 import { usePipelines, stageTypeMeta, type PipelineStage } from './pipelines-data';
 import {
@@ -94,6 +97,10 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
     setView(readListView(SURFACE_KEY, 'board'));
   }, []);
 
+  // Null when this business has not set deal scoring up — which is what keeps a
+  // health badge off every card on a board where health means nothing yet.
+  const dealScoreMax = useActiveScoringModel('deal')?.maxScore ?? null;
+
   const chooseView = (next: ListView) => {
     setView(next);
     writeListView(SURFACE_KEY, next);
@@ -112,6 +119,65 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
     if (pipelineId !== 'all') return pipelineList.find((p) => p.id === pipelineId) ?? null;
     return pipelineList.find((p) => p.isDefault) ?? pipelineList[0] ?? null;
   }, [pipelineId, pipelineList]);
+
+  const [viewId, setViewId] = useState<string | null>(null);
+
+  // Board and table narrow by different things, so they save different views —
+  // the board has no open/closed control at all (a pipeline without its won and
+  // lost columns is not that pipeline), and its pipeline is always set to
+  // something. Saving the board's resolved pipeline rather than the literal
+  // "all" is deliberate: reopening the view should land on the board somebody
+  // was looking at, not on whichever pipeline happens to be default that month.
+  const currentFilters = isBoard
+    ? viewFilters([
+        search.trim() !== '' && {
+          field: 'deal.search',
+          operator: 'contains',
+          value: search.trim(),
+        },
+        Boolean(boardPipeline) && {
+          field: 'deal.pipelineId',
+          operator: 'eq',
+          value: boardPipeline?.id,
+        },
+      ])
+    : viewFilters([
+        search.trim() !== '' && {
+          field: 'deal.search',
+          operator: 'contains',
+          value: search.trim(),
+        },
+        pipelineId !== 'all' && { field: 'deal.pipelineId', operator: 'eq', value: pipelineId },
+        // The published field is the boolean the resolvers already expose, not
+        // this list's three-way control — `deal.isClosed` is what a report or an
+        // automation condition would be written against.
+        state !== 'all' && { field: 'deal.isClosed', operator: 'eq', value: state === 'closed' },
+      ]);
+
+  // What "nothing chosen" means here — the table opens on open deals, and the
+  // board opens on the default pipeline. Neither is an empty filter set, so
+  // without this the menu would offer to save an untouched list.
+  const defaultPipelineId = pipelineList.find((p) => p.isDefault)?.id ?? pipelineList[0]?.id;
+  const baselineFilters = isBoard
+    ? viewFilters([
+        Boolean(defaultPipelineId) && {
+          field: 'deal.pipelineId',
+          operator: 'eq',
+          value: defaultPipelineId,
+        },
+      ])
+    : viewFilters([{ field: 'deal.isClosed', operator: 'eq', value: false }]);
+
+  const applyView = (view: SavedView | null): void => {
+    setViewId(view?.id ?? null);
+    setSearch(viewFilterValue(view, 'deal.search'));
+    const nextPipeline = viewFilterValue(view, 'deal.pipelineId');
+    setPipelineId(nextPipeline === '' ? 'all' : nextPipeline);
+    // No condition means no restriction, which is "all deals" — not the list's
+    // own opening default. A view says what it says.
+    const closed = viewFilterValue(view, 'deal.isClosed');
+    setState(closed === '' ? 'all' : closed === 'true' ? 'closed' : 'open');
+  };
 
   const params: DealListParams = isBoard
     ? {
@@ -292,6 +358,14 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <Plus className="size-4" aria-hidden />
           New deal
         </Button>
+        <SavedViewsMenu
+          objectKey="deal"
+          current={currentFilters}
+          baseline={baselineFilters}
+          nameHint="Closing this month"
+          selectedId={viewId}
+          onApply={applyView}
+        />
         <RefreshButton
           isFetching={isFetching}
           updatedAt={data ? dataUpdatedAt : undefined}
@@ -364,7 +438,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
               emptyColumnText="Nothing at this step yet."
               onMove={handleMove}
               onOpenCard={open}
-              renderCard={(deal) => <DealCard deal={deal} />}
+              renderCard={(deal) => <DealCard deal={deal} scoreMax={dealScoreMax} />}
             />
           </div>
         ) : (
@@ -454,9 +528,13 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
 /* ── The card ───────────────────────────────────────────────────────────── */
 
-function DealCard({ deal }: { deal: Deal }) {
+function DealCard({ deal, scoreMax }: { deal: Deal; scoreMax: number | null }) {
   const customer = dealCustomerName(deal.customer);
   const signal = dealDueSignal(deal);
+  // Health only where the business has told us what healthy means. A board full
+  // of "Not scored" would be a column of noise on every tenant that never wrote
+  // a rule, and a bare 0 would libel every deal on the board.
+  const band = scoreMax !== null && deal.score > 0 ? scoreBand(deal.score, scoreMax) : null;
 
   return (
     <div className="flex min-w-0 flex-col gap-1.5">
@@ -465,11 +543,18 @@ function DealCard({ deal }: { deal: Deal }) {
         <span className="font-mono text-sm tabular-nums">
           {formatMoney(deal.value, deal.currency)}
         </span>
-        {signal ? (
-          <Badge color={signal.tone} variant="soft" size="sm">
-            {signal.label}
-          </Badge>
-        ) : null}
+        <span className="flex shrink-0 items-baseline gap-1">
+          {band ? (
+            <Badge color={band.color} variant="soft" size="sm">
+              {deal.score}
+            </Badge>
+          ) : null}
+          {signal ? (
+            <Badge color={signal.tone} variant="soft" size="sm">
+              {signal.label}
+            </Badge>
+          ) : null}
+        </span>
       </div>
       {customer ? <p className="truncate text-sm">{customer}</p> : null}
     </div>

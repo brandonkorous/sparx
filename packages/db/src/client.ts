@@ -64,12 +64,45 @@ function connectionUrl(): string | undefined {
 
 const datasourceUrl = connectionUrl();
 
+/**
+ * `customer.company` — the field name every consumer already reads.
+ *
+ * The COLUMN is `customers.company_name` and the Prisma field is `companyName`,
+ * because `Customer.company` had to be freed up for the relation to the Company
+ * record (docs/144 §11). That is an internal rename. It is NOT a wire rename:
+ * `company` is the key in the create/update schema, in the segment source
+ * `customer.company`, in the scoring paths and in the CSV import header, and it
+ * is what every payload carrying a customer has always published.
+ *
+ * Doing this as a computed field rather than a serializer is the whole point. A
+ * customer does not only cross the wire from the customers routes — it rides
+ * along inside a deal, a ticket, an order, a cart, a booking and a chat thread,
+ * about 120 places in all, every one of them a plain Prisma `include`. A
+ * serializer would have to be remembered at each of them, and at each new one
+ * forever after; this is derived once, at the client, and is therefore correct
+ * everywhere by construction — including places nobody has written yet.
+ *
+ * `needs` makes Prisma fetch `companyName` even under a narrowing `select`, so
+ * the value is never quietly null. Raw SQL bypasses extensions and builds its
+ * own shapes, which is fine — it always did.
+ */
+const withDerivedFields = {
+  result: {
+    customer: {
+      company: {
+        needs: { companyName: true },
+        compute: (customer: { companyName: string | null }): string | null => customer.companyName,
+      },
+    },
+  },
+} as const;
+
 export const prisma: PrismaClient =
   globalForPrisma.__sparxPrisma ??
-  new PrismaClient({
+  (new PrismaClient({
     log: logQueries ? ['query', 'warn', 'error'] : ['warn', 'error'],
     ...(datasourceUrl ? { datasourceUrl } : {}),
-  });
+  }).$extends(withDerivedFields) as unknown as PrismaClient);
 
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.__sparxPrisma = prisma;

@@ -18,6 +18,7 @@
 //   ['crm','signatures', id]  what has been asked of one document
 // ══════════════════════════════════════════════════════════════════════════
 
+import type { ConditionGroup } from '@sparx/automation-schemas';
 import { useMutation, useQuery, useQueryClient } from '@sparx/query';
 import { ApiError } from '@sparx/api-client';
 import { api } from '../../lib/api/client';
@@ -96,7 +97,9 @@ export interface SavedView {
   userId: string;
   objectKey: string;
   name: string;
-  filters: Record<string, unknown>;
+  /** The platform's condition DSL — the same one segments, automations, reports
+   *  and scoring use. Never a per-list bag of control names. */
+  filters: ConditionGroup;
   columns: string[];
   sort: { field: string; direction: 'asc' | 'desc' } | null;
   isShared: boolean;
@@ -119,7 +122,7 @@ export function useSavedViews(objectKey: string) {
 export interface SavedViewInput {
   objectKey: string;
   name: string;
-  filters?: Record<string, unknown>;
+  filters?: ConditionGroup;
   columns?: string[];
   sort?: { field: string; direction: 'asc' | 'desc' } | null;
   isShared?: boolean;

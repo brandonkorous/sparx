@@ -17,6 +17,10 @@
 import { useMutation, useQuery, useQueryClient } from '@sparx/query';
 import { ApiError } from '@sparx/api-client';
 import { api } from '../../lib/api/client';
+// Imported so the invalidation below cannot drift from the keys it is meant to
+// clear — see `useInvalidateEngagement`.
+import { customerActivityKeys } from './customer-activity-data';
+import { callKeys } from './calls-data';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -184,15 +188,35 @@ export function useSalesSnippets() {
 /* ── Mutations ──────────────────────────────────────────────────────────── */
 
 /**
- * Anything said about a record invalidates BOTH the conversations and the
- * activity timeline — every message also writes an activity row, so a composer
- * that refreshed only its own list would leave the timeline below it stale.
+ * Anything said about a record invalidates the conversations, the activity
+ * timeline AND the call log — every message also writes an activity row, and a
+ * logged call writes a call record too, so a composer that refreshed only its
+ * own list would leave everything below it stale.
+ *
+ * ══════════════════════════════════════════════════════════════════════════
+ * EVERY KEY HERE IS IMPORTED. NONE OF THEM IS TYPED OUT.
+ * ══════════════════════════════════════════════════════════════════════════
+ *
+ * That is the entire point, because this function did exactly what its own
+ * comment said it existed to prevent. It invalidated the literal
+ * `['crm', 'activities']` while the timeline is keyed on
+ * `['crm', 'customer-activity', …]` — a prefix that has never matched anything.
+ * So logging a call showed a cheerful "Call logged" toast over a list that still
+ * read "No notes yet", and the honest conclusion for the person looking at it is
+ * that the call was not saved. They log it again.
+ *
+ * A hand-typed key is a copy of a fact that lives somewhere else, and it goes
+ * stale silently — no type error, no failing test, nothing on screen but an
+ * absence. `scoring-data.ts` opens with a warning about this precise trap;
+ * it was live here the whole time. Import the owner's `all` prefix and the
+ * compiler starts caring.
  */
 function useInvalidateEngagement() {
   const queryClient = useQueryClient();
   return () => {
     void queryClient.invalidateQueries({ queryKey: engagementKeys.all });
-    void queryClient.invalidateQueries({ queryKey: ['crm', 'activities'] });
+    void queryClient.invalidateQueries({ queryKey: customerActivityKeys.all });
+    void queryClient.invalidateQueries({ queryKey: callKeys.all });
     void queryClient.invalidateQueries({ queryKey: ['crm', 'customers'] });
   };
 }

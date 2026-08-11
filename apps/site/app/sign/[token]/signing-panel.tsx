@@ -201,7 +201,7 @@ export function SigningPanel({ tenantSlug, token }: { tenantSlug: string; token:
             <AlertTitle>You said no to this</AlertTitle>
             <AlertDescription>
               {view.business.name} has been told.
-              {view.declineReason ? ` You told them: “${view.declineReason}”.` : ''} If that was a
+              {view.declineReason ? ` You told them: “${view.declineReason}”` : ''} If that was a
               mistake, reply to their email and they can send it again.
             </AlertDescription>
           </AlertContent>

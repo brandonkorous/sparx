@@ -13,6 +13,9 @@
 //   • crm.customer.updated
 //   • crm.customer.subscribed (storefront newsletter opt-in → marketing segment)
 //   • crm.b2b.account_updated
+//   • crm.segment.created / crm.segment.updated — the SEGMENT-driven pass, which
+//     re-cuts one segment across every customer (the rest re-cut one customer
+//     across every segment)
 //
 // Each addition emits crm.segment.entered + writes a CrmActivity row;
 // each removal emits crm.segment.exited + writes its activity row.
@@ -28,6 +31,13 @@ import type { PlatformEvent } from './platform-bus';
 interface EventPayload {
   customerId?: string;
   orderId?: string;
+}
+
+interface SegmentEventPayload {
+  segmentId?: string;
+  /** Only present on `crm.segment.updated`. Absent on create, where the rules
+   *  are new by definition. */
+  rulesChanged?: boolean;
 }
 
 export function registerSegmentEvaluatorConsumers(ctx: ConsumerContext): (() => void)[] {
@@ -50,6 +60,40 @@ export function registerSegmentEvaluatorConsumers(ctx: ConsumerContext): (() => 
           const customerId = await resolveCustomerId(event as PlatformEvent<EventPayload>);
           if (!customerId) return;
           await evaluateCustomerForTenant(event.tenantId, customerId);
+        })
+      )
+    );
+  }
+
+  // A NEW SEGMENT HAS TO FILL ITSELF, and nothing made it.
+  //
+  // Everything above is CUSTOMER-driven: when one person changes, re-check that
+  // person against every segment. Creating a segment changes no person, so a
+  // brand-new segment matched nobody until some unrelated customer happened to
+  // be touched. The builder counted "24 of 24 match" while you typed the rules,
+  // you pressed Create, and the list said "No members yet" — with the screen
+  // still promising that "anyone who matches is added automatically". It is the
+  // same reason most of the built-in segments sat at zero.
+  //
+  // The other direction: EDITING the rules re-cuts the group, so a member who no
+  // longer matches has to leave. `rulesChanged` is already on the event, so only
+  // a real rule change pays for the scan — renaming a segment does not.
+  for (const topic of ['crm.segment.created', 'crm.segment.updated']) {
+    teardowns.push(
+      ctx.bus.subscribe(
+        topic,
+        gateHandler<unknown>(async (event) => {
+          const payload = (event as PlatformEvent<SegmentEventPayload>).payload;
+          if (!payload?.segmentId) return;
+          if (topic === 'crm.segment.updated' && payload.rulesChanged === false) return;
+          // Here rather than inline in the service on purpose: this walks every
+          // customer in the tenant, and an owner pressing Create should not wait
+          // on it (docs/02 — side effects are consumed, not inlined).
+          const { recomputeFull } = await import('../services/segment-evaluation');
+          await recomputeFull(
+            { tenantId: event.tenantId, userId: undefined },
+            { segmentId: payload.segmentId }
+          );
         })
       )
     );

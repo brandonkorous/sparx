@@ -184,7 +184,7 @@ function PipelineEditor({
     create.isError || update.isError
       ? pipelineErrorMessage(
           create.error ?? update.error,
-          'Could not save this pipeline. Nothing was changed.'
+          'The server did not answer. Nothing was changed and your work is still on screen — try again in a moment.'
         )
       : null;
 

@@ -121,6 +121,20 @@ export interface SurfaceDefinition {
    */
   readonly useBadgeCount?: () => number | null | undefined;
 
+  /**
+   * Params to open this row with, when the row is not simply "the surface".
+   *
+   * ONE surface, MANY nav rows. A tenant that invents Projects, Venues and
+   * Contracts gets three rows in Customers, and all three are the same generic
+   * records surface told which record type it is looking at — the alternative
+   * is registering a surface per record type at runtime, and surface keys are
+   * persisted in saved layouts, so minting them from tenant data would put a
+   * tenant's vocabulary inside everyone's stored layout forever.
+   *
+   * Static surfaces leave this unset and open with no params, exactly as before.
+   */
+  readonly defaultParams?: SurfaceParams;
+
   /** Extra command-palette search terms beyond the title. */
   readonly keywords?: readonly string[];
   /** Preferred initial width as a fraction of the window, when opened `beside`. */

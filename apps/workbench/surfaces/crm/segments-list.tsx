@@ -22,7 +22,7 @@ import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
-import { ruleCount, useSegments, type Segment } from './segments-data';
+import { ruleCount, segmentMembership, useSegments, type Segment } from './segments-data';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -163,7 +163,10 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
             <thead>
               <tr>
                 <th>Name</th>
-                <th className="hidden @md:table-cell">Rules</th>
+                {/* The size leads the right-hand side because "how many people
+                    is that" is what this list is opened to find out. */}
+                <th className="text-right">People</th>
+                <th className="hidden @lg:table-cell">Rules</th>
                 <th>State</th>
               </tr>
             </thead>
@@ -191,7 +194,10 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
                       </span>
                     ) : null}
                   </td>
-                  <td className="hidden text-sm @md:table-cell">{ruleSummary(segment)}</td>
+                  <td className="text-right text-sm tabular-nums">
+                    {segment._count ? segmentMembership(segment._count.members) : '—'}
+                  </td>
+                  <td className="hidden text-sm @lg:table-cell">{ruleSummary(segment)}</td>
                   <td>
                     <StateBadge segment={segment} />
                   </td>

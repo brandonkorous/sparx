@@ -27,6 +27,7 @@ import {
   Input,
   Text,
   Textarea,
+  Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
@@ -48,6 +49,7 @@ import {
   usePreviewCount,
   useSegment,
   useSegmentMemberCount,
+  useRecomputeSegment,
   useSegmentMembers,
   useUpdateSegment,
   type Segment,
@@ -136,6 +138,7 @@ function SegmentEditor({
 }) {
   const isNew = id === 'new';
   const toast = useToast();
+  const recompute = useRecomputeSegment();
   const confirm = useConfirm();
 
   const create = useCreateSegment();
@@ -281,7 +284,7 @@ function SegmentEditor({
     create.isError || update.isError
       ? segmentErrorMessage(
           create.error ?? update.error,
-          'Could not save this segment. Nothing was changed.'
+          'The server did not answer. Nothing was changed and your work is still on screen — try again in a moment.'
         )
       : null;
 
@@ -372,10 +375,47 @@ function SegmentEditor({
           total={preview.data?.total}
           invalid={!serialized.ok}
         />
+        {/* Only once it exists, and only for rule-driven groups — a hand-picked
+            list has no rules to re-derive membership from, and re-cutting one
+            would empty something somebody built by hand. */}
+        {!isNew && segment?.kind === 'dynamic' ? (
+          <Tooltip content="Re-check every customer against these rules. Membership normally keeps itself up to date; use this if a group looks out of date.">
+            <Button
+              color="module"
+              variant="soft"
+              size="sm"
+              className="ml-auto shrink-0"
+              loading={recompute.isPending}
+              onClick={() => {
+                recompute.mutate(segment.id, {
+                  onSuccess: (result) => {
+                    toast.add({
+                      title:
+                        result.changed === 0
+                          ? 'Already up to date'
+                          : `${result.changed.toLocaleString()} ${result.changed === 1 ? 'person' : 'people'} moved in or out`,
+                      description: `Checked ${result.scanned.toLocaleString()} customers.`,
+                      type: 'success',
+                    });
+                  },
+                  onError: () => {
+                    toast.add({
+                      title: 'Could not update the membership',
+                      description: 'Nothing was changed — try again in a moment.',
+                      type: 'error',
+                    });
+                  },
+                });
+              }}
+            >
+              Update membership
+            </Button>
+          </Tooltip>
+        ) : null}
         <Button
           color="module"
           size="sm"
-          className="ml-auto shrink-0"
+          className={!isNew && segment?.kind === 'dynamic' ? 'shrink-0' : 'ml-auto shrink-0'}
           loading={saving}
           disabled={Boolean(blocked) || (!isNew && !dirty)}
           onClick={submit}

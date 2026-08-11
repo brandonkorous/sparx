@@ -108,6 +108,9 @@ export interface TicketListParams {
   priority?: TicketPriority;
   source?: TicketSource;
   customerId?: string;
+  /** Every request from this company, whoever raised it. `b2b_account_id` on the
+   *  wire — see the same note on DealListParams. */
+  companyId?: string;
   assignedToUserId?: string;
   unassigned?: boolean;
   breached?: boolean;
@@ -281,6 +284,7 @@ export function useTickets(params: TicketListParams) {
         ...(params.priority ? { priority: params.priority } : {}),
         ...(params.source ? { source: params.source } : {}),
         ...(params.customerId ? { customer_id: params.customerId } : {}),
+        ...(params.companyId ? { b2b_account_id: params.companyId } : {}),
         ...(params.assignedToUserId ? { assigned_to: params.assignedToUserId } : {}),
         // Sent as the literal strings the route expects — `false` would read as
         // "filter to the ones that are NOT unassigned", which is not what an

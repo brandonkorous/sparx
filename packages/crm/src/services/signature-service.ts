@@ -180,6 +180,28 @@ export async function revoke(
 
 /* ── The public half: token in, nothing trusted ──────────────────────────── */
 
+/**
+ * The word the SIGNER sees for what they are accepting.
+ *
+ * Normally the stage's own customer-facing label, because "Estimate", "Quote"
+ * and "Work Order" are the tenant's vocabulary and using anything else would be
+ * the platform talking over them.
+ *
+ * EXCEPT at a draft stage. "Draft" is an internal state — it means the business
+ * has not finished writing it — and putting it in front of a customer produced
+ * a page headed "Draft Q-000001" with a button reading "Accept this draft".
+ * Nobody should be asked to sign something the sender is still calling a draft,
+ * and a signer who reads it carefully is right to hesitate. The document is the
+ * honest neutral word: never wrong, and never somebody's private label. The
+ * REAL fix is on the sending side, where the panel now says so before the ask.
+ */
+function signerFacingLabel(stage: { stageType: string; customerLabel: string }): string {
+  // Capitalised like any stage label would be: the page uses it as a heading
+  // as-is and lowercases it for prose, so a lowercase value here rendered a
+  // heading reading "document Q-000001".
+  return stage.stageType === 'draft' ? 'Document' : stage.customerLabel;
+}
+
 /** What the signing page renders — deliberately the minimum a signer needs. */
 export interface PublicSigningView {
   signatureId: string;
@@ -262,7 +284,7 @@ export async function viewByToken(ctx: ServiceContext, token: string): Promise<P
       currency: doc.currency,
       total: Number(doc.total),
       validUntil: doc.validUntil?.toISOString() ?? null,
-      label: doc.stage.customerLabel,
+      label: signerFacingLabel(doc.stage),
       lines: doc.lines.map((l) => ({
         description: l.description,
         quantity: Number(l.quantity),

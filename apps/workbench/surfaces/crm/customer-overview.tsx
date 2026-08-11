@@ -17,8 +17,21 @@
 // do we drop the individual empty sections — because the populated page around
 // them already proves nothing is broken.
 
-import { Badge, Card, EmptyState, Text } from '@wizeworks/silicaui-react';
-import { AlertTriangle, Inbox } from 'lucide-react';
+import { useState } from 'react';
+import {
+  Alert,
+  AlertActions,
+  AlertContent,
+  AlertDescription,
+  AlertTitle,
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  Text,
+  useToast,
+} from '@wizeworks/silicaui-react';
+import { AlertTriangle, Building2, Inbox } from 'lucide-react';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
@@ -27,8 +40,11 @@ import {
   describeOrderRecency,
   formatMoney,
   longDate,
+  useUpdateCustomer,
   type Customer,
 } from './customers-data';
+import { useCompanyDomainMatch } from './companies-data';
+import { ScorePanel } from './score-panel';
 import {
   formatDate as formatOrderDate,
   shippingState,
@@ -297,6 +313,104 @@ function RecentActivity({ activity }: { activity: CustomerActivity[] }) {
 
 /* ── Tab ────────────────────────────────────────────────────────────────── */
 
+/**
+ * "Do they work at Harborview Inn?" — the association offer (docs/144 §11).
+ *
+ * IT ASKS, IT NEVER DECIDES. Filing someone under a company changes who sees
+ * them, which price list finds them and whose invoice they land on, so guessing
+ * from an email domain and doing it silently would be the platform quietly
+ * rewriting a relationship on the strength of a string after an @. The business
+ * turns the suggestion on (it is off by default), the business says yes, and
+ * personal mailboxes are never guessed from at all.
+ *
+ * Shown only where all three are true: there is an address, nobody has filed
+ * them yet, and a company has actually claimed that domain. Everything else —
+ * a personal address, an unclaimed domain, the setting off — renders nothing,
+ * because a banner explaining why there is no suggestion is worse than silence.
+ *
+ * Dismissal is for this viewing only. It is not stored: the reason to say no is
+ * almost always "not now", and a permanent "never ask about this contact" is a
+ * preference nobody knows they set and nobody can find to undo.
+ */
+function CompanySuggestion({ ctx, customer }: { ctx: SurfaceContext; customer: Customer }) {
+  const [dismissed, setDismissed] = useState(false);
+  const toast = useToast();
+  const update = useUpdateCustomer(customer.id);
+
+  const unfiled = customer.companyId === null;
+  const email = customer.email ?? '';
+  const { data: match } = useCompanyDomainMatch(email, unfiled && !dismissed);
+  const suggestion = match?.company ?? null;
+
+  if (!unfiled || dismissed || suggestion === null) return null;
+
+  const accept = (): void => {
+    update.mutate(
+      { companyId: suggestion.id },
+      {
+        onSuccess: () => {
+          toast.add({
+            title: `Filed under ${suggestion.companyName}`,
+            type: 'success',
+          });
+        },
+        onError: () => {
+          toast.add({
+            title: 'Could not file them there',
+            description: 'Nothing was changed. Try again in a moment.',
+            type: 'error',
+          });
+        },
+      }
+    );
+  };
+
+  return (
+    <Alert color="module" variant="soft">
+      <Building2 className="size-5 shrink-0" aria-hidden />
+      <AlertContent>
+        <AlertTitle>Do they work at {suggestion.companyName}?</AlertTitle>
+        <AlertDescription>
+          {match?.domain !== null && match?.domain !== undefined
+            ? `${customerName(customer)} writes from ${match.domain}, which you have told us belongs to ${suggestion.companyName}.`
+            : `${customerName(customer)}'s email domain belongs to ${suggestion.companyName}.`}{' '}
+          Filing them there puts them on the company&rsquo;s page alongside everyone else you know
+          at that business.
+        </AlertDescription>
+        <AlertActions>
+          <Button color="module" size="sm" loading={update.isPending} onClick={accept}>
+            Yes, file them there
+          </Button>
+          <Button
+            color="neutral"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setDismissed(true);
+            }}
+          >
+            Not now
+          </Button>
+          <Button
+            color="neutral"
+            variant="ghost"
+            size="sm"
+            onClick={(event) => {
+              ctx.open(
+                'crm.account.detail',
+                { id: suggestion.id },
+                { target: event.shiftKey ? 'beside' : 'tab' }
+              );
+            }}
+          >
+            Look at {suggestion.companyName} first
+          </Button>
+        </AlertActions>
+      </AlertContent>
+    </Alert>
+  );
+}
+
 export function CustomerOverviewTab({
   ctx,
   customer,
@@ -330,9 +444,21 @@ export function CustomerOverviewTab({
 
   return (
     <div className="flex flex-col gap-4">
+      <CompanySuggestion ctx={ctx} customer={customer} />
       {/* Worth always shows — $0 across zero orders is a real, meaningful state. */}
       <WorthKpis customer={customer} />
       <StoreCredit customerId={customer.id} />
+      {/* "Are they worth my time" is the question this tab exists to answer, and
+          the score is this business's own answer to it — so it sits with the
+          money rather than below the activity feed. */}
+      <ScorePanel
+        ctx={ctx}
+        objectKey="contact"
+        recordId={customer.id}
+        score={customer.score}
+        scoredAt={customer.scoredAt}
+        noun="customer"
+      />
 
       {loading ? (
         <Card>

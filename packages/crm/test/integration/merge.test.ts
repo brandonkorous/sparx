@@ -199,11 +199,23 @@ describe('findLikelyDuplicates', () => {
       email: 'shared@example.test',
       firstName: 'First',
     });
-    await customerService.create(test.ctx, {
-      type: 'b2b',
-      email: 'SHARED@example.test', // same email, different case
-      firstName: 'Second',
-    });
+
+    // WRITTEN AROUND THE SERVICE ON PURPOSE. The input schema now lowercases an
+    // address on the way in, so this pair can no longer be created through the
+    // front door — that create is refused as the duplicate it is. The rows that
+    // already exist from before that shipped are the reason detection still has
+    // to compare case-insensitively, so the test seeds one the way it arrived:
+    // straight into the table.
+    await withTenant(test.ctx, (tx) =>
+      tx.customer.create({
+        data: {
+          tenantId: test.ctx.tenantId,
+          type: 'b2b',
+          email: 'SHARED@example.test',
+          firstName: 'Second',
+        },
+      })
+    );
 
     const groups = await customerService.findLikelyDuplicates(test.ctx);
     const emailGroup = groups.find((g) => g.reason === 'email');

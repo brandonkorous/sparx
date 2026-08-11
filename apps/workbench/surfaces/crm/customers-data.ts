@@ -70,6 +70,12 @@ export interface Customer {
   orderCount: number;
   firstOrderAt: string | null;
   lastOrderAt: string | null;
+  /** What this business's own scoring rules make of them (docs/144 §10). Zero
+   *  until a tenant writes a model, which is why the score panel says so rather
+   *  than showing a confident 0. */
+  score: number;
+  /** When the score was last worked out. Null means it never has been. */
+  scoredAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -92,7 +98,7 @@ export interface CustomerAddress {
   phone: string | null;
 }
 
-export type CustomerSort = 'lastOrderAt' | 'totalSpent' | 'updatedAt' | 'createdAt';
+export type CustomerSort = 'score' | 'lastOrderAt' | 'totalSpent' | 'updatedAt' | 'createdAt';
 
 export interface CustomerListParams {
   q?: string;

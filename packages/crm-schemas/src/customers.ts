@@ -18,6 +18,29 @@ import {
   Uuid,
 } from './common';
 
+/**
+ * An email address, stored the way it will be compared.
+ *
+ * TRIMMED AND LOWERCASED ON THE WAY IN, because both unique indexes on
+ * `customers` compare raw text. Without this, `Jane@example.com` and
+ * `jane@example.com` are two different contacts to the database and one person
+ * to everybody else — the same "one person, two records" bug the indexes exist
+ * to prevent, entering through a door they do not watch. A trailing space does
+ * the same thing and is easier to do by accident, because it is invisible.
+ *
+ * Addresses are case-insensitive in every mail system anybody actually uses;
+ * the case somebody typed carries no information worth a split history. Kept
+ * here rather than in the service so that REST, MCP, GraphQL, importers and the
+ * storefront signup all normalise identically — a rule enforced at one write
+ * path is a rule the next write path will not have.
+ *
+ * Duplicate DETECTION already lowercases when it compares, so the mixed-case
+ * pairs created before this shipped surface in the Duplicates screen rather
+ * than needing a backfill — and a backfill would be the dangerous option, since
+ * lowercasing two rows that then collide would fail against those same indexes.
+ */
+const EmailAddress = z.string().trim().toLowerCase().pipe(z.string().email().max(255));
+
 // GDPR consent shape (stored in customers.gdpr_consent JSONB).
 // Captured at the moment consent was granted; never mutated retroactively.
 const GdprConsent = z.object({
@@ -40,7 +63,7 @@ export const CreateCustomerInput = z.object({
   // dashboard create route defaults this to the ACTIVE site for multi-site
   // tenants, so a customer created while viewing a site belongs to that site.
   propertyId: Uuid.nullable().optional(),
-  email: z.string().email().max(255).nullable().optional(),
+  email: EmailAddress.nullable().optional(),
   phone: z.string().max(50).nullable().optional(),
   firstName: z.string().max(255).nullable().optional(),
   lastName: z.string().max(255).nullable().optional(),
@@ -91,7 +114,7 @@ export type UpdateCustomerInput = z.infer<typeof UpdateCustomerInput>;
 // default relationship type and lands at lifecycle `subscriber`; an existing
 // customer keeps whatever they already carry on all three axes.
 export const SubscribeCustomerInput = z.object({
-  email: z.string().email().max(255),
+  email: EmailAddress,
   // The site (web property) the form was on (docs/58 D2). Null → a tenant-level
   // contact not tied to a site. Resolved from the `?property=` slug at the edge.
   propertyId: Uuid.nullable().optional(),

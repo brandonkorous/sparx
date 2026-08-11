@@ -58,6 +58,9 @@ export interface Company {
   customProperties: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
+  /** How many contacts sit under this company. Present on the LIST only — the
+   *  detail pane shows the people themselves, which is the better answer. */
+  _count?: { customers: number };
 }
 
 export interface AccountListParams {

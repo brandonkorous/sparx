@@ -31,7 +31,7 @@ import { publishCrmEvent } from '../events';
 import { changedProperties, resolvePropertyBag, toJsonInput } from './custom-properties';
 import { schemaFor } from './object-def-service';
 import type { ServiceContext } from '../errors';
-import { CrmNotFoundError } from '../errors';
+import { CrmConflictError, CrmNotFoundError } from '../errors';
 import { ensureBuiltInSegment } from './segment-service';
 
 export { merge, findLikelyDuplicates, bulkMerge } from './merge-service';
@@ -55,7 +55,7 @@ export interface ListCustomersFilter {
   take?: number;
   skip?: number;
   // Sort: lastOrderAt desc | totalSpent desc | updatedAt desc | createdAt desc
-  sortBy?: 'lastOrderAt' | 'totalSpent' | 'updatedAt' | 'createdAt';
+  sortBy?: 'score' | 'lastOrderAt' | 'totalSpent' | 'updatedAt' | 'createdAt';
 }
 
 export async function list(
@@ -162,7 +162,7 @@ export async function getInactive(
 export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Customer> {
   const input = CreateCustomerInput.parse(rawInput);
 
-  const customer = await withTenant(ctx, async (tx) => {
+  const write = withTenant(ctx, async (tx) => {
     // The tenant's declared extra fields (docs/144 §3), validated + calculated
     // inside the same transaction that writes the row, so a bad property can
     // never leave a half-created contact behind.
@@ -213,6 +213,10 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Cu
     });
 
     return created;
+  });
+
+  const customer = await write.catch(async (err: unknown) => {
+    throw await asDuplicateEmail(ctx, err, input.email ?? null, input.propertyId ?? null, null);
   });
 
   await publishCrmEvent({
@@ -398,7 +402,7 @@ export async function update(
 ): Promise<Customer> {
   const input = UpdateCustomerInput.parse(rawInput);
 
-  const result = await withTenant(ctx, async (tx) => {
+  const write = withTenant(ctx, async (tx) => {
     const before = await tx.customer.findUnique({ where: { id: customerId } });
     if (before?.deletedAt !== null) {
       throw new CrmNotFoundError('Customer', customerId);
@@ -463,6 +467,18 @@ export async function update(
       updated,
       changed: changedProperties(before.customProperties, updated.customProperties),
     };
+  });
+
+  const result = await write.catch(async (err: unknown) => {
+    // Which site the row will live on once this edit lands — the incoming value
+    // if the edit moves it, otherwise wherever it already is. That pair is half
+    // of the unique key, so getting it wrong would name the wrong person.
+    const row = await withTenant(ctx, (tx) =>
+      tx.customer.findUnique({ where: { id: customerId }, select: { propertyId: true } })
+    );
+    const propertyId =
+      input.propertyId !== undefined ? input.propertyId : (row?.propertyId ?? null);
+    throw await asDuplicateEmail(ctx, err, input.email ?? null, propertyId, customerId);
   });
 
   await publishCrmEvent({
@@ -954,6 +970,64 @@ function isUniqueViolation(err: unknown): boolean {
     err !== null &&
     'code' in err &&
     (err as { code?: unknown }).code === 'P2002'
+  );
+}
+
+/** Turns the `(tenant, site, email)` unique violation into something a person can
+ *  act on, and returns the original error untouched when it is anything else —
+ *  so a genuine fault still surfaces as a fault.
+ *
+ *  Adding somebody who is already in the book is an ordinary Tuesday: an owner
+ *  types a name they met at a trade show and the address is already on file from
+ *  a checkout eight months ago. Unhandled, P2002 reaches the transport unmapped
+ *  and the screen says "An internal error occurred" — which reads as "this
+ *  software is broken" rather than "you already have this person", and the next
+ *  thing that happens is the same contact gets typed in again with a tweaked
+ *  address to get past it. That is how a customer ends up as two rows whose
+ *  history is split in half, which is the exact thing §12's duplicate management
+ *  exists to clean up afterwards. Cheaper to say so at the point of typing. */
+async function asDuplicateEmail(
+  ctx: ServiceContext,
+  err: unknown,
+  email: string | null,
+  propertyId: string | null,
+  excludeId: string | null
+): Promise<unknown> {
+  if (!isUniqueViolation(err) || email === null) return err;
+
+  // Deliberately NOT filtered on `deletedAt` — a soft-deleted row still occupies
+  // the address at SITE scope, and "that contact is in your bin" is the only
+  // answer that explains why the save failed.
+  //
+  // A LIVE row wins the tie, and that is not cosmetic. There are two constraints
+  // here: the site-scoped one counts deleted rows, the tenant-wide partial index
+  // (`customers_tenant_global_email_unique`) counts only live ones. Taking
+  // whichever row came back first could answer a live collision with "restore
+  // that contact" and send somebody to the bin looking for a contact that is
+  // sitting in their list.
+  const findSibling = (deleted: boolean) =>
+    withTenant(ctx, (tx) =>
+      tx.customer.findFirst({
+        where: {
+          email,
+          propertyId,
+          deletedAt: deleted ? { not: null } : null,
+          ...(excludeId !== null ? { id: { not: excludeId } } : {}),
+        },
+        select: { firstName: true, lastName: true, deletedAt: true },
+      })
+    );
+
+  const existing = (await findSibling(false)) ?? (await findSibling(true));
+  if (existing === null) return err;
+
+  const name = [existing.firstName, existing.lastName].filter(Boolean).join(' ').trim();
+  const who = name === '' ? 'A contact' : name;
+  return new CrmConflictError(
+    existing.deletedAt === null
+      ? `${who} already uses ${email}. Open that contact and add what is new there — a second record splits one person's history in half.`
+      : `${who} used ${email} and was deleted. Restore that contact rather than adding a second one; their orders and conversations are still attached to it.`,
+    'email'
   );
 }
 

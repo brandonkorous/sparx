@@ -42,6 +42,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { CustomPropertiesPanel } from './custom-properties-panel';
 import { AssociationsPanel } from './associations-panel';
+import { ScorePanel } from './score-panel';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useTeamRoster } from '../../lib/api/team';
 import { customerName, useCustomers } from './customers-data';
@@ -282,7 +283,7 @@ function DealEditor({ ctx, id, deal }: { ctx: SurfaceContext; id: string; deal?:
     create.isError || update.isError || moveStage.isError
       ? dealErrorMessage(
           create.error ?? update.error ?? moveStage.error,
-          'Could not save this deal. Nothing was changed.'
+          'The server did not answer. Nothing was changed and your work is still on screen — try again in a moment.'
         )
       : null;
 
@@ -654,6 +655,21 @@ function DealEditor({ ctx, id, deal }: { ctx: SurfaceContext; id: string; deal?:
               />
             </Field>
           </FormSection>
+
+          {/* How healthy this business's own rules think the deal is (docs/144
+              §10) — and the reasons, so "62" is something to argue with rather
+              than a number to scroll past. Saved deals only: an unsaved one has
+              nothing to score yet. */}
+          {!isNew && deal ? (
+            <ScorePanel
+              ctx={ctx}
+              objectKey="deal"
+              recordId={deal.id}
+              score={deal.score}
+              scoredAt={deal.scoredAt}
+              noun="deal"
+            />
+          ) : null}
 
           {/* Everyone else on this deal (docs/144 §6). The `Customer` select
               above names ONE person; a real deal has the one who signs it, the

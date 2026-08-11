@@ -76,7 +76,28 @@ export async function list(
       ...(filter.workflowId ? { workflowId: filter.workflowId } : {}),
       ...(filter.stageId ? { stageId: filter.stageId } : {}),
       ...(filter.customerId ? { customerId: filter.customerId } : {}),
-      ...(filter.companyId ? { companyId: filter.companyId } : {}),
+      // A COMPANY'S DOCUMENTS INCLUDE ITS PEOPLE'S. Billing a named contact
+      // writes `customerId` and leaves `companyId` null — which is correct, that
+      // is who the document is made out to — so matching the column alone
+      // answered "what has been billed to this company as an entity", not "what
+      // does this company owe me". A trade supplier deciding whether to release
+      // the next order needs the second one, and the first reads as a company
+      // with no debts while somebody there is 60 days late.
+      //
+      // Wrapped in `AND` so it composes with the `q` search below rather than
+      // one `OR` key silently overwriting the other.
+      ...(filter.companyId
+        ? {
+            AND: [
+              {
+                OR: [
+                  { companyId: filter.companyId },
+                  { customer: { companyId: filter.companyId } },
+                ],
+              },
+            ],
+          }
+        : {}),
       ...(filter.status ? { status: filter.status } : {}),
       // No denormalized customer/account name column (bill-to/ship-to are
       // frozen JSON, not queryable) — search the document number directly and

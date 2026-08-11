@@ -143,6 +143,12 @@ model Customer {
   // Site forms (docs/115) — contact/lead submissions mirrored onto this contact
   formSubmissions FormSubmission[]
 
+  // THIS IS HALF THE RULE. Postgres counts NULLs as DISTINCT, so this index
+  // never fires for TENANT-WIDE contacts (propertyId null) — two of them could
+  // hold one address. The other half is `customers_tenant_global_email_unique`,
+  // a PARTIAL unique index that Prisma cannot express, hand-written in
+  // `20270220000000_crm_customer_tenant_wide_email_unique`. Both raise P2002 and
+  // both are mapped to a 409 by `asDuplicateEmail` in `customer-service.ts`.
   @@unique([tenantId, propertyId, email], map: "customers_tenant_property_email_unique")
   @@index([tenantId, propertyId])
   @@index([tenantId, type])

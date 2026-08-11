@@ -26,6 +26,35 @@ The timestamp prefixes in this repo are **hand-authored and run about six months
 
 Format is `<14 digits>_<lower_snake_case>`. [scripts/check-migration-order.mjs](../../scripts/check-migration-order.mjs) enforces all of this in CI, and also refuses the **deletion** of a migration directory — every database that applied it still records the name, so removing it fails `migrate deploy` on the mismatch. Reverse a migration with a new migration.
 
+## Renaming a table does NOT rename the functions over it
+
+`ALTER TABLE … RENAME` is a catalog update. It does **not** rewrite the body of a plpgsql function,
+because a body is stored as text and parsed only when it runs. So every `SECURITY DEFINER` function
+that names the old table keeps naming it, compiles fine, and fails at runtime — silently, if nothing
+calls it at boot.
+
+This bit on 2026-08-09, renaming `b2b_accounts` → `companies` (docs/144 §11). Two functions broke:
+
+- `sync_b2b_credit_used` — the single money chokepoint every billing-document create / line /
+  payment / void funnels through. Its failure took the whole billing write path down.
+- `resolve_b2b_price` — trade price resolution.
+
+**Typecheck and lint were green the entire time.** Only the DB-backed integration suite found it.
+
+Before shipping any table rename, run this and redefine everything it returns in the same migration:
+
+```sql
+SELECT p.proname
+FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+WHERE n.nspname = 'public' AND p.prosrc ILIKE '%<old_table_name>%';
+
+SELECT viewname FROM pg_views
+WHERE schemaname = 'public' AND definition ILIKE '%<old_table_name>%';
+```
+
+Same applies to a renamed COLUMN. Reproduce each definition verbatim from `pg_get_functiondef` with
+only the name changed — a rename migration is the wrong place to also improve a function.
+
 ## Two seeds, and only one of them is shippable
 
 `prisma/seed.ts` and `prisma/seed-platform.ts` are different deliverables. Reach

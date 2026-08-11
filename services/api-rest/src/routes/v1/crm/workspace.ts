@@ -37,20 +37,11 @@ import {
   signatureService,
 } from '@sparx/crm';
 import { ok, paged } from '@sparx/api-core/envelope';
-import { requireAuth, requireRole } from '@sparx/api-core/auth';
-import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
-import { resolvePropertyId } from '../../../lib/property.js';
+import { requireRole } from '@sparx/api-core/auth';
+import { activeCrmSite, requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
 import { sendSignatureRequest } from '../../../lib/signature-mail.js';
 
 const PathId = z.object({ id: z.string().uuid() });
-
-/** The site being worked in, from the switcher header. Every read and write in
- *  this file is per-business (docs/131) — two unrelated businesses under one
- *  owner do not share a duplicate rule, a column set or a booking link. */
-async function activeSite(request: Parameters<typeof requireRole>[0]): Promise<string> {
-  const auth = requireAuth(request);
-  return resolvePropertyId(auth, request.headers['x-sparx-property-id'] as string | undefined);
-}
 
 const ViewsQuery = z.object({
   object_key: z.string().max(63).optional(),
@@ -73,7 +64,7 @@ const workspaceRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     await requireCrmModule(request);
     const ctx = toCrmContext(request);
-    const propertyId = await activeSite(request);
+    const propertyId = await activeCrmSite(request);
     // The RESOLVED settings, not the stored row: a surface that renders the row
     // shows blanks for a tenant that has never saved, and a business reading
     // blanks concludes the feature is broken rather than defaulted.
@@ -85,7 +76,7 @@ const workspaceRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'admin');
     await requireCrmModule(request);
     const ctx = toCrmContext(request);
-    const propertyId = await activeSite(request);
+    const propertyId = await activeCrmSite(request);
     const saved = await crmSettingsService.update(ctx, request.body, propertyId);
     return ok(saved);
   });
@@ -96,7 +87,7 @@ const workspaceRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     await requireCrmModule(request);
     const q = ViewsQuery.parse(request.query);
-    const propertyId = await activeSite(request);
+    const propertyId = await activeCrmSite(request);
     const items = await savedViewService.list(toCrmContext(request), {
       objectKey: q.object_key,
       propertyId,
@@ -142,7 +133,7 @@ const workspaceRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/crm/meeting-links', async (request) => {
     requireRole(request, 'viewer');
     await requireCrmModule(request);
-    const propertyId = await activeSite(request);
+    const propertyId = await activeCrmSite(request);
     const items = await meetingLinkService.list(toCrmContext(request), { propertyId });
     return paged(items, { total: items.length, per_page: items.length || 1 });
   });
@@ -177,7 +168,7 @@ const workspaceRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     await requireCrmModule(request);
     const q = DuplicatesQuery.parse(request.query);
-    const propertyId = await activeSite(request);
+    const propertyId = await activeCrmSite(request);
     const groups = await mergeService.findLikelyDuplicates(toCrmContext(request), {
       limit: q.limit,
       propertyId,
@@ -191,7 +182,7 @@ const workspaceRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'admin');
     await requireCrmModule(request);
     const body = BulkMergeBody.parse(request.body);
-    const propertyId = await activeSite(request);
+    const propertyId = await activeCrmSite(request);
     const result = await mergeService.bulkMerge(toCrmContext(request), {
       minConfidence: body.minConfidence,
       limit: body.limit,
