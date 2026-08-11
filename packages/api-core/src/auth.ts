@@ -42,10 +42,11 @@ const API_KEY_PREFIX_LEN = API_KEY_PUBLIC_PREFIX.length + 8;
 // sync by hand — api-core stays fastify-only and must not import the Next/React
 // graph @sparx/auth pulls in, same reason the api-key logic is inlined below).
 // `owner|admin|editor|viewer` are the RANKED tier the coarse `requireRole`
-// hierarchy understands; `builder|marketing|support|partner` are LATERAL
+// hierarchy understands; `builder|marketing|support|partner|scanner` are LATERAL
 // capability roles — they floor to read-only in that hierarchy and earn their
 // real powers from explicit `requireAnyRole` allow-lists on the routes that own
-// them (e.g. `partner` → `/v1/partner/*`, docs/114 §B.7).
+// them (e.g. `partner` → `/v1/partner/*`, docs/114 §B.7; `scanner` → the
+// inventory receive/count/transfer/lookup endpoints, docs/146 Phase 1).
 export type StaffRole =
   | 'owner'
   | 'admin'
@@ -54,6 +55,7 @@ export type StaffRole =
   | 'marketing'
   | 'support'
   | 'partner'
+  | 'scanner'
   | 'viewer';
 export type ActorType = 'user' | 'api';
 

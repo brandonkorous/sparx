@@ -58,6 +58,19 @@ export interface PublicInventoryRow {
   unitCostCents: number | null;
   avgCostCents: number | null;
   updatedAt: string;
+  /**
+   * When the QUANTITY was last established (docs/146 Phase 1).
+   *
+   * Distinct from `updatedAt`, which moves for any write to the row — editing a
+   * reorder point this morning would make a three-week-old count look fresh.
+   * The freshness indicator reads this one, and reading the wrong one is a bug
+   * that renders as reassurance.
+   */
+  asOf: string;
+  /** Seconds since `asOf`, computed server-side. Served rather than derived by
+   *  each client, so a browser with a skewed clock cannot paint half a stock
+   *  list as stale. */
+  ageSeconds: number;
 }
 
 /**
@@ -213,6 +226,7 @@ export async function listInventory(
         unitCostCents: true,
         avgCostCents: true,
         updatedAt: true,
+        asOf: true,
         warehouse: { select: { code: true, name: true } },
         variant: {
           select: { sku: true, product: { select: { id: true, title: true } } },
@@ -246,6 +260,8 @@ export async function listInventory(
           unitCostCents: r.unitCostCents,
           avgCostCents: r.avgCostCents,
           updatedAt: r.updatedAt.toISOString(),
+          asOf: r.asOf.toISOString(),
+          ageSeconds: Math.max(0, Math.floor((Date.now() - r.asOf.getTime()) / 1000)),
         },
       ];
     });

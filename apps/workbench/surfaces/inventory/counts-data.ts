@@ -51,8 +51,15 @@ export interface CountLine {
   variantId: string;
   variantSku: string | null;
   productTitle: string | null;
-  /** What the system believed was on the shelf when this line was created. */
-  expectedQuantity: number;
+  /**
+   * What the system believed was on the shelf when this line was created.
+   *
+   * NULL on a BLIND count that is still open — the whole point of blind counting
+   * is that the number never reaches the person counting, so the server withholds
+   * it rather than trusting this screen to hide it. It comes back at review,
+   * which is when the variance is meant to be looked at.
+   */
+  expectedQuantity: number | null;
   /** What the person counted. Null until they enter it. */
   countedQuantity: number | null;
   /** `counted − expected`, null until counted. The difference to reconcile. */
@@ -75,6 +82,19 @@ export interface CountRow {
   warehouseName: string | null;
   warehouseCode: string | null;
   type: CountType;
+  /**
+   * What the count COVERS — the whole location, one zone, or one shelf.
+   *
+   * Load-bearing rather than decorative: it decides whether an item missing from
+   * the sheet means "zero" or "not in scope", which is the difference between a
+   * correction and a catastrophe.
+   */
+  scope: 'location' | 'zone' | 'bin';
+  binId: string | null;
+  binCode: string | null;
+  zoneName: string | null;
+  /** Expected quantities are withheld from whoever is counting until review. */
+  isBlind: boolean;
   status: CountStatus;
   note: string | null;
   /** Money-value of differences above which a manager must approve the post. */

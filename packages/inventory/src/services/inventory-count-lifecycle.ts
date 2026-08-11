@@ -17,6 +17,7 @@ import {
 import type { ServiceContext } from '../errors';
 import { publishInventoryEvent } from '../events';
 
+import { lockBinOnHand } from './bin-ledger';
 import { applyMovement, emitStockEvents, resolveActorType } from './ledger';
 import type { MovementResult } from './ledger';
 import { costBasisFor, loadCountDetail } from './inventory-count-shared';
@@ -29,6 +30,8 @@ interface CountLineLite {
   variantId: string;
   expectedQuantity: number;
   countedQuantity: number | null;
+  /** Set on a shelf-scoped line — the whole reason `applyRecount` branches. */
+  binId: string | null;
 }
 
 // ─── Submit for review ─────────────────────────────────────────────────────────
@@ -49,7 +52,13 @@ export async function submitInventoryCount(
 
     const lines = await tx.inventoryCountLine.findMany({
       where: { countId },
-      select: { id: true, variantId: true, expectedQuantity: true, countedQuantity: true },
+      select: {
+        id: true,
+        variantId: true,
+        expectedQuantity: true,
+        countedQuantity: true,
+        binId: true,
+      },
     });
     if (lines.length === 0) {
       throw new InventoryValidationError('Add at least one line before submitting the count');
@@ -169,7 +178,13 @@ export async function postInventoryCount(
 
     const lines = await tx.inventoryCountLine.findMany({
       where: { countId, countedQuantity: { not: null } },
-      select: { id: true, variantId: true, expectedQuantity: true, countedQuantity: true },
+      select: {
+        id: true,
+        variantId: true,
+        expectedQuantity: true,
+        countedQuantity: true,
+        binId: true,
+      },
     });
 
     const events: RecountEvent[] = [];
@@ -233,12 +248,62 @@ async function applyRecount(
   countId: string,
   line: CountLineLite
 ): Promise<RecountEvent> {
+  const counted = line.countedQuantity ?? 0;
+
+  // ── A SHELF-scoped line (docs/146 Phase 2) ──
+  //
+  // `setOnHand` would be flatly wrong here. Counting twelve on shelf A-01 does
+  // not mean the LOCATION holds twelve — it means A-01 does, and the location
+  // should move by the difference at that shelf. Setting the location to twelve
+  // would silently delete everything on every other shelf, which is the most
+  // destructive thing this module could do and would look like a successful count.
+  //
+  // So: lock the shelf, take the difference against what is LIVE on it (immune to
+  // a sale landing mid-count, exactly as `setOnHand` is at location level), and
+  // apply that as a relative delta seated on the shelf.
+  if (line.binId) {
+    const liveOnShelf = await lockBinOnHand(tx, {
+      tenantId: ctx.tenantId,
+      variantId: line.variantId,
+      binId: line.binId,
+      warehouseId,
+    });
+    const delta = counted - (liveOnShelf ?? 0);
+    const result = await applyMovement(tx, {
+      tenantId: ctx.tenantId,
+      variantId: line.variantId,
+      warehouseId,
+      delta,
+      reason: 'recount',
+      referenceType: 'InventoryCount',
+      referenceId: countId,
+      actorType: resolveActorType(ctx),
+      actorId: ctx.userId ?? null,
+      idempotencyKey: `count:${line.id}`,
+      binId: line.binId,
+      // A count is the authority on what is physically there. If the shelf was
+      // already recorded negative — the location was oversold and the shortfall
+      // was seated here — correcting UP is the fix, and refusing it would leave
+      // the wrong number in place.
+      allowNegative: true,
+    });
+    await tx.inventoryCountLine.update({
+      where: { id: line.id },
+      data: { appliedDelta: result.appliedDelta, movementId: result.movementId || null },
+    });
+    await tx.inventoryBinLevel.updateMany({
+      where: { variantId: line.variantId, binId: line.binId },
+      data: { lastCountedAt: new Date() },
+    });
+    return { variantId: line.variantId, warehouseId, result, delta: result.appliedDelta };
+  }
+
   const result = await applyMovement(tx, {
     tenantId: ctx.tenantId,
     variantId: line.variantId,
     warehouseId,
     delta: 0,
-    setOnHand: line.countedQuantity ?? 0,
+    setOnHand: counted,
     reason: 'recount',
     referenceType: 'InventoryCount',
     referenceId: countId,

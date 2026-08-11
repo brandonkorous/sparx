@@ -421,6 +421,13 @@ export const ReceiveLineInput = z
     // Actual landed cost — defaults to the PO line's agreed cost when omitted.
     unitCostCents: z.number().int().nonnegative().optional(),
     lotNumber: z.string().min(1).max(63).optional(),
+    // Which shelf the GOOD units went on (docs/146 Phase 2). Optional even on a
+    // bin-enabled location: the receiver may be booking a delivery from a desk
+    // with the pallet still on the dock, and refusing the receipt until someone
+    // walks the aisle is how deliveries stop being booked at all. Omitted, the
+    // put-away suggester picks — home shelf, then a shelf already holding it,
+    // then the default. Damaged units ignore this entirely and go to DAMAGED.
+    binId: Uuid.optional(),
   })
   // A receipt line must record SOME arrival — good units, damaged units, or both.
   // A line with zero of each is a no-op that books nothing and must be rejected.
@@ -486,18 +493,55 @@ export type InventoryCountStatus = z.infer<typeof InventoryCountStatus>;
 // warehouse is snapshotted. For `cycle`, the listed variants seed the lines (more
 // can be added while counting). `approvalThresholdCents` overrides the default
 // ($50) above which the post needs an admin sign-off.
-export const CreateInventoryCountInput = z.object({
-  warehouseId: Uuid,
-  type: InventoryCountType,
-  variantIds: z.array(Uuid).max(5000).optional(),
-  approvalThresholdCents: z.number().int().nonnegative().optional(),
-  note: z.string().max(2000).optional(),
-});
+/** What a stock count COVERS (docs/146 Phase 2). `location` is the pre-bins
+ *  behaviour exactly, so an existing caller is unaffected.
+ *
+ *  Declared here rather than with the other bin schemas below because a const
+ *  enum must exist before the object that references it — and the counts section
+ *  comes first in this file. */
+export const CountScope = z.enum(['location', 'zone', 'bin']);
+export type CountScope = z.infer<typeof CountScope>;
+
+export const CreateInventoryCountInput = z
+  .object({
+    warehouseId: Uuid,
+    type: InventoryCountType,
+    variantIds: z.array(Uuid).max(5000).optional(),
+    approvalThresholdCents: z.number().int().nonnegative().optional(),
+    note: z.string().max(2000).optional(),
+    // ── Scope (docs/146 Phase 2) ──
+    // Defaults to `location`, which is the pre-bins behaviour exactly, so an
+    // existing caller is unaffected.
+    scope: CountScope.default('location'),
+    binId: Uuid.optional(),
+    zoneName: z.string().trim().max(60).optional(),
+    /** Hide the expected quantity from whoever is counting, so what they write
+     *  down is what they SEE. The cheapest accuracy control in the category. */
+    isBlind: z.boolean().optional(),
+  })
+  .refine((v) => v.scope !== 'bin' || v.binId !== undefined, {
+    message: 'Choose the shelf this count covers',
+    path: ['binId'],
+  })
+  .refine((v) => v.scope !== 'zone' || (v.zoneName ?? '') !== '', {
+    message: 'Choose the zone this count covers',
+    path: ['zoneName'],
+  })
+  // A scope carrying the WRONG target is the dangerous case: a count that thinks
+  // it covers the whole location applies zero to every variant absent from the
+  // sheet. Refusing the mismatch is cheaper than the cleanup.
+  .refine((v) => v.scope === 'bin' || v.binId === undefined, {
+    message: 'A shelf can only be given when the count covers one shelf',
+    path: ['binId'],
+  });
 export type CreateInventoryCountInput = z.infer<typeof CreateInventoryCountInput>;
 
 // Add one more variant to a counting session (snapshots its expected on-hand).
 export const AddCountLineInput = z.object({
   variantId: Uuid,
+  /** Which shelf this line counts. Required on a bin- or zone-scoped count, where
+   *  the same variant may legitimately appear on several lines. */
+  binId: Uuid.optional(),
 });
 export type AddCountLineInput = z.infer<typeof AddCountLineInput>;
 
@@ -619,6 +663,208 @@ export const SetSafetyBufferInput = z.object({
   safetyBuffer: z.number().int().nonnegative().max(1_000_000),
 });
 export type SetSafetyBufferInput = z.infer<typeof SetSafetyBufferInput>;
+
+// ─── Per-channel safety buffers (docs/146 Phase 1) ───────────────────────────
+//
+// `SetSafetyBufferInput` above withholds N units from EVERY channel equally.
+// That is the wrong shape the moment a tenant sells in more than one place: a
+// storefront reads the level live and needs no cushion, while a marketplace we
+// push to every fifteen minutes needs slack to survive the window between a sale
+// here and the push landing there.
+//
+// A row with no variant/warehouse is the CHANNEL DEFAULT; a row with both is a
+// surgical override for one level. The half-specified forms are rejected — "this
+// variant at every warehouse" is a different feature with a different resolution
+// order, and silently accepting it would make the resolved number unexplainable.
+
+/** Sales channels the buffer system recognises. Free-form beyond the built-ins
+ *  so a channel adapter's slug (amazon, ebay, walmart, …) is valid without a
+ *  schema change every time one is added. */
+export const InventoryChannel = z
+  .string()
+  .trim()
+  .min(1)
+  .max(63)
+  .regex(/^[a-z0-9][a-z0-9_-]*$/, 'Channel must be a lowercase slug');
+export type InventoryChannel = z.infer<typeof InventoryChannel>;
+
+export const SetChannelBufferInput = z
+  .object({
+    channel: InventoryChannel,
+    /** Both omitted = the channel-wide default. Both set = a level override. */
+    variantId: Uuid.optional(),
+    warehouseId: Uuid.optional(),
+    buffer: z.number().int().nonnegative().max(1_000_000),
+    note: z.string().max(2000).optional(),
+  })
+  .refine((v) => (v.variantId === undefined) === (v.warehouseId === undefined), {
+    message: 'Give both variantId and warehouseId for a level override, or neither for the default',
+    path: ['variantId'],
+  });
+export type SetChannelBufferInput = z.infer<typeof SetChannelBufferInput>;
+
+// ─── Feed freshness SLO (docs/146 Phase 1) ───────────────────────────────────
+//
+// `syncIntervalSec` says how often we INTEND to pull; this says when the number
+// stops being trustworthy, and what to do about it. They are different questions
+// — a nightly feed is healthy at 23 hours old and alarming at 30.
+
+export const StalenessPolicy = z.enum([
+  // Flag the source and banner every surface reading it. Loud, reversible.
+  'warn',
+  // Additionally withhold `stalenessBuffer` extra units from every channel this
+  // source feeds, so the lag eats the cushion instead of a customer's order.
+  'buffer_up',
+  // Additionally stop selling this source's stock on external channels until a
+  // sync lands. The right answer where an oversell costs marketplace account
+  // health rather than one apology.
+  'pause_channel',
+]);
+export type StalenessPolicy = z.infer<typeof StalenessPolicy>;
+
+export const SetSourceFreshnessInput = z.object({
+  /** Age past which this source's stock is suspect. 0 = no SLO (exempt). */
+  expectedIntervalSec: z
+    .number()
+    .int()
+    .nonnegative()
+    .max(60 * 60 * 24 * 30),
+  stalenessPolicy: StalenessPolicy.optional(),
+  stalenessBuffer: z.number().int().nonnegative().max(1_000_000).optional(),
+});
+export type SetSourceFreshnessInput = z.infer<typeof SetSourceFreshnessInput>;
+
+// ─── Integrity: reconciliation + oversell (docs/146 Phase 1) ─────────────────
+
+export const ReconciliationScope = z.enum(['full', 'sample', 'variant']);
+export type ReconciliationScope = z.infer<typeof ReconciliationScope>;
+
+export const ReconciliationStatus = z.enum(['running', 'ok', 'drift', 'error']);
+export type ReconciliationStatus = z.infer<typeof ReconciliationStatus>;
+
+export const RunReconciliationInput = z.object({
+  scope: ReconciliationScope.default('full'),
+  /** Required when scope = 'variant' — check one item on demand. */
+  variantId: Uuid.optional(),
+  /** Cap for scope = 'sample': the N most recently touched levels. */
+  sampleSize: z.number().int().min(1).max(10_000).default(1000),
+});
+export type RunReconciliationInput = z.infer<typeof RunReconciliationInput>;
+
+// ─── Bins (docs/146 Phase 2) ─────────────────────────────────────────────────
+//
+// Where INSIDE a location a thing is. Opt-in per warehouse — see
+// `Warehouse.usesBins`; with it off none of this is ever asked for.
+
+export const BinType = z.enum([
+  // The shelf a picker walks to. The default and the overwhelming majority.
+  'pick',
+  // Overstock. Feeds the pick face rather than being picked from directly.
+  'bulk',
+  // Where a delivery lands before it is put away.
+  'receiving',
+  // Picked goods waiting to be packed or shipped.
+  'staging',
+  // Arrived or returned but not yet passed. NOT sellable.
+  'quarantine',
+  // Written off but physically still here. NOT sellable.
+  'damaged',
+]);
+export type BinType = z.infer<typeof BinType>;
+
+/** How a picker is routed through a location's shelves (docs/146 Phase 4).
+ *  Stored on the warehouse now because put-away suggests using the same
+ *  preference, so it earns its place before picking ships. */
+export const AllocationStrategy = z.enum(['fifo', 'fefo', 'nearest_bin', 'single_bin']);
+export type AllocationStrategy = z.infer<typeof AllocationStrategy>;
+
+/** A shelf label. Uppercased and trimmed so `a-01-01` and `A-01-01` are the same
+ *  shelf — people type these on a phone, at speed, next to the rack. */
+export const BinCode = z
+  .string()
+  .trim()
+  .min(1)
+  .max(32)
+  .transform((v) => v.toUpperCase());
+
+export const CreateBinInput = z.object({
+  warehouseId: Uuid,
+  code: BinCode,
+  name: z.string().trim().max(120).optional(),
+  // All four free text: every warehouse names its geography differently, and a
+  // schema insisting on ours would be fought rather than filled in.
+  zone: z.string().trim().max(60).optional(),
+  aisle: z.string().trim().max(60).optional(),
+  rack: z.string().trim().max(60).optional(),
+  shelf: z.string().trim().max(60).optional(),
+  type: BinType.default('pick'),
+  /** Defaults from `type` when omitted; overridable because the two come apart. */
+  isSellable: z.boolean().optional(),
+  pickSequence: z.number().int().min(0).max(1_000_000).optional(),
+  capacityUnits: z.number().int().positive().max(10_000_000).optional(),
+  notes: z.string().max(2000).optional(),
+});
+export type CreateBinInput = z.infer<typeof CreateBinInput>;
+
+// `type` is re-declared WITHOUT its default, deliberately. `.partial()` makes a
+// field optional but leaves `.default()` in place, so a patch of `{ name: 'A-1' }`
+// would parse to `{ name: 'A-1', type: 'pick' }` and the update service — which
+// writes whatever is not undefined — would silently turn a quarantine shelf into
+// a pick shelf on a rename. See patch-semantics.test.ts, which caught exactly
+// this and three like it.
+export const UpdateBinInput = CreateBinInput.omit({ warehouseId: true })
+  .partial()
+  .extend({ type: BinType.optional(), isActive: z.boolean().optional() });
+export type UpdateBinInput = z.infer<typeof UpdateBinInput>;
+
+export const MoveBetweenBinsInput = z.object({
+  variantId: Uuid,
+  fromBinId: Uuid,
+  toBinId: Uuid,
+  quantity: z.number().int().positive().max(10_000_000),
+  note: z.string().max(2000).optional(),
+  /** Suffixed `:out` / `:in` for the two halves, so a retried move applies once. */
+  idempotencyKey: z.string().max(100).optional(),
+});
+export type MoveBetweenBinsInput = z.infer<typeof MoveBetweenBinsInput>;
+
+/** One line of a put-away: what arrived, and which shelf it went on. */
+export const PutAwayLineInput = z.object({
+  variantId: Uuid,
+  binId: Uuid,
+  quantity: z.number().int().positive().max(10_000_000),
+});
+export type PutAwayLineInput = z.infer<typeof PutAwayLineInput>;
+
+export const PutAwayInput = z.object({
+  /** The shelf the goods are currently sitting on — usually a `receiving` bin. */
+  fromBinId: Uuid,
+  lines: z.array(PutAwayLineInput).min(1).max(500),
+  note: z.string().max(2000).optional(),
+});
+export type PutAwayInput = z.infer<typeof PutAwayInput>;
+
+/** What to do with returned goods once someone has looked at them. */
+export const ReturnDisposition = z.enum([
+  // Back on the shelf and sellable again.
+  'restock',
+  // Held pending inspection — on the quarantine shelf, not sellable.
+  'quarantine',
+  // Broken. On the damaged shelf, written off.
+  'scrap',
+]);
+export type ReturnDisposition = z.infer<typeof ReturnDisposition>;
+
+export const OversellIncidentKind = z.enum([
+  // A `deny` variant refused the hold. Lost revenue, correct behaviour.
+  'blocked',
+  // A `continue`/`preorder` variant took a hold it cannot cover today.
+  'allowed',
+  // A committed sale drove on-hand below zero. Goods left that we did not
+  // believe existed — always worth a look.
+  'negative_on_hand',
+]);
+export type OversellIncidentKind = z.infer<typeof OversellIncidentKind>;
 
 // ─── External sync (P5c Tier B — generic SaaS HTTP-API pull) ──────────────────────
 //

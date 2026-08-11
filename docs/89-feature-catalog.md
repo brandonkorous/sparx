@@ -330,6 +330,10 @@ b2b / dropship are consumers. The full six-phase build is shipped — see [docs/
 - ✅ **Reporting** — valuation + value-over-time, turnover / DIO, aging + dead-stock, reorder analysis; CSV export.
 - ✅ **MCP supply tools** — `get_low_inventory`, `get_inventory_valuation`, `suggest_reorders`, `update_inventory`, `create_purchase_order`, `receive_stock` (own `read:/write:inventory` scopes).
 - ✅ **B2B inventory** — account-scoped + fitment-filtered availability, per-account min/max order qty, fleet / work-order holds.
+- ✅ **Integrity: the ledger checks itself** (docs/146 Phase 1) — a nightly pass re-derives `Σ(movements.delta)` per level against the recorded on-hand and records the result (a clean run is shown as a result, not silence); a disagreement is recorded and NEVER auto-corrected. Plus a per-level "where this number came from" explanation reachable from every stock surface, a full CSV export of the ledger, a shrinkage report, and an oversell log recording every refused or uncovered sale with the numbers the system believed at that moment.
+- ✅ **Feed freshness SLO** — a source declares how often it will report; a breach flags it, stamps when it started, and applies its chosen consequence (`warn` / withhold extra units / pause channel selling). Distinct from "the last sync failed": a feed whose last sync SUCCEEDED four days ago looks healthy everywhere else and its numbers are worthless.
+- ✅ **Per-channel oversell cushions** — override → channel default → level buffer, so a live storefront and a 15-minute marketplace push can hold back different amounts.
+- ✅ **Warehouse (`scanner`) role** — receive / count / transfer / lookup only, costs hidden, no adjustments outside a count. Unlimited users: sparx bills per module, not per seat.
 
 ---
 

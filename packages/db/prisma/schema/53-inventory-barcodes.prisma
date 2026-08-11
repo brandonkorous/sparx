@@ -1,0 +1,130 @@
+// Barcodes — the scan registry (docs/146 Phase 3).
+//
+// `ProductVariant.barcode` is a single nullable VARCHAR(14) that has, until now,
+// been a channel-feed field: something Google Shopping and Amazon want, written
+// once at import and never read by us. That is not a scan registry, and it is
+// short of what a warehouse actually needs in four separate ways.
+//
+//   1. A thing has MORE THAN ONE barcode. The manufacturer's UPC on the unit, the
+//      ITF-14 on the case, the supplier's own label, and the code the previous
+//      system printed and stuck on four hundred shelves. All four are on real
+//      cartons in the room and all four have to scan.
+//   2. A case barcode means TWELVE. Scanning it and adding one is the single
+//      most common way a receiving count goes wrong, and it is silent — nothing
+//      about the number twelve appears anywhere for anyone to have checked.
+//   3. A barcode has a SYMBOLOGY. UPC-A and EAN-13 carry check digits that catch
+//      a mis-key before it reaches the ledger; Code 128 carries none and must be
+//      accepted as typed. Storing the format is what makes validation possible.
+//   4. Items with NO barcode need one. Not every SKU arrives with a manufacturer
+//      code, and "the ones we can scan and the ones we can't" is how a scan-first
+//      workflow degrades back into typing.
+//
+// So the registry: many rows per variant, one designated primary, each with a
+// symbology and a pack size.
+//
+// ── The uniqueness rule, and why it is strict ────────────────────────────────
+//
+// `UNIQUE (tenant_id, value)`. A scan must resolve to exactly ONE variant or the
+// scan-first workflows in Phase 3 have nothing to do with the result but ask a
+// question, which defeats the point of scanning. Two variants that genuinely
+// share a manufacturer GTIN are a real thing and this constraint refuses them —
+// deliberately, because the alternative is discovering the ambiguity at six in
+// the morning on the dock instead of at the moment someone typed the second one
+// in. `createBarcode` names the conflicting variant in the error.
+//
+// ── `ProductVariant.barcode` stays, as a derived mirror ──────────────────────
+//
+// It is read by the channel projections, the product feeds and the CSV importer
+// in a couple of dozen places, and all of them mean the same thing by it: the
+// GTIN this product is known by in the outside world. So it keeps meaning that.
+// The registry mirrors its primary row down into the column when — and only when
+// — that row is a GTIN-family code that fits VARCHAR(14). An internal Code 128
+// is ours and means nothing to Google, so it never lands there.
+
+model VariantBarcode {
+  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String @map("tenant_id") @db.Uuid
+  variantId String @map("variant_id") @db.Uuid
+
+  // As scanned. Normalized on write (trimmed, whitespace stripped, upper-cased
+  // for the alphanumeric symbologies) so that the unique index actually catches
+  // a duplicate rather than being defeated by a trailing space.
+  value String @db.VarChar(64)
+
+  // upc_a | upc_e | ean_13 | ean_8 | gtin_14 | itf_14 | code_128 | code_39 | qr | other
+  // A CHECK pins it. Detected from the value on write when the caller does not
+  // say, which is nearly always — a scanner reports digits, not a format.
+  symbology String @default("code_128") @db.VarChar(20)
+
+  // How many base units ONE scan of this code represents. The case-of-twelve
+  // problem, made explicit: an ITF-14 case code gets 12 and scan-to-receive adds
+  // twelve, rather than one and a discrepancy nobody finds until the count.
+  packSize Int @default(1) @map("pack_size")
+
+  // The one that represents this variant outward — printed on our own labels,
+  // mirrored into `ProductVariant.barcode` if it is a GTIN. Exactly one per
+  // variant; a partial unique index enforces it.
+  isPrimary Boolean @default(false) @map("is_primary")
+
+  // Set when this is the code on the SUPPLIER's packaging rather than ours. The
+  // same physical item can arrive wearing a different label from each supplier,
+  // and receiving has to accept all of them. Null means "ours / the manufacturer's".
+  supplierId String? @map("supplier_id") @db.Uuid
+
+  // Free text for the human looking at a list of five codes: "Case of 12",
+  // "Old packaging", "Acme's label".
+  label String? @db.VarChar(120)
+
+  // manual | generated | import | supplier | channel | scan
+  // `generated` means we minted it (see InventoryBarcodeSequence) and it is
+  // therefore ours to reprint; the others came from outside and are not.
+  source String @default("manual") @db.VarChar(20)
+
+  // Last time this specific code was scanned anywhere. Cheap to maintain and it
+  // answers the question that decides whether an old code can be retired: is
+  // anybody still scanning the labels we printed in 2019?
+  lastScannedAt DateTime? @map("last_scanned_at") @db.Timestamptz
+  scanCount     Int       @default(0) @map("scan_count")
+
+  isActive Boolean @default(true) @map("is_active")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  createdBy String?  @map("created_by") @db.VarChar(127)
+
+  tenant   Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant  ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  supplier Supplier?      @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+
+  @@unique([tenantId, value], map: "commerce_variant_barcodes_tenant_value_unique")
+  @@index([tenantId, variantId])
+  @@index([tenantId, supplierId])
+  @@map("commerce_variant_barcodes")
+}
+
+// The internal-barcode allocator.
+//
+// A counter in a table rather than `MAX(value) + 1` under an advisory lock,
+// because the two differ in exactly the case that matters: delete the highest
+// internal barcode and `MAX + 1` hands the same number to the next item, while
+// four hundred labels carrying it are still stuck to shelves. A barcode that has
+// ever been printed must never be re-issued, so the counter only ever goes up
+// and deleting a row does not lower it.
+//
+// Codes are minted as real UPC-A in the GS1 restricted-circulation range
+// (number system 2), not as an invented format: a scanner reads them as an
+// ordinary UPC with no configuration, they carry a check digit that catches a
+// mis-scan, and the range is reserved for in-store use so one can never collide
+// with a manufacturer's code.
+model InventoryBarcodeSequence {
+  tenantId String @id @map("tenant_id") @db.Uuid
+
+  // Next 10-digit body to issue. BigInt because 10 digits overflows Int.
+  nextValue BigInt @default(1) @map("next_value")
+
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("inventory_barcode_sequences")
+}

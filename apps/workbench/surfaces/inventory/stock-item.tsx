@@ -50,6 +50,7 @@ import {
   NativeSelect,
   Text,
   Timestamp,
+  Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
@@ -60,7 +61,10 @@ import {
   MapPin,
   Package,
   PackageX,
+  Printer,
   Save,
+  ShieldCheck,
+  Sparkles,
   SlidersHorizontal,
   Warehouse,
 } from 'lucide-react';
@@ -90,6 +94,7 @@ import {
   type StockLevel,
   type StockLocation,
 } from './data';
+import { useGenerateBarcodes, useVariantBarcodes } from './scan-data';
 
 /** Centred and capped — a pane torn onto a second monitor is 2000px wide, and
  *  uncapped this becomes a line of numbers pinned to the left edge. */
@@ -551,7 +556,10 @@ function LocationCard({
   sku,
   level,
   currency,
+  onExplain,
 }: {
+  /** Open the explanation of THIS location's number, beside. */
+  onExplain: () => void;
   variantId: string;
   productId: string | null;
   sku: string;
@@ -571,9 +579,26 @@ function LocationCard({
             {locationLabel(level)}
           </Heading>
         </div>
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
-        </Badge>
+        <div className="flex shrink-0 items-center gap-2">
+          <Badge color={state.tone} variant="soft" size="sm">
+            {state.label}
+          </Badge>
+          {/* The numbers below are the whole reason anyone is on this screen, so
+              the way to interrogate them sits with them rather than in a menu.
+              Icon-only with a tooltip: it is a secondary action beside a status
+              badge, and a labelled button here would compete with the counts. */}
+          <Tooltip content="Where this number came from">
+            <Button
+              size="sm"
+              variant="ghost"
+              color="neutral"
+              aria-label="Where this number came from"
+              onClick={onExplain}
+            >
+              <ShieldCheck className="size-4" aria-hidden />
+            </Button>
+          </Tooltip>
+        </div>
       </div>
 
       {/* Three numbers, and the one that answers "can I sell it" leads. */}
@@ -645,6 +670,134 @@ function LocationCard({
 }
 
 /* ── Holds and history ──────────────────────────────────────────────────── */
+
+/**
+ * What you can scan to bring this item up (docs/146 Phase 3.1).
+ *
+ * Placed on the STOCK screen rather than only in the catalogue because the
+ * question "why did that box not scan" is asked by someone looking at stock, and
+ * the answer — no code, or a code on a different item — belongs where the
+ * question is. An item with no code at all gets the mint button here, which is
+ * the shortest path there is from a spreadsheet catalogue to a scannable one.
+ */
+function BarcodesSection({
+  variantId,
+  sku,
+  ctx,
+}: {
+  variantId: string;
+  sku: string | null;
+  ctx: SurfaceContext;
+}) {
+  const barcodes = useVariantBarcodes(variantId);
+  const generate = useGenerateBarcodes();
+  const toast = useToast();
+  const rows = barcodes.data ?? [];
+
+  return (
+    <section className="card bg-base-100 flex flex-col gap-3 p-4">
+      <div className="border-base-300 flex flex-wrap items-center justify-between gap-2 border-b pb-2">
+        <div className="flex flex-col gap-0.5">
+          <Heading level={2} className="text-lg font-semibold">
+            What scans as this
+          </Heading>
+          <Text className="text-sm">Every code that brings this item up on a scanner.</Text>
+        </div>
+        {rows.length > 0 ? (
+          <Button
+            size="sm"
+            variant="outline"
+            color="module"
+            onClick={() => {
+              ctx.open('inventory.barcodes.labels', { variantId }, { target: 'beside' });
+            }}
+          >
+            <Printer className="size-4" aria-hidden />
+            Print labels
+          </Button>
+        ) : null}
+      </div>
+
+      {barcodes.isLoading ? (
+        <Text className="text-sm">Loading codes…</Text>
+      ) : rows.length === 0 ? (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Text className="min-w-0 text-sm">
+            Nothing scans as {sku ?? 'this item'} yet, so it has to be found by name every time.
+            sparx can create a real UPC for it — any scanner reads it, and it can never clash with a
+            manufacturer&rsquo;s code.
+          </Text>
+          <Button
+            size="sm"
+            color="module"
+            disabled={generate.isPending}
+            onClick={() => {
+              generate.mutate(
+                { variantIds: [variantId] },
+                {
+                  onSuccess: (result) => {
+                    const made = result.generated[0];
+                    toast.add({
+                      title: made ? `Barcode ${made.value} created` : 'Nothing to create',
+                      description: made ? 'Print a label for it and it is scannable.' : undefined,
+                      type: made ? 'success' : 'info',
+                    });
+                  },
+                  onError: () => {
+                    toast.add({ title: 'Could not create a barcode', type: 'error' });
+                  },
+                }
+              );
+            }}
+          >
+            <Sparkles className="size-4" aria-hidden />
+            {generate.isPending ? 'Creating…' : 'Create a barcode'}
+          </Button>
+        </div>
+      ) : (
+        <ul className="flex flex-col gap-2">
+          {rows.map((row) => (
+            <li key={row.id} className="flex flex-wrap items-center justify-between gap-2">
+              <span className="flex min-w-0 flex-wrap items-baseline gap-2">
+                <span className="truncate font-mono font-medium">{row.value}</span>
+                <Badge color="neutral" variant="outline" size="sm">
+                  {row.symbologyLabel}
+                </Badge>
+                {row.isPrimary ? (
+                  <Badge color="module" variant="soft" size="sm">
+                    Main
+                  </Badge>
+                ) : null}
+                {/* The fact with consequences: one pull of the trigger on this
+                    code books twelve, not one. */}
+                {row.packSize > 1 ? (
+                  <Badge color="module-commerce" size="sm">
+                    One scan = {row.packSize}
+                  </Badge>
+                ) : null}
+                {row.supplierName ? (
+                  <Badge color="module-crm" variant="soft" size="sm">
+                    {row.supplierName}
+                  </Badge>
+                ) : null}
+                {!row.isActive ? (
+                  <Badge color="warning" variant="soft" size="sm">
+                    Retired
+                  </Badge>
+                ) : null}
+              </span>
+              <Text className="text-sm">
+                {row.scanCount > 0
+                  ? `Scanned ${plural(row.scanCount, 'time', 'times')}`
+                  : 'Never scanned'}
+              </Text>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
 
 function HoldsSection({ holds }: { holds: ReturnType<typeof useStockHolds>['data'] }) {
   const rows = holds?.items ?? [];
@@ -1039,6 +1192,13 @@ export function StockItemSurface({ ctx }: { ctx: SurfaceContext }) {
               sku={sku ?? 'this item'}
               level={level}
               currency="USD"
+              onExplain={() => {
+                ctx.open(
+                  'inventory.stock.provenance',
+                  { variantId, warehouseId: level.warehouseId },
+                  { target: 'beside' }
+                );
+              }}
             />
           ))}
 
@@ -1077,6 +1237,8 @@ export function StockItemSurface({ ctx }: { ctx: SurfaceContext }) {
               </ul>
             </section>
           ) : null}
+
+          <BarcodesSection variantId={variantId} sku={sku} ctx={ctx} />
 
           <HoldsSection holds={holds.data} />
           <HistorySection history={history.data} />

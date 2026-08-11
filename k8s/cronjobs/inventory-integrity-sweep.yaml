@@ -1,0 +1,86 @@
+# Nightly inventory integrity sweep (docs/146 Phase 1). For each active Inventory
+# tenant it does two things that answer the same question from opposite ends:
+#
+#   1. RECONCILE — re-derive Σ(inventory_movements.delta) per (variant, warehouse)
+#      and compare it to the recorded on-hand. `applyMovement()` guarantees these
+#      match by construction; this is the guarantee being CHECKED rather than
+#      believed. A mismatch records a drift row and fires
+#      `inventory.reconciliation.drift`. Nothing is auto-corrected — writing the
+#      derived value over the recorded one would destroy the evidence, and if the
+#      ledger is the corrupted side it would propagate that into a good level.
+#   2. FRESHNESS — evaluate every source that declared an SLO against its promise.
+#      A feed whose last run SUCCEEDED four days ago looks healthy on every
+#      dashboard and its numbers are worthless; the sweep is what notices.
+#
+# Runs at 04:30 UTC — BEFORE the valuation snapshot at 05:30, deliberately. The
+# snapshot prices whatever the levels say; if a level is drifting we want that on
+# the record before the number is frozen into a historical series that will be
+# read for months.
+#
+# Idempotent: re-running inside the same breach changes nothing and emits nothing
+# (events fire on transitions only). Forbid concurrency — a full reconciliation
+# on a large catalogue can take minutes and two overlapping passes would each
+# resolve the other's open drifts.
+#
+# `--max-time 840` against a 15-minute deadline: this is the one nightly job whose
+# work scales with catalogue size, and a truncated pass that reports partial
+# results is worse than a late one.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: inventory-integrity-sweep
+  namespace: sparx-prod
+  labels:
+    app: inventory-integrity-cron
+    job: integrity-sweep
+spec:
+  schedule: '30 4 * * *'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            app: inventory-integrity-cron
+            job: integrity-sweep
+        spec:
+          serviceAccountName: sparx-app
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.1
+              command: ['sh', '-c']
+              args:
+                - >
+                  curl --fail-with-body --silent --show-error
+                  --max-time 840
+                  -X POST
+                  -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
+                  http://api-rest.sparx-prod.svc.cluster.local:3000/internal/inventory/integrity-sweep
+              env:
+                - name: SPARX_INTERNAL_CRON_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: sparx-app-secrets
+                      key: SPARX_INTERNAL_CRON_TOKEN
+              resources:
+                requests:
+                  cpu: '25m'
+                  memory: '16Mi'
+                limits:
+                  cpu: '100m'
+                  memory: '32Mi'
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ['ALL']
+                seccompProfile:
+                  type: RuntimeDefault

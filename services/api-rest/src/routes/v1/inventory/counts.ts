@@ -22,7 +22,12 @@ import { inventoryService } from '@sparx/inventory';
 import { InventoryCountStatus } from '@sparx/commerce-schemas';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
-import { requireInventoryModule, toInventoryContext } from '../../../lib/inventory-context.js';
+import {
+  redactCosts,
+  requireInventoryModule,
+  requireScanCapable,
+  toInventoryContext,
+} from '../../../lib/inventory-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const PathLine = z.object({ id: z.string().uuid(), lineId: z.string().uuid() });
@@ -51,7 +56,9 @@ const inventoryCountRoutes: FastifyPluginAsync = async (app) => {
         ...(q.skip !== undefined ? { skip: q.skip } : {}),
       }
     );
-    return reply.send(paged(items, { total, skip: q.skip ?? 0, per_page: q.take ?? 50 }));
+    return reply.send(
+      paged(redactCosts(request, items), { total, skip: q.skip ?? 0, per_page: q.take ?? 50 })
+    );
   });
 
   app.post('/v1/inventory/counts', async (request, reply) => {
@@ -68,8 +75,15 @@ const inventoryCountRoutes: FastifyPluginAsync = async (app) => {
     await requireInventoryModule(request);
     requireRole(request, 'viewer');
     const { id } = PathId.parse(request.params);
+    // A count detail carries the variance VALUE, which is a cost figure — the one
+    // number a scanner is promised they cannot see.
     return reply.send(
-      ok(await inventoryService.getInventoryCount(toInventoryContext(request), id))
+      ok(
+        redactCosts(
+          request,
+          await inventoryService.getInventoryCount(toInventoryContext(request), id)
+        )
+      )
     );
   });
 
@@ -93,24 +107,35 @@ const inventoryCountRoutes: FastifyPluginAsync = async (app) => {
     return reply.send(ok(updated));
   });
 
+  // Entering counts IS the warehouse floor's job (docs/146 Phase 1), so this uses
+  // the scan-capable allow-list rather than the ranked `editor` gate — which the
+  // lateral `scanner` role would fail. POSTING the count stays `editor`: the
+  // person who counts a shelf is not necessarily the person who should sign off
+  // on the stock correction it implies, and keeping those apart is most of what
+  // makes a floor login safe to hand out.
   app.post('/v1/inventory/counts/:id/entries', async (request, reply) => {
     await requireInventoryModule(request);
-    requireRole(request, 'editor');
+    requireScanCapable(request);
     const { id } = PathId.parse(request.params);
     const updated = await inventoryService.enterCounts(
       toInventoryContext(request),
       id,
       request.body
     );
-    return reply.send(ok(updated));
+    return reply.send(ok(redactCosts(request, updated)));
   });
 
   app.post('/v1/inventory/counts/:id/submit', async (request, reply) => {
     await requireInventoryModule(request);
-    requireRole(request, 'editor');
+    requireScanCapable(request);
     const { id } = PathId.parse(request.params);
     return reply.send(
-      ok(await inventoryService.submitInventoryCount(toInventoryContext(request), id))
+      ok(
+        redactCosts(
+          request,
+          await inventoryService.submitInventoryCount(toInventoryContext(request), id)
+        )
+      )
     );
   });
 

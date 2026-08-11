@@ -30,6 +30,37 @@ model InventorySource {
   syncIntervalSec Int       @default(0) @map("sync_interval_sec")
   notes           String?   @db.Text
 
+  // ── Freshness SLO (docs/146 Phase 1) ──────────────────────────────────────
+  //
+  // `syncIntervalSec` says how often we INTEND to pull. It says nothing about
+  // when the number stops being trustworthy, and those are different questions:
+  // a nightly feed is perfectly healthy at 23 hours old and alarming at 30.
+  //
+  // `expectedIntervalSec` is the promise — the age past which stock from this
+  // source must be treated as suspect. 0 = no SLO declared (the source is
+  // exempt; used for one-shot imports). Defaulted from syncIntervalSec × 2 on
+  // enrollment so a source that declares a cadence gets an SLO for free.
+  expectedIntervalSec Int @default(0) @map("expected_interval_sec")
+
+  // What to DO on a breach — the whole point of noticing:
+  //   warn          — flag the source, banner every surface reading it. Default:
+  //                   loud, reversible, safe for a tenant who is still tuning.
+  //   buffer_up     — additionally withhold `stalenessBuffer` extra units from
+  //                   every channel served by this source's levels, so the lag
+  //                   eats the cushion instead of the customer's order.
+  //   pause_channel — additionally stop pushing/selling this source's stock on
+  //                   external channels until a sync lands. The nuclear option,
+  //                   and the right one for a marketplace where an oversell
+  //                   costs account health rather than one apology.
+  stalenessPolicy String @default("warn") @map("staleness_policy") @db.VarChar(20)
+  stalenessBuffer Int    @default(0) @map("staleness_buffer")
+
+  // Breach state, maintained by the freshness sweep. `staleSince` is the first
+  // moment the source was observed in breach and is CLEARED on a successful sync
+  // — so "stale for 3 days" is answerable, not just "stale".
+  isStale    Boolean   @default(false) @map("is_stale")
+  staleSince DateTime? @map("stale_since") @db.Timestamptz
+
   // Tier A on-prem bridge enrollment (docs/28 §3, docs/100 P5d). An `agent` source
   // is fed by an outbound-HTTPS bridge the tenant installs on their network;
   // pairing mints a tenant-scoped API key (`api_keys`) the agent authenticates

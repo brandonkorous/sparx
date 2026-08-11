@@ -247,6 +247,22 @@ model Tenant {
   inventoryTransfers     InventoryTransfer[]
   inventoryTransferLines InventoryTransferLine[]
 
+  // Inventory integrity (docs/146 Phase 1) — the evidence behind the numbers
+  inventoryReconciliationRuns   InventoryReconciliationRun[]
+  inventoryReconciliationDrifts InventoryReconciliationDrift[]
+  inventoryOversellIncidents    InventoryOversellIncident[]
+  inventoryChannelBuffers       InventoryChannelBuffer[]
+
+  // Inventory bins (docs/146 Phase 2) — where inside a location a thing is
+  inventoryBins         InventoryBin[]
+  inventoryBinLevels    InventoryBinLevel[]
+  inventoryBinMovements InventoryBinMovement[]
+
+  // Inventory barcodes (docs/146 Phase 3) — the scan registry
+  variantBarcodes          VariantBarcode[]
+  inventoryBarcodeSequence InventoryBarcodeSequence?
+  inventoryScanEvents      InventoryScanEvent[]
+
   // Commerce module — pricing + discounts
   priceLists             PriceList[]
   priceListEntries       PriceListEntry[]

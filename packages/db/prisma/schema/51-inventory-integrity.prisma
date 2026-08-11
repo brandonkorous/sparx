@@ -1,0 +1,231 @@
+// Inventory integrity — the tables that make "your stock number is right" a
+// CLAIM WE CAN CHECK rather than an assumption (docs/146 Phase 1).
+//
+// The ledger already guarantees `onHand == Σ(movements.delta)` by construction:
+// `applyMovement()` is the only writer, and it appends a row inside the same row
+// lock that mutates the level. That is a design guarantee, and a design guarantee
+// nobody re-derives is a belief. These three tables turn it into evidence:
+//
+//   1. InventoryReconciliationRun / …Drift — a scheduled job re-derives the sum
+//      per (variant, warehouse), compares it to the recorded on-hand, and records
+//      what it found. A clean run is a positive result worth showing an operator,
+//      not silence. A drift row is the alarm nobody else in the category has.
+//   2. InventoryOversellIncident — every time the platform refused a sale for
+//      lack of stock, or permitted one it could not cover, one row. "Inaccurate
+//      inventory" is the #1 complaint in the market and it is almost always
+//      diagnosed after the refund; this makes it diagnosable at the moment it
+//      happens, with the policy that was in force attached.
+//   3. InventoryChannelBuffer — the oversell cushion, per sales channel. A
+//      marketplace whose feed we push to on a 15-minute cycle needs a deeper
+//      withhold than a storefront reading the level directly, and one number on
+//      the level cannot express that.
+//
+// All three are OBSERVABILITY. Nothing here is on the critical path of a sale,
+// nothing here writes `on_hand`, and a failure to record must never fail the
+// operation being recorded.
+
+// One pass of the reconciliation job over one tenant. Append-only; the history
+// is the point (a drift that appeared on a Tuesday and cleared on a Wednesday is
+// a different story from one that has been there for a month).
+model InventoryReconciliationRun {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // running | ok | drift | error. A CHECK constraint pins the vocabulary. `ok`
+  // means every level checked reconciled exactly; `drift` means at least one did
+  // not; `error` means the pass itself failed and proves nothing.
+  status String @default("running") @db.VarChar(12)
+
+  // full | sample | variant. A full pass walks every level; a sample pass walks
+  // the busiest N (the nightly default on a large catalog); a variant pass is the
+  // on-demand check an operator fires from the provenance drawer.
+  scope String @default("full") @db.VarChar(12)
+
+  levelsChecked Int @default(0) @map("levels_checked")
+  driftCount    Int @default(0) @map("drift_count")
+  // Σ|recorded − derived| in units, and the same difference valued at cost. Units
+  // say how wrong; value says how much it matters.
+  driftUnits      Int @default(0) @map("drift_units")
+  driftValueCents Int @default(0) @map("drift_value_cents")
+
+  startedAt  DateTime  @default(now()) @map("started_at") @db.Timestamptz
+  finishedAt DateTime? @map("finished_at") @db.Timestamptz
+  durationMs Int?      @map("duration_ms")
+  error      String?   @db.Text
+
+  tenant Tenant                         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  drifts InventoryReconciliationDrift[]
+
+  @@index([tenantId, startedAt(sort: Desc)])
+  @@index([tenantId, status])
+  @@map("inventory_reconciliation_runs")
+}
+
+// One level that failed to reconcile. `recordedOnHand` is what `inventory_levels`
+// said; `derivedOnHand` is Σ(delta) from the ledger. They should never differ —
+// if they do, one of the two is lying and an operator needs to know WHICH before
+// they trust a reorder suggestion built on it.
+//
+// A drift is NOT auto-corrected. Silently writing the derived value would destroy
+// the evidence and could be the wrong direction (if the ledger is the corrupted
+// side, "fixing" the level propagates the corruption). Resolution is an explicit
+// human act — post a count — and `resolvedAt` records that it happened.
+model InventoryReconciliationDrift {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+  runId    String @map("run_id") @db.Uuid
+
+  variantId   String @map("variant_id") @db.Uuid
+  warehouseId String @map("warehouse_id") @db.Uuid
+
+  recordedOnHand Int @map("recorded_on_hand")
+  derivedOnHand  Int @map("derived_on_hand")
+  // recorded − derived. Signed: positive means the level claims MORE than the
+  // ledger can account for (phantom stock — the dangerous direction, it oversells).
+  delta          Int
+  // |delta| × the level's cost basis at detection time.
+  valueCents     Int @default(0) @map("value_cents")
+
+  // Set when a later run finds this (variant, warehouse) reconciling again, or
+  // when a posted count closes it. Null = still drifting.
+  resolvedAt DateTime? @map("resolved_at") @db.Timestamptz
+  // Soft pointer to the movement that closed it (a count post, usually). No FK —
+  // the ledger is append-only and never deleted under a drift row.
+  resolutionMovementId String? @map("resolution_movement_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant    Tenant                     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  run       InventoryReconciliationRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  variant   ProductVariant             @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  warehouse Warehouse                  @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, runId])
+  @@index([tenantId, variantId, warehouseId])
+  @@index([tenantId, resolvedAt])
+  @@map("inventory_reconciliation_drifts")
+}
+
+// One row every time stock ran out from the platform's point of view.
+//
+// `kind` distinguishes three genuinely different events that all look like "out
+// of stock" in a support ticket:
+//
+//   blocked          — a `deny` variant refused the hold. The customer saw an
+//                      error. Lost revenue, correct behaviour.
+//   allowed          — a `continue`/`preorder` variant took a hold it cannot
+//                      cover today. A promise was made. Correct behaviour IF the
+//                      merchant meant it, and a slow-motion refund if they didn't.
+//   negative_on_hand — a committed sale drove on-hand below zero. Goods left the
+//                      building that the system did not believe were there. This
+//                      one is always worth looking at.
+//
+// The row snapshots the numbers AS THEY WERE at the decision, not as they are
+// now — the whole value is being able to answer "what did we think we had?"
+// months later, when the level has moved on.
+model InventoryOversellIncident {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  variantId   String @map("variant_id") @db.Uuid
+  warehouseId String @map("warehouse_id") @db.Uuid
+
+  // blocked | allowed | negative_on_hand. A CHECK pins the vocabulary.
+  kind String @db.VarChar(20)
+
+  requestedQuantity Int @map("requested_quantity")
+  // Sellable at the moment of the decision — on_hand − allocated − buffer. May be
+  // negative when the level was already oversold.
+  availableQuantity Int @map("available_quantity")
+  // max(0, requested − available). How short we were.
+  shortfall         Int @default(0)
+
+  // Snapshot of the numbers behind `availableQuantity`, so the arithmetic can be
+  // re-shown without re-deriving it from a level that has since changed.
+  onHandAtDecision    Int @default(0) @map("on_hand_at_decision")
+  allocatedAtDecision Int @default(0) @map("allocated_at_decision")
+  bufferAtDecision    Int @default(0) @map("buffer_at_decision")
+
+  // The variant's inventoryPolicy in force: deny | continue | preorder.
+  policy String @db.VarChar(20)
+
+  // Where the demand came from. `channel` is the sales channel resolved by the
+  // allocator (storefront | b2b | subscription | admin | <channel slug>);
+  // holderType/holderId point at the cart/order/subscription that asked.
+  channel    String? @db.VarChar(63)
+  holderType String? @map("holder_type") @db.VarChar(20)
+  holderId   String? @map("holder_id") @db.Uuid
+
+  // Attribution, matching the ledger's vocabulary so an incident and the movements
+  // around it can be read side by side.
+  actorType String  @default("system") @map("actor_type") @db.VarChar(20)
+  actorId   String? @map("actor_id") @db.VarChar(127)
+
+  // When the level's stock came from an external feed, which source — so a
+  // cluster of incidents can be traced to the feed that went stale rather than to
+  // the catalogue.
+  sourceId String? @map("source_id") @db.Uuid
+  // Age of the level's `as_of` at the decision, in seconds. A large number next to
+  // an incident is the whole diagnosis.
+  stockAgeSeconds Int? @map("stock_age_seconds")
+
+  occurredAt DateTime @default(now()) @map("occurred_at") @db.Timestamptz
+
+  tenant    Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  warehouse Warehouse      @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, occurredAt(sort: Desc)])
+  @@index([tenantId, variantId, occurredAt(sort: Desc)])
+  @@index([tenantId, kind, occurredAt(sort: Desc)])
+  @@index([tenantId, channel])
+  @@map("inventory_oversell_incidents")
+}
+
+// The oversell cushion, per sales channel.
+//
+// `inventory_levels.safety_buffer` withholds N units from EVERY channel equally.
+// That is the wrong shape as soon as a tenant sells in more than one place: a
+// storefront reads the level live and needs no cushion at all, while a
+// marketplace we push to every fifteen minutes needs several units of slack to
+// survive the window between a sale here and the push landing there.
+//
+// Resolution order for a channel's sellable quantity (see `resolveChannelBuffer`):
+//   1. a row here matching (channel, variant, warehouse)  — the surgical override
+//   2. a row here matching (channel) with null variant + warehouse — the channel default
+//   3. `inventory_levels.safety_buffer` — the all-channels floor
+//
+// Nullable variant/warehouse is why the unique index is expression-based in the
+// migration rather than a plain @@unique: Postgres treats NULLs as distinct, so a
+// naive unique on (channel, variant_id, warehouse_id) would permit unlimited
+// duplicate channel defaults.
+model InventoryChannelBuffer {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // Sales channel slug: storefront | b2b | subscription | admin | a channel
+  // adapter's slug (amazon, ebay, walmart, …).
+  channel String @db.VarChar(63)
+
+  // Both null = the channel-wide default. Both set = a surgical override for one
+  // (variant, warehouse). A CHECK constraint forbids the half-specified forms,
+  // which have no coherent meaning.
+  variantId   String? @map("variant_id") @db.Uuid
+  warehouseId String? @map("warehouse_id") @db.Uuid
+
+  /// Units withheld from this channel's sellable quantity.
+  buffer Int @default(0)
+
+  note String? @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant    Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  warehouse Warehouse?      @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, channel])
+  @@index([tenantId, variantId, warehouseId])
+  @@map("inventory_channel_buffers")
+}

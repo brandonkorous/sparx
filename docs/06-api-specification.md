@@ -1,8 +1,8 @@
 # WizeWorks Platform — API Specification
 
-**Version:** 1.1.0  
+**Version:** 1.2.0  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-06-17
+**Last Updated:** 2026-08-10
 
 ---
 
@@ -369,6 +369,57 @@ appliedDelta?, error? } ] }`.
 **`GET /v1/inventory/alerts`** — variants at or below their reorder point. Query:
 `warehouse_id` (uuid), `take` (1–250). Returns the low-stock rows (SKU, title,
 warehouse, available, reorder point + quantity, lead time).
+
+#### Inventory integrity (docs/146 Phase 1)
+
+Every level row now also carries `as_of` — when the QUANTITY was last established
+— and a server-computed `age_seconds`. These are deliberately distinct from
+`updated_at`, which moves for any write to the row: editing a reorder point would
+otherwise make a three-week-old count read as fresh.
+
+```
+GET    /v1/inventory/integrity/reconciliation     Check history         (read:inventory)
+POST   /v1/inventory/integrity/reconciliation     Run a check now       (write:inventory)
+GET    /v1/inventory/integrity/drifts             Levels that disagree  (read:inventory)
+GET    /v1/inventory/integrity/oversell           Refused/uncovered sales (read:inventory)
+GET    /v1/inventory/integrity/oversell/summary   Counts by kind        (read:inventory)
+GET    /v1/inventory/stock/:variant_id/:warehouse_id/provenance
+                                                  Explain one number    (read:inventory)
+GET    /v1/inventory/movements/export             Ledger as CSV         (read:inventory)
+GET    /v1/inventory/reports/shrinkage            What left unsold      (read:inventory)
+GET    /v1/inventory/channel-buffers              Per-channel cushions  (read:inventory)
+PUT    /v1/inventory/channel-buffers              Set one (upsert)      (write:inventory)
+DELETE /v1/inventory/channel-buffers/:id          Remove one            (write:inventory)
+GET    /v1/inventory/sources/freshness            Feed SLO state        (read:inventory)
+PUT    /v1/inventory/sources/:id/freshness        Declare the SLO       (write:inventory)
+POST   /v1/inventory/sources/freshness/sweep      Evaluate now          (write:inventory)
+```
+
+**`…/provenance`** is the one worth calling out. One request returns the
+decomposition of a stock number (on-hand / allocated / buffer / sellable, plus a
+per-channel resolution when `?channel=` is given), `Σ(movements.delta)` recomputed
+live with a `reconciles` boolean, the recent ledger rows with their actor and
+source, the active holds, the feed(s) behind the number with their staleness, and
+the cost basis. It is one call by design: the value of the feature is answering
+"why is this number what it is" without a research project, and four round trips
+to four endpoints IS a research project.
+
+**`…/movements/export`** takes the identical filter set as
+`GET /v1/inventory/movements` minus `take`/`skip` — an export is the whole
+filtered set. It is capped server-side; the cap being hit is reported in
+`X-Sparx-Export-Truncated` and the row count in `X-Sparx-Export-Rows`, because a
+client streaming the body to a download never sees its length and a silently
+short export is the worst possible artifact.
+
+**Reconciliation never mutates stock.** A drift is recorded, not corrected —
+overwriting the stored number with the recalculated one would destroy the
+evidence, and if the ledger were the corrupted side it would propagate that into a
+good level. Resolution is an explicit posted count.
+
+**The `scanner` role** (warehouse floor) is admitted to receiving, count entry,
+transfer ship/receive and stock lookup by an explicit allow-list rather than by
+the ranked role hierarchy, and cost fields are nulled in every response it
+receives. Posting a count and creating a transfer remain `editor`.
 
 ### CRM Pipeline
 

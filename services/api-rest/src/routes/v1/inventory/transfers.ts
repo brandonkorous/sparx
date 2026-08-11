@@ -23,7 +23,12 @@ import { inventoryService } from '@sparx/inventory';
 import { InventoryTransferStatus } from '@sparx/commerce-schemas';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
-import { requireInventoryModule, toInventoryContext } from '../../../lib/inventory-context.js';
+import {
+  redactCosts,
+  requireInventoryModule,
+  requireScanCapable,
+  toInventoryContext,
+} from '../../../lib/inventory-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const PathLine = z.object({ id: z.string().uuid(), lineId: z.string().uuid() });
@@ -119,25 +124,37 @@ const inventoryTransferRoutes: FastifyPluginAsync = async (app) => {
     return reply.status(204).send();
   });
 
+  // Shipping and receiving a transfer are physical acts performed on the floor
+  // (docs/146 Phase 1) — scan-capable rather than the ranked `editor` gate.
+  // Creating, editing and cancelling a transfer stay `editor`: deciding that
+  // stock should move is a different job from moving it.
   app.post('/v1/inventory/transfers/:id/ship', async (request, reply) => {
     await requireInventoryModule(request);
-    requireRole(request, 'editor');
+    requireScanCapable(request);
     const { id } = PathId.parse(request.params);
     return reply.send(
-      ok(await inventoryService.shipInventoryTransfer(toInventoryContext(request), id))
+      ok(
+        redactCosts(
+          request,
+          await inventoryService.shipInventoryTransfer(toInventoryContext(request), id)
+        )
+      )
     );
   });
 
   app.post('/v1/inventory/transfers/:id/receive', async (request, reply) => {
     await requireInventoryModule(request);
-    requireRole(request, 'editor');
+    requireScanCapable(request);
     const { id } = PathId.parse(request.params);
     return reply.send(
       ok(
-        await inventoryService.receiveInventoryTransfer(
-          toInventoryContext(request),
-          id,
-          request.body
+        redactCosts(
+          request,
+          await inventoryService.receiveInventoryTransfer(
+            toInventoryContext(request),
+            id,
+            request.body
+          )
         )
       )
     );

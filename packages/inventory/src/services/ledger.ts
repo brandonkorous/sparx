@@ -25,6 +25,8 @@ import { InventoryValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 import { publishInventoryEvent } from '../events';
 
+import { mirrorMovementToBins } from './bin-ledger';
+import { recordOversellIncidentOnTx } from './integrity';
 import { syncProductInStock } from './internal';
 
 export type ActorType = 'user' | 'ai' | 'system' | 'integration';
@@ -58,6 +60,15 @@ export interface MovementInput {
   allocatedDelta?: number;
   /** Permit onHand < 0 (a committed sale under a continue/preorder policy). */
   allowNegative?: boolean;
+  /**
+   * Which shelf this change happened on (docs/146 Phase 2).
+   *
+   * Optional and usually omitted: a sale does not know which shelf a picker
+   * used, so the mirror draws down across the bins that hold stock. Set it when
+   * the caller genuinely knows — a put-away, a bin-scoped count, a scan.
+   * Ignored entirely on a location that does not use bins.
+   */
+  binId?: string | null;
 }
 
 export interface MovementResult {
@@ -168,6 +179,39 @@ export async function applyMovement(tx: TxClient, input: MovementInput): Promise
       `Movement would drive onHand negative (current ${current.on_hand}, delta ${delta})`
     );
   }
+
+  // A permitted negative on-hand means goods left the building that the system
+  // did not believe were there. That is the most serious of the three oversell
+  // shapes and the easiest to miss — it throws nothing, shows no error, and the
+  // only trace is a minus sign on a stock screen nobody is looking at. Recorded
+  // in THIS transaction so the incident and the movement land together
+  // (docs/146 Phase 1, D3).
+  if (newOnHand < 0 && current.on_hand >= 0) {
+    await recordOversellIncidentOnTx(
+      tx,
+      { tenantId: input.tenantId, ...(input.actorId ? { userId: input.actorId } : {}) },
+      {
+        variantId: input.variantId,
+        warehouseId: input.warehouseId,
+        kind: 'negative_on_hand',
+        // The "request" here is the size of the movement, and what was available
+        // is what the level actually held before it.
+        requestedQuantity: Math.abs(delta),
+        availableQuantity: current.on_hand,
+        onHandAtDecision: current.on_hand,
+        allocatedAtDecision: current.allocated,
+        bufferAtDecision: 0,
+        // The policy that permitted it is implied by the caller passing
+        // `allowNegative`; the variant's own flag is not read here because doing
+        // so would add a query to the hot path of every committed sale.
+        policy: 'continue',
+        actorType: input.actorType,
+        actorId: input.actorId ?? null,
+        holderType: input.referenceType ?? null,
+        holderId: input.referenceId ?? null,
+      }
+    );
+  }
   const newAllocated = current.allocated + allocatedDelta;
   const newAvg = nextAvgCost(
     current.on_hand,
@@ -209,7 +253,28 @@ export async function applyMovement(tx: TxClient, input: MovementInput): Promise
     },
   });
 
-  // 6. Keep the denormalized Product.inStock flag honest.
+  // 6. Mirror the change onto a shelf (docs/146 Phase 2). A no-op on a location
+  //    that does not use bins, which is what keeps the whole feature genuinely
+  //    optional rather than optional-in-the-UI-only. Runs in THIS transaction, so
+  //    the warehouse row and its bin row land together or not at all — the two
+  //    ledgers can never disagree about whether something happened.
+  await mirrorMovementToBins(tx, {
+    tenantId: input.tenantId,
+    variantId: input.variantId,
+    warehouseId: input.warehouseId,
+    delta,
+    reason: input.reason,
+    movementId: movement.id,
+    binId: input.binId ?? null,
+    referenceType: input.referenceType ?? null,
+    referenceId: input.referenceId ?? null,
+    actorType: input.actorType,
+    actorId: input.actorId ?? null,
+    source: input.source ?? null,
+    allowNegative: input.allowNegative ?? false,
+  });
+
+  // 7. Keep the denormalized Product.inStock flag honest.
   await syncProductInStock(tx, input.variantId);
 
   return {

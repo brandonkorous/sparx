@@ -49,6 +49,7 @@ import {
   Select,
   Text,
   Timestamp,
+  Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
 import {
@@ -59,6 +60,7 @@ import {
   MapPin,
   PackageX,
   Save,
+  ShieldCheck,
   SlidersHorizontal,
   Warehouse,
 } from 'lucide-react';
@@ -563,11 +565,14 @@ function LevelRow({
   variant,
   level,
   currency,
+  onExplain,
 }: {
   productId: string;
   variant: Variant;
   level: ProductStockLevel;
   currency: string;
+  /** Open the explanation of THIS location's number, beside. */
+  onExplain: () => void;
 }) {
   const [editingRule, setEditingRule] = useState(false);
   const state = levelState(level);
@@ -580,9 +585,25 @@ function LevelRow({
           <MapPin className="size-4 shrink-0" aria-hidden />
           <Text className="min-w-0 font-semibold">{level.warehouseName}</Text>
         </div>
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
-        </Badge>
+        <div className="flex shrink-0 items-center gap-2">
+          <Badge color={state.tone} variant="soft" size="sm">
+            {state.label}
+          </Badge>
+          {/* Same affordance as the Inventory module's own item pane, in the
+              same place, because it is the same question asked of the same
+              number — a merchant who learns it here should find it there. */}
+          <Tooltip content="Where this number came from">
+            <Button
+              size="sm"
+              variant="ghost"
+              color="neutral"
+              aria-label="Where this number came from"
+              onClick={onExplain}
+            >
+              <ShieldCheck className="size-4" aria-hidden />
+            </Button>
+          </Tooltip>
+        </div>
       </div>
 
       {/* Three numbers, and the one that answers "can I sell it" leads. */}
@@ -656,7 +677,9 @@ function VariantCard({
   levels,
   locations,
   currency,
+  onExplain,
 }: {
+  onExplain: (warehouseId: string) => void;
   productId: string;
   variant: Variant;
   levels: ProductStockLevel[];
@@ -710,6 +733,9 @@ function VariantCard({
               variant={variant}
               level={level}
               currency={currency}
+              onExplain={() => {
+                onExplain(level.warehouseId);
+              }}
             />
           ))}
         </div>
@@ -1031,6 +1057,13 @@ function StockBody({ ctx, scope }: { ctx: SurfaceContext; scope: ReadyScope }) {
             levels={byVariant.get(variant.id) ?? []}
             locations={locations}
             currency={currency}
+            onExplain={(warehouseId) => {
+              ctx.open(
+                'inventory.stock.provenance',
+                { variantId: variant.id, warehouseId },
+                { target: 'beside' }
+              );
+            }}
           />
         ))}
 

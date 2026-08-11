@@ -16,6 +16,10 @@ import inventoryTransferRoutes from './transfers.js';
 import inventoryMovementRoutes from './movements.js';
 import inventorySyncRoutes from './sync.js';
 import inventoryAgentRoutes from './agent.js';
+import inventoryIntegrityRoutes from './integrity.js';
+import inventoryBinRoutes from './bins.js';
+import inventoryBarcodeRoutes from './barcodes.js';
+import inventoryScanningRoutes from './scanning.js';
 
 const inventoryRoutes: FastifyPluginAsync = async (app) => {
   // The documented public API (docs/06 §7) — registered first so its canonical
@@ -37,6 +41,10 @@ const inventoryRoutes: FastifyPluginAsync = async (app) => {
   await app.register(inventoryMovementRoutes);
   await app.register(inventorySyncRoutes);
   await app.register(inventoryAgentRoutes);
+  await app.register(inventoryIntegrityRoutes);
+  await app.register(inventoryBinRoutes);
+  await app.register(inventoryBarcodeRoutes);
+  await app.register(inventoryScanningRoutes);
 };
 
 export default inventoryRoutes;

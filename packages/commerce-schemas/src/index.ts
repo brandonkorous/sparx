@@ -27,6 +27,17 @@ export * from './fitment-dictionaries';
 // Phase 2 — inventory (warehouses, levels, lots, serials).
 export * from './inventory';
 
+// Barcodes — symbology, check digits, scan-equivalence and the write schemas for
+// the scan registry (docs/146 Phase 3). Pure: the same code validates on the
+// server, in the API and in the label printer, because a check digit computed
+// two ways is a bug that only shows up on paper.
+export * from './barcodes';
+
+// The bar patterns themselves — Code 128, the EAN/UPC family, ITF-14 — as pure
+// module arithmetic with no rendering dependency, so a label drawn in the
+// workbench and one drawn server-side are the same barcode.
+export * from './barcode-encode';
+
 // Phase 3 — pricing + discounts + gift cards + account credit.
 export * from './pricing';
 export * from './discounts';

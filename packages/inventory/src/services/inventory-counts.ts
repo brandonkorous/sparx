@@ -66,7 +66,9 @@ export async function listInventoryCounts(
       }),
       tx.inventoryCount.count({ where }),
     ]);
-    return { items: rows.map(serializeRow), total };
+    // The list does not resolve bin codes — one lookup per row for a column the
+    // list does not show. The detail read fills it in.
+    return { items: rows.map((r) => serializeRow(r)), total };
   });
 }
 
@@ -115,6 +117,10 @@ async function createOnce(ctx: ServiceContext, input: CreateInventoryCountInput)
         type: input.type,
         status: 'counting',
         note: input.note ?? null,
+        scope: input.scope,
+        binId: input.binId ?? null,
+        zoneName: input.zoneName ?? null,
+        ...(input.isBlind !== undefined ? { isBlind: input.isBlind } : {}),
         ...(input.approvalThresholdCents !== undefined
           ? { approvalThresholdCents: input.approvalThresholdCents }
           : {}),
@@ -128,6 +134,7 @@ async function createOnce(ctx: ServiceContext, input: CreateInventoryCountInput)
           tenantId: ctx.tenantId,
           countId: count.id,
           variantId: l.variantId,
+          binId: l.binId ?? null,
           expectedQuantity: l.expected,
         })),
       });
@@ -148,12 +155,48 @@ async function createOnce(ctx: ServiceContext, input: CreateInventoryCountInput)
   });
 }
 
-/** Snapshot the expected on-hand for the count's lines: every live level in the
- *  warehouse for a `full` count, or the given variants for a `cycle` count. */
+/**
+ * Snapshot the expected on-hand for the count's lines.
+ *
+ * Four shapes now, and the SCOPE decides which — a bin or zone count builds its
+ * lines from bin levels (one per variant PER SHELF), while a location count
+ * builds them from warehouse levels exactly as it always did.
+ *
+ * The distinction is not cosmetic. "Twelve on A-01 and three on B-04" is the
+ * answer a counter needs, and collapsing it to fifteen loses where to go and
+ * look when it turns out to be wrong.
+ */
 async function buildInitialLines(
   tx: TxClient,
   input: CreateInventoryCountInput
-): Promise<{ variantId: string; expected: number }[]> {
+): Promise<{ variantId: string; expected: number; binId?: string }[]> {
+  // ── Bin- and zone-scoped: lines come from the SHELVES in scope ──
+  if (input.scope === 'bin' || input.scope === 'zone') {
+    const binLevels = await tx.inventoryBinLevel.findMany({
+      where: {
+        warehouseId: input.warehouseId,
+        variant: { deletedAt: null },
+        ...(input.scope === 'bin'
+          ? { binId: input.binId }
+          : { bin: { zone: input.zoneName, isActive: true, deletedAt: null } }),
+        // Empty shelves are excluded from a routine count: walking a counter past
+        // four hundred empty locations to confirm they are still empty is how
+        // cycle counting gets abandoned. A deliberately empty shelf is verified by
+        // a `full` count, which includes everything.
+        ...(input.type === 'full' ? {} : { onHand: { not: 0 } }),
+        ...((input.variantIds ?? []).length > 0
+          ? { variantId: { in: [...new Set(input.variantIds ?? [])] } }
+          : {}),
+      },
+      select: { variantId: true, binId: true, onHand: true },
+    });
+    return binLevels.map((l) => ({
+      variantId: l.variantId,
+      binId: l.binId,
+      expected: l.onHand,
+    }));
+  }
+
   if (input.type === 'full') {
     const levels = await tx.inventoryLevel.findMany({
       where: { warehouseId: input.warehouseId, variant: { deletedAt: null } },

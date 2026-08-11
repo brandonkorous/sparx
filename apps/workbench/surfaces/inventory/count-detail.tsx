@@ -46,6 +46,7 @@ import {
   Table,
   Text,
   Timestamp,
+  Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
@@ -53,6 +54,7 @@ import {
   ClipboardCheck,
   ClipboardList,
   Plus,
+  Printer,
   Save,
   ShieldCheck,
   Trash2,
@@ -86,6 +88,8 @@ import {
   type CountLine,
   type CountType,
 } from './counts-data';
+import { ScanInput, playScanFeedback } from './scan-input';
+import { useScanQueue, useScanToCount, type ScanActionResult } from './scan-data';
 
 /** Centred and capped — a count torn onto a second monitor is 2000px wide, and
  *  uncapped the difference column drifts a foot from the item it belongs to. */
@@ -400,6 +404,11 @@ function LinesCard({
   removingId: string | null;
 }) {
   const posted = count.status === 'posted';
+  // On a blind count the server sends no expected quantity while counting, so
+  // there is nothing to show and no difference to compute. The columns go away
+  // rather than showing an em-dash: an empty column invites someone to go and
+  // look the number up, which is exactly what blind counting is preventing.
+  const blind = count.isBlind && count.status === 'counting';
 
   const displayedCounted = (line: CountLine): number | null =>
     drafts[line.id] !== undefined ? parseQty(drafts[line.id]) : line.countedQuantity;
@@ -411,9 +420,11 @@ function LinesCard({
           {editable ? 'Count each item' : 'What was counted'}
         </Heading>
         <Text className="text-sm">
-          {editable
-            ? 'Put in what you actually find on the shelf. The difference from what we expected is worked out for you.'
-            : 'The quantities counted, and how they differed from what was expected.'}
+          {blind
+            ? 'Put in what you actually find. What the system expected is hidden until the count is submitted, so the number you write down is the number you saw.'
+            : editable
+              ? 'Put in what you actually find on the shelf. The difference from what we expected is worked out for you.'
+              : 'The quantities counted, and how they differed from what was expected.'}
         </Text>
       </div>
 
@@ -421,16 +432,21 @@ function LinesCard({
         <thead>
           <tr>
             <th>Item</th>
-            <th className="hidden text-right whitespace-nowrap @md:table-cell">We think</th>
+            {blind ? null : (
+              <th className="hidden text-right whitespace-nowrap @md:table-cell">We think</th>
+            )}
             <th className="text-right whitespace-nowrap">Counted</th>
-            <th>{posted ? 'Correction' : 'Difference'}</th>
+            {blind ? null : <th>{posted ? 'Correction' : 'Difference'}</th>}
             {editable ? <th className="w-0" /> : null}
           </tr>
         </thead>
         <tbody>
           {count.lines.map((line) => {
             const counted = displayedCounted(line);
-            const variance = counted === null ? null : counted - line.expectedQuantity;
+            const variance =
+              counted === null || line.expectedQuantity === null
+                ? null
+                : counted - line.expectedQuantity;
             return (
               <tr key={line.id}>
                 <td className="w-full max-w-0">
@@ -439,15 +455,19 @@ function LinesCard({
                     <span className="truncate font-mono text-sm">
                       {line.variantSku ?? 'No code'}
                     </span>
-                    <span className="truncate text-sm @md:hidden">
-                      We think {String(line.expectedQuantity)} here
-                    </span>
+                    {blind ? null : (
+                      <span className="truncate text-sm @md:hidden">
+                        We think {String(line.expectedQuantity ?? '—')} here
+                      </span>
+                    )}
                   </span>
                 </td>
 
-                <td className="hidden text-right tabular-nums @md:table-cell">
-                  {line.expectedQuantity}
-                </td>
+                {blind ? null : (
+                  <td className="hidden text-right tabular-nums @md:table-cell">
+                    {line.expectedQuantity ?? '—'}
+                  </td>
+                )}
 
                 <td className="text-right">
                   {editable ? (
@@ -469,23 +489,25 @@ function LinesCard({
                   )}
                 </td>
 
-                <td>
-                  {posted ? (
-                    line.appliedDelta === null || line.appliedDelta === 0 ? (
-                      <Badge color="neutral" variant="soft" size="sm">
-                        No change
-                      </Badge>
+                {blind ? null : (
+                  <td>
+                    {posted ? (
+                      line.appliedDelta === null || line.appliedDelta === 0 ? (
+                        <Badge color="neutral" variant="soft" size="sm">
+                          No change
+                        </Badge>
+                      ) : (
+                        <Badge color={deltaTone(line.appliedDelta)} variant="soft" size="sm">
+                          <span className="tabular-nums">{signedDelta(line.appliedDelta)}</span>
+                        </Badge>
+                      )
                     ) : (
-                      <Badge color={deltaTone(line.appliedDelta)} variant="soft" size="sm">
-                        <span className="tabular-nums">{signedDelta(line.appliedDelta)}</span>
+                      <Badge color={varianceTone(variance)} variant="soft" size="sm">
+                        {varianceLabel(variance)}
                       </Badge>
-                    )
-                  ) : (
-                    <Badge color={varianceTone(variance)} variant="soft" size="sm">
-                      {varianceLabel(variance)}
-                    </Badge>
-                  )}
-                </td>
+                    )}
+                  </td>
+                )}
 
                 {editable ? (
                   <td>
@@ -510,6 +532,55 @@ function LinesCard({
           })}
         </tbody>
       </Table>
+    </section>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SCANNING INTO A COUNT (docs/146 Phase 3.6)
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/**
+ * The scan path, sitting above the search box because it is the fast one.
+ *
+ * Two behaviours differ from typing a total, and both are stated on screen
+ * rather than left to be discovered:
+ *
+ *   • Each pull ADDS one. Counting a shelf is one trigger pull per item, so ten
+ *     pulls on the same thing is ten. Typing a number still replaces it.
+ *   • An item that is not on the sheet gets ADDED to the sheet. Finding stock
+ *     the system does not know about is the most valuable thing a count does,
+ *     and a workflow that refuses it teaches people to leave it off.
+ */
+function ScanIntoCount({ count }: { count: CountDetail }) {
+  const scan = useScanToCount(count.id);
+  const queue = useScanQueue();
+  const [result, setResult] = useState<ScanActionResult | null>(null);
+
+  const onScan = async (value: string) => {
+    const outcome = await scan.mutateAsync({ value });
+    setResult(outcome);
+    playScanFeedback(outcome.outcome);
+  };
+
+  return (
+    <section className="card bg-base-100 flex min-w-0 flex-col gap-3 p-4">
+      <div className="flex flex-col gap-0.5">
+        <Heading level={2} className="text-lg font-semibold">
+          Scan what you find
+        </Heading>
+        <Text className="text-sm">
+          One pull of the trigger adds one. Anything not already on the list gets added to it.
+        </Text>
+      </div>
+      <ScanInput
+        onScan={onScan}
+        placeholder="Scan an item"
+        result={result}
+        busy={scan.isPending}
+        queued={queue.size}
+        focusOnMount={false}
+      />
     </section>
   );
 }
@@ -741,6 +812,32 @@ function CountSession({
           {state.label}
         </Badge>
 
+        {/* The sticker that makes "scan the count sheet" true. Without it that
+            instruction in warehouse mode has nothing to scan. */}
+        <Tooltip content="Print a scannable label for the count sheet">
+          <Button
+            size="sm"
+            variant="ghost"
+            color="neutral"
+            shape="square"
+            className="shrink-0"
+            aria-label="Print a scannable label for this count"
+            onClick={() => {
+              ctx.open(
+                'inventory.documents.label',
+                {
+                  number: count.number,
+                  title: 'Stock count',
+                  subtitle: count.warehouseName ?? '',
+                },
+                { target: 'beside' }
+              );
+            }}
+          >
+            <Printer className="size-4" aria-hidden />
+          </Button>
+        </Tooltip>
+
         {editable ? (
           <>
             {changed.length > 0 ? (
@@ -856,6 +953,13 @@ function CountSession({
               </AlertContent>
             </Alert>
           ) : null}
+
+          {/* Scanning comes FIRST, above the search box. Counting a shelf by
+              scanning is the fast path and searching for each item by name is
+              the slow one, so the fast path gets the position. Each pull adds
+              one — ten pulls on the same item is ten, which is what counting
+              physically is. */}
+          {editable ? <ScanIntoCount count={count} /> : null}
 
           {editable ? (
             <AddItems countId={count.id} warehouseId={count.warehouseId} existing={existing} />

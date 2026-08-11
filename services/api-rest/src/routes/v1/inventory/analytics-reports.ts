@@ -12,7 +12,12 @@
 import type { FastifyPluginAsync, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import { inventoryService } from '@sparx/inventory';
-import type { AgingReport, ReorderAnalysisReport, TurnoverReport } from '@sparx/inventory';
+import type {
+  AgingReport,
+  ReorderAnalysisReport,
+  ShrinkageReport,
+  TurnoverReport,
+} from '@sparx/inventory';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireInventoryModule, toInventoryContext } from '../../../lib/inventory-context.js';
@@ -34,6 +39,12 @@ const ReorderQuery = z.object({
   warehouse_id: z.string().uuid().optional(),
   velocity_days: z.coerce.number().int().min(1).max(365).optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
+  format: z.enum(['json', 'csv']).optional(),
+});
+const ShrinkageQuery = z.object({
+  from: z.string().datetime().optional(),
+  to: z.string().datetime().optional(),
+  warehouse_id: z.string().uuid().optional(),
   format: z.enum(['json', 'csv']).optional(),
 });
 
@@ -79,6 +90,23 @@ const inventoryAnalyticsReportRoutes: FastifyPluginAsync = async (app) => {
       ...(q.take !== undefined ? { take: q.take } : {}),
     });
     if (q.format === 'csv') return sendCsv(reply, 'reorder-analysis', reorderCsv(report));
+    return ok(report);
+  });
+
+  // Shrinkage (docs/146 Phase 1). 80% of operators report losing 1–5% of
+  // inventory value a year and almost none can say where it went, because the
+  // write-offs are scattered across adjustments, damaged receipts and count
+  // variances. The ledger already holds every one of them; this is the read.
+  app.get('/v1/inventory/reports/shrinkage', async (request, reply) => {
+    await requireInventoryModule(request);
+    requireRole(request, 'viewer');
+    const q = ShrinkageQuery.parse(request.query);
+    const report = await inventoryService.shrinkageReport(toInventoryContext(request), {
+      ...(q.from ? { from: q.from } : {}),
+      ...(q.to ? { to: q.to } : {}),
+      ...(q.warehouse_id ? { warehouseId: q.warehouse_id } : {}),
+    });
+    if (q.format === 'csv') return sendCsv(reply, 'shrinkage', shrinkageCsv(report));
     return ok(report);
   });
 };
@@ -176,6 +204,24 @@ function reorderCsv(r: ReorderAnalysisReport): string {
       row.suggestedQuantity,
       row.supplierName,
       row.unitCostCents,
+    ])
+  );
+}
+
+// The shrinkage export is the per-variant detail, not the summary tiles: the
+// reason someone exports a shrinkage report is to go and look at the items, and
+// a CSV of four totals is a screenshot with extra steps.
+function shrinkageCsv(r: ShrinkageReport): string {
+  return toCsv(
+    ['sku', 'product', 'units_lost', 'value_cents', 'movements', 'from', 'to'],
+    r.topVariants.map((v) => [
+      v.variantSku,
+      v.productTitle,
+      v.units,
+      v.valueCents,
+      v.movements,
+      r.from,
+      r.to,
     ])
   );
 }

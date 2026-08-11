@@ -300,3 +300,105 @@ export function turnoverHeadline(report: TurnoverReport): { value: string; meani
       : `About ${String(report.daysInventoryOutstanding)} days of stock on hand at this selling pace.`;
   return { value, meaning };
 }
+
+/* ── Shrinkage: what left without being sold (docs/146 Phase 1) ──────────── */
+
+/**
+ * Four out of five businesses lose between 1% and 5% of their stock value a
+ * year and almost none of them can say where it went — because the write-offs
+ * that make it up are scattered across corrections, damaged deliveries and
+ * count differences. Every one of them is already in the movement ledger; this
+ * is the read that gathers them and prices them.
+ */
+export interface ShrinkageByReason {
+  reason: string;
+  units: number;
+  valueCents: number;
+  movements: number;
+}
+
+export interface ShrinkageByWarehouse {
+  warehouseId: string;
+  warehouseName: string | null;
+  warehouseCode: string | null;
+  units: number;
+  valueCents: number;
+}
+
+export interface ShrinkageTopVariant {
+  variantId: string;
+  variantSku: string | null;
+  productTitle: string | null;
+  units: number;
+  valueCents: number;
+  movements: number;
+}
+
+export interface ShrinkagePeriod {
+  /** First of the month, ISO date. */
+  period: string;
+  units: number;
+  valueCents: number;
+}
+
+export interface ShrinkageReport {
+  from: string;
+  to: string;
+  totalUnits: number;
+  totalValueCents: number;
+  /** Stock FOUND by counts in the same period — reported beside the losses
+   *  rather than subtracted from them. A business that finds as much as it
+   *  loses has a counting problem, not a theft problem, and netting the two to
+   *  zero would say it has neither. */
+  recountGainUnits: number;
+  recountGainValueCents: number;
+  /** Losses as a share of what the stock is worth today. Null when there is no
+   *  stock to compare against — a new tenant's "infinity%" helps nobody. */
+  percentOfValuation: number | null;
+  currentValuationCents: number;
+  byReason: ShrinkageByReason[];
+  byWarehouse: ShrinkageByWarehouse[];
+  topVariants: ShrinkageTopVariant[];
+  byPeriod: ShrinkagePeriod[];
+}
+
+export function useShrinkageReport(range: { from: string; to: string }, warehouseId?: string) {
+  return useQuery({
+    queryKey: ['inventory', 'reports', 'shrinkage', range, warehouseId ?? null] as const,
+    queryFn: () =>
+      api.get<ShrinkageReport>('/v1/inventory/reports/shrinkage', {
+        from: range.from,
+        to: range.to,
+        ...(warehouseId ? { warehouse_id: warehouseId } : {}),
+      }),
+  });
+}
+
+/** A write-off reason in the shop's words, not the engineer's stored value. */
+export function shrinkageReasonLabel(reason: string): string {
+  switch (reason) {
+    case 'loss':
+      return 'Gone missing';
+    case 'damage':
+      return 'Damaged or broken';
+    case 'recount':
+      return 'Found short when counted';
+    default:
+      return reason;
+  }
+}
+
+/**
+ * How worrying a shrinkage rate is.
+ *
+ * Anchored to what the industry actually reports: 1–5% a year is the normal
+ * band, so under 1% is genuinely good and above 5% is outside what most
+ * businesses live with. Colouring a 1.2% rate red would make the number useless
+ * to the people it is for.
+ */
+export function shrinkageTone(percentOfValuation: number | null): Tone {
+  if (percentOfValuation === null) return 'neutral';
+  if (percentOfValuation < 1) return 'success';
+  if (percentOfValuation <= 5) return 'warning';
+  return 'danger';
+}

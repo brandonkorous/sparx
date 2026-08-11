@@ -64,6 +64,45 @@ const inventoryMovementRoutes: FastifyPluginAsync = async (app) => {
     });
     return reply.send(paged(items, { total, skip: q.skip ?? 0, per_page: q.take ?? 50 }));
   });
+
+  // CSV export of the same view (docs/146 Phase 1). An audit trail that can't
+  // leave the building isn't one — an accountant, an insurer and a marketplace
+  // dispute all want the rows. Takes the IDENTICAL filter as the list above, so
+  // what someone exports is exactly what they were looking at; an export that
+  // quietly ignores the filters is how "the numbers didn't match" starts.
+  //
+  // `take`/`skip` are deliberately NOT accepted — an export is the whole filtered
+  // set, capped by the service, and a paginated export is a footgun.
+  app.get('/v1/inventory/movements/export', async (request, reply) => {
+    await requireInventoryModule(request);
+    requireRole(request, 'viewer');
+    const q = ListQuery.omit({ take: true, skip: true }).parse(request.query);
+    const result = await inventoryService.exportMovements(toInventoryContext(request), {
+      ...(q.q !== undefined ? { q: q.q } : {}),
+      ...(q.variant_id !== undefined ? { variantId: q.variant_id } : {}),
+      ...(q.product_id !== undefined ? { productId: q.product_id } : {}),
+      ...(q.warehouse_id !== undefined ? { warehouseId: q.warehouse_id } : {}),
+      ...(q.reason !== undefined ? { reason: q.reason } : {}),
+      ...(q.actor_type !== undefined ? { actorType: q.actor_type } : {}),
+      ...(q.actor_id !== undefined ? { actorId: q.actor_id } : {}),
+      ...(q.reference_type !== undefined ? { referenceType: q.reference_type } : {}),
+      ...(q.reference_id !== undefined ? { referenceId: q.reference_id } : {}),
+      ...(q.from !== undefined ? { from: q.from } : {}),
+      ...(q.to !== undefined ? { to: q.to } : {}),
+    });
+    const stamp = new Date().toISOString().slice(0, 10);
+    return (
+      reply
+        .header('content-type', 'text/csv; charset=utf-8')
+        .header('content-disposition', `attachment; filename="stock-movements-${stamp}.csv"`)
+        // Truncation must be visible to a machine as well as to a human reading the
+        // row count — a client that streams the file to a download never sees the
+        // body's length, and a silently-short export is the worst possible artifact.
+        .header('x-sparx-export-rows', String(result.rows))
+        .header('x-sparx-export-truncated', String(result.truncated))
+        .send(result.csv)
+    );
+  });
 };
 
 export default inventoryMovementRoutes;

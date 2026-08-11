@@ -63,6 +63,13 @@ model ProductVariant {
   widthMm     Int? @map("width_mm")
   heightMm    Int? @map("height_mm")
 
+  // Where this item LIVES — the shelf put-away suggests first (docs/146 Phase 2).
+  // One bin, not one per warehouse: a variant stocked in three buildings gets its
+  // home shelf in each from where it already sits, and only the tenant's primary
+  // location is worth pinning by hand. A per-warehouse home is a bin-level
+  // concern the put-away suggester already infers from existing stock.
+  defaultBinId String? @map("default_bin_id") @db.Uuid
+
   inventoryPolicy  String  @default("deny") @map("inventory_policy") @db.VarChar(20)
   // ^ deny | continue | preorder
   requiresShipping Boolean @default(true) @map("requires_shipping")
@@ -115,6 +122,14 @@ model ProductVariant {
   billingDocumentLines  BillingDocumentLine[]
   fleetHolds            B2bFleetHold[]
   channelMappings       ChannelProductMapping[]
+  reconciliationDrifts  InventoryReconciliationDrift[]
+  oversellIncidents     InventoryOversellIncident[]
+  channelBuffers        InventoryChannelBuffer[]
+  binLevels             InventoryBinLevel[]
+  binMovements          InventoryBinMovement[]
+  defaultBin            InventoryBin?               @relation("VariantDefaultBin", fields: [defaultBinId], references: [id], onDelete: SetNull)
+  barcodes              VariantBarcode[]
+  scanEvents            InventoryScanEvent[]
 
   @@unique([tenantId, sku], map: "product_variants_sku_unique")
   @@index([tenantId, productId])

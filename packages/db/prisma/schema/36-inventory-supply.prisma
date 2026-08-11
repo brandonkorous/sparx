@@ -44,6 +44,7 @@ model Supplier {
   tenant         Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   variants       SupplierVariant[]
   purchaseOrders PurchaseOrder[]
+  barcodes       VariantBarcode[]
 
   @@unique([tenantId, code], map: "inventory_suppliers_tenant_code_unique")
   @@index([tenantId, isActive])

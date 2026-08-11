@@ -22,6 +22,7 @@ import {
 import type { ServiceContext } from '../errors';
 
 import { CART_TTL_SECONDS_DEFAULT, syncProductInStock } from './internal';
+import { recordOversellIncidentDetached, recordOversellIncidentOnTx } from './integrity';
 import { applyMovement, emitStockEvents, resolveActorType } from './ledger';
 
 export interface ReservationResult {
@@ -34,6 +35,52 @@ interface LockedLevel {
   on_hand: number;
   allocated: number;
   safety_buffer: number;
+}
+
+/**
+ * The sales channel a hold belongs to.
+ *
+ * Shared by the warehouse allocator (which routes on it) and the oversell
+ * incident recorder (which reports on it) — two callers that must agree, because
+ * an incident attributed to a different channel than the one the allocator
+ * routed for is worse than no attribution.
+ */
+export function channelForHolder(holderType: string): string {
+  if (holderType === 'cart') return 'storefront';
+  if (holderType === 'subscription') return 'subscription';
+  return 'admin';
+}
+
+/**
+ * Feed context for an incident: which external source (if any) feeds this level,
+ * and how old the number was when the decision was made.
+ *
+ * A cluster of oversells next to a four-hour-old feed is a diagnosis; the same
+ * cluster with no age attached is a mystery. Only called on the shortfall path,
+ * so the extra read costs nothing on a normal reserve.
+ */
+async function incidentFeedContext(
+  tx: TxClient,
+  ctx: ServiceContext,
+  variantId: string,
+  warehouseId: string
+): Promise<{ sourceId: string | null; stockAgeSeconds: number | null }> {
+  const [link, level] = await Promise.all([
+    tx.inventorySourceLink.findFirst({
+      where: { tenantId: ctx.tenantId, variantId, warehouseId, status: 'active' },
+      select: { sourceId: true },
+    }),
+    tx.inventoryLevel.findFirst({
+      where: { tenantId: ctx.tenantId, variantId, warehouseId },
+      select: { asOf: true },
+    }),
+  ]);
+  return {
+    sourceId: link?.sourceId ?? null,
+    stockAgeSeconds: level
+      ? Math.max(0, Math.floor((Date.now() - level.asOf.getTime()) / 1000))
+      : null,
+  };
 }
 
 /**
@@ -87,8 +134,42 @@ export async function reserveOnTx(
   // Net the safety buffer (docs/28 §5.3): the last N units are withheld from sale,
   // so a `deny` variant can't be reserved into the buffer.
   const available = current.on_hand - current.allocated - current.safety_buffer;
-  if (available < input.quantity && variant.inventoryPolicy === 'deny') {
-    throw new InventoryOutOfStockError(input.variantId, input.quantity, Math.max(0, available));
+
+  // Record the shortfall BEFORE deciding what to do about it (docs/146 Phase 1).
+  // Both outcomes are worth a row and they are different events: `blocked` is
+  // revenue we refused, `allowed` is a promise we may not be able to keep. The
+  // pair is the raw material of the oversell surface, and today the only trace
+  // either leaves is a customer-facing error or nothing at all.
+  if (available < input.quantity) {
+    const incident = {
+      variantId: input.variantId,
+      warehouseId,
+      requestedQuantity: input.quantity,
+      availableQuantity: available,
+      onHandAtDecision: current.on_hand,
+      allocatedAtDecision: current.allocated,
+      bufferAtDecision: current.safety_buffer,
+      policy: variant.inventoryPolicy,
+      channel: channelForHolder(input.holderType),
+      holderType: input.holderType,
+      holderId: input.holderId,
+      actorType: resolveActorType(ctx),
+      actorId: ctx.userId ?? null,
+      ...(await incidentFeedContext(tx, ctx, input.variantId, warehouseId)),
+    };
+
+    if (variant.inventoryPolicy === 'deny') {
+      // The caller's transaction is about to roll back with the throw below, so
+      // an in-transaction write would vanish with it — and the refused sale is
+      // precisely the incident an operator most wants to see. Detached, and
+      // best-effort: observability must never be able to fail a checkout.
+      await recordOversellIncidentDetached(ctx, { ...incident, kind: 'blocked' });
+      throw new InventoryOutOfStockError(input.variantId, input.quantity, Math.max(0, available));
+    }
+
+    // `continue` / `preorder` — the hold succeeds and this transaction commits,
+    // so the incident lands with the thing it describes.
+    await recordOversellIncidentOnTx(tx, ctx, { ...incident, kind: 'allowed' });
   }
 
   await tx.inventoryLevel.update({
@@ -370,12 +451,7 @@ export async function pickWarehouseFor(
   tx: TxClient,
   input: { variantId: string; quantity: number; holderType: string }
 ): Promise<string> {
-  const channel =
-    input.holderType === 'cart'
-      ? 'storefront'
-      : input.holderType === 'subscription'
-        ? 'subscription'
-        : 'admin';
+  const channel = channelForHolder(input.holderType);
 
   const candidates = await tx.warehouse.findMany({
     where: { isActive: true, deletedAt: null },

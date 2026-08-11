@@ -29,6 +29,7 @@
 import { useState } from 'react';
 import {
   Badge,
+  Button,
   Card,
   EmptyState,
   Input,
@@ -38,8 +39,9 @@ import {
   Text,
   Timestamp,
   ToolbarSeparator,
+  Tooltip,
 } from '@wizeworks/silicaui-react';
-import { History, Search } from 'lucide-react';
+import { History, Search, ShieldCheck } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -119,6 +121,21 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
     );
   };
 
+  /**
+   * "…and what is that number now?"
+   *
+   * A ledger row identifies exactly one (item, location) pair, so the current
+   * standing of that pair is one click away rather than a hunt through the stock
+   * list. Always beside — the row being asked about has to stay on screen.
+   */
+  const explain = (movement: Movement) => {
+    ctx.open(
+      'inventory.stock.provenance',
+      { variantId: movement.variantId, warehouseId: movement.warehouseId },
+      { target: 'beside' }
+    );
+  };
+
   const body = () => {
     // A failed load REPLACES the table — an empty grid under live filters reads
     // as "nothing has ever moved", which is a far bigger claim than the truth.
@@ -172,6 +189,9 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
             <th className="hidden text-right @2xl:table-cell">Left on shelf</th>
             <th>Why</th>
             <th className="hidden @xl:table-cell">Location</th>
+            <th className="w-8">
+              <span className="sr-only">Where this item&rsquo;s number stands now</span>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -238,6 +258,26 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
               <td className="hidden max-w-48 truncate @xl:table-cell">
                 {movement.warehouseName ?? '—'}
+              </td>
+
+              <td>
+                {/* `stopPropagation` because the row is itself a button — without
+                    it this opens the item AND the explanation, and whichever
+                    lands second wins. */}
+                <Tooltip content="Where this item's number stands now">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    color="neutral"
+                    aria-label={`Where the number for ${movement.variantSku ?? 'this item'} stands now`}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      explain(movement);
+                    }}
+                  >
+                    <ShieldCheck className="size-4" aria-hidden />
+                  </Button>
+                </Tooltip>
               </td>
             </tr>
           ))}

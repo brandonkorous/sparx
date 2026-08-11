@@ -35,6 +35,11 @@ export type InventoryTopic = Extract<
   | 'inventory.count.completed'
   | 'inventory.transfer.shipped'
   | 'inventory.transfer.received'
+  | 'inventory.bin.moved'
+  | 'inventory.reconciliation.drift'
+  | 'inventory.oversell.blocked'
+  | 'inventory.source.stale'
+  | 'inventory.source.recovered'
 >;
 
 export interface InventoryEventInput<T = Record<string, unknown>> {

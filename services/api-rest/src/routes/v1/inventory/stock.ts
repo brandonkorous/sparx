@@ -22,7 +22,11 @@ import { inventoryService, isLowStock } from '@sparx/inventory';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
-import { requireInventoryModule, toInventoryContext } from '../../../lib/inventory-context.js';
+import {
+  redactCosts,
+  requireInventoryModule,
+  toInventoryContext,
+} from '../../../lib/inventory-context.js';
 
 const VariantParam = z.object({ variantId: z.string().uuid() });
 const WarehouseParam = z.object({ warehouseId: z.string().uuid() });
@@ -64,7 +68,15 @@ const inventoryStockRoutes: FastifyPluginAsync = async (app) => {
     await requireInventoryModule(request);
     requireRole(request, 'viewer');
     const { variantId } = VariantParam.parse(request.params);
-    return ok(await inventoryService.levelsForVariant(toInventoryContext(request), variantId));
+    // Level rows carry the cost basis; the `scanner` role is promised in the team
+    // screen's own words that it cannot see what anything cost, so the promise is
+    // kept at the transport rather than by which columns a client chooses to draw.
+    return ok(
+      redactCosts(
+        request,
+        await inventoryService.levelsForVariant(toInventoryContext(request), variantId)
+      )
+    );
   });
 
   app.get('/v1/inventory/levels/warehouse/:warehouseId', async (request) => {
@@ -73,11 +85,14 @@ const inventoryStockRoutes: FastifyPluginAsync = async (app) => {
     const { warehouseId } = WarehouseParam.parse(request.params);
     const q = LevelsQuery.parse(request.query);
     return ok(
-      await inventoryService.levelsForWarehouse(toInventoryContext(request), warehouseId, {
-        ...(q.take !== undefined ? { take: q.take } : {}),
-        ...(q.skip !== undefined ? { skip: q.skip } : {}),
-        ...(q.low_stock_only === true ? { lowStockOnly: true } : {}),
-      })
+      redactCosts(
+        request,
+        await inventoryService.levelsForWarehouse(toInventoryContext(request), warehouseId, {
+          ...(q.take !== undefined ? { take: q.take } : {}),
+          ...(q.skip !== undefined ? { skip: q.skip } : {}),
+          ...(q.low_stock_only === true ? { lowStockOnly: true } : {}),
+        })
+      )
     );
   });
 
@@ -119,6 +134,12 @@ const inventoryStockRoutes: FastifyPluginAsync = async (app) => {
             reorderPoint: true,
             reorderQuantity: true,
             updatedAt: true,
+            // `asOf` is when the QUANTITY was last established; `updatedAt` moves
+            // for any write to the row (a reorder point edit, a buffer change).
+            // The freshness indicator needs the first and would be quietly wrong
+            // reading the second — a level whose threshold someone tweaked this
+            // morning would render as fresh stock (docs/146 Phase 1).
+            asOf: true,
             variant: {
               select: {
                 sku: true,
@@ -143,6 +164,11 @@ const inventoryStockRoutes: FastifyPluginAsync = async (app) => {
       reorderPoint: r.reorderPoint,
       reorderQuantity: r.reorderQuantity,
       updatedAt: r.updatedAt.toISOString(),
+      asOf: r.asOf.toISOString(),
+      // Served computed rather than left to the client: every consumer would
+      // otherwise derive it from its own clock, and a browser whose clock is
+      // twenty minutes out would paint half the grid as stale.
+      ageSeconds: Math.max(0, Math.floor((Date.now() - r.asOf.getTime()) / 1000)),
       sku: r.variant.sku,
       variantTitle: r.variant.title,
       productId: r.variant.product.id,

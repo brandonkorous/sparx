@@ -2,8 +2,10 @@
 
 import {
   ArrowLeftRight,
+  Barcode,
   BarChart3,
   Boxes,
+  CircleAlert,
   ClipboardCheck,
   ClipboardList,
   History,
@@ -11,7 +13,12 @@ import {
   Link2,
   PackageCheck,
   PackageSearch,
+  Grid3x3,
+  Printer,
+  QrCode,
   RefreshCw,
+  ScanLine,
+  ShieldCheck,
   Truck,
   Warehouse,
 } from 'lucide-react';
@@ -37,6 +44,17 @@ import { ReorderListSurface } from '../../../surfaces/inventory/reorder-list';
 import { ReportsSurface } from '../../../surfaces/inventory/reports';
 import { SourcesListSurface } from '../../../surfaces/inventory/sources-list';
 import { SourceDetailSurface } from '../../../surfaces/inventory/source-detail';
+import { IntegritySurface } from '../../../surfaces/inventory/integrity';
+import { ProvenanceSurface } from '../../../surfaces/inventory/provenance';
+import { BinsListSurface } from '../../../surfaces/inventory/bins-list';
+import { BinDetailSurface } from '../../../surfaces/inventory/bin-detail';
+import { BinLabelsSurface } from '../../../surfaces/inventory/bin-labels';
+import { BarcodesListSurface } from '../../../surfaces/inventory/barcodes-list';
+import { BarcodeConflictsSurface } from '../../../surfaces/inventory/barcode-conflicts';
+import { ProductLabelsSurface } from '../../../surfaces/inventory/product-labels';
+import { DocumentLabelSurface } from '../../../surfaces/inventory/document-label';
+import { ReceivingScanSurface } from '../../../surfaces/inventory/receiving-scan';
+import { WarehouseModeSurface } from '../../../surfaces/inventory/warehouse-mode';
 
 export const INVENTORY_SURFACES: SurfaceDefinition[] = [
   {
@@ -66,6 +84,19 @@ export const INVENTORY_SURFACES: SurfaceDefinition[] = [
     // point of shift-clicking a row.
     besideWidth: 0.45,
   },
+  {
+    // "Why is this number what it is." Opened BESIDE the quantity it explains —
+    // a dialog would cover the very thing the person is asking about. Unlisted:
+    // it is meaningless without an item and a location, so it is reached from a
+    // number, never from the launcher.
+    key: 'inventory.stock.provenance',
+    title: 'Where this number came from',
+    module: 'inventory',
+    icon: ShieldCheck,
+    component: ProvenanceSurface,
+    listed: false,
+    besideWidth: 0.4,
+  },
 
   /* ── Where it lives ────────────────────────────────────────────────────── */
   {
@@ -89,6 +120,121 @@ export const INVENTORY_SURFACES: SurfaceDefinition[] = [
     listed: false,
     besideWidth: 0.45,
   },
+  {
+    // Sits directly under Locations because a shelf lives inside one, and the
+    // two are always set up together.
+    key: 'inventory.bins.list',
+    title: 'Shelves',
+    module: 'inventory',
+    icon: Grid3x3,
+    section: 'Where it lives',
+    order: 10.5,
+    keywords: ['bins', 'racks', 'aisles', 'zones', 'put away', 'where is it', 'pick face'],
+    component: BinsListSurface,
+    createSurface: 'inventory.bins.detail',
+    createLabel: 'New shelf',
+  },
+  {
+    key: 'inventory.bins.detail',
+    title: (params) => (params.id === 'new' ? 'New shelf' : 'Shelf'),
+    module: 'inventory',
+    icon: Grid3x3,
+    component: BinDetailSurface,
+    listed: false,
+    besideWidth: 0.45,
+  },
+  {
+    // Listed, unlike most detail surfaces: "print shelf labels" is a task
+    // somebody sets out to do, not something they arrive at from a row.
+    key: 'inventory.bins.labels',
+    title: 'Shelf labels',
+    module: 'inventory',
+    icon: QrCode,
+    section: 'Where it lives',
+    order: 10.6,
+    keywords: ['print', 'qr', 'barcode', 'label', 'sticker'],
+    component: BinLabelsSurface,
+    besideWidth: 0.55,
+  },
+
+  /* ── Scanning (docs/146 Phase 3) ──────────────────────────────────────── */
+
+  {
+    // The registry, and the screen that answers "can we scan yet". Its own
+    // section rather than folded into "Where it lives": a barcode is about
+    // identifying a thing, not locating it, and the two are different jobs
+    // done by different people.
+    key: 'inventory.barcodes.list',
+    title: 'Barcodes',
+    module: 'inventory',
+    icon: Barcode,
+    section: 'Scanning',
+    order: 12,
+    keywords: ['upc', 'ean', 'gtin', 'code 128', 'scan', 'sku', 'label'],
+    component: BarcodesListSurface,
+  },
+  {
+    // Listed, and deliberately: an unresolved conflict is the one thing that
+    // stops scanning working, and a screen you can only reach from a banner is
+    // a screen nobody checks.
+    key: 'inventory.barcodes.conflicts',
+    title: 'Shared barcodes',
+    module: 'inventory',
+    icon: CircleAlert,
+    section: 'Scanning',
+    order: 12.2,
+    keywords: ['duplicate', 'conflict', 'clash', 'two items', 'same code'],
+    component: BarcodeConflictsSurface,
+    besideWidth: 0.5,
+  },
+  {
+    key: 'inventory.barcodes.labels',
+    title: 'Product labels',
+    module: 'inventory',
+    icon: Printer,
+    section: 'Scanning',
+    order: 12.4,
+    keywords: ['print', 'sticker', 'barcode', 'code 128', 'upc'],
+    component: ProductLabelsSurface,
+    besideWidth: 0.55,
+  },
+  {
+    // Addressed by the purchase order, because the receipt does not exist until
+    // the session is posted. Unlisted: opening "scan a delivery" with no
+    // delivery in mind is not a thing anyone wants — warehouse mode and the PO
+    // are the two ways in.
+    key: 'inventory.receiving.scan',
+    title: 'Scan a delivery',
+    module: 'inventory',
+    icon: ScanLine,
+    component: ReceivingScanSurface,
+    listed: false,
+  },
+  {
+    // The sticker that makes "scan the count sheet" true. Unlisted: it is always
+    // about a specific document, and the four detail screens that own those
+    // documents are the way in.
+    key: 'inventory.documents.label',
+    title: 'Print a label',
+    module: 'inventory',
+    icon: Printer,
+    component: DocumentLabelSurface,
+    listed: false,
+    besideWidth: 0.45,
+  },
+  {
+    // The phone-in-the-aisle surface. Listed, because somebody picking up a
+    // tablet to go and work the floor is setting out to do exactly this.
+    key: 'inventory.warehouse',
+    title: 'Warehouse mode',
+    module: 'inventory',
+    icon: ScanLine,
+    section: 'Scanning',
+    order: 12.6,
+    keywords: ['scan', 'phone', 'tablet', 'handheld', 'floor', 'gun', 'pick', 'put away'],
+    component: WarehouseModeSurface,
+  },
+
   {
     key: 'inventory.transfers.list',
     title: 'Transfers',
@@ -244,8 +390,30 @@ export const INVENTORY_SURFACES: SurfaceDefinition[] = [
     icon: BarChart3,
     section: 'Reporting',
     order: 30,
-    keywords: ['analytics', 'value', 'ageing', 'turnover'],
+    keywords: ['analytics', 'value', 'ageing', 'turnover', 'shrinkage', 'loss'],
     component: ReportsSurface,
+  },
+  {
+    // Sits in Reporting rather than Setup because it is something you READ, and
+    // it belongs next to the other numbers people come here to check.
+    key: 'inventory.integrity',
+    title: 'Integrity',
+    module: 'inventory',
+    icon: ShieldCheck,
+    section: 'Reporting',
+    order: 31,
+    keywords: [
+      'accuracy',
+      'trust',
+      'audit',
+      'reconcile',
+      'does it add up',
+      'oversell',
+      'stale',
+      'drift',
+      'wrong numbers',
+    ],
+    component: IntegritySurface,
   },
   {
     key: 'inventory.sources',

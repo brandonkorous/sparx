@@ -133,6 +133,99 @@ function buildWhere(filter: ListMovementsFilter): Prisma.InventoryMovementWhereI
   };
 }
 
+// ─── Export (docs/146 Phase 1) ─────────────────────────────────────────────────
+//
+// The audit trail is only an audit trail if it can leave the building — an
+// accountant, an insurer, and a marketplace dispute all want the rows, not a
+// screenshot of page one. The export takes the SAME filter as the list, so what
+// someone exports is exactly what they were looking at; a filter set that the
+// export quietly ignores is how "we exported to Excel and the numbers didn't
+// match" becomes a support ticket.
+
+/** Cap on one export. Above this the answer is a narrower date range, not a
+ *  bigger file: a million-row synchronous CSV times out the request and helps
+ *  nobody. The header row states the cap when it is hit, so a truncated export
+ *  can never be mistaken for a complete one. */
+const EXPORT_MAX_ROWS = 50_000;
+
+export interface MovementExport {
+  csv: string;
+  rows: number;
+  /** True when the result was capped — the caller must surface this. */
+  truncated: boolean;
+}
+
+const EXPORT_COLUMNS = [
+  'movement_id',
+  'occurred_at',
+  'sku',
+  'product',
+  'warehouse_code',
+  'warehouse',
+  'reason',
+  'delta',
+  'balance_after',
+  'unit_cost_cents',
+  'actor_type',
+  'actor_id',
+  'source',
+  'reference_type',
+  'reference_id',
+  'note',
+] as const;
+
+/** RFC-4180 quoting. Everything is quoted rather than only the fields that need
+ *  it: a SKU containing a comma and one that does not should not produce
+ *  differently-shaped rows, because that difference is what breaks naive parsers
+ *  halfway down a file. */
+function csvCell(value: string | number | null): string {
+  if (value === null) return '""';
+  return `"${String(value).replace(/"/g, '""')}"`;
+}
+
+export async function exportMovements(
+  ctx: ServiceContext,
+  filter: ListMovementsFilter = {}
+): Promise<MovementExport> {
+  const rows = await withTenant(ctx, async (tx) =>
+    tx.inventoryMovement.findMany({
+      where: { tenantId: ctx.tenantId, ...buildWhere(filter) },
+      orderBy: { createdAt: 'desc' },
+      take: EXPORT_MAX_ROWS + 1,
+      include: INCLUDE,
+    })
+  );
+
+  const truncated = rows.length > EXPORT_MAX_ROWS;
+  const body = (truncated ? rows.slice(0, EXPORT_MAX_ROWS) : rows).map(serializeMovement);
+
+  const lines = [
+    EXPORT_COLUMNS.join(','),
+    ...body.map((m) =>
+      [
+        csvCell(m.id),
+        csvCell(m.createdAt),
+        csvCell(m.variantSku),
+        csvCell(m.productTitle),
+        csvCell(m.warehouseCode),
+        csvCell(m.warehouseName),
+        csvCell(m.reason),
+        csvCell(m.delta),
+        csvCell(m.balanceAfter),
+        csvCell(m.unitCostCents),
+        csvCell(m.actorType),
+        csvCell(m.actorId),
+        csvCell(m.source),
+        csvCell(m.referenceType),
+        csvCell(m.referenceId),
+        csvCell(m.note),
+      ].join(',')
+    ),
+  ];
+
+  return { csv: `${lines.join('\r\n')}\r\n`, rows: body.length, truncated };
+}
+
 function serializeMovement(m: MovementWithRefs): MovementRow {
   return {
     id: m.id,

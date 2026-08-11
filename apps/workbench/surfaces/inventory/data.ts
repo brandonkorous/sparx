@@ -79,6 +79,13 @@ export interface StockLevel {
   unitCostCents: number | null;
   avgCostCents: number | null;
   updatedAt: string;
+  /** When the QUANTITY was last established — NOT when the row was last touched.
+   *  Editing a reorder point moves `updatedAt` and leaves this alone, which is
+   *  exactly why the freshness hint reads this one. */
+  asOf: string;
+  /** Seconds since `asOf`, worked out on the server so a browser with a wrong
+   *  clock cannot paint a whole list as stale. */
+  ageSeconds: number;
 }
 
 /** A place stock is kept — a warehouse, a shop floor, a van. */

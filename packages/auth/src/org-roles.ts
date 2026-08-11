@@ -45,6 +45,17 @@ export const roles = {
   marketing: ac.newRole({ ...none }),
   support: ac.newRole({ ...none }),
   partner: ac.newRole({ ...none }),
+  // Warehouse floor staff (docs/146 Phase 1). A lateral role like the four above:
+  // it floors to read-only in the ranked hierarchy and earns its real powers from
+  // an explicit allow-list on the inventory scan endpoints (receive, count,
+  // transfer, lookup) via api-core's `requireAnyRole`.
+  //
+  // It exists for a commercial reason as much as a security one. Per-user pricing
+  // is one of the loudest complaints in this category, and sparx bills per module
+  // — so a tenant can give a seat to every person on the floor at no extra cost.
+  // A role that hands a picker the whole console would make that offer reckless;
+  // this is the one that makes it safe.
+  scanner: ac.newRole({ ...none }),
   viewer: ac.newRole({ ...none }),
 };
 
@@ -57,6 +68,7 @@ export const ORG_ROLES = [
   'marketing',
   'support',
   'partner',
+  'scanner',
   'viewer',
 ] as const;
 export type OrgRole = (typeof ORG_ROLES)[number];

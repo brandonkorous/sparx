@@ -1,0 +1,219 @@
+// Bins — where inside a location a thing actually is (docs/146 Phase 2).
+//
+// A warehouse answers "which building". Above roughly five hundred SKUs that
+// stops being enough: the question becomes "which shelf", and without an answer
+// there is no directed picking, no put-away, and counting means walking the whole
+// room. Bins are the sub-location layer every serious system in this category
+// has and we did not.
+//
+// ── Bins are OPT-IN, per location ────────────────────────────────────────────
+//
+// `Warehouse.usesBins` gates the whole feature. A shop with one stockroom gains
+// nothing from being made to name a shelf before it can receive a delivery, and
+// forcing that on them is how a feature built for the warehouse makes the product
+// worse for everyone smaller. With it off, no bin UI renders and every write
+// lands in the location's DEFAULT bin without anyone being asked.
+//
+// ── The layering, and why the warehouse ledger is left ALONE ─────────────────
+//
+// `inventory_levels.on_hand` stays the authoritative quantity, and
+// `inventory_movements` stays exactly what it is: the record of changes to THAT
+// number, with `onHand == Σ(delta)` intact. Bins sit strictly BELOW it:
+//
+//     inventory_levels        (variant, warehouse)  ← availability reads this
+//       └── inventory_bin_levels   (variant, bin)   ← Σ == the level above
+//             └── inventory_bin_movements           ← Σ(delta) == the bin level
+//
+// Three invariants, each checkable, and the top one is untouched — which is the
+// point. Phase 1's reconciliation job keeps working with no changes to its query,
+// and gains one new cross-check (Σ bin levels == level on-hand) rather than a
+// rewrite. Putting bins INTO the warehouse ledger was the obvious alternative and
+// it is wrong: a bin-to-bin move changes no warehouse quantity, so it would have
+// had to be written as a −N/+N pair that makes `balanceAfter` dip through a value
+// the shelf never held.
+
+model InventoryBin {
+  id          String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String @map("tenant_id") @db.Uuid
+  warehouseId String @map("warehouse_id") @db.Uuid
+
+  // What is painted on the label. Unique per warehouse, not per tenant — two
+  // buildings both having an "A-01-01" is normal and forcing global uniqueness
+  // would make people invent prefixes.
+  code String @db.VarChar(32)
+  name String? @db.VarChar(120)
+
+  // Optional hierarchy, all free text. Deliberately NOT four foreign-keyed tables:
+  // every warehouse names its geography differently (zone/aisle/rack/shelf,
+  // room/row/bay, floor/section) and a schema that insists on ours would be
+  // fought rather than filled in. These exist to GROUP and FILTER — "count zone
+  // A", "print labels for aisle 3" — not to model a building.
+  zone  String? @db.VarChar(60)
+  aisle String? @db.VarChar(60)
+  rack  String? @db.VarChar(60)
+  shelf String? @db.VarChar(60)
+
+  // pick | bulk | receiving | staging | quarantine | damaged. A CHECK pins it.
+  //   pick        the shelf a picker walks to. The default.
+  //   bulk        overstock; feeds the pick face, not picked from directly.
+  //   receiving   where a delivery lands before it is put away.
+  //   staging     picked goods waiting to be packed or shipped.
+  //   quarantine  arrived or returned but not yet passed — NOT sellable.
+  //   damaged     written off but physically still here — NOT sellable.
+  type String @default("pick") @db.VarChar(20)
+
+  // Whether stock here counts toward what a customer may buy.
+  //
+  // Derived from `type` on creation but stored, not computed, because the two
+  // genuinely come apart: a tenant may want a bulk bin excluded from the pick
+  // face while it is being re-organised, and a quarantine bin re-opened once its
+  // batch clears. A computed column would make both of those a type change,
+  // which loses what the bin actually IS.
+  isSellable Boolean @default(true) @map("is_sellable")
+
+  // Walk order for directed picking (docs/146 Phase 4). Lower is earlier. Null
+  // sorts last, so an unsequenced warehouse still produces a stable list.
+  pickSequence Int? @map("pick_sequence")
+
+  // A hint, not a constraint. Nothing refuses a put-away for exceeding it — a
+  // system that will not let you record where something physically IS teaches
+  // people to record it somewhere else, and then the data is worse than the
+  // overflow was. It drives a warning and a capacity report.
+  capacityUnits Int? @map("capacity_units")
+
+  // The per-warehouse fallback every write lands in when no bin is named, and
+  // the one the backfill created. Exactly one per warehouse (a partial unique
+  // index enforces it); never deletable, never archivable.
+  isDefault Boolean @default(false) @map("is_default")
+
+  // Provisioned by the platform rather than the tenant — the DEFAULT bin, and the
+  // quarantine/damaged pair created with a warehouse. Excluded from the ordinary
+  // bin pickers where selecting one would be wrong.
+  isSystem Boolean @default(false) @map("is_system")
+
+  notes String? @db.Text
+
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  warehouse Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  levels            InventoryBinLevel[]
+  movements         InventoryBinMovement[]
+  movementsFrom     InventoryBinMovement[]   @relation("BinMoveFrom")
+  movementsTo       InventoryBinMovement[]   @relation("BinMoveTo")
+  defaultForVariant ProductVariant[]         @relation("VariantDefaultBin")
+  receiptLines      GoodsReceiptLine[]
+  countLines        InventoryCountLine[]
+  scanEvents        InventoryScanEvent[]
+
+  @@unique([warehouseId, code], map: "inventory_bins_warehouse_code_unique")
+  @@index([tenantId, warehouseId, isActive])
+  @@index([tenantId, warehouseId, zone])
+  @@index([tenantId, warehouseId, pickSequence])
+  @@map("inventory_bins")
+}
+
+// (variant, bin) on-hand. Sums to the (variant, warehouse) level above it.
+//
+// No `allocated` here, deliberately. A reservation holds stock at the LOCATION —
+// which shelf it will eventually come off is a picking decision made later, and
+// allocating against a specific bin would force that decision at add-to-basket
+// time and then be wrong the moment a picker takes it from the other shelf.
+model InventoryBinLevel {
+  variantId String @map("variant_id") @db.Uuid
+  binId     String @map("bin_id") @db.Uuid
+  tenantId  String @map("tenant_id") @db.Uuid
+
+  // Denormalized from the bin so the "sum my bins" cross-check and every
+  // warehouse-scoped read can run without joining through inventory_bins.
+  warehouseId String @map("warehouse_id") @db.Uuid
+
+  onHand Int @default(0) @map("on_hand")
+
+  // When stock was last physically confirmed in THIS bin — set by a count or a
+  // put-away, not by a sale. Drives "this shelf has not been looked at in a
+  // year", which is where cycle-count scheduling starts (Phase 7).
+  lastCountedAt DateTime? @map("last_counted_at") @db.Timestamptz
+
+  asOf      DateTime @default(now()) @map("as_of") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant    Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  bin       InventoryBin   @relation(fields: [binId], references: [id], onDelete: Cascade)
+  warehouse Warehouse      @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  @@id([variantId, binId])
+  @@index([tenantId, binId])
+  @@index([tenantId, variantId, warehouseId])
+  // "What is on this shelf" and "which shelves hold anything" — the two reads a
+  // picker and a counter make, kept off a full scan.
+  @@index([tenantId, warehouseId, onHand])
+  @@map("inventory_bin_levels")
+}
+
+// The bin-level ledger. Same shape and same discipline as `inventory_movements`,
+// one layer down: append-only, attributed, idempotent, and `binLevel.onHand ==
+// Σ(delta)` for every bin.
+//
+// Two kinds of row:
+//
+//   • A row PAIRED to a warehouse movement (`movementId` set) — a receipt, a
+//     sale, a count posting. The warehouse quantity changed and so did a bin's.
+//   • A bin-to-bin MOVE (`movementId` null, `fromBinId`/`toBinId` set) — written
+//     as a −N/+N pair. The warehouse quantity did not change and no warehouse
+//     movement exists, which is the honest record: nothing entered or left the
+//     building.
+model InventoryBinMovement {
+  id          String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String @map("tenant_id") @db.Uuid
+  binId       String @map("bin_id") @db.Uuid
+  variantId   String @map("variant_id") @db.Uuid
+  warehouseId String @map("warehouse_id") @db.Uuid
+
+  delta        Int // signed
+  balanceAfter Int? @map("balance_after") // bin on-hand AFTER this row
+
+  // Same vocabulary as the warehouse ledger, plus `put_away` and `bin_move`
+  // which have no warehouse-level equivalent because they move nothing in or out.
+  reason String @db.VarChar(20)
+
+  // Soft pointer to the warehouse ledger row this accompanies. No FK: the two
+  // ledgers are both append-only and neither should be able to cascade-delete
+  // the other's history. Null on a pure bin move.
+  movementId String? @map("movement_id") @db.Uuid
+
+  // Set on both halves of a bin-to-bin move, so one query reconstructs "5 went
+  // from A-01 to B-04" instead of two rows a reader has to pair up by timestamp.
+  fromBinId String? @map("from_bin_id") @db.Uuid
+  toBinId   String? @map("to_bin_id") @db.Uuid
+
+  referenceType String? @map("reference_type") @db.VarChar(63)
+  referenceId   String? @map("reference_id") @db.Uuid
+
+  actorType String  @default("system") @map("actor_type") @db.VarChar(20)
+  actorId   String? @map("actor_id") @db.VarChar(127)
+  source    String? @db.VarChar(63)
+
+  idempotencyKey String? @map("idempotency_key") @db.VarChar(127)
+  note           String? @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant    Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  bin       InventoryBin   @relation(fields: [binId], references: [id], onDelete: Cascade)
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  warehouse Warehouse      @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  fromBin   InventoryBin?  @relation("BinMoveFrom", fields: [fromBinId], references: [id], onDelete: SetNull)
+  toBin     InventoryBin?  @relation("BinMoveTo", fields: [toBinId], references: [id], onDelete: SetNull)
+
+  @@unique([tenantId, idempotencyKey], map: "inventory_bin_movements_tenant_idempotency_unique")
+  @@index([tenantId, binId, createdAt(sort: Desc)])
+  @@index([tenantId, variantId, createdAt(sort: Desc)])
+  @@index([tenantId, movementId])
+  @@map("inventory_bin_movements")
+}

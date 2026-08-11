@@ -97,6 +97,18 @@ export type EventType =
   | 'inventory.count.completed'
   | 'inventory.transfer.shipped'
   | 'inventory.transfer.received'
+  // A shelf-to-shelf move inside one location (docs/146 Phase 2). Changes no
+  // location quantity, so nothing downstream should re-price or re-index — it is
+  // published for automations that care WHERE stock is (out of quarantine, onto
+  // the pick face) rather than how much there is.
+  | 'inventory.bin.moved'
+  // Inventory integrity (docs/146 Phase 1) — the ledger checking itself.
+  // `reconciliation.drift` fires when a scheduled pass finds a level whose
+  // recorded on-hand disagrees with Σ(movements.delta); `oversell.blocked`
+  // fires on every refused or uncovered hold. Both are alarms, not bookkeeping:
+  // nothing downstream mutates stock in response, it notifies a human.
+  | 'inventory.reconciliation.drift'
+  | 'inventory.oversell.blocked'
   // Cart + checkout
   | 'cart.created'
   | 'cart.updated'
@@ -206,6 +218,11 @@ export type EventType =
   | 'inventory.source.sync_started'
   | 'inventory.source.sync_completed'
   | 'inventory.source.error'
+  // Freshness SLO (docs/146 Phase 1) — a source that has not reported inside its
+  // declared window. Distinct from `.error`: the last sync SUCCEEDED, and that is
+  // exactly what makes it dangerous — nothing looks broken while the number rots.
+  | 'inventory.source.stale'
+  | 'inventory.source.recovered'
   // Stock level mutations
   | 'inventory.levels.updated'
   // ─── Universal search (docs/39) ─────────────────────────────────────

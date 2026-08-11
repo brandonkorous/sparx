@@ -25,6 +25,7 @@ import {
 } from '../errors';
 import type { ServiceContext } from '../errors';
 
+import { resolvePutAwayBin, systemBinFor } from './bin-routing';
 import { applyMovement, emitStockEvents, resolveActorType } from './ledger';
 import type { MovementResult } from './ledger';
 
@@ -265,6 +266,10 @@ async function applyReceiptLine(
       quantityDamaged?: number;
       unitCostCents?: number;
       lotNumber?: string;
+      /** Which shelf the good units went on (docs/146 Phase 2). Optional even on
+       *  a bin-enabled location — the put-away suggester resolves it when the
+       *  receiver is booking from a desk with the pallet still on the dock. */
+      binId?: string;
     };
   }
 ): Promise<ReceiptEvent[]> {
@@ -293,6 +298,18 @@ async function applyReceiptLine(
   // became sellable stock (0 on a total-loss line). Damaged units are ledger-only
   // (no receipt-line column). The row always exists so the receipt shows the line
   // and the damaged movements below have a stable id to key their idempotency on.
+  // Which shelf the GOOD units go on (docs/146 Phase 2). Resolved HERE rather
+  // than left to the ledger's mirror so the receipt line RECORDS it — "we put it
+  // on A-01" is a fact about this delivery that someone will want back in six
+  // months, and a mirror that decided it silently leaves no trace. Null on a
+  // location that does not use bins.
+  const binId = await resolvePutAwayBin(tx, ctx, {
+    warehouseId,
+    variantId: poLine.variantId,
+    requested: input.binId ?? null,
+    quantity: good,
+  });
+
   const line = await tx.goodsReceiptLine.create({
     data: {
       tenantId: ctx.tenantId,
@@ -302,6 +319,7 @@ async function applyReceiptLine(
       quantityReceived: good,
       unitCostCents,
       lotNumber,
+      binId,
     },
     select: { id: true },
   });
@@ -325,6 +343,7 @@ async function applyReceiptLine(
       actorType,
       actorId: ctx.userId ?? null,
       idempotencyKey: `goods-receipt:${line.id}`,
+      binId,
     });
     if (result.movementId) {
       await tx.goodsReceiptLine.update({
@@ -359,6 +378,13 @@ async function applyReceiptLine(
   // on-hand change is 0; the valued loss (qty × landed cost) lives on the damage
   // row. Neither movement touches the PO line's received count or a lot.
   if (damaged > 0) {
+    // Both halves go to the DAMAGED shelf, never the pick face (docs/146 Phase 2).
+    // Net on-hand is zero either way, but the shelf matters: broken units that
+    // arrive and are written off in the same breath are still physically sitting
+    // somewhere until someone bins them, and recording them on the pick shelf
+    // would send a picker to a box of scrap. Null on a non-bin location.
+    const damagedBinId = await systemBinFor(tx, warehouseId, 'damaged');
+
     const damagedIn = await applyMovement(tx, {
       tenantId: ctx.tenantId,
       variantId: poLine.variantId,
@@ -371,6 +397,7 @@ async function applyReceiptLine(
       actorType,
       actorId: ctx.userId ?? null,
       idempotencyKey: `goods-receipt:${line.id}:damaged-in`,
+      binId: damagedBinId,
     });
     const writeOff = await applyMovement(tx, {
       tenantId: ctx.tenantId,
@@ -384,6 +411,7 @@ async function applyReceiptLine(
       actorType,
       actorId: ctx.userId ?? null,
       idempotencyKey: `goods-receipt:${line.id}:damaged-writeoff`,
+      binId: damagedBinId,
     });
     events.push(
       {

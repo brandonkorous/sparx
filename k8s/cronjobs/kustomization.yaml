@@ -28,6 +28,9 @@ resources:
   - domain-renewal-check.yaml
   - site-analytics-rollup.yaml
   - search-console-sync.yaml
+  # Without this, `onHand == Σ(movements.delta)` is a design guarantee nobody
+  # ever re-derives, and a stale feed keeps selling stock that isn't there.
+  - inventory-integrity-sweep.yaml
   - inventory-valuation-snapshot.yaml
   - channel-order-poll.yaml
   - market-settlement.yaml

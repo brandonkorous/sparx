@@ -30,6 +30,7 @@
 import { useState } from 'react';
 import {
   Badge,
+  Button,
   Card,
   EmptyState,
   NativeSelect,
@@ -39,8 +40,9 @@ import {
   ToggleGroup,
   ToggleGroupItem,
   ToolbarSeparator,
+  Tooltip,
 } from '@wizeworks/silicaui-react';
-import { ArrowDown, ArrowUp, Boxes, TrendingDown } from 'lucide-react';
+import { ArrowDown, ArrowUp, Boxes, ShieldCheck, TrendingDown } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -55,6 +57,7 @@ import {
   type StockLevel,
   type StockSortKey,
 } from './data';
+import { humanDuration, stockAgeTone } from './integrity-data';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -161,6 +164,16 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
     ctx.open('inventory.stock.item', { variantId: level.variantId }, { target: targetFor(event) });
   };
 
+  /** Always beside, never in place: the whole point of the explanation is to
+   *  read it while still looking at the number it explains. */
+  const explain = (level: StockLevel) => {
+    ctx.open(
+      'inventory.stock.provenance',
+      { variantId: level.variantId, warehouseId: level.warehouseId },
+      { target: 'beside' }
+    );
+  };
+
   const body = () => {
     // A failed load REPLACES the table. Rendering an empty grid under live
     // filters invites someone to conclude they have no stock.
@@ -219,6 +232,11 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
             <th className="hidden text-right @xl:table-cell">On the shelf</th>
             <th className="hidden text-right @3xl:table-cell">Spoken for</th>
             <th>State</th>
+            {/* An icon-only column: the header is for screen readers, and a word
+                here would claim width the numbers need more. */}
+            <th className="w-8">
+              <span className="sr-only">Where the number came from</span>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -266,9 +284,41 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
                   {level.allocated}
                 </td>
                 <td>
-                  <Badge color={state.tone} variant="soft" size="sm">
-                    {state.label}
-                  </Badge>
+                  <span className="flex flex-wrap items-center gap-1">
+                    <Badge color={state.tone} variant="soft" size="sm">
+                      {state.label}
+                    </Badge>
+                    {/* Only when the number has actually gone stale. A row of
+                        "2 hours" beside every healthy line is noise that trains
+                        people to stop reading the column before it ever means
+                        anything — an age badge is a deliberate signal, and a
+                        deliberate signal shown always is a decoration. */}
+                    {stockAgeTone(level.ageSeconds) !== 'success' ? (
+                      <Badge color={stockAgeTone(level.ageSeconds)} variant="soft" size="sm">
+                        {humanDuration(level.ageSeconds)} old
+                      </Badge>
+                    ) : null}
+                  </span>
+                </td>
+                <td>
+                  {/* `stopPropagation` because the row itself is a button: without
+                      it this opens the item pane AND the explanation, and the one
+                      that lands second wins — which is the opposite of what was
+                      clicked. */}
+                  <Tooltip content="Where this number came from">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      color="neutral"
+                      aria-label={`Where the number for ${level.sku ?? 'this item'} came from`}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        explain(level);
+                      }}
+                    >
+                      <ShieldCheck className="size-4" aria-hidden />
+                    </Button>
+                  </Tooltip>
                 </td>
               </tr>
             );

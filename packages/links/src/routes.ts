@@ -309,6 +309,17 @@ export const ROUTES: readonly AppRoute[] = [
   /* ── Inventory ────────────────────────────────────────────────────────── */
   { path: '/inventory/stock', surface: 'inventory.stock.list' },
   { path: '/inventory/stock/:variantId', surface: 'inventory.stock.item' },
+  // "Where this number came from" (docs/146 Phase 1). Two segments because a
+  // stock number IS a (item, location) pair — an address with only the item
+  // would not identify the number it claims to explain.
+  {
+    path: '/inventory/stock/:variantId/at/:warehouseId/provenance',
+    surface: 'inventory.stock.provenance',
+  },
+  { path: '/inventory/integrity', surface: 'inventory.integrity' },
+  { path: '/inventory/shelves', surface: 'inventory.bins.list' },
+  { path: '/inventory/shelves/labels', surface: 'inventory.bins.labels' },
+  { path: '/inventory/shelves/:id', surface: 'inventory.bins.detail' },
   { path: '/inventory/locations', surface: 'inventory.warehouses.list' },
   {
     path: '/inventory/locations/:id',
@@ -329,6 +340,18 @@ export const ROUTES: readonly AppRoute[] = [
   { path: '/inventory/purchase-orders/:id', surface: 'inventory.purchase-orders.detail' },
   { path: '/inventory/receiving', surface: 'inventory.receiving.list' },
   { path: '/inventory/receiving/:id', surface: 'inventory.receiving.detail' },
+  // Scanning a delivery in (docs/146 Phase 3.5). Addressed by the PURCHASE ORDER
+  // rather than by a receipt: the receipt does not exist until the session is
+  // posted, so a session link that survives a reload can only be the order's.
+  { path: '/inventory/receiving/scan/:id', surface: 'inventory.receiving.scan' },
+  // Barcodes (docs/146 Phase 3.1–3.3).
+  { path: '/inventory/barcodes', surface: 'inventory.barcodes.list' },
+  { path: '/inventory/barcodes/shared', surface: 'inventory.barcodes.conflicts' },
+  { path: '/inventory/barcodes/labels', surface: 'inventory.barcodes.labels' },
+  // The scannable sticker for a purchase order, receipt, transfer or count.
+  { path: '/inventory/document-label/:number', surface: 'inventory.documents.label' },
+  // Warehouse mode (docs/146 Phase 3.8) — the phone-in-the-aisle surface.
+  { path: '/inventory/warehouse', surface: 'inventory.warehouse' },
   { path: '/inventory/reorder', surface: 'inventory.reorder' },
   { path: '/inventory/reports', surface: 'inventory.reports' },
   { path: '/inventory/sources', surface: 'inventory.sources' },

@@ -479,6 +479,15 @@ module "pubsub" {
     "inventory.source.sync_completed" = []
     "inventory.source.error"          = []
 
+    # Inventory integrity (docs/146 Phase 1) — the ledger checking itself, and
+    # the feed-freshness SLO. All four are alarms consumed by notifications and
+    # tenant automations; nothing downstream mutates stock in response.
+    "inventory.bin.moved"            = []
+    "inventory.reconciliation.drift" = []
+    "inventory.oversell.blocked"     = []
+    "inventory.source.stale"         = []
+    "inventory.source.recovered"     = []
+
     # Integration providers, blueprint/template installs, imports, chat
     "provider.installed"      = []
     "provider.uninstalled"    = []

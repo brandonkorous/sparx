@@ -45,10 +45,11 @@ import {
   Table,
   Textarea,
   Text,
+  Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { ClipboardList, PackageCheck, PackageX } from 'lucide-react';
+import { ClipboardList, PackageCheck, PackageX, Printer } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -644,6 +645,33 @@ function ViewReceipt({ ctx, id }: { ctx: SurfaceContext; id: string }) {
         <Badge color="success" variant="soft" size="sm">
           Booked in
         </Badge>
+
+        {/* A receipt is history, so this is for TRACING rather than for a
+            workflow: stick it on the carton that came in and a scan months later
+            says which delivery it arrived on. */}
+        <Tooltip content="Print a scannable label so this delivery can be traced later">
+          <Button
+            size="sm"
+            variant="ghost"
+            color="neutral"
+            shape="square"
+            className="shrink-0"
+            aria-label="Print a scannable label for this delivery"
+            onClick={() => {
+              ctx.open(
+                'inventory.documents.label',
+                {
+                  number: data.number,
+                  title: 'Goods receipt',
+                  subtitle: data.warehouseName ?? '',
+                },
+                { target: 'beside' }
+              );
+            }}
+          >
+            <Printer className="size-4" aria-hidden />
+          </Button>
+        </Tooltip>
         {data.purchaseOrderId ? (
           <Button
             size="sm"

@@ -15,9 +15,18 @@ export interface InventoryCountLineRow {
   variantId: string;
   variantSku: string | null;
   productTitle: string | null;
-  expectedQuantity: number;
+  /**
+   * What we thought was here, snapshotted when the line was made.
+   *
+   * NULL on a BLIND count that is still being counted — not zero, and not
+   * omitted from the type. Blind counting only works if the number never
+   * reaches the person holding the shelf, and a field typed `number` is a field
+   * somebody eventually renders. It comes back at review, which is the moment
+   * the variance is supposed to be looked at.
+   */
+  expectedQuantity: number | null;
   countedQuantity: number | null;
-  /** counted − expected, null until counted. The count-time variance (display). */
+  /** counted − expected, null until counted, and null while a blind count is open. */
   variance: number | null;
   /** Cost basis for the variance value column (avg → unit → variant cost). */
   unitCostCents: number | null;
@@ -34,6 +43,17 @@ export interface InventoryCountRow {
   warehouseName: string | null;
   warehouseCode: string | null;
   type: 'cycle' | 'full';
+  /**
+   * What the count COVERS (docs/146 Phase 2). Load-bearing for the reader, not
+   * decorative: it is what decides whether an item absent from the sheet means
+   * "zero" or "not in scope" — a correction or a catastrophe.
+   */
+  scope: 'location' | 'zone' | 'bin';
+  binId: string | null;
+  binCode: string | null;
+  zoneName: string | null;
+  /** Expected quantities are withheld from the counter until review. */
+  isBlind: boolean;
   status: 'counting' | 'review' | 'approved' | 'posted' | 'cancelled';
   note: string | null;
   approvalThresholdCents: number;
@@ -112,12 +132,22 @@ export async function loadCountDetail(tx: TxClient, id: string): Promise<Invento
     row.warehouseId,
     row.lines.map((l) => l.variantId)
   );
-  return serializeDetail(row, costBasis);
+  // A shelf-scoped count is meaningless without the shelf's name on it. Fetched
+  // separately rather than through a relation because the count carries a bare
+  // `bin_id` column; one indexed lookup on a detail read is not worth a schema
+  // change to avoid.
+  const bin = row.binId
+    ? await tx.inventoryBin.findUnique({ where: { id: row.binId }, select: { code: true } })
+    : null;
+  return serializeDetail(row, costBasis, bin?.code ?? null);
 }
 
 // ─── Serializers ─────────────────────────────────────────────────────────────
 
-export function serializeRow(r: CountWithLineFlags): InventoryCountRow {
+export function serializeRow(
+  r: CountWithLineFlags,
+  binCode: string | null = null
+): InventoryCountRow {
   return {
     id: r.id,
     number: r.number,
@@ -125,6 +155,11 @@ export function serializeRow(r: CountWithLineFlags): InventoryCountRow {
     warehouseName: r.warehouse?.name ?? null,
     warehouseCode: r.warehouse?.code ?? null,
     type: r.type as InventoryCountRow['type'],
+    scope: r.scope as InventoryCountRow['scope'],
+    binId: r.binId,
+    binCode,
+    zoneName: r.zoneName,
+    isBlind: r.isBlind,
     status: r.status as InventoryCountRow['status'],
     note: r.note,
     approvalThresholdCents: r.approvalThresholdCents,
@@ -143,12 +178,22 @@ export function serializeRow(r: CountWithLineFlags): InventoryCountRow {
 
 export function serializeDetail(
   r: CountWithLines,
-  costBasis: Map<string, number | null>
+  costBasis: Map<string, number | null>,
+  binCode: string | null = null
 ): InventoryCountDetail {
-  const base = serializeRow({
-    ...r,
-    lines: r.lines.map((l) => ({ countedQuantity: l.countedQuantity })),
-  });
+  const base = serializeRow(
+    {
+      ...r,
+      lines: r.lines.map((l) => ({ countedQuantity: l.countedQuantity })),
+    },
+    binCode
+  );
+
+  // The blind gate. Withheld only while the count is OPEN: once it is submitted
+  // for review the counting is done, the numbers are frozen, and hiding the
+  // variance from the person who has to approve it would be theatre.
+  const withhold = r.isBlind && r.status === 'counting';
+
   return {
     ...base,
     lines: r.lines.map((l) => ({
@@ -156,9 +201,10 @@ export function serializeDetail(
       variantId: l.variantId,
       variantSku: l.variant?.sku ?? null,
       productTitle: l.variant?.product?.title ?? null,
-      expectedQuantity: l.expectedQuantity,
+      expectedQuantity: withhold ? null : l.expectedQuantity,
       countedQuantity: l.countedQuantity,
-      variance: l.countedQuantity === null ? null : l.countedQuantity - l.expectedQuantity,
+      variance:
+        withhold || l.countedQuantity === null ? null : l.countedQuantity - l.expectedQuantity,
       unitCostCents: costBasis.get(l.variantId) ?? l.variant?.costCents ?? null,
       appliedDelta: l.appliedDelta,
       movementId: l.movementId,

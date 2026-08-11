@@ -26,6 +26,18 @@ model Warehouse {
   // selectable or archivable as an ordinary location.
   isSystem Boolean @default(false) @map("is_system")
 
+  // Bins are OPT-IN per location (docs/146 Phase 2). A shop with one stockroom
+  // gains nothing from naming a shelf before it can receive a delivery, and
+  // forcing that is how a warehouse feature makes the product worse for everyone
+  // smaller. Off = every write lands in this location's DEFAULT bin silently and
+  // no bin UI renders.
+  usesBins Boolean @default(false) @map("uses_bins")
+
+  // How a picker is routed through this location's bins (docs/146 Phase 4).
+  // fifo | fefo | nearest_bin | single_bin. Stored now because put-away suggests
+  // a bin using the same preference, so it earns its place before picking ships.
+  allocationStrategy String @default("fifo") @map("allocation_strategy") @db.VarChar(20)
+
   line1      String? @db.VarChar(255)
   line2      String? @db.VarChar(255)
   city       String? @db.VarChar(120)
@@ -61,6 +73,14 @@ model Warehouse {
   transfersIn        InventoryTransfer[]    @relation("TransferTo")
   defaultForProducts Product[]              @relation("ProductDefaultWarehouse")
   fleetHolds         B2bFleetHold[]
+
+  reconciliationDrifts InventoryReconciliationDrift[]
+  oversellIncidents    InventoryOversellIncident[]
+  channelBuffers       InventoryChannelBuffer[]
+
+  bins         InventoryBin[]
+  binLevels    InventoryBinLevel[]
+  binMovements InventoryBinMovement[]
 
   @@unique([tenantId, code], map: "inventory_warehouses_tenant_code_unique")
   @@index([tenantId, isActive])

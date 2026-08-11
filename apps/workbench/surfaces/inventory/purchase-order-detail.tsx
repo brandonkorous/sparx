@@ -49,6 +49,7 @@ import {
   Table,
   Textarea,
   Text,
+  Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
@@ -59,7 +60,9 @@ import {
   PackageCheck,
   Pencil,
   Plus,
+  Printer,
   Save,
+  ScanLine,
   Send,
   Trash2,
 } from 'lucide-react';
@@ -924,6 +927,56 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             <PackageCheck className="size-4" aria-hidden />
             Receive
           </Button>
+        ) : null}
+
+        {/* Scanning is the OTHER way to receive the same delivery, so it sits
+            beside it as an equal rather than hidden in a menu — the dock has a
+            gun, the desk has a keyboard, and neither is the exception. Outline
+            rather than solid: only one of the two can be the primary action on
+            a screen, and typing is what someone at this desk is already doing. */}
+        {canReceive && detail ? (
+          <Tooltip content="Open the scanning screen for this delivery">
+            <Button
+              size="sm"
+              variant="outline"
+              color="module"
+              className="shrink-0"
+              onClick={() => {
+                ctx.open('inventory.receiving.scan', { id: detail.id }, { target: 'tab' });
+              }}
+            >
+              <ScanLine className="size-4" aria-hidden />
+              Scan it in
+            </Button>
+          </Tooltip>
+        ) : null}
+
+        {/* The sticker that makes this order scannable at all. Icon-only: it is
+            a secondary action, and the tooltip carries the meaning. */}
+        {detail && status !== 'draft' ? (
+          <Tooltip content="Print a scannable label for the paperwork and the pallet">
+            <Button
+              size="sm"
+              variant="ghost"
+              color="neutral"
+              shape="square"
+              className="shrink-0"
+              aria-label="Print a scannable label for this order"
+              onClick={() => {
+                ctx.open(
+                  'inventory.documents.label',
+                  {
+                    number: detail.number,
+                    title: 'Purchase order',
+                    subtitle: detail.supplierName ?? '',
+                  },
+                  { target: 'beside' }
+                );
+              }}
+            >
+              <Printer className="size-4" aria-hidden />
+            </Button>
+          </Tooltip>
         ) : null}
 
         {detail && (status === 'submitted' || status === 'partial' || status === 'received') ? (

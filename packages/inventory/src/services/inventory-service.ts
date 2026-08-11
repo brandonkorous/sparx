@@ -75,8 +75,8 @@ export type { FleetHoldRow, AccountAvailabilityRow, ListFleetHoldsFilter } from 
 // ─── Movement / audit-log read path (P4 corrections) ──────────────────
 // A filterable, paginated view over the append-only `inventory_movements`
 // ledger — the compliance surface answering who moved stock, when, why, how much.
-export { listMovements } from './movement-log';
-export type { MovementRow, ListMovementsFilter } from './movement-log';
+export { listMovements, exportMovements } from './movement-log';
+export type { MovementRow, ListMovementsFilter, MovementExport } from './movement-log';
 
 // ─── Reservations (cart soft / order hard) ────────────────────────────
 // The tx-aware cores (`reserveOnTx` / `releaseOnTx`) let the commerce cart seam
@@ -300,3 +300,178 @@ export type {
 // Most callers use reserve/commit/adjust above rather than this directly.
 export { applyMovement, emitStockEvents } from './ledger';
 export type { MovementInput, MovementResult, ActorType } from './ledger';
+
+// ─── Integrity: the ledger checking itself (docs/146 Phase 1) ─────────
+// Reconciliation re-derives Σ(delta) against the recorded on-hand; the oversell
+// log records every refused or uncovered hold. Both are observability — neither
+// ever writes stock, and a drift is never auto-corrected (that would destroy the
+// evidence and could propagate a corrupt ledger into a good level).
+export {
+  runReconciliation,
+  listReconciliationRuns,
+  listReconciliationDrifts,
+  recordOversellIncidentOnTx,
+  recordOversellIncidentDetached,
+  listOversellIncidents,
+  oversellSummary,
+} from './integrity';
+export type {
+  ReconciliationRunRow,
+  ReconciliationDriftRow,
+  ListReconciliationRunsFilter,
+  ListDriftsFilter,
+  OversellIncidentInput,
+  OversellIncidentRow,
+  ListOversellIncidentsFilter,
+  OversellSummary,
+} from './integrity';
+
+// ─── Provenance: why is this number what it is ────────────────────────
+// One call that decomposes a stock figure, re-derives it from the ledger, names
+// who is holding the allocated units, and reports how fresh the feed behind it
+// is. The read the trust pillar rests on.
+export { stockProvenance } from './provenance';
+export type {
+  StockProvenance,
+  ProvenanceMovement,
+  ProvenanceHold,
+  ProvenanceSource,
+  ProvenanceOptions,
+} from './provenance';
+
+// ─── Per-channel oversell buffers ─────────────────────────────────────
+export {
+  listChannelBuffers,
+  setChannelBuffer,
+  deleteChannelBuffer,
+  resolveChannelBuffer,
+  resolveChannelBufferOnTx,
+} from './channel-buffers';
+export type {
+  ChannelBufferRow,
+  ListChannelBuffersFilter,
+  ResolvedChannelBuffer,
+} from './channel-buffers';
+
+// ─── Feed freshness SLO ───────────────────────────────────────────────
+export {
+  listSourceFreshness,
+  setSourceFreshness,
+  sweepSourceFreshness,
+  resolveStalenessPenalty,
+  resolveStalenessPenaltyOnTx,
+} from './freshness';
+export type { SourceFreshnessRow, FreshnessSweepResult, StalenessPenalty } from './freshness';
+
+// ─── Bins: where INSIDE a location a thing is (docs/146 Phase 2) ──────
+// Opt-in per warehouse. `inventory_levels` stays authoritative for availability;
+// bin levels sum to it, and the bin ledger sums to each bin — three checkable
+// invariants, of which the top one is untouched by this layer.
+export {
+  listBins,
+  getBin,
+  createBin,
+  updateBin,
+  archiveBin,
+  binContents,
+  binsForVariant,
+  moveBetweenBins,
+  suggestPutAway,
+  setVariantHomeBin,
+  enableBinsForWarehouse,
+  disableBinsForWarehouse,
+  provisionSystemBins,
+  defaultSellableFor,
+} from './bins';
+export type {
+  BinRow,
+  BinContentRow,
+  VariantBinRow,
+  ListBinsFilter,
+  PutAwaySuggestion,
+} from './bins';
+
+export { applyBinMovement, mirrorMovementToBins, lockBinOnHand, defaultBinFor } from './bin-ledger';
+export type { BinMovementInput, BinMovementResult } from './bin-ledger';
+
+export { systemBinFor, resolvePutAwayBin } from './bin-routing';
+
+// ─── Barcodes + scanning (docs/146 Phase 3) ───────────────────────────
+// The registry that makes a scan resolve to exactly one thing, the minter for
+// items that arrived without a code, and the one resolver every scan-first
+// workflow goes through. Symbology maths lives in @sparx/commerce-schemas so
+// the label printer in the browser computes check digits the same way.
+export {
+  listBarcodes,
+  barcodesForVariant,
+  resolveBarcode,
+  listBarcodeConflicts,
+  resolveBarcodeConflict,
+  createBarcode,
+  updateBarcode,
+  setPrimaryBarcode,
+  deleteBarcode,
+  generateBarcodes,
+  previewSymbology,
+} from './barcodes';
+export type {
+  BarcodeRow,
+  BarcodeMatch,
+  BarcodeConflictRow,
+  GeneratedBarcode,
+  GenerateBarcodesResult,
+} from './barcodes';
+
+export {
+  receivingSession,
+  scanToReceive,
+  postScannedReceipt,
+  undoReceivingScan,
+  scanToCount,
+  scanToCountAndReload,
+  scanToTransfer,
+  scanPutAway,
+  replayScanQueue,
+  listScanEvents,
+} from './scan-workflows';
+export type {
+  ScanContextType,
+  ScanOutcome,
+  ScanEnvelope,
+  ScanActionResult,
+  ReceivingSession,
+  ReceivingSessionLine,
+  ScanToReceiveInput,
+  PostScannedReceiptInput,
+  ScanToCountInput,
+  ScanToTransferInput,
+  ScanPutAwayInput,
+  QueuedScan,
+  ReplayResult,
+  ScanEventRow,
+  ListScanEventsFilter,
+} from './scan-workflows';
+
+export { resolveScan } from './scan';
+export type {
+  ScanKind,
+  ScanMatch,
+  ScanResolution,
+  ResolveScanOptions,
+  VariantScanMatch,
+  BinScanMatch,
+  DocumentScanMatch,
+  LotScanMatch,
+  SerialScanMatch,
+} from './scan';
+
+// ─── Shrinkage ────────────────────────────────────────────────────────
+export { shrinkageReport } from './shrinkage';
+export type {
+  ShrinkageReport,
+  ShrinkageFilter,
+  ShrinkageByReason,
+  ShrinkageByWarehouse,
+  ShrinkageTopVariant,
+  ShrinkagePeriod,
+} from './shrinkage';

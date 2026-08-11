@@ -50,6 +50,7 @@ import {
   Text,
   Textarea,
   Timestamp,
+  Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
@@ -60,6 +61,7 @@ import {
   PackagePlus,
   PackageX,
   Pencil,
+  Printer,
   Send,
   Trash2,
   Truck,
@@ -93,6 +95,36 @@ import {
   type TransferDetail,
   type TransferLine,
 } from './transfers-data';
+import { ScanInput, playScanFeedback } from './scan-input';
+import { useScanQueue, useScanToTransfer, type ScanActionResult } from './scan-data';
+
+/**
+ * Scan items onto a draft transfer.
+ *
+ * Each pull adds one to the line, creating it if the item is not on the transfer
+ * yet — the same accumulating behaviour as counting, for the same reason: moving
+ * a pallet is one trigger pull per box.
+ */
+function ScanIntoTransfer({ transferId }: { transferId: string }) {
+  const scan = useScanToTransfer(transferId);
+  const queue = useScanQueue();
+  const [result, setResult] = useState<ScanActionResult | null>(null);
+
+  return (
+    <ScanInput
+      onScan={async (value) => {
+        const outcome = await scan.mutateAsync({ value });
+        setResult(outcome);
+        playScanFeedback(outcome.outcome);
+      }}
+      placeholder="Scan an item onto this transfer"
+      result={result}
+      busy={scan.isPending}
+      queued={queue.size}
+      focusOnMount={false}
+    />
+  );
+}
 
 /** Centred and capped — a pane torn onto a second monitor is 2000px wide, and
  *  uncapped this becomes a line of controls pinned to the left edge. */
@@ -863,6 +895,34 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           {state.label}
         </Badge>
 
+        {/* Goes on the tote, so the receiving end scans it rather than reading a
+            reference off a docket. */}
+        {detail ? (
+          <Tooltip content="Print a scannable label for the tote and the paperwork">
+            <Button
+              size="sm"
+              variant="ghost"
+              color="neutral"
+              shape="square"
+              className="shrink-0"
+              aria-label="Print a scannable label for this transfer"
+              onClick={() => {
+                ctx.open(
+                  'inventory.documents.label',
+                  {
+                    number: detail.number,
+                    title: 'Transfer',
+                    subtitle: `${detail.fromWarehouseName ?? ''} → ${detail.toWarehouseName ?? ''}`,
+                  },
+                  { target: 'beside' }
+                );
+              }}
+            >
+              <Printer className="size-4" aria-hidden />
+            </Button>
+          </Tooltip>
+        ) : null}
+
         {showCancel ? (
           <Button
             size="sm"
@@ -1048,6 +1108,15 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 </Text>
               )}
             </div>
+
+            {/* Scanning a pallet onto a transfer beats searching for each item
+                by name, so it sits above the list rather than behind the "Add
+                item" dialog. Only on a saved draft: a transfer that has not been
+                created yet has nothing for a scan to attach to, and one already
+                in transit describes a box on a truck. */}
+            {!isNew && status === 'draft' && detail ? (
+              <ScanIntoTransfer transferId={detail.id} />
+            ) : null}
 
             {lines.length === 0 ? (
               <EmptyState
